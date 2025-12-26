@@ -1,5 +1,12 @@
 import { useEffect, useState, type JSX } from "react";
-import { Box, Button, Typography, InputAdornment, Stack, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  InputAdornment,
+  Stack,
+  IconButton,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import SignupLayout from "../../layouts/SignupLayout";
@@ -9,7 +16,10 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { forgotPassSchema } from "../../utils/yup-config";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForgotPasswordMutation, useResendMutation } from "../../rtk/endpoints/authApi";
+import {
+  useForgotPasswordMutation,
+  useResendMutation,
+} from "../../rtk/endpoints/authApi";
 import GlobalDialog from "../../components/dialog";
 
 type FormData = {
@@ -24,7 +34,6 @@ export default function ForgotPassword(): JSX.Element {
   const [showCheckMailPopup, setShowCheckMailPopup] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
-
   const {
     register,
     handleSubmit,
@@ -36,8 +45,6 @@ export default function ForgotPassword(): JSX.Element {
 
   const watchedFields = watch();
   const isFormValid = watchedFields.email && !errors.email;
-
-
 
   // inside your component
 
@@ -55,7 +62,11 @@ export default function ForgotPassword(): JSX.Element {
     try {
       if (userEmail) {
         const encryptEmail = encryptAES(userEmail);
-        await resend({ email: encryptEmail, deviceType: "web", actionType: "forgot-password" }).unwrap();
+        await resend({
+          email: encryptEmail,
+          deviceType: "web",
+          actionType: "forgot-password",
+        }).unwrap();
       }
     } catch (error: any) {
       console.error("Resend Error:", error);
@@ -93,7 +104,12 @@ export default function ForgotPassword(): JSX.Element {
         maxWidth={400}
         component="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          position: "relative",
+        }}
       >
         {/* Back arrow - positioned absolutely in top left */}
         <IconButton
@@ -145,40 +161,62 @@ export default function ForgotPassword(): JSX.Element {
           Forgot Password
         </Typography>
 
-        <Typography variant="body2" textAlign="center" mb={3} sx={{ color: "#6C737F" }}>
-          Enter your registered email address we'll send you a link to reset your password
-        </Typography>
-
-        <StyledTextField
-          fullWidth
-          type="email"
-          placeholder="Enter Registered Email Address"
-          margin="normal"
-          {...register("email", { required: "Email is required" })}
-          error={Boolean(errors.email)}
-          helperText={errors.email?.message}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img src="/assets/icons/sms.svg" alt="mail-icon" loading="lazy" style={{ width: "20px", height: "20px" }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{
-            marginBottom: 2,
-          }}
-        />
-
-        <Button
-          type="submit"
-          fullWidth
-          variant="secondary"
-          disabled={isSubmitting || !isFormValid}
+        <Typography
+          variant="body2"
+          textAlign="center"
+          mb={3}
+          sx={{ color: "#6C737F" }}
         >
-          Send Verification Link
-        </Button>
+          Enter your registered email address we'll send you a link to reset
+          your password
+        </Typography>
+        <Box
+          sx={{
+            width: "100%",
+            position: { xs: "fixed", sm: "static" }, // mobile only
+            bottom: { xs: 0, sm: "auto" },
+            left: { xs: 0, sm: "auto" },
+            p: { xs: 2, sm: 0 },
+            backgroundColor: { xs: "#fff", sm: "transparent" },
+            zIndex: { xs: 10, sm: "auto" },
+          }}
+        >
+          <StyledTextField
+            fullWidth
+            type="email"
+            placeholder="Enter Registered Email Address"
+            margin="normal"
+            {...register("email", { required: "Email is required" })}
+            error={Boolean(errors.email)}
+            helperText={errors.email?.message}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ mr: 0 }}>
+                    <img
+                      src="/assets/icons/sms.svg"
+                      alt="mail-icon"
+                      loading="lazy"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{
+              marginBottom: 2,
+            }}
+          />
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="secondary"
+            disabled={isSubmitting || !isFormValid}
+          >
+            Send Verification Link
+          </Button>
+        </Box>
       </Box>
 
       {/* Check Mail Popup */}
@@ -216,7 +254,12 @@ export default function ForgotPassword(): JSX.Element {
             </Box>
 
             {/* Title */}
-            <Typography variant="h5" fontWeight={600} mb={2} sx={{ color: "#111927" }}>
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              mb={2}
+              sx={{ color: "#111927" }}
+            >
               Please check your mail
             </Typography>
 
