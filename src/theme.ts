@@ -126,8 +126,8 @@ const theme = createTheme({
       lineHeight: "1.875rem",
     },
     body2: {
-      fontSize: "1.125rem",
-      lineHeight: "1.75rem",
+      fontSize: "16px",
+      lineHeight: "24px",
     },
     subtitle1: {
       fontSize: "24px",

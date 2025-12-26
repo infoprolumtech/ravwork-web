@@ -237,9 +237,8 @@ export default function ForgotPassword(): JSX.Element {
                 variant="outlined"
                 onClick={handleCloseCheckMailPopup}
                 sx={{
-                  borderColor: "#D1D5DB",
                   color: "#384250",
-                  textTransform: "none",
+                  borderRadius: "50px",
                   px: 3,
                 }}
               >
@@ -250,6 +249,7 @@ export default function ForgotPassword(): JSX.Element {
                 onClick={handleResendVerificationLink}
                 sx={{
                   textTransform: "none",
+
                   px: 3,
                 }}
               >

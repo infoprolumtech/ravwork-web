@@ -1,24 +1,10 @@
 import { Typography, Box, Card, CardContent, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Button, Stack } from "@mui/material";
 import AdminLayout from "../../layouts/AdminLayout";
+import DashboardCard from "../../components/reusecard/DashboardCard";
 
 export default function Dashboard() {
   // Mock data - replace with actual API calls
-  const profileComplete = 66; // percentage
-  
-  // Statistics data
-  const statsData = {
-    clicks: {
-      today: "1,721K",
-      thisWeek: "367K",
-      thisMonth: "1,156"
-    },
-    bookings: {
-      today: "721K",
-      thisWeek: "367K",
-      thisMonth: "1,156"
-    }
-  };
-
+  const profileComplete = 36; // percentage
   const jobsData = [
     { name: "Sarah Johnson", jobType: "New Request", dateTime: "Nov 22, 2025 • 10:00 AM" },
     { name: "Sarah Johnson", jobType: "Plumbing Repair", dateTime: "No Date Available" },
@@ -34,138 +20,115 @@ export default function Dashboard() {
         </Typography>
 
         {/* Complete Setup Banner */}
-        <Card 
-          sx={{ 
-            mb: 3, 
-            borderRadius: 2, 
+        <Card
+          sx={{
+            mb: 3,
+            borderRadius: 2,
             boxShadow: 1,
-            backgroundColor: "#E3F0F8",
-            border: "none"
+            bgcolor: "#D2E7FF",
           }}
         >
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
-              <Box sx={{ flex: 1, minWidth: 200 }}>
-                <Typography variant="body1" sx={{ mb: 1.5, fontWeight: 600, color: "#111927" }}>
-                  Complete Setup. Get More Clients with a complete Profile.
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={profileComplete}
-                    sx={{
-                      flex: 1,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: "#D1D5DB",
-                      "& .MuiLinearProgress-bar": {
-                        borderRadius: 4,
-                        backgroundColor: "#0E6A37",
-                      },
-                    }}
-                  />
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: "#111927", minWidth: "60px" }}>
-                    {profileComplete}% Complete
-                  </Typography>
-                </Box>
-              </Box>
-              <Button
-                variant="contained"
+          <CardContent sx={{ py: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+
+              {/* Icon */}
+              <Box
                 sx={{
-                  backgroundColor: "#111927",
-                  color: "#FFFFFF",
-                  textTransform: "none",
-                  px: 3,
-                  py: 1,
-                  "&:hover": {
-                    backgroundColor: "#384250",
+                  width: 40,
+                  height: 40,
+                  bgcolor: "#F9FAFB",
+                  borderRadius: "50%",
+                  display: {
+                    xs: "none",
+                    sm: "flex",
                   },
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                Complete profile
-              </Button>
+                <img src="./assets/icons/User.svg" alt="" />
+              </Box>
+              {/* Content */}
+              <Box sx={{ flex: 1 }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                  <Box>
+                    <Typography fontWeight={600} color="#111927">
+                      Complete Setup.
+                    </Typography>
+                    <Typography variant="body2">
+                      Get More Clients with a complete Profile.
+                    </Typography>
+                  </Box>
+
+                  <Button variant="secondary">
+                    Complete profile
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+            {/* Progress */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <LinearProgress
+                variant="determinate"
+                value={profileComplete}
+                sx={{
+                  flex: 1,
+                  height: 16,
+                  borderRadius: 4,
+                  bgcolor: "#D1D5DB",
+                  border: "4px solid #FFFFFF",
+                  "& .MuiLinearProgress-bar": {
+                    bgcolor: "#BAEDBD",
+                    borderRadius: 4,
+                  },
+                }}
+              />
+              <Typography fontWeight={600} minWidth={70}>
+                {profileComplete}% Complete
+              </Typography>
             </Box>
           </CardContent>
         </Card>
 
+
         {/* Statistics Cards - Row 1: Clicks */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  Today's Clicks
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.clicks.today}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  Clicks This Week
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.clicks.thisWeek}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  Clicks This month
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.clicks.thisMonth}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Statistics Cards - Row 2: Bookings */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  Today's Bookings
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.bookings.today}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  This Week's Bookings
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.bookings.thisWeek}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
-              <CardContent>
-                <Typography variant="body2" sx={{ color: "#6C737F", mb: 1 }}>
-                  Bookings This Month
-                </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: "#111927" }}>
-                  {statsData.bookings.thisMonth}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+          <DashboardCard
+            icon="/assets/icons/mouse-square.svg"
+            label="Today’s Clicks"
+            value="1,721k"
+            theme="theme1"
+          />
+          <DashboardCard
+            icon="/assets/icons/mouse-square.svg"
+            label="Clicks This Week"
+            value="367k"
+            theme="theme2"
+          />
+          <DashboardCard
+            icon="/assets/icons/mouse-square.svg"
+            label="Clicks This Month"
+            value="1,156"
+            theme="theme1"
+          />
+          <DashboardCard
+            icon="/assets/icons/user-check.svg"
+            label="Today’s Bookings"
+            value="721k"
+            theme="theme2"
+          />
+          <DashboardCard
+            icon="/assets/icons/user-check.svg"
+            label="This Week’s Bookings"
+            value="367k"
+            theme="theme1"
+          />
+          <DashboardCard
+            icon="/assets/icons/user-check.svg"
+            label="Bookings This Month"
+            value="1,156"
+            theme="theme2"
+          />
         </Grid>
 
         {/* Recent Activity Table */}
@@ -194,7 +157,7 @@ export default function Dashboard() {
                 </TableBody>
               </Table>
             </TableContainer>
-            
+
             {/* Pagination */}
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 3, gap: 1 }}>
               <Button
