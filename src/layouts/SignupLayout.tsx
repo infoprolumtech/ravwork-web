@@ -83,13 +83,17 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
         }}
       >
         <Container
-          maxWidth="sm"
+          maxWidth={false}
           sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             width: "100%",
             position: "relative",
+            maxWidth: {
+              xs: "100%",
+              sm: "730px",
+            },
           }}
         >
           {/* Back Icon - Top Left */}

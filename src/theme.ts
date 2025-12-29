@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 // @ts-ignore
-import '@fontsource/poppins';
+import '@fontsource/inter';
 
 
 const theme = createTheme({
@@ -78,7 +78,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Montserrat, sans-serif",
+    fontFamily: "Inter, sans-serif",
     h1: {
       fontSize: "4.5rem",
       lineHeight: "5.625rem",
@@ -126,8 +126,8 @@ const theme = createTheme({
       lineHeight: "1.875rem",
     },
     body2: {
-      fontSize: "1.125rem",
-      lineHeight: "1.75rem",
+      fontSize: "16px",
+      lineHeight: "24px",
     },
     subtitle1: {
       fontSize: "24px",
@@ -136,7 +136,7 @@ const theme = createTheme({
       letterSpacing: "0",
       paragraphSpacing: "24px",
       color: "#6C737F",
-      fontFamily: "Montserrat, sans-serif",
+      fontFamily: "Inter, sans-serif",
     },
     subtitle2: {
       fontSize: "16px",

@@ -40,7 +40,11 @@ export default function ResetPasswordPage(): JSX.Element {
   });
 
   const watchedFields = watch();
-  const isFormValid = watchedFields.password && watchedFields.confirmPassword && !errors.password && !errors.confirmPassword;
+  const isFormValid =
+    watchedFields.password &&
+    watchedFields.confirmPassword &&
+    !errors.password &&
+    !errors.confirmPassword;
 
   const onSubmit = async (data: ResetPasswordFormInputs) => {
     try {
@@ -52,7 +56,7 @@ export default function ResetPasswordPage(): JSX.Element {
       // navigate("/");
       await resetPassword({
         token: token || "",
-        new_password: (data.password),
+        new_password: data.password,
       }).unwrap();
     } catch (error: any) {
       console.error("Reset Password Error:", error);
@@ -85,7 +89,12 @@ export default function ResetPasswordPage(): JSX.Element {
         maxWidth={400}
         component="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          position: "relative",
+        }}
       >
         {/* Back arrow - positioned absolutely in top left */}
         <IconButton
@@ -137,107 +146,134 @@ export default function ResetPasswordPage(): JSX.Element {
           Change Password
         </Typography>
 
-        <Typography variant="body2" textAlign="center" mb={3} sx={{ color: "#6C737F" }}>
-          Phone number verification is only for job updates. You will not receive messages for anything else.
+        <Typography
+          variant="body2"
+          textAlign="center"
+          mb={3}
+          sx={{ color: "#6C737F" }}
+        >
+          Phone number verification is only for job updates. You will not
+          receive messages for anything else.
         </Typography>
 
-            {/* Password Field */}
-            <StyledTextField
-              fullWidth
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter new password"
-              margin="normal"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              error={Boolean(errors.password)}
-              helperText={errors.password?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start" sx={{ mr: 0 }}>
-                      <img
-                        src="/assets/icons/lock.svg"
-                        alt="lock-icon"
-                        loading="lazy"
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        <img
-                          src={showPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                          alt={showPassword ? "hide-password" : "show-password"}
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+        {/* Password Field */}
+        <StyledTextField
+          fullWidth
+          type={showPassword ? "text" : "password"}
+          placeholder="Enter new password"
+          margin="normal"
+          {...register("password", {
+            required: "Password is required",
+            minLength: {
+              value: 6,
+              message: "Password must be at least 6 characters",
+            },
+          })}
+          error={Boolean(errors.password)}
+          helperText={errors.password?.message}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start" sx={{ mr: 0 }}>
+                  <img
+                    src="/assets/icons/lock.svg"
+                    alt="lock-icon"
+                    loading="lazy"
+                  />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)}>
+                    <img
+                      src={
+                        showPassword
+                          ? "/assets/icons/eye-slash.svg"
+                          : "/assets/icons/eye.svg"
+                      }
+                      alt={showPassword ? "hide-password" : "show-password"}
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
 
-            {/* Confirm Password Field */}
-            <StyledTextField
-              fullWidth
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm new password"
-              margin="normal"
-              {...register("confirmPassword", {
-                required: "Confirm Password is required",
-                validate: (value) =>
-                  value === password || "Passwords must match",
-              })}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start" sx={{ mr: 0 }}>
-                      <img
-                        src="/assets/icons/lock.svg"
-                        alt="lock-icon"
-                        loading="lazy"
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                      >
-                        <img
-                          src={showConfirmPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                          alt={showConfirmPassword ? "hide-password" : "show-password"}
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{
-                mb: 2,
-              }}
-            />
+        {/* Confirm Password Field */}
+        <StyledTextField
+          fullWidth
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="Confirm new password"
+          margin="normal"
+          {...register("confirmPassword", {
+            required: "Confirm Password is required",
+            validate: (value) => value === password || "Passwords must match",
+          })}
+          error={Boolean(errors.confirmPassword)}
+          helperText={errors.confirmPassword?.message}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start" sx={{ mr: 0 }}>
+                  <img
+                    src="/assets/icons/lock.svg"
+                    alt="lock-icon"
+                    loading="lazy"
+                  />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    <img
+                      src={
+                        showConfirmPassword
+                          ? "/assets/icons/eye-slash.svg"
+                          : "/assets/icons/eye.svg"
+                      }
+                      alt={
+                        showConfirmPassword ? "hide-password" : "show-password"
+                      }
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            mb: 2,
+          }}
+        />
 
-            <Button
-              fullWidth
-              type="submit"
-              variant="secondary"
-              disabled={isSubmitting || !isFormValid}
-            >
-              Change Password
-            </Button>
+        <Box
+          sx={{
+            width: "100%",
+            position: { xs: "fixed", sm: "static" }, // fixed on mobile
+            bottom: { xs: 0, sm: "auto" },
+            left: { xs: 0, sm: "auto" },
+            p: { xs: 2, sm: 0 },
+            backgroundColor: { xs: "#fff", sm: "transparent" },
+            zIndex: { xs: 10, sm: "auto" },
+            boxShadow: {
+              xs: "0 -2px 10px rgba(0,0,0,0.05)",
+              sm: "none",
+            },
+          }}
+        >
+          <Button
+            fullWidth
+            type="submit"
+            variant="secondary"
+            disabled={isSubmitting || !isFormValid}
+          >
+            Change Password
+          </Button>
+        </Box>
       </Box>
 
       {/* Congratulation Popup */}
@@ -292,7 +328,12 @@ export default function ResetPasswordPage(): JSX.Element {
             </Box>
 
             {/* Title */}
-            <Typography variant="h5" fontWeight={600} mb={2} sx={{ color: "#111927" }}>
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              mb={2}
+              sx={{ color: "#111927" }}
+            >
               Congratulation!!
             </Typography>
 
