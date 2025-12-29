@@ -1,5 +1,5 @@
 import { Typography, Box, Card, CardContent, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Button, Stack } from "@mui/material";
-import AdminLayout from "../../layouts/AdminLayout";
+import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
 
 export default function Dashboard() {
@@ -12,7 +12,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <AdminLayout>
+    <ServiceProviderLayout>
       <Box sx={{ p: 3 }}>
         {/* Header Breadcrumb */}
         <Typography variant="body2" sx={{ color: "#6C737F", mb: 2 }}>
@@ -210,6 +210,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </Box>
-    </AdminLayout>
+    </ServiceProviderLayout>
   );
 }
