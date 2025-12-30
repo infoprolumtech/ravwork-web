@@ -42,43 +42,43 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   {
     segment: "dashboard",
     title: "Dashboard",
-    icon: "/assets/icons/sidebar menu icon/ChartPieSlice.svg",
+    icon: "/assets/icons/sidebar_menu_icon/ChartPieSlice.svg",
     path: "/dashboard",
   },
   {
     segment: "my-jobs",
     title: "My Jobs",
-    icon: "/assets/icons/sidebar menu icon/briefcase.svg",
+    icon: "/assets/icons/sidebar_menu_icon/briefcase.svg",
     path: "/my-jobs",
   },
   {
     segment: "services-offered",
     title: "Services Offered",
-    icon: "/assets/icons/sidebar menu icon/flash.svg",
+    icon: "/assets/icons/sidebar_menu_icon/flash.svg",
     path: "/services-offered",
   },
   {
     segment: "earnings",
     title: "Earnings",
-    icon: "/assets/icons/sidebar menu icon/ArrowRise.svg",
+    icon: "/assets/icons/sidebar_menu_icon/ArrowRise.svg",
     path: "/earnings",
   },
   {
     segment: "my-profile",
     title: "My profile",
-    icon: "/assets/icons/sidebar menu icon/Group.svg",
+    icon: "/assets/icons/sidebar_menu_icon/Group.svg",
     path: "/my-profile",
   },
   {
     segment: "notifications",
-    title: "Notifications",
-    icon: "/assets/icons/sidebar menu icon/bell.svg",
+    title: "Email and SMS",
+    icon: "/assets/icons/sidebar_menu_icon/bell.svg",
     path: "/notifications",
   },
   {
     segment: "manage-subscription",
     title: "Manage Subscription",
-    icon: "/assets/icons/sidebar menu icon/crown.svg",
+    icon: "/assets/icons/sidebar_menu_icon/crown.svg",
     path: "/manage-subscription",
   },
 ];
@@ -196,9 +196,12 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const { children, window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [desktopOpen, setDesktopOpen] = React.useState(true);
+  const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.auth.user);
+  const [logout] = useLogoutMutation();
 
   const handleDrawerToggle = React.useCallback(() => {
     setMobileOpen((prev: boolean) => !prev);
@@ -207,6 +210,24 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const handleDesktopDrawerToggle = React.useCallback(() => {
     setDesktopOpen((prev: boolean) => !prev);
   }, []);
+
+  const handleLogout = React.useCallback(() => {
+    setOpenLogoutDialog(true);
+  }, []);
+
+  const handleCloseLogoutDialog = React.useCallback(() => {
+    setOpenLogoutDialog(false);
+  }, []);
+
+  const handleLogoutConfirm = React.useCallback(async () => {
+    try {
+      await logout({});
+      dispatch(logoutUser());
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }, [logout, dispatch, navigate]);
 
   // Memoize path parts to avoid recalculating on every render
   const pathParts = React.useMemo(
@@ -227,7 +248,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     const navItem = NAVIGATION_ITEMS.find((item) => item.segment === currentSegment);
     return {
       title: navItem?.title || "Dashboard",
-      icon: navItem?.icon || "/assets/icons/sidebar menu icon/ChartPieSlice.svg",
+      icon: navItem?.icon || "/assets/icons/sidebar_menu_icon/ChartPieSlice.svg",
     };
   }, [pathParts]);
 
@@ -490,6 +511,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               fontSize: "12px",
               color: "#6C737F",
               textDecoration: "none",
+              cursor: "pointer",
               "&:hover": { color: "#384250" },
             }}
           >
@@ -503,6 +525,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               fontSize: "12px",
               color: "#6C737F",
               textDecoration: "none",
+              cursor: "pointer",
               "&:hover": { color: "#384250" },
             }}
           >
@@ -516,6 +539,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               fontSize: "12px",
               color: "#6C737F",
               textDecoration: "none",
+              cursor: "pointer",
               "&:hover": { color: "#384250" },
             }}
           >
@@ -523,10 +547,26 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           </Typography>
           <Typography
             variant="body2"
+            onClick={handleLogout}
             sx={{
               fontSize: "12px",
               color: "#6C737F",
-              mt: 1,
+              textDecoration: "none",
+              cursor: "pointer",
+              "&:hover": { color: "#384250" },
+            }}
+          >
+            Log Out
+          </Typography>
+          
+          {/* Horizontal Divider */}
+          <Divider sx={{ my: 1, borderColor: "#E5E7EB" }} />
+          
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: "12px",
+              color: "#6C737F",
             }}
           >
             Ravwork Inc. © 2023 All Right Reserved
@@ -596,6 +636,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               sx={{ 
                 mr: { xs: 0.5, md: 1 }, 
                 padding: { xs: "8px" },
+                display: { xs: "flex", md: "none" }
               }}
             >
               <MenuIcon />
@@ -707,6 +748,20 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         <Toolbar />
         {children}
       </Box>
+
+      {/* Logout Dialog */}
+      <GlobalDialog
+        open={openLogoutDialog}
+        handleClose={handleCloseLogoutDialog}
+        component={
+          <CommonDialog
+            handleCancel={handleCloseLogoutDialog}
+            title="Logout"
+            subTitle="Are you sure want to log out of your account?"
+            handleConfirm={handleLogoutConfirm}
+          />
+        }
+      />
     </Box>
   );
 }

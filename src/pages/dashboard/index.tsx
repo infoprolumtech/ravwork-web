@@ -1,95 +1,208 @@
-import { Typography, Box, Card, CardContent, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Button, Stack } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Grid,
+  Button,
+  Stack,
+  Avatar,
+} from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
 
 export default function Dashboard() {
   // Mock data - replace with actual API calls
-  const profileComplete = 36; // percentage
+  const profileComplete = 70; // percentage
   const jobsData = [
-    { name: "Sarah Johnson", jobType: "New Request", dateTime: "Nov 22, 2025 • 10:00 AM" },
-    { name: "Sarah Johnson", jobType: "Plumbing Repair", dateTime: "No Date Available" },
-    { name: "Sarah Johnson", jobType: "Plumbing Repair", dateTime: "Nov 22, 2025 • 10:00 AM" },
+    {
+      name: "Sarah Johnson",
+      jobType: "New Request",
+      dateTime: "Nov 22, 2025 • 10:00 AM",
+    },
+    {
+      name: "Sarah Johnson",
+      jobType: "Plumbing Repair",
+      dateTime: "No Date Available",
+    },
+    {
+      name: "Sarah Johnson",
+      jobType: "Plumbing Repair",
+      dateTime: "Nov 22, 2025 • 10:00 AM",
+    },
   ];
 
   return (
     <ServiceProviderLayout>
-      <Box sx={{ p: 3 }}>
-        {/* Header Breadcrumb */}
-        <Typography variant="body2" sx={{ color: "#6C737F", mb: 2 }}>
-          Dashboards / Default
-        </Typography>
+      <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
 
         {/* Complete Setup Banner */}
-        <Card
-          sx={{
-            mb: 3,
-            borderRadius: 2,
-            boxShadow: 1,
-            bgcolor: "#D2E7FF",
-          }}
-        >
-          <CardContent sx={{ py: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
-              {/* Icon */}
+        {profileComplete > 90 ? (
+          /* ===== COMPLETED PROFILE CARD ===== */
+          <Card
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+              boxShadow: 1,
+              bgcolor: "#D2E7FF",
+            }}
+          >
+            <CardContent sx={{ py: 2 }}>
+              {/* Header */}
               <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  bgcolor: "#F9FAFB",
-                  borderRadius: "50%",
-                  display: {
-                    xs: "none",
-                    sm: "flex",
-                  },
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={1}
               >
-                <img src="./assets/icons/User.svg" alt="" />
+                <Typography fontWeight={600} fontSize={14} color="#111927">
+                  Welcome back!
+                </Typography>
+                <Button variant="secondary">Complete Setup</Button>
               </Box>
-              {/* Content */}
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                  <Box>
-                    <Typography fontWeight={600} color="#111927">
-                      Complete Setup.
-                    </Typography>
-                    <Typography variant="body2">
-                      Get More Clients with a complete Profile.
-                    </Typography>
-                  </Box>
 
-                  <Button variant="secondary">
-                    Complete profile
-                  </Button>
+              {/* Body */}
+              <Box display="flex" alignItems="center" gap={2}>
+                <Avatar
+                  src="./assets/images/avatar.png"
+                  sx={{ width: 74, height: 74 }}
+                />
+
+                <Box flex={1}>
+                  <Typography fontWeight={600} fontSize={18}>
+                    Full Name Goes Here
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      gap: 1,
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        maxWidth: { xs: "100%", sm: 260 },
+                        overflow: { xs: "visible", sm: "hidden" },
+                        textOverflow: { sm: "ellipsis" },
+                        whiteSpace: { xs: "normal", sm: "nowrap" },
+                        wordBreak: "break-all",
+                      }}
+                    >
+                      https://rawwork.com/p/johndoe
+                    </Typography>
+
+                    <Box display="flex" gap={0.5}>
+                      {["copy", "share-arrow"].map((icon) => (
+                        <Box
+                          key={icon}
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            bgcolor: "#fff",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            flexShrink: 0,
+                          }}
+                        >
+                          <img src={`./assets/icons/${icon}.svg`} alt={icon} />
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-            {/* Progress */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <LinearProgress
-                variant="determinate"
-                value={profileComplete}
-                sx={{
-                  flex: 1,
-                  height: 16,
-                  borderRadius: 4,
-                  bgcolor: "#D1D5DB",
-                  border: "4px solid #FFFFFF",
-                  "& .MuiLinearProgress-bar": {
-                    bgcolor: "#BAEDBD",
-                    borderRadius: 4,
-                  },
-                }}
-              />
-              <Typography fontWeight={600} minWidth={70}>
-                {profileComplete}% Complete
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          /* ===== INCOMPLETE PROFILE CARD ===== */
+          <Card
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+              boxShadow: 1,
+              bgcolor: "#D2E7FF",
+            }}
+          >
+            <CardContent sx={{ py: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {/* Icon */}
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    bgcolor: "#F9FAFB",
+                    borderRadius: "50%",
+                    display: { xs: "none", sm: "flex" },
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img src="./assets/icons/User.svg" alt="" />
+                </Box>
 
+                {/* Content */}
+                <Box sx={{ flex: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 1,
+                    }}
+                  >
+                    <Box>
+                      <Typography fontWeight={600} color="#111927">
+                        Complete Setup.
+                      </Typography>
+                      <Typography variant="body2">
+                        Get more clients with a complete profile.
+                      </Typography>
+                    </Box>
+
+                    <Button variant="secondary">Complete profile</Button>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Progress */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={profileComplete}
+                  sx={{
+                    flex: 1,
+                    height: 16,
+                    borderRadius: 4,
+                    bgcolor: "#D1D5DB",
+                    border: "4px solid #FFFFFF",
+                    "& .MuiLinearProgress-bar": {
+                      bgcolor: "#BAEDBD",
+                      borderRadius: 4,
+                    },
+                  }}
+                />
+                <Typography fontWeight={600} minWidth={70}>
+                  {profileComplete}% Complete
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Statistics Cards - Row 1: Clicks */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -134,21 +247,33 @@ export default function Dashboard() {
         {/* Recent Activity Table */}
         <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
           <CardContent>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: "#111927" }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 2, fontWeight: 600, color: "#111927" }}
+            >
               Recent Activity
             </Typography>
             <TableContainer component={Paper} elevation={0}>
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>Name</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>Job Type</TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>Date & Time</TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      Name
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      Job Type
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      Date & Time
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {jobsData.map((job, index) => (
-                    <TableRow key={index} sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}>
+                    <TableRow
+                      key={index}
+                      sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}
+                    >
                       <TableCell>{job.name}</TableCell>
                       <TableCell>{job.jobType}</TableCell>
                       <TableCell>{job.dateTime}</TableCell>
@@ -159,7 +284,15 @@ export default function Dashboard() {
             </TableContainer>
 
             {/* Pagination */}
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 3, gap: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 3,
+                gap: 1,
+              }}
+            >
               <Button
                 variant="outlined"
                 sx={{
