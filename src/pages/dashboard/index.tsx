@@ -16,12 +16,12 @@ import {
   Stack,
   Avatar,
 } from "@mui/material";
-import AdminLayout from "../../layouts/AdminLayout";
+import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
 
 export default function Dashboard() {
   // Mock data - replace with actual API calls
-  const profileComplete = 99; // percentage
+  const profileComplete = 70; // percentage
   const jobsData = [
     {
       name: "Sarah Johnson",
@@ -41,12 +41,8 @@ export default function Dashboard() {
   ];
 
   return (
-    <AdminLayout>
-      <Box sx={{ p: 3 }}>
-        {/* Header Breadcrumb */}
-        <Typography variant="body2" sx={{ color: "#6C737F", mb: 2 }}>
-          Dashboards / Default
-        </Typography>
+    <ServiceProviderLayout>
+      <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
 
         {/* Complete Setup Banner */}
         {profileComplete > 90 ? (
@@ -347,6 +343,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </Box>
-    </AdminLayout>
+    </ServiceProviderLayout>
   );
 }
