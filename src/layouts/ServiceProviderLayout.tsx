@@ -1,4 +1,4 @@
-import * as React from "react";
+                                    import * as React from "react";
 import {
   Box,
   Stack,
@@ -195,12 +195,17 @@ interface ServiceProviderLayoutProps {
 export default function ServiceProviderLayout(props: ServiceProviderLayoutProps) {
   const { children, window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [desktopOpen, setDesktopOpen] = React.useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const user = useSelector((state: any) => state.auth.user);
 
   const handleDrawerToggle = React.useCallback(() => {
-    setMobileOpen((prev) => !prev);
+    setMobileOpen((prev: boolean) => !prev);
+  }, []);
+
+  const handleDesktopDrawerToggle = React.useCallback(() => {
+    setDesktopOpen((prev: boolean) => !prev);
   }, []);
 
   // Memoize path parts to avoid recalculating on every render
@@ -248,6 +253,10 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           flexDirection: "column",
           backgroundColor: theme.palette.background.default,
           overflow: "auto",
+          overflowX: "hidden",
+          width: "100%",
+          maxWidth: "100%",
+          boxSizing: "border-box",
           // Hide scrollbar but keep scroll functionality
           "&::-webkit-scrollbar": {
             display: "none",
@@ -277,7 +286,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         </Box>
 
         {/* User Profile Section */}
-        <Box sx={{ p: 3, pb: 2 }}>
+        <Box sx={{ p: { xs: 2, md: 3 }, pb: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
             <Avatar
               sx={{
@@ -310,13 +319,16 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             borderRadius: "12px",
             background: "#F7F9FB",
             display: "flex",
-            padding: "5px 12px 15px 12px",
+            padding: { xs: "5px 8px 15px 8px", md: "5px 12px 15px 12px" },
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "flex-start",
             gap: "0px",
             alignSelf: "stretch",
             mb: 2,
+            width: "100%",
+            maxWidth: "100%",
+            boxSizing: "border-box",
           }}
         >
           <Typography
@@ -382,8 +394,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       </Box>
 
       {/* Navigation Menu */}
-      <Box sx={{ py: 2 }}>
-        <List sx={{ px: 2 }}>
+      <Box sx={{ py: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        <List sx={{ px: { xs: 1, md: 2 }, width: "100%", maxWidth: "100%" }}>
           {NAVIGATION_ITEMS.map((item) => {
             const selected = isPathSelected(item.segment);
             const handleNavClick = () => navigate(item.path);
@@ -468,7 +480,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       </Box>
 
       {/* Footer Links */}
-      <Box sx={{ p: 2, pt: 1.5 }}>
+      <Box sx={{ p: { xs: 1.5, md: 2 }, pt: 1.5, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
         <Stack spacing={1}>
           <Typography
             variant="body2"
@@ -530,13 +542,20 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", width: "100%", overflowX: "hidden" }}>
       {/* App Bar for Mobile */}
       <AppBar
         position="fixed"
         sx={{
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { md: `${DRAWER_WIDTH}px` },
+          width: { 
+            xs: "100%", 
+            md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : "100%"
+          },
+          ml: { 
+            xs: 0, 
+            md: desktopOpen ? `${DRAWER_WIDTH}px` : 0
+          },
+          transition: "width 0.3s, margin-left 0.3s",
           backgroundColor: theme.palette.background.default,
           boxShadow: "none",
           borderBottom: "1px solid #E5E7EB",
@@ -545,8 +564,10 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         <Toolbar
           sx={{
             justifyContent: "space-between",
-            pr: { xs: 2, md: 4 },
-            pl: { xs: 2, md: 4 },
+            pr: { xs: 1, md: 4 },
+            pl: { xs: 1, md: 4 },
+            minHeight: { xs: "56px", md: "64px" },
+            overflow: "hidden",
           }}
         >
           {/* Left side - Breadcrumb */}
@@ -554,27 +575,47 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 1,
+              gap: { xs: 0.5, md: 1 },
+              flex: 1,
+              minWidth: 0,
+              overflow: "hidden",
             }}
           >
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 1, display: { md: "none" } }}
+              onClick={() => {
+                const isDesktop = window?.().innerWidth ? window().innerWidth >= 960 : false;
+                if (isDesktop) {
+                  handleDesktopDrawerToggle();
+                } else {
+                  handleDrawerToggle();
+                }
+              }}
+              sx={{ 
+                mr: { xs: 0.5, md: 1 }, 
+                padding: { xs: "8px" },
+              }}
             >
               <MenuIcon />
             </IconButton>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
               <img
                 src={currentPageInfo.icon}
                 alt={currentPageInfo.title}
-                style={{ width: "20px", height: "20px" }}
+                style={{ width: "20px", height: "20px", flexShrink: 0 }}
               />
               <Typography
                 variant="body2"
-                sx={{ fontSize: "14px", color: "#6C737F", fontWeight: 400 }}
+                sx={{ 
+                  fontSize: { xs: "12px", md: "14px" }, 
+                  color: "#6C737F", 
+                  fontWeight: 400,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
               >
                 {currentPageInfo.title}
               </Typography>
@@ -582,16 +623,21 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           </Box>
 
           {/* Right side - Logo */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: { xs: 0.5, md: 1 },
+            flexShrink: 0,
+          }}>
             <img
               src="/assets/icons/ravwork_logo_icon.svg"
               alt="Ravwork Icon"
-              style={{ height: "35px", width: "26px" }}
+              style={{ height: "35px", width: "26px", maxWidth: "100%" }}
             />
             <img
               src="/assets/icons/ravwork_logo_text.svg"
               alt="Ravwork"
-              style={{ width: "69px", height: "20px" }}
+              style={{ width: "69px", height: "20px", maxWidth: "100%" }}
             />
           </Box>
         </Toolbar>
@@ -611,10 +657,11 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", md: "none" },
+            display: { xs: "block", md: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: DRAWER_WIDTH,
+              width: { xs: "100%", md: DRAWER_WIDTH },
+              maxWidth: { xs: "100%", md: DRAWER_WIDTH },
               borderRight: "1px solid #E5E7EB",
             },
           }}
@@ -622,7 +669,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           {drawer}
         </Drawer>
         <Drawer
-          variant="permanent"
+          variant="persistent"
+          open={desktopOpen}
           sx={{
             display: { xs: "none", md: "block" },
             "& .MuiDrawer-paper": {
@@ -630,9 +678,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               width: DRAWER_WIDTH,
               border: "none",
               borderRight: "1px solid #E5E7EB",
+              position: "relative",
             },
           }}
-          open
         >
           {drawer}
         </Drawer>
@@ -643,10 +691,17 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          p: { xs: 2, md: 3 },
+          width: { 
+            xs: "100%", 
+            md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : "100%"
+          },
+          maxWidth: "100%",
           backgroundColor: theme.palette.primary.light,
           minHeight: "100vh",
+          overflowX: "hidden",
+          boxSizing: "border-box",
+          transition: "width 0.3s",
         }}
       >
         <Toolbar />
