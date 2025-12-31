@@ -20,7 +20,6 @@ import EarningsCard from "../../components/reusecard/Earnings";
 import { StyledTextField } from "../../utils/helper";
 
 export default function EarningsPage(): JSX.Element {
-
   const jobsData = [
     {
       name: "Sarah Johnson",
@@ -92,12 +91,38 @@ export default function EarningsPage(): JSX.Element {
             }}
           />
 
-          <IconButton sx={{ width: "40px", height: "40px", bgcolor: "#E3F5FF", borderRadius: 50 }}><img
-            src="/assets/icons/mail.svg"
-            alt="calendar"
-            style={{ width: 20, height: 20 }}
-          /></IconButton>
+          <IconButton
+            sx={{
+              width: "40px",
+              height: "40px",
+              bgcolor: "#E3F5FF",
+              borderRadius: 50,
+            }}
+          >
+            {/* Desktop / Tablet */}
+            <Box
+              component="img"
+              src="/assets/icons/mail.svg"
+              alt="mail"
+              sx={{
+                width: 20,
+                height: 20,
+                display: { xs: "none", sm: "block" },
+              }}
+            />
 
+            {/* Mobile */}
+            <Box
+              component="img"
+              src="/assets/icons/download.svg"
+              alt="download"
+              sx={{
+                width: 20,
+                height: 20,
+                display: { xs: "block", sm: "none" },
+              }}
+            />
+          </IconButton>
         </Stack>
 
         {/* Recent Activity Table */}

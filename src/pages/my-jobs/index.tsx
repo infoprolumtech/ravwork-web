@@ -41,7 +41,7 @@ export default function MyJobsPage(): JSX.Element {
             },
             "& .Mui-selected": {
               backgroundColor: "#D2E7FF",
-              color:"#1C1C11",
+              color:"#1C1C1C",
             },
           }}
         >
