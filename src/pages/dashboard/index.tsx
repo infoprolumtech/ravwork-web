@@ -42,8 +42,14 @@ export default function Dashboard() {
 
   return (
     <ServiceProviderLayout>
-      <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-
+      <Box
+        sx={{
+          p: { xs: 1.5, md: 3 },
+          width: "100%",
+          maxWidth: "100%",
+          boxSizing: "border-box",
+        }}
+      >
         {/* Complete Setup Banner */}
         {profileComplete > 90 ? (
           /* ===== COMPLETED PROFILE CARD ===== */
