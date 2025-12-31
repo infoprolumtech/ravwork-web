@@ -8,8 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
+import { useNavigate } from "react-router-dom";
+
 
 export default function MyProfilePage(): JSX.Element {
+  const navigate = useNavigate();
+
+  const id = "12345"; // Example user ID, replace with actual data as needed
   return (
     <ServiceProviderLayout>
       <Box
@@ -42,6 +47,7 @@ export default function MyProfilePage(): JSX.Element {
               <Button
                 variant="secondary"
                 sx={{ height: "28px", fontWeight: "500", fontSize: "9px" }}
+                onClick={() => navigate(`/my-profile/${id}`)}
               >
                 Edit Profile
               </Button>

@@ -17,6 +17,7 @@ import Earnings from "../pages/earnings";
 import MyProfile from "../pages/my-profile";
 import Notifications from "../pages/notifications";
 import ManageSubscription from "../pages/manage-subscription";
+import EditProfile from "../pages/my-profile/[id]";
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -140,6 +141,14 @@ export default function AppRoutes() {
         </PrivateRoute>
       ),
     },
+    {
+  path: "/my-profile/:id",
+  element: (
+    <PrivateRoute>
+      <EditProfile />
+    </PrivateRoute>
+  ),
+},
 
     // Notifications
     {
