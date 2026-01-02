@@ -18,6 +18,7 @@ import MyProfile from "../pages/my-profile";
 import Notifications from "../pages/notifications";
 import ManageSubscription from "../pages/manage-subscription";
 import EditProfile from "../pages/my-profile/[id]";
+import ClientPage from "../pages/client";
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -80,6 +81,12 @@ export default function AppRoutes() {
           <ResetPasswordPage />
         </PublicRoute>
       ),
+    },
+
+    // Client Page (No Layout)
+    {
+      path: "/ravwork.link/client",
+      element: <ClientPage />,
     },
 
     // Private Routes
