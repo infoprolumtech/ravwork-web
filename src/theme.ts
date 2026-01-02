@@ -342,39 +342,72 @@ const theme = createTheme({
               padding: "10px 7px",
             },
           },
-        }
-
-      ],
-    },
-      MuiTextField: {
-    variants: [
-      {
-        props: { variant: "datePicker" },
-        style: {
-          width: {
-            xs: "147.49px",
-            sm: "499.99px",
-          },
-          height: "56px",
-          "& .MuiInputBase-root": {
-            height: "56px",
-            borderRadius: "100px",
-            "& fieldset": {
-              borderRadius: "100px",
+        },
+        {
+          props: { variant: "blackbutton" },
+          style: {
+            backgroundColor: "#1C1C1C",
+            color: "#fff",
+            textTransform: "none",
+            fontSize: "14px",
+            fontWeight: 500,
+            height: "32px",
+            width:"82px",
+            borderRadius: "68px",
+            px: 2,
+            py: 0.75,
+            ml: "auto",
+            display: "flex",
+            alignItems: "center",
+            "&:hover": {
+              backgroundColor: "#F9FAFB",
+              color: "#1C1C1C",
+            },
+            "& .icon-default": {
+              display: "inline",
+            },
+            "&:hover .icon-default": {
+              display: "none",
+            },
+            "& .icon-hover": {
+              display: "none",
+            },
+            "&:hover .icon-hover": {
+              display: "inline",
             },
           },
-          "& .MuiInputLabel-root": {
-            fontWeight: 400,
-            fontSize: "16px",
-            lineHeight: "24px",
-            letterSpacing: "0%",
+        }
+      ],
+    },
+    MuiTextField: {
+      variants: [
+        {
+          props: { variant: "datePicker" },
+          style: {
+            width: {
+              xs: "147.49px",
+              sm: "499.99px",
+            },
+            height: "56px",
+            "& .MuiInputBase-root": {
+              height: "56px",
+              borderRadius: "100px",
+              "& fieldset": {
+                borderRadius: "100px",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "24px",
+              letterSpacing: "0%",
+            },
           },
         },
-      },
-    ],
-  } as any,
+      ],
+    } as any,
   },
-  
+
 });
 
 export default theme;

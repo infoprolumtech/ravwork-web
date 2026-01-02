@@ -109,123 +109,136 @@ export default function ClientPage(): JSX.Element {
         {/* Profile Card */}
         <Card
           sx={{
-            backgroundColor: "#E3F0F8",
+            backgroundColor: "#D2E7FF",
             borderRadius: "16px",
             p: 3,
             mb: 4,
             boxShadow: "none",
           }}
         >
-          <Stack spacing={2}>
-            {/* Profile Header */}
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar
-                sx={{
-                  width: 80,
-                  height: 80,
-                  border: "2px solid #fff",
-                }}
-                src="/assets/images/avatar.png"
-                alt="Profile"
-              />
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: 600,
-                    color: "#111927",
-                    mb: 0.5,
-                    fontSize: { xs: "20px", md: "24px" },
-                  }}
-                >
-                  Joe's Plumbing Service
-                </Typography>
-                <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-                  <IconButton
-                    size="small"
+          <Box display={"flex"} gap={'28px'}>
+            <Avatar
+              sx={{
+                width: { xs: "75px", sm: "175px" },
+                height: { xs: "75px", sm: "175px" },
+                border: "2px solid #fff",
+                display:{xs:"none", sm:"block"}
+              }}
+              src="/assets/images/avatar.png"
+              alt="Profile"
+            />
+            <Stack
+              display="flex"
+              justifyContent="space-between"
+              width={"100%"}
+            >
+              <Box display={"flex"} flexDirection={{xs:'column-reverse', sm:'row'}} justifyContent={"space-between"} gap={'4px'}>
+                <Box>
+                  <Typography
+                    variant="h5"
                     sx={{
-                      width: 32,
-                      height: 32,
-                      p: 0.5,
-                    }}
-                  >
-                    <img
-                      src="/assets/icons/Facebook.svg"
-                      alt="Facebook"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      p: 0.5,
-                    }}
-                  >
-                    <img
-                      src="/assets/icons/linkedin.svg"
-                      alt="LinkedIn"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      p: 0.5,
-                    }}
-                  >
-                    <img
-                      src="/assets/icons/instagram.svg"
-                      alt="Instagram"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#fff",
+                      fontWeight: 600,
                       color: "#111927",
-                      textTransform: "none",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      borderRadius: "8px",
-                      px: 2,
-                      py: 0.75,
-                      ml: "auto",
-                      "&:hover": {
-                        backgroundColor: "#F9FAFB",
-                      },
+                      mb: 0.5,
+                      fontSize: { xs: "20px", md: "18px" },
                     }}
-                    startIcon={
+                  >
+                    Joe's Plumbing Service
+                  </Typography>
+                  <img src="/assets/icons/line.svg" />
+                  <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        p: 0.5,
+                      }}
+                    >
                       <img
-                        src="/assets/icons/share-arrow.svg"
-                        alt="Share"
-                        style={{ width: "16px", height: "16px" }}
+                        src="/assets/icons/Facebook.svg"
+                        alt="Facebook"
+                        style={{ width: "24px", height: "24px" }}
                       />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        p: 0.5,
+                      }}
+                    >
+                      <img
+                        src="/assets/icons/linkedin.svg"
+                        alt="LinkedIn"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        p: 0.5,
+                      }}
+                    >
+                      <img
+                        src="/assets/icons/instagram.svg"
+                        alt="Instagram"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </IconButton>
+                  </Stack>
+                </Box>
+                <Box display="flex" alignItems="flex-start" justifyContent={'space-between'}>
+                  <Avatar
+              sx={{
+                width: { xs: "75px", sm: "175px" },
+                height: { xs: "75px", sm: "175px" },
+                border: "2px solid #fff",
+                display:{xs:"block", sm:"none"}
+              }}
+              src="/assets/images/avatar.png"
+              alt="Profile"
+            />
+                  <Button
+                    variant="blackbutton"
+                    startIcon={
+                      <>
+                        <img
+                          src="/assets/icons/share-arroww.svg"
+                          alt="Share"
+                          className="icon-default"
+                          style={{ width: "16px", height: "16px" }}
+                        />
+                        <img
+                          src="/assets/icons/share-arrow.svg"
+                          alt="Share"
+                          className="icon-hover"
+                          style={{ width: "16px", height: "16px" }}
+                        />
+                      </>
                     }
                   >
                     Share
                   </Button>
-                </Stack>
+                </Box>
               </Box>
+              <Typography
+                sx={{
+                  color: "#6C737F",
+                  fontWeight: 400,
+                  fontSize: "14px",
+                  listspacing: "12px",
+                  lineHeight: "20px",
+                }}
+              >
+                Licensed & insured junk removal for homes and businesses.
+                Same-day service available.
+              </Typography>
             </Stack>
-
-            {/* Description */}
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#384250",
-                fontSize: "14px",
-                lineHeight: "20px",
-              }}
-            >
-              Licensed & insured junk removal for homes and businesses. Same-day
-              service available.
-            </Typography>
-          </Stack>
+          </Box>
         </Card>
 
         {/* Services Grid */}
