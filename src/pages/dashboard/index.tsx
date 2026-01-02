@@ -21,7 +21,7 @@ import DashboardCard from "../../components/reusecard/DashboardCard";
 
 export default function Dashboard() {
   // Mock data - replace with actual API calls
-  const profileComplete = 70; // percentage
+  const profileComplete = 100; // percentage
   const jobsData = [
     {
       name: "Sarah Johnson",
@@ -72,7 +72,7 @@ export default function Dashboard() {
                 <Typography fontWeight={600} fontSize={14} color="#111927">
                   Welcome back!
                 </Typography>
-                <Button variant="secondary">Complete Setup</Button>
+                <Button variant="dashboardbutton">Complete Setup</Button>
               </Box>
 
               {/* Body */}
@@ -82,11 +82,11 @@ export default function Dashboard() {
                   sx={{ width: 74, height: 74 }}
                 />
 
-                <Box flex={1}>
+                <Box flex={1}gap={4}>
                   <Typography fontWeight={600} fontSize={18}>
                     Full Name Goes Here
                   </Typography>
-
+                  <img src="./assets/icons/line.svg" alt="" height={"2px"} width={"27px"} />
                   <Box
                     sx={{
                       display: "flex",
@@ -172,21 +172,34 @@ export default function Dashboard() {
                     }}
                   >
                     <Box>
-                      <Typography fontWeight={600} color="#111927">
-                        Complete Setup.
-                      </Typography>
-                      <Typography variant="body2">
-                        Get more clients with a complete profile.
-                      </Typography>
+                      <Box>
+                        <Typography
+                          fontWeight={600}
+                          fontSize={14}
+                          lineHeight="20px"
+                          letterSpacing="0%"
+                        >
+                          Complete Setup.
+                        </Typography>
+
+                        <Typography
+                          fontWeight={400}
+                          fontSize={10}
+                          lineHeight="20px"
+                          letterSpacing="0%"
+                        >
+                          Get more clients with a complete profile.
+                        </Typography>
+                      </Box>
                     </Box>
 
-                    <Button variant="secondary">Complete profile</Button>
+                    <Button variant="dashboardbutton">Complete profile</Button>
                   </Box>
                 </Box>
               </Box>
 
               {/* Progress */}
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <LinearProgress
                   variant="determinate"
                   value={profileComplete}
@@ -202,8 +215,31 @@ export default function Dashboard() {
                     },
                   }}
                 />
-                <Typography fontWeight={600} minWidth={70}>
-                  {profileComplete}% Complete
+                <Typography
+                  component="span"
+                  sx={{
+                    fontFamily: "Inter",
+                    fontWeight: 600,
+                    fontSize: { xs: "12px", md: "20px" }, // small: 12px, desktop: 20px
+                    lineHeight: "36px",
+                    letterSpacing: "0%",
+                  }}
+                >
+                  {profileComplete}%
+                </Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    fontFamily: "Inter",
+                    fontWeight: 400,
+                    fontSize: "12px",
+                    lineHeight: "20px",
+                    letterSpacing: "0%",
+                    verticalAlign: "bottom",
+                    ml: 0.5,
+                  }}
+                >
+                  Complete
                 </Typography>
               </Box>
             </CardContent>
@@ -211,7 +247,7 @@ export default function Dashboard() {
         )}
 
         {/* Statistics Cards - Row 1: Clicks */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Today’s Clicks"

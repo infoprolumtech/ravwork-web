@@ -10,10 +10,7 @@ interface DashboardCardProps {
   theme?: Theme;
 }
 
-const THEME_COLORS: Record<
-  Theme,
-  { cardBg: string; iconBg: string }
-> = {
+const THEME_COLORS: Record<Theme, { cardBg: string; iconBg: string }> = {
   theme1: {
     cardBg: "#E3F5FF",
     iconBg: "#FFFFFF",
@@ -23,7 +20,6 @@ const THEME_COLORS: Record<
     iconBg: "#FFFFFF",
   },
 };
-
 
 export default function DashboardCard({
   icon,
@@ -38,8 +34,8 @@ export default function DashboardCard({
         p: 2,
         borderRadius: 3,
         backgroundColor: THEME_COLORS[theme].cardBg,
-        width: { xs: "100%", sm: 200, md: 260 },
-        maxWidth: 376,
+        width: { xs: "125px", sm: "200px", md: "260px" },
+        maxWidth: "376px",
         flexGrow: 1,
       }}
     >
@@ -64,12 +60,12 @@ export default function DashboardCard({
           </Box>
         )}
 
-        <Typography fontWeight={600} fontSize={14} noWrap>
+        <Typography fontWeight={600} fontSize={{ xs: "11.67px", md: "14px" }}>
           {label}
         </Typography>
       </Stack>
 
-      <Typography fontWeight={500} fontSize={14} mt={1} noWrap>
+      <Typography fontWeight={600} fontSize={{ xs: "19px", md: "24px" }}>
         {value}
       </Typography>
     </Paper>

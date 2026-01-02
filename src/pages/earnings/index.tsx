@@ -74,6 +74,7 @@ export default function EarningsPage(): JSX.Element {
           <StyledTextField
             sx={{ width: "450px", marginRight: "12px" }}
             variant="outlined"
+            placeholder="From"
             type="date"
             label="Select date"
             InputLabelProps={{
@@ -84,6 +85,7 @@ export default function EarningsPage(): JSX.Element {
           <StyledTextField
             sx={{ width: "450px", marginRight: "12px" }}
             variant="outlined"
+            placeholder="To"
             type="date"
             label="Select date"
             InputLabelProps={{

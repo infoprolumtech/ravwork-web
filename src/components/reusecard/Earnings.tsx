@@ -36,7 +36,7 @@ export default function EarningsCard({
         p: 2,
         borderRadius: 3,
         backgroundColor: THEME_COLORS[theme].cardBg,
-        width: { xs: "100%", sm: 150, md: 260 },
+        width: { xs: "140px", sm: 150, md: 260 },
         maxWidth: 376,
         flexGrow: 1,
       }}
@@ -62,7 +62,7 @@ export default function EarningsCard({
           </Box>
         )}
 
-        <Typography fontWeight={600} fontSize={14} noWrap>
+        <Typography fontWeight={600} fontSize={14}>
           {label}
         </Typography>
       </Stack>
@@ -75,7 +75,7 @@ export default function EarningsCard({
           alignItems: "center",
         }}
       >
-        <Typography fontWeight={500} fontSize={14} noWrap>
+        <Typography fontWeight={500} fontSize={14}>
           {value}
         </Typography>
         {percentage && (
