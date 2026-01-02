@@ -582,7 +582,19 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex", width: "100%", overflowX: "hidden" }}>
+    <Box sx={{ 
+      display: "flex", 
+      width: "100%", 
+      overflowX: "hidden",
+      overflowY: "auto",
+      height: "100vh",
+      // Hide scrollbar but keep scroll functionality
+      "&::-webkit-scrollbar": {
+        display: "none",
+      },
+      scrollbarWidth: "none", // Firefox
+      msOverflowStyle: "none", // IE and Edge
+    }}>
       {/* App Bar for Mobile */}
       <AppBar
         position="fixed"
@@ -704,6 +716,12 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               width: { xs: "100%", md: DRAWER_WIDTH },
               maxWidth: { xs: "100%", md: DRAWER_WIDTH },
               borderRight: "1px solid #E5E7EB",
+              // Hide scrollbar but keep scroll functionality
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+              scrollbarWidth: "none", // Firefox
+              msOverflowStyle: "none", // IE and Edge
             },
           }}
         >
@@ -720,6 +738,12 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               border: "none",
               borderRight: "1px solid #E5E7EB",
               position: "relative",
+              // Hide scrollbar but keep scroll functionality
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+              scrollbarWidth: "none", // Firefox
+              msOverflowStyle: "none", // IE and Edge
             },
           }}
         >
@@ -741,8 +765,15 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           backgroundColor: theme.palette.primary.light,
           minHeight: "100vh",
           overflowX: "hidden",
+          overflowY: "auto",
           boxSizing: "border-box",
           transition: "width 0.3s",
+          // Hide scrollbar but keep scroll functionality
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          scrollbarWidth: "none", // Firefox
+          msOverflowStyle: "none", // IE and Edge
         }}
       >
         <Toolbar />
