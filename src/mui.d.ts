@@ -50,6 +50,7 @@ declare module "@mui/material/Button" {
     danger: true;
     danger2: true;
     success: true;
+    dashboardbutton: true;
   }
 }
 declare module "@mui/material/styles" {

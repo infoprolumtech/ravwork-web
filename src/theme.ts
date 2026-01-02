@@ -313,9 +313,68 @@ const theme = createTheme({
             },
           },
         },
+        {
+          props: { variant: "dashboardbutton" },
+          style: {
+            backgroundColor: "#000000",
+            color: "#FFFFFF",
+            width: "120px",
+            height: "34px",
+            borderRadius: "68px",
+            gap: "8px",
+            opacity: 1,
+            textTransform: "none",
+            fontFamily: "Inter",
+            fontWeight: 500,
+            fontSize: "12px",
+            lineHeight: "18px",
+            letterSpacing: "0%",
+            padding: "8px 12px",
+            "&:hover": {
+              // backgroundColor: "#5c5a5aff",
+            },
+
+            "@media (max-width:600px)": {
+              width: "86px",
+              height: "28px",
+              fontSize: "9px",
+              lineHeight: "18px",
+              padding: "10px 7px",
+            },
+          },
+        }
+
       ],
     },
+      MuiTextField: {
+    variants: [
+      {
+        props: { variant: "datePicker" },
+        style: {
+          width: {
+            xs: "147.49px",
+            sm: "499.99px",
+          },
+          height: "56px",
+          "& .MuiInputBase-root": {
+            height: "56px",
+            borderRadius: "100px",
+            "& fieldset": {
+              borderRadius: "100px",
+            },
+          },
+          "& .MuiInputLabel-root": {
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: "24px",
+            letterSpacing: "0%",
+          },
+        },
+      },
+    ],
+  } as any,
   },
+  
 });
 
 export default theme;

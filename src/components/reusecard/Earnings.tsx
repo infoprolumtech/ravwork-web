@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 
 type Theme = "theme1" | "theme2";
 
-interface DashboardCardProps {
+interface EarningsCardProps {
   icon?: string | ReactNode;
   value: string | number;
   label: string;
+  percentage?: string | number; // new prop
   theme?: Theme;
 }
 
@@ -21,12 +22,13 @@ const THEME_COLORS: Record<Theme, { cardBg: string; iconBg: string }> = {
   },
 };
 
-export default function DashboardCard({
+export default function EarningsCard({
   icon,
   value,
   label,
+  percentage,
   theme = "theme1",
-}: DashboardCardProps) {
+}: EarningsCardProps) {
   return (
     <Paper
       elevation={0}
@@ -34,8 +36,8 @@ export default function DashboardCard({
         p: 2,
         borderRadius: 3,
         backgroundColor: THEME_COLORS[theme].cardBg,
-        width: { xs: "125px", sm: "200px", md: "260px" },
-        maxWidth: "376px",
+        width: { xs: "140px", sm: 150, md: 260 },
+        maxWidth: 376,
         flexGrow: 1,
       }}
     >
@@ -65,9 +67,27 @@ export default function DashboardCard({
         </Typography>
       </Stack>
 
-      <Typography fontWeight={600} fontSize={{ xs: "19px", md: "24px" }}>
-        {value}
-      </Typography>
+      <Box
+        sx={{
+          mt: 1,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography fontWeight={600} fontSize={{ xs: "19px", md: "24px" }}>
+          {value}
+        </Typography>
+        {percentage && (
+          <Typography
+            fontWeight={400}
+            fontSize={12}
+            color={Number(percentage.toString().replace("%", "")) >= 0 ? "green" : "red"}
+          >
+            {percentage} <img src="./assets/icons/IconText.svg" alt=""  />
+          </Typography>
+        )}
+      </Box>
     </Paper>
   );
 }
