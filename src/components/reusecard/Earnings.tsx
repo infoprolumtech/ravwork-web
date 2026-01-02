@@ -62,7 +62,7 @@ export default function EarningsCard({
           </Box>
         )}
 
-        <Typography fontWeight={600} fontSize={14}>
+        <Typography fontWeight={600} fontSize={{ xs: "11.67px", md: "14px" }}>
           {label}
         </Typography>
       </Stack>
@@ -75,12 +75,12 @@ export default function EarningsCard({
           alignItems: "center",
         }}
       >
-        <Typography fontWeight={500} fontSize={14}>
+        <Typography fontWeight={600} fontSize={{ xs: "19px", md: "24px" }}>
           {value}
         </Typography>
         {percentage && (
           <Typography
-            fontWeight={500}
+            fontWeight={400}
             fontSize={12}
             color={Number(percentage.toString().replace("%", "")) >= 0 ? "green" : "red"}
           >

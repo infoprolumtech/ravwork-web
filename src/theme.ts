@@ -346,7 +346,35 @@ const theme = createTheme({
 
       ],
     },
+      MuiTextField: {
+    variants: [
+      {
+        props: { variant: "datePicker" },
+        style: {
+          width: {
+            xs: "147.49px",
+            sm: "499.99px",
+          },
+          height: "56px",
+          "& .MuiInputBase-root": {
+            height: "56px",
+            borderRadius: "100px",
+            "& fieldset": {
+              borderRadius: "100px",
+            },
+          },
+          "& .MuiInputLabel-root": {
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: "24px",
+            letterSpacing: "0%",
+          },
+        },
+      },
+    ],
+  } as any,
   },
+  
 });
 
 export default theme;
