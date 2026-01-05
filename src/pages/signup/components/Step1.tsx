@@ -1,12 +1,36 @@
 import { useState } from "react";
-import { Box, Button, Typography, InputAdornment, IconButton } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Box, Button, Typography, InputAdornment, IconButton, MenuItem, Select, FormControl } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step1Schema } from "../validationSchemas";
 import type { Step1FormInputs } from "../types";
+
+// Common country codes with ISO codes
+const COUNTRY_CODES = [
+  { code: "+1", country: "USA/Canada", iso: "USA", flag: "🇺🇸" },
+  { code: "+44", country: "UK", iso: "GBR", flag: "🇬🇧" },
+  { code: "+61", country: "Australia", iso: "AUS", flag: "🇦🇺" },
+  { code: "+64", country: "New Zealand", iso: "NZL", flag: "🇳🇿" },
+  { code: "+91", country: "India", iso: "IND", flag: "🇮🇳" },
+  { code: "+86", country: "China", iso: "CHN", flag: "🇨🇳" },
+  { code: "+81", country: "Japan", iso: "JPN", flag: "🇯🇵" },
+  { code: "+82", country: "South Korea", iso: "KOR", flag: "🇰🇷" },
+  { code: "+33", country: "France", iso: "FRA", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", iso: "DEU", flag: "🇩🇪" },
+  { code: "+39", country: "Italy", iso: "ITA", flag: "🇮🇹" },
+  { code: "+34", country: "Spain", iso: "ESP", flag: "🇪🇸" },
+  { code: "+7", country: "Russia", iso: "RUS", flag: "🇷🇺" },
+  { code: "+55", country: "Brazil", iso: "BRA", flag: "🇧🇷" },
+  { code: "+52", country: "Mexico", iso: "MEX", flag: "🇲🇽" },
+  { code: "+971", country: "UAE", iso: "ARE", flag: "🇦🇪" },
+  { code: "+65", country: "Singapore", iso: "SGP", flag: "🇸🇬" },
+  { code: "+60", country: "Malaysia", iso: "MYS", flag: "🇲🇾" },
+  { code: "+66", country: "Thailand", iso: "THA", flag: "🇹🇭" },
+  { code: "+62", country: "Indonesia", iso: "IDN", flag: "🇮🇩" },
+];
 
 interface Step1Props {
   onNext: (data: Step1FormInputs) => void;
@@ -19,7 +43,7 @@ export const Step1 = ({ onNext }: Step1Props) => {
 
   const form = useForm<Step1FormInputs>({
     resolver: yupResolver(step1Schema) as any,
-    defaultValues: { username: PREFIX, email: "", phone: "", password: "" },
+    defaultValues: { username: PREFIX, email: "", countryCode: "+1", phoneNumber: "", password: "" },
   });
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,34 +235,113 @@ export const Step1 = ({ onNext }: Step1Props) => {
         }}
       />
 
-      <StyledTextField
-        fullWidth
-        variant="outlined"
-        placeholder="Phone Number"
-        margin="none"
-        {...form.register("phone")}
-        error={Boolean(form.formState.errors.phone)}
-        helperText={form.formState.errors.phone?.message}
-        sx={{
-          mb: 1.5,
-          "& .MuiInputBase-input": {
-            color: "#1C1C1C",
-            "&::placeholder": {
-              color: "#1C1C1C",
-              opacity: 1,
+      {/* Country Code and Phone Number in Same Row */}
+      <Box sx={{ display: "flex", gap: 1.5, mb: 1.5 }}>
+        {/* Country Code Selector */}
+        <FormControl
+          error={Boolean(form.formState.errors.countryCode)}
+          sx={{
+            minWidth: 150,
+            "& .MuiOutlinedInput-root": {
+              backgroundColor: "#F9FAFB",
+              borderRadius: "100px",
+              "& fieldset": {
+                border: "1px solid #D1D5DB",
+              },
+              "&:hover fieldset": {
+                border: "1px solid #D1D5DB",
+              },
+              "&.Mui-focused fieldset": {
+                border: "1px solid #9CA3AF",
+              },
             },
-          },
-        }}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ mr: 0 }}>
-                <img src="/assets/icons/phone.svg" alt="phone-icon" style={{ width: "20px", height: "20px" }} />
-              </InputAdornment>
-            ),
-          },
-        }}
-      />
+          }}
+        >
+          <Controller
+            name="countryCode"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                displayEmpty
+                sx={{
+                  borderRadius: "100px",
+                  fontSize: "16px",
+                  "& .MuiSelect-select": {
+                    py: 1.5,
+                    px: 2,
+                    display: "flex",
+                    alignItems: "center",
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "#12B76A",
+                  },
+                }}
+                renderValue={(value) => {
+                  const selected = COUNTRY_CODES.find((c) => c.code === value);
+                  return selected ? `${selected.iso} (${selected.code})` : value || "+1";
+                }}
+              >
+                {COUNTRY_CODES.map((country) => (
+                  <MenuItem key={country.code} value={country.code}>
+                    {country.flag} {country.iso} ({country.code}) - {country.country}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+        </FormControl>
+
+        {/* Phone Number Input */}
+        <StyledTextField
+          fullWidth
+          variant="outlined"
+          placeholder="Phone Number"
+          margin="none"
+          {...form.register("phoneNumber", {
+            onChange: (e) => {
+              // Only allow digits
+              const value = e.target.value.replace(/[^0-9]/g, "");
+              form.setValue("phoneNumber", value);
+            },
+          })}
+          error={Boolean(form.formState.errors.phoneNumber)}
+          helperText={form.formState.errors.phoneNumber?.message}
+          sx={{
+            "& .MuiInputBase-input": {
+              color: "#1C1C1C",
+              "&::placeholder": {
+                color: "#1C1C1C",
+                opacity: 1,
+              },
+            },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start" sx={{ mr: 0 }}>
+                  <img src="/assets/icons/phone.svg" alt="phone-icon" style={{ width: "20px", height: "20px" }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </Box>
+      {form.formState.errors.countryCode && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: "#F97066",
+            fontSize: "12px",
+            mt: -1.5,
+            mb: 1.5,
+            ml: 1.5,
+            display: "block",
+          }}
+        >
+          {form.formState.errors.countryCode.message}
+        </Typography>
+      )}
 
       <StyledTextField
         fullWidth

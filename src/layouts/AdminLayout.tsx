@@ -55,11 +55,14 @@ function Action() {
   };
   const handleLogoutConfirm = async () => {
     try {
-      await logout({});
+      await logout(undefined).unwrap();
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if logout fails, still log out user locally
+      dispatch(logoutUser());
+      navigate("/login");
     }
   };
   return (

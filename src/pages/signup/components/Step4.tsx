@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step4Schema } from "../validationSchemas";
@@ -11,15 +10,15 @@ import type { Step4FormInputs } from "../types";
 interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
   onBack: () => void;
+  onSkip: () => void;
 }
 
-export const Step4 = ({ onNext, onBack }: Step4Props) => {
-  const navigate = useNavigate();
+export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
 
   const form = useForm<Step4FormInputs>({
-    resolver: yupResolver(step4Schema),
-    defaultValues: { businessName: "", businessDescription: "", publicUrl: "", instagram: "", facebook: "", linkedin: "" },
+    resolver: yupResolver(step4Schema) as any,
+    defaultValues: { businessName: "", businessDescription: "", instagram: "", facebook: "", linkedin: "" },
   });
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +108,9 @@ export const Step4 = ({ onNext, onBack }: Step4Props) => {
           <Typography variant="body2" sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
             Name or Business Name
           </Typography>
+          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
+            Optional
+          </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <StyledTextField
@@ -135,6 +137,9 @@ export const Step4 = ({ onNext, onBack }: Step4Props) => {
         <Grid size={{ xs: 12, sm: 4 }}>
           <Typography variant="body2" sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
             Business Description
+          </Typography>
+          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
+            Optional
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
@@ -169,7 +174,7 @@ export const Step4 = ({ onNext, onBack }: Step4Props) => {
             Photo
           </Typography>
           <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
-            Image must be .png & .jpg format
+            Optional - Image must be .png & .jpg format
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
@@ -360,7 +365,7 @@ export const Step4 = ({ onNext, onBack }: Step4Props) => {
         <Button
           fullWidth
           variant="outlined"
-          onClick={() => navigate("/dashboard")}
+          onClick={onSkip}
           sx={{ 
             borderColor: "#D1D5DB", 
             color: "#1C1C1C", 

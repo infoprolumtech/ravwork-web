@@ -56,7 +56,7 @@ export default function ResetPasswordPage(): JSX.Element {
       // navigate("/");
       await resetPassword({
         token: token || "",
-        new_password: data.password,
+        newPassword: data.password,
       }).unwrap();
     } catch (error: any) {
       console.error("Reset Password Error:", error);

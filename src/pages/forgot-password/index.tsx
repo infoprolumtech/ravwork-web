@@ -10,16 +10,13 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import SignupLayout from "../../layouts/SignupLayout";
-import { encryptAES, StyledTextField } from "../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
 import { useDispatch } from "react-redux";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { forgotPassSchema } from "../../utils/yup-config";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  useForgotPasswordMutation,
-  useResendMutation,
-} from "../../rtk/endpoints/authApi";
+import { useForgotPasswordMutation } from "../../rtk/endpoints/authApi";
 import GlobalDialog from "../../components/dialog";
 
 type FormData = {
@@ -27,8 +24,7 @@ type FormData = {
 };
 
 export default function ForgotPassword(): JSX.Element {
-  const [forgotPassword, { isSuccess, data }] = useForgotPasswordMutation();
-  const [resend, { isSuccess: isResendSuccess }] = useResendMutation();
+  const [forgotPassword, { isSuccess }] = useForgotPasswordMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showCheckMailPopup, setShowCheckMailPopup] = useState(false);
@@ -50,8 +46,7 @@ export default function ForgotPassword(): JSX.Element {
 
   const onSubmit = async (data: FormData): Promise<void> => {
     try {
-      const encryptEmail = encryptAES(data.email);
-      await forgotPassword({ email: encryptEmail }).unwrap();
+      await forgotPassword({ email: data.email }).unwrap();
       setUserEmail(data.email);
     } catch (error: any) {
       console.error("Forgot Password Error:", error);
@@ -61,12 +56,13 @@ export default function ForgotPassword(): JSX.Element {
   const handleResendVerificationLink = async () => {
     try {
       if (userEmail) {
-        const encryptEmail = encryptAES(userEmail);
-        await resend({
-          email: encryptEmail,
-          deviceType: "web",
-          actionType: "forgot-password",
-        }).unwrap();
+        await forgotPassword({ email: userEmail }).unwrap();
+        dispatch(
+          showAlert({
+            message: "Reset password link has been resent successfully.",
+            severity: "success",
+          })
+        );
       }
     } catch (error: any) {
       console.error("Resend Error:", error);
@@ -75,9 +71,8 @@ export default function ForgotPassword(): JSX.Element {
 
   const handleCloseCheckMailPopup = () => {
     setShowCheckMailPopup(false);
-    // Navigate to change password screen after closing popup
-    const token = data?.data?.token || "";
-    navigate(`/reset-password?token=${token}`);
+    // User will receive email with reset link containing token
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -86,16 +81,6 @@ export default function ForgotPassword(): JSX.Element {
     }
   }, [isSuccess]);
 
-  useEffect(() => {
-    if (isResendSuccess) {
-      dispatch(
-        showAlert({
-          message: "Reset password link has been resent successfully.",
-          severity: "success",
-        })
-      );
-    }
-  }, [isResendSuccess]);
 
   return (
     <SignupLayout>
