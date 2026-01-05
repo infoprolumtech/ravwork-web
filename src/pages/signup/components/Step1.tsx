@@ -187,11 +187,36 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
               "& .MuiInputBase-root": {
                 height: "48px",
                 minHeight: "48px",
+                overflow: "hidden", // Ensure autofill styling stays within input box
               },
               "& .MuiInputBase-input": {
                 color: "#1C1C1C",
                 height: "48px",
                 padding: "12px 16px",
+                borderRadius: "100px",
+                // Override browser autofill styling - only affects the input field box
+                "&:-webkit-autofill": {
+                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+                  WebkitTextFillColor: "#1C1C1C !important",
+                  caretColor: "#1C1C1C",
+                  borderRadius: "100px",
+                  transition: "background-color 5000s ease-in-out 0s",
+                },
+                "&:-webkit-autofill:hover": {
+                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+                  WebkitTextFillColor: "#1C1C1C !important",
+                  borderRadius: "100px",
+                },
+                "&:-webkit-autofill:focus": {
+                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+                  WebkitTextFillColor: "#1C1C1C !important",
+                  borderRadius: "100px",
+                },
+                "&:-webkit-autofill:active": {
+                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+                  WebkitTextFillColor: "#1C1C1C !important",
+                  borderRadius: "100px",
+                },
               },
               "& .MuiFormHelperText-root": {
                 marginTop: { xs: "4px", sm: "6px" },
@@ -238,7 +263,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
                 position: "absolute",
                 left: { 
                   xs: "calc(40px + 14ch)", 
-                  sm: "calc(48px + 14ch)",
+                  sm: "calc(48px + 10ch)",
                   md: "calc(48px + 10ch)",
                   lg: "calc(48px + 10ch)"
                 },
@@ -278,13 +303,38 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           "& .MuiInputBase-root": {
             height: "48px",
             minHeight: "48px",
+            overflow: "hidden", // Ensure autofill styling stays within input box
           },
           "& .MuiInputBase-input": {
             color: "#1C1C1C",
             height: "48px",
+            borderRadius: "100px",
             "&::placeholder": {
               color: "#1C1C1C",
               opacity: 1,
+            },
+            // Override browser autofill styling - only affects the input field box
+            "&:-webkit-autofill": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              caretColor: "#1C1C1C",
+              borderRadius: "100px",
+              transition: "background-color 5000s ease-in-out 0s",
+            },
+            "&:-webkit-autofill:hover": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
+            },
+            "&:-webkit-autofill:focus": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
+            },
+            "&:-webkit-autofill:active": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
             },
           },
           "& .MuiFormHelperText-root": {
@@ -349,7 +399,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
                     alignItems: "center",
                   },
                   "& .MuiSelect-icon": {
-                    color: "#12B76A",
+                    color: "#6C737F",
                   },
                 }}
                 renderValue={(value) => {
@@ -444,13 +494,38 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           "& .MuiInputBase-root": {
             height: "48px",
             minHeight: "48px",
+            overflow: "hidden", // Ensure autofill styling stays within input box
           },
           "& .MuiInputBase-input": {
             color: "#1C1C1C",
             height: "48px",
+            borderRadius: "100px",
             "&::placeholder": {
               color: "#1C1C1C",
               opacity: 1,
+            },
+            // Override browser autofill styling - only affects the input field box
+            "&:-webkit-autofill": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              caretColor: "#1C1C1C",
+              borderRadius: "100px",
+              transition: "background-color 5000s ease-in-out 0s",
+            },
+            "&:-webkit-autofill:hover": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
+            },
+            "&:-webkit-autofill:focus": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
+            },
+            "&:-webkit-autofill:active": {
+              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
+              WebkitTextFillColor: "#1C1C1C !important",
+              borderRadius: "100px",
             },
           },
           "& .MuiFormHelperText-root": {
