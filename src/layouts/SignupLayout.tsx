@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Box, IconButton } from '@mui/material';
-import { colors } from '../utils/constants';
+// import { colors } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
 
 interface SignupLayoutProps {
@@ -24,7 +24,7 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: colors["Base-White"],
+        // backgroundColor: colors["Base-White"],
         display: "flex",
         flexDirection: "column",
         width: "100%",
@@ -57,7 +57,7 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             <img
               src="/assets/icons/back-arrow.svg"
               alt="back-arrow"
-              style={{ width: "24px", height: "24px" }}
+              style={{ width: "24px", height: "24px" , marginRight: "px"}}
             />
           </IconButton>
         ) : (
