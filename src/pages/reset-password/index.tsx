@@ -1,11 +1,13 @@
-import React, { useEffect, type JSX } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import {
   Box,
   Button,
   Typography,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
 import { useForm } from "react-hook-form";
@@ -15,6 +17,7 @@ import { resetPassSchema } from "../../utils/yup-config";
 import { useResetPasswordMutation } from "../../rtk/endpoints/authApi";
 import { useDispatch } from "react-redux";
 import { showAlert } from "../../rtk/feature/alertSlice";
+import GlobalDialog from "../../components/dialog";
 
 interface ResetPasswordFormInputs {
   password: string;
@@ -28,6 +31,7 @@ export default function ResetPasswordPage(): JSX.Element {
   let token = searchParams.get("token");
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showCongratulationPopup, setShowCongratulationPopup] = useState(false);
   const [resetPassword, { isSuccess }] = useResetPasswordMutation();
   const {
     register,
@@ -68,13 +72,19 @@ export default function ResetPasswordPage(): JSX.Element {
   
   useEffect(() => {
     if (isSuccess) {
-      dispatch(showAlert({
-        message: "Password reset successfully. Please sign in with your new password.",
-        severity: "success",
-      }));
-      navigate("/login");
+      setShowCongratulationPopup(true);
     }
-  }, [isSuccess, dispatch, navigate]);
+  }, [isSuccess]);
+
+  const handleCloseCongratulationPopup = () => {
+    setShowCongratulationPopup(false);
+    navigate("/login");
+  };
+
+  const handleSignIn = () => {
+    setShowCongratulationPopup(false);
+    navigate("/login");
+  };
 
   // Watch password for confirm validation
   const password = watch("password");
@@ -267,6 +277,159 @@ export default function ResetPasswordPage(): JSX.Element {
           </Button>
         </Box>
       </Box>
+
+      {/* Congratulation Popup */}
+      <GlobalDialog
+        open={showCongratulationPopup}
+        handleClose={handleCloseCongratulationPopup}
+        component={
+          <Box sx={{ 
+            position: "relative",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: { xs: "100%", sm: "auto" },
+            justifyContent: { xs: "space-between", sm: "flex-start" },
+            alignItems: "center",
+            textAlign: "center",
+          }}>
+            {/* Close button */}
+            <IconButton
+              onClick={handleCloseCongratulationPopup}
+              sx={{
+                position: "absolute",
+                top: { xs: 8, sm: 16 },
+                right: { xs: 8, sm: 16 },
+                color: "#1C1C1C",
+                zIndex: 1,
+                backgroundColor: { xs: "#F9FAFB", sm: "transparent" },
+                "&:hover": {
+                  backgroundColor: { xs: "#F3F4F6", sm: "rgba(0,0,0,0.04)" },
+                },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+
+            {/* Success Icon */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mb: { xs: 2, sm: 3 },
+                mt: { xs: 2, sm: 0 },
+              }}
+            >
+              <Box
+                sx={{
+                  width: { xs: 64, sm: 80 },
+                  height: { xs: 64, sm: 80 },
+                  borderRadius: "50%",
+                  backgroundColor: "#D1FAE5",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px solid #10B981",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: { xs: 32, sm: 40 },
+                    height: { xs: 32, sm: 40 },
+                    borderRadius: "50%",
+                    backgroundColor: "#10B981",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      color: "#fff",
+                      fontSize: { xs: "20px", sm: "24px" },
+                      fontWeight: 600,
+                    }}
+                  >
+                    ✓
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Title */}
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              mb={1.5}
+              sx={{ 
+                color: "#111927",
+                fontSize: { xs: "20px", sm: "24px" },
+              }}
+            >
+              Congratulation!!
+            </Typography>
+
+            {/* Message */}
+            <Typography 
+              variant="body2" 
+              mb={{ xs: 4, sm: 3 }} 
+              sx={{ 
+                color: "#6C737F",
+                fontSize: { xs: "14px", sm: "16px" },
+              }}
+            >
+              Your Password has been Successfully changed
+            </Typography>
+
+            {/* Buttons */}
+            <Stack 
+              direction="row" 
+              spacing={{ xs: 1.5, sm: 2 }} 
+              justifyContent="center"
+              sx={{
+                mt: { xs: "auto", sm: 0 },
+                pt: { xs: 2, sm: 0 },
+                width: "100%",
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={handleCloseCongratulationPopup}
+                sx={{
+                  color: "#384250",
+                  borderColor: "#D1D5DB",
+                  borderRadius: "50px",
+                  px: { xs: 2, sm: 3 },
+                  py: { xs: 1, sm: 1.5 },
+                  fontSize: { xs: "14px", sm: "16px" },
+                  textTransform: "none",
+                  flex: { xs: 1, sm: "none" },
+                  "&:hover": {
+                    borderColor: "#9CA3AF",
+                    backgroundColor: "#F9FAFB",
+                  },
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleSignIn}
+                sx={{
+                  textTransform: "none",
+                  px: { xs: 2, sm: 3 },
+                  py: { xs: 1, sm: 1.5 },
+                  fontSize: { xs: "14px", sm: "16px" },
+                  borderRadius: "50px",
+                  flex: { xs: 1, sm: "none" },
+                }}
+              >
+                Sign In
+              </Button>
+            </Stack>
+          </Box>
+        }
+      />
     </SignupLayout>
   );
 }
