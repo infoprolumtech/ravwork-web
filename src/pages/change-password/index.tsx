@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
     Box,
     Button,
     Typography,
     InputAdornment,
-    IconButton,
-    Grid
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { StyledTextField } from '../../utils/helper';
-import AdminLayout from '../../layouts/AdminLayout';
+import SignupLayout from '../../layouts/SignupLayout';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changePassSchema } from '../../utils/yup-config';
 import { useDispatch } from 'react-redux';
@@ -17,7 +15,6 @@ import { showAlert } from '../../rtk/feature/alertSlice';
 import { useNavigate } from 'react-router-dom';
 import { useChangePasswordMutation, useLogoutMutation } from '../../rtk/endpoints/authApi';
 import { logoutUser } from '../../rtk/feature/authSlice';
-import { colors } from '../../utils/constants';
 
 interface ChangePasswordFormInputs {
     newPassword: string;
@@ -25,8 +22,6 @@ interface ChangePasswordFormInputs {
 }
 
 export default function ChangePasswordPage() {
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [changePassword, {isSuccess}] = useChangePasswordMutation();
     const [logout] = useLogoutMutation();
     const dispatch = useDispatch();
@@ -70,173 +65,152 @@ export default function ChangePasswordPage() {
       }
     }, [isSuccess, dispatch, logout, navigate]);
     return (
-      <AdminLayout>
-        <Grid container justifyContent="center" alignItems="center">
+      <SignupLayout showBackIcon={false} onBackClick={() => navigate(-1)}>
+        <Box
+          width="100%"
+          maxWidth={{ xs: "100%", sm: "400px" }}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            position: "relative",
+            mx: "auto",
+          }}
+        >
+          {/* Icon above title */}
           <Box
-            width="100%"
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            px={4}
-            py={8}
-            sx={{ maxWidth: { xs: "100%", lg: "500px" } }}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: { xs: 2, sm: 3 },
+              mt: { xs: 0, sm: 2 },
+            }}
           >
-            {/* Icon above title */}
             <Box
               sx={{
+                width: { xs: 32, sm: 36 },
+                height: { xs: 32, sm: 36 },
+                borderRadius: "50%",
                 display: "flex",
+                alignItems: "center",
                 justifyContent: "center",
-                mb: 3,
+                padding: { xs: "5px", sm: "6.864px" },
               }}
             >
-              <Box
-                sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "6.864px",
-                }}
-              >
-                <img
-                  src="/assets/icons/forgot_icon.svg"
-                  alt="forgot-password-icon"
-                  style={{ width: "36px", height: "36px" }}
-                />
-              </Box>
+              <img
+                src="/assets/icons/forgot_icon.svg"
+                alt="forgot-password-icon"
+                style={{ width: "100%", height: "100%" }}
+              />
             </Box>
+          </Box>
 
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              textAlign="center"
-              mb={4}
-            >
-              Change Password
-            </Typography>
+          <Typography
+            variant="h5"
+            fontWeight={600}
+            textAlign="center"
+            mb={{ xs: 2, sm: 3 }}
+            sx={{ fontSize: { xs: "24px", sm: "28px", md: "34px" } }}
+          >
+            Change Password
+          </Typography>
 
-            {/* New Password Field */}
-            <Box sx={{ mb: 2 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors["Gray-600"],
-                  mb: 0.5,
-                  fontSize: "14px",
-                }}
-              >
-                -New Password-
-              </Typography>
-            <StyledTextField
-              fullWidth
-              type={showNewPassword ? "text" : "password"}
-              placeholder="Enter New Password"
-              margin="normal"
-              {...register("newPassword")}
-              error={Boolean(errors.newPassword)}
-              helperText={errors.newPassword?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start" sx={{ mr: 0 }}>
-                      <img
-                        src="/assets/icons/lock.svg"
-                        alt="lock-icon"
-                        loading="lazy"
-                          style={{ width: "20px", height: "20px" }}
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowNewPassword((prev) => !prev)}
-                      >
-                        <img
-                          src={showNewPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                          alt={showNewPassword ? "hide-password" : "show-password"}
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors["Gray-600"],
-                  fontSize: "12px",
-                  mt: 0.5,
-                  ml: 1,
-                }}
-              >
-                Your password should contain at least 1 uppercase, 1 lowercase, 1 special character, and 1 digit.
-              </Typography>
-            </Box>
+          <Typography
+            variant="body2"
+            textAlign="center"
+            mb={{ xs: 2, sm: 3 }}
+            sx={{ 
+              color: "#6C737F",
+              fontSize: { xs: "14px", sm: "16px" },
+              px: { xs: 1, sm: 0 },
+            }}
+          >
+            Phone number verification is only for job updates. You will not
+            receive messages for anything else. krishna
+          </Typography>
 
-            {/* Confirm Password Field */}
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors["Gray-600"],
-                  mb: 0.5,
-                  fontSize: "14px",
-                }}
-              >
-                -Confirm Password-
-              </Typography>
-            <StyledTextField
-              fullWidth
-              type={showConfirmPassword ? "text" : "password"}
-                placeholder="Enter Confirm Password"
-              margin="normal"
-              {...register("confirmPassword")}
-              error={Boolean(errors.confirmPassword)}
-              helperText={errors.confirmPassword?.message}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start" sx={{ mr: 0 }}>
-                      <img
-                        src="/assets/icons/lock.svg"
-                        alt="lock-icon"
-                        loading="lazy"
-                          style={{ width: "20px", height: "20px" }}
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      >
-                        <img
-                          src={showConfirmPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                          alt={showConfirmPassword ? "hide-password" : "show-password"}
-                          style={{ width: "20px", height: "20px" }}
-                        />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            </Box>
+          {/* New Password Field */}
+          <StyledTextField
+            fullWidth
+            type="password"
+            placeholder="Enter new password"
+            margin="normal"
+            {...register("newPassword")}
+            error={Boolean(errors.newPassword)}
+            helperText={errors.newPassword?.message}
+            sx={{ mb: 1.5 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ mr: 0 }}>
+                    <img
+                      src="/assets/icons/lock.svg"
+                      alt="lock-icon"
+                      loading="lazy"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
+          {/* Confirm Password Field */}
+          <StyledTextField
+            fullWidth
+            type="password"
+            placeholder="Confirm new password"
+            margin="normal"
+            {...register("confirmPassword")}
+            error={Boolean(errors.confirmPassword)}
+            helperText={errors.confirmPassword?.message}
+            sx={{ mb: 1.5 }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ mr: 0 }}>
+                    <img
+                      src="/assets/icons/lock.svg"
+                      alt="lock-icon"
+                      loading="lazy"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
+          <Box
+            sx={{
+              width: "100%",
+              position: { xs: "fixed", sm: "static" },
+              bottom: { xs: 0, sm: "auto" },
+              left: { xs: 0, sm: "auto" },
+              p: { xs: 2, sm: 0 },
+              backgroundColor: { xs: "#fff", sm: "transparent" },
+              zIndex: { xs: 10, sm: "auto" },
+              boxShadow: {
+                xs: "0 -2px 10px rgba(0,0,0,0.05)",
+                sm: "none",
+              },
+            }}
+          >
             <Button
               type="submit"
               fullWidth
               variant="secondary"
               disabled={isSubmitting || !isFormValid}
+              sx={{
+                height: { xs: "44px", sm: "48px" },
+              }}
             >
               {isSubmitting ? "Changing Password..." : "Change Password"}
             </Button>
           </Box>
-        </Grid>
-      </AdminLayout>
+        </Box>
+      </SignupLayout>
     );
 }

@@ -83,121 +83,146 @@ export default function ForgotPassword(): JSX.Element {
 
 
   return (
-    <SignupLayout>
+    <SignupLayout showBackIcon={true} onBackClick={() => navigate(-1)}>
       <Box
         width="100%"
-        maxWidth={400}
+        maxWidth={{ xs: "100%", sm: "400px" }}
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          mx: "auto",
           position: "relative",
         }}
       >
-        {/* Back arrow - positioned absolutely in top left */}
-        <IconButton
-          onClick={() => navigate(-1)}
+        {/* Back Icon - Above content for large screens */}
+        <Box
           sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            color: "text.primary",
-            p: 1,
+            display: { xs: "none", md: "block" },
+            mb: 2,
+            alignSelf: "flex-start",
           }}
         >
-          <img
-            src="/assets/icons/back-arrow.svg"
-            alt="back-arrow"
-            style={{ width: 24, height: 24 }}
-          />
-        </IconButton>
-
+          <IconButton
+            onClick={() => navigate(-1)}
+            sx={{
+              color: "text.primary",
+              p: 1,
+              minWidth: "auto",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src="/assets/icons/back-arrow.svg"
+              alt="back-arrow"
+              style={{ width: "24px", height: "24px" }}
+            />
+          </IconButton>
+        </Box>
         {/* Icon above title */}
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
-            mb: 3,
-            mt: 2,
+            mb: { xs: 2, sm: 3 },
+            mt: { xs: 0, sm: 2 },
           }}
         >
           <Box
             sx={{
-              width: 36,
-              height: 36,
+              width: { xs: 32, sm: 36 },
+              height: { xs: 32, sm: 36 },
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: "6.864px",
+              padding: { xs: "5px", sm: "6.864px" },
             }}
           >
             <img
               src="/assets/icons/forgot_icon.svg"
               alt="forgot-password-icon"
-              style={{ width: "36px", height: "36px" }}
+              style={{ width: "100%", height: "100%" }}
             />
           </Box>
         </Box>
 
-        <Typography variant="h5" textAlign="center" mb={3} fontWeight={600}>
+        <Typography 
+          variant="h5" 
+          textAlign="center" 
+          mb={{ xs: 2, sm: 3 }} 
+          fontWeight={600}
+          sx={{ fontSize: { xs: "24px", sm: "28px", md: "34px" } }}
+        >
           Forgot Password
         </Typography>
 
         <Typography
           variant="body2"
           textAlign="center"
-          mb={3}
-          sx={{ color: "#6C737F" }}
+          mb={{ xs: 2, sm: 3 }}
+          sx={{ 
+            color: "#6C737F",
+            fontSize: { xs: "14px", sm: "16px" },
+            px: { xs: 1, sm: 0 },
+          }}
         >
           Enter your registered email address we'll send you a link to reset
           your password
         </Typography>
+        <StyledTextField
+          fullWidth
+          type="email"
+          placeholder="Email"
+          margin="normal"
+          {...register("email", { required: "Email is required" })}
+          error={Boolean(errors.email)}
+          helperText={errors.email?.message}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start" sx={{ mr: 0 }}>
+                  <img
+                    src="/assets/icons/mail.svg"
+                    alt="mail-icon"
+                    loading="lazy"
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            mb: { xs: 2, sm: 2 },
+          }}
+        />
+
         <Box
           sx={{
             width: "100%",
-            position: { xs: "fixed", sm: "static" }, // mobile only
+            position: { xs: "fixed", sm: "static" },
             bottom: { xs: 0, sm: "auto" },
             left: { xs: 0, sm: "auto" },
             p: { xs: 2, sm: 0 },
             backgroundColor: { xs: "#fff", sm: "transparent" },
             zIndex: { xs: 10, sm: "auto" },
+            boxShadow: {
+              xs: "0 -2px 10px rgba(0,0,0,0.05)",
+              sm: "none",
+            },
           }}
         >
-          <StyledTextField
-            fullWidth
-            type="email"
-            placeholder="Enter Registered Email Address"
-            margin="normal"
-            {...register("email", { required: "Email is required" })}
-            error={Boolean(errors.email)}
-            helperText={errors.email?.message}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img
-                      src="/assets/icons/sms.svg"
-                      alt="mail-icon"
-                      loading="lazy"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </InputAdornment>
-                ),
-              },
-            }}
-            sx={{
-              marginBottom: 2,
-            }}
-          />
-
           <Button
             type="submit"
             fullWidth
             variant="secondary"
             disabled={isSubmitting || !isFormValid}
+            sx={{
+              height: { xs: "44px", sm: "48px" },
+            }}
           >
             Send Verification Link
           </Button>

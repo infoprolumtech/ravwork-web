@@ -16,7 +16,7 @@ export const ROWS_LIMIT = 100;
 export const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
     backgroundColor: theme.palette.primary.light, // light background
-    color: theme.palette.primary[900], // text color
+    color: "#1C1C1C", // text color
     borderRadius: "100px",
     fontSize: "16px"
   },
@@ -34,7 +34,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     display: "none", // Hide labels in auth layout
   },
   '& .MuiInputBase-input::placeholder': {
-    color: theme.palette.primary[400],
+    color: "#1C1C1C"
   },
   "& .MuiOutlinedInput-root": {
     "& .MuiOutlinedInput-notchedOutline": {

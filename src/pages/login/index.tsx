@@ -65,53 +65,65 @@ export default function LoginPage(): JSX.Element {
 
 
   return (
-    <SignupLayout>
+    <SignupLayout showBackIcon={false} onBackClick={() => navigate(-1)}>
       <Box
         width="100%"
-        maxWidth={400}
+        maxWidth={{ xs: "100%", sm: "400px" }}
         component="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center",
+          mx: "auto",
+        }}
       >
         {/* Icon above title */}
         <Box
           sx={{
-            width: 36,
-            height: 36,
+            width: { xs: 32, sm: 36 },
+            height: { xs: 32, sm: 36 },
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "6.864px",
-            mb: 2,
+            padding: { xs: "5px", sm: "6.864px" },
+            mb: { xs: 2, sm: 2 },
+            mt: { xs: 0, sm: 2 },
           }}
         >
           <img
             src="/assets/icons/sigup_icon.svg"
             alt="email-icon"
-            style={{ width: "36px", height: "36px" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Box>
 
-        <Typography variant="h5" textAlign="center" mb={3} fontWeight={600}>
+        <Typography 
+          variant="h5" 
+          textAlign="center" 
+          mb={{ xs: 2, sm: 3 }} 
+          fontWeight={600}
+          sx={{ fontSize: { xs: "24px", sm: "28px", md: "34px" } }}
+        >
           Sign In
         </Typography>
         <StyledTextField
           fullWidth
           variant="outlined"
           type="text"
-          // label="Email Address"
           placeholder="Email"
           margin="normal"
           {...register("email")}
           error={Boolean(errors.email)}
           helperText={errors.email?.message}
+          sx={{ mb: 1.5 }}
           slotProps={{
             input: {
               startAdornment: (
                 <InputAdornment position="start" sx={{ mr: 0 }}>
                   <img
-                    src="/assets/icons/sms.svg"
+                    src="/assets/icons/mail.svg"
                     alt="email-icon"
                     style={{ width: "20px", height: "20px" }}
                   />
@@ -124,13 +136,13 @@ export default function LoginPage(): JSX.Element {
         <StyledTextField
           fullWidth
           variant="outlined"
-          // label="Password"
           type={showPassword ? "text" : "password"}
           placeholder="Enter Password"
           margin="normal"
           {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
+          sx={{ mb: 1 }}
           slotProps={{
             input: {
               startAdornment: (
@@ -163,11 +175,12 @@ export default function LoginPage(): JSX.Element {
           variant="subtitle2"
           textAlign="right"
           mt={1}
-          mb={2.5}
+          mb={{ xs: 2, sm: 2.5 }}
           sx={{
             width: "100%",
             cursor: "pointer",
             color: "#1C1C1C",
+            fontSize: { xs: "14px", sm: "16px" },
             "&:hover": {
               textDecoration: "underline",
             }
@@ -180,12 +193,16 @@ export default function LoginPage(): JSX.Element {
         <Box
           sx={{
             width: "100%",
-            position: { xs: "fixed", sm: "static" }, // mobile only
+            position: { xs: "fixed", sm: "static" },
             bottom: { xs: 0, sm: "auto" },
             left: { xs: 0, sm: "auto" },
             p: { xs: 2, sm: 0 },
             backgroundColor: { xs: "#fff", sm: "transparent" },
             zIndex: { xs: 10, sm: "auto" },
+            boxShadow: {
+              xs: "0 -2px 10px rgba(0,0,0,0.05)",
+              sm: "none",
+            },
           }}
         >
           <Button
@@ -193,19 +210,36 @@ export default function LoginPage(): JSX.Element {
             type="submit"
             variant="secondary"
             disabled={isSubmitting || !isFormValid}
+            sx={{
+              height: { xs: "44px", sm: "48px" },
+            }}
           >
             Sign In
           </Button>
-          <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
+          <Typography 
+            variant="body2" 
+            textAlign="center" 
+            sx={{ 
+              mt: { xs: 1.5, sm: 2 },
+              fontSize: { xs: "14px", sm: "16px" },
+              display: { xs: "none", sm: "block" },
+            }}
+          >
             Don't Have an Account?{" "}
             <Typography
               component="span"
-              sx={{ fontWeight: 600, color: "#111927", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+              sx={{ 
+                fontWeight: 600, 
+                color: "#111927", 
+                cursor: "pointer", 
+                "&:hover": { textDecoration: "underline" } 
+              }}
               onClick={() => navigate("/")}
             >
               Sign Up
             </Typography>
-          </Typography></Box>
+          </Typography>
+        </Box>
       </Box>
     </SignupLayout>
   );

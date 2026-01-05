@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Typography, InputAdornment, IconButton, MenuItem, Select, FormControl } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -34,17 +34,25 @@ const COUNTRY_CODES = [
 
 interface Step1Props {
   onNext: (data: Step1FormInputs) => void;
+  initialData?: Step1FormInputs | null;
 }
 
-export const Step1 = ({ onNext }: Step1Props) => {
+export const Step1 = ({ onNext, initialData }: Step1Props) => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const PREFIX = "ravwork.link/";
 
   const form = useForm<Step1FormInputs>({
     resolver: yupResolver(step1Schema) as any,
-    defaultValues: { username: PREFIX, email: "", countryCode: "+1", phoneNumber: "", password: "" },
+    defaultValues: initialData || { username: PREFIX, email: "", countryCode: "+1", phoneNumber: "", password: "" },
   });
+
+  // Update form values when initialData changes (when navigating back)
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData, form]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -109,9 +117,15 @@ export const Step1 = ({ onNext }: Step1Props) => {
   };
 
   return (
-    <Box width={439} maxWidth={493} component="form" onSubmit={form.handleSubmit(handleSubmit)}>
+    <Box 
+      width="100%" 
+      maxWidth={{ xs: "100%", sm: "493px" }} 
+      component="form" 
+      onSubmit={form.handleSubmit(handleSubmit)}
+      sx={{ mx: "auto" }}
+    >
       {/* Progress Indicator - Centered */}
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
         <ProgressIndicator currentStep={1} />
       </Box>
       
@@ -120,91 +134,136 @@ export const Step1 = ({ onNext }: Step1Props) => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          mb: 3,
+          mb: { xs: 2, sm: 3 },
         }}
       >
         <Box
           sx={{
-            width: 36,
-            height: 36,
+            width: { xs: 32, sm: 36 },
+            height: { xs: 32, sm: 36 },
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "6.864px",
+            padding: { xs: "5px", sm: "6.864px" },
           }}
         >
           <img
             src="/assets/icons/sigup_icon.svg"
             alt="email-icon"
-            style={{ width: "36px", height: "36px" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Box>
       </Box>
       
-      <Typography variant="h5" textAlign="center" mb={3} sx={{ fontSize: "34px", color: "#1C1C1C", fontWeight: 600, textAlign: "center" }}>
+      <Typography 
+        variant="h5" 
+        textAlign="center" 
+        mb={{ xs: 2, sm: 3 }} 
+        sx={{ 
+          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
+          color: "#1C1C1C", 
+          fontWeight: 600, 
+          textAlign: "center",
+          lineHeight: { xs: 1.3, sm: 1.2 },
+        }}
+      >
         Let's help client book<br />you instantly.
       </Typography>
 
-      <Box sx={{ position: "relative", mb: 1.5 }}>
-        <StyledTextField
-          fullWidth
-          variant="outlined"
-          margin="none"
-          value={form.watch("username")}
-          onChange={handleUsernameChange}
-          onKeyDown={handleUsernameKeyDown}
-          onFocus={handleUsernameFocus}
-          error={Boolean(form.formState.errors.username)}
-          helperText={form.formState.errors.username?.message}
-          sx={{
-            "& .MuiInputBase-input": {
-              color: "#1C1C1C",
-            },
-          }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img src="/assets/icons/at-sign.svg" alt="username-icon" style={{ width: "20px", height: "20px" }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-        {!form.watch("username") && (
-          <Typography
+      <Box sx={{ position: "relative", mb: form.formState.errors.username ? 0 : 1.5 }}>
+        <Box sx={{ position: "relative" }}>
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            margin="none"
+            value={form.watch("username")}
+            onChange={handleUsernameChange}
+            onKeyDown={handleUsernameKeyDown}
+            onFocus={handleUsernameFocus}
+            error={Boolean(form.formState.errors.username)}
+            helperText={form.formState.errors.username?.message}
             sx={{
-              position: "absolute",
-              left: "48px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              pointerEvents: "none",
-              color: "#6C737F",
-              fontSize: "16px",
-              fontFamily: "Inter, sans-serif",
+              "& .MuiInputBase-root": {
+                height: "48px",
+                minHeight: "48px",
+              },
+              "& .MuiInputBase-input": {
+                color: "#1C1C1C",
+                height: "48px",
+                padding: "12px 16px",
+              },
+              "& .MuiFormHelperText-root": {
+                marginTop: { xs: "4px", sm: "6px" },
+                marginLeft: 0,
+                fontSize: { xs: "11px", sm: "12px" },
+                lineHeight: { xs: 1.4, sm: 1.5 },
+              },
             }}
-          >
-            ravwork.link/username
-          </Typography>
-        )}
-        {form.watch("username") === PREFIX && (
-          <Typography
-            sx={{
-              position: "absolute",
-              left: "149px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              pointerEvents: "none",
-              color: "#6C737F",
-              fontSize: "16px",
-              fontFamily: "Inter, sans-serif",
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start" sx={{ mr: 0 }}>
+                    <img src="/assets/icons/at-sign.svg" alt="username-icon" style={{ width: "20px", height: "20px" }} />
+                  </InputAdornment>
+                ),
+              },
             }}
-          >
-            username
-          </Typography>
-        )}
+          />
+          {!form.watch("username") && (
+            <Typography
+              sx={{
+                position: "absolute",
+                left: { xs: "40px", sm: "48px" },
+                top: "24px",
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+                color: "#6C737F",
+                fontSize: { xs: "12px", sm: "16px" },
+                fontFamily: "Inter, sans-serif",
+                zIndex: 1,
+                maxWidth: { xs: "calc(100% - 45px)", sm: "none" },
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                pr: { xs: 1, sm: 0 },
+              }}
+            >
+              ravwork.link/username
+            </Typography>
+          )}
+          {form.watch("username") === PREFIX && (
+            <Typography
+              sx={{
+                position: "absolute",
+                left: { 
+                  xs: "calc(40px + 14ch)", 
+                  sm: "calc(48px + 14ch)",
+                  md: "calc(48px + 10ch)",
+                  lg: "calc(48px + 10ch)"
+                },
+                top: "24px",
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+                color: "#6C737F",
+                fontSize: { xs: "12px", sm: "16px", md: "16px", lg: "16px" },
+                fontFamily: "Inter, sans-serif",
+                zIndex: 1,
+                maxWidth: { xs: "calc(100% - 45px)", sm: "calc(100% - 250px)", md: "calc(100% - 280px)", lg: "none" },
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                pr: { xs: 1, sm: 0 },
+              }}
+            >
+              username
+            </Typography>
+          )}
+        </Box>
       </Box>
+      {form.formState.errors.username && (
+        <Box sx={{ mb: 1.5, mt: 0.5 }} />
+      )}
 
       <StyledTextField
         fullWidth
@@ -215,13 +274,24 @@ export const Step1 = ({ onNext }: Step1Props) => {
         error={Boolean(form.formState.errors.email)}
         helperText={form.formState.errors.email?.message}
         sx={{
-          mb: 1.5,
+          mb: form.formState.errors.email ? 0 : 1.5,
+          "& .MuiInputBase-root": {
+            height: "48px",
+            minHeight: "48px",
+          },
           "& .MuiInputBase-input": {
             color: "#1C1C1C",
+            height: "48px",
             "&::placeholder": {
               color: "#1C1C1C",
               opacity: 1,
             },
+          },
+          "& .MuiFormHelperText-root": {
+            marginTop: { xs: "4px", sm: "6px" },
+            marginLeft: 0,
+            fontSize: { xs: "11px", sm: "12px" },
+            lineHeight: { xs: 1.4, sm: 1.5 },
           },
         }}
         slotProps={{
@@ -234,17 +304,22 @@ export const Step1 = ({ onNext }: Step1Props) => {
           },
         }}
       />
+      {form.formState.errors.email && (
+        <Box sx={{ mb: 1.5, mt: 0.5 }} />
+      )}
 
       {/* Country Code and Phone Number in Same Row */}
-      <Box sx={{ display: "flex", gap: 1.5, mb: 1.5 }}>
+      <Box sx={{ display: "flex", gap: { xs: 1, sm: 1.5 }, mb: (form.formState.errors.countryCode || form.formState.errors.phoneNumber) ? 0 : 1.5, flexDirection: "row" }}>
         {/* Country Code Selector */}
         <FormControl
           error={Boolean(form.formState.errors.countryCode)}
           sx={{
-            minWidth: 150,
+            minWidth: { xs: 120, sm: 150 },
+            flexShrink: 0,
             "& .MuiOutlinedInput-root": {
               backgroundColor: "#F9FAFB",
               borderRadius: "100px",
+              height: { xs: "44px", sm: "48px" },
               "& fieldset": {
                 border: "1px solid #D1D5DB",
               },
@@ -266,10 +341,10 @@ export const Step1 = ({ onNext }: Step1Props) => {
                 displayEmpty
                 sx={{
                   borderRadius: "100px",
-                  fontSize: "16px",
+                  fontSize: { xs: "14px", sm: "16px" },
                   "& .MuiSelect-select": {
-                    py: 1.5,
-                    px: 2,
+                    py: { xs: 1.25, sm: 1.5 },
+                    px: { xs: 1.5, sm: 2 },
                     display: "flex",
                     alignItems: "center",
                   },
@@ -308,12 +383,23 @@ export const Step1 = ({ onNext }: Step1Props) => {
           error={Boolean(form.formState.errors.phoneNumber)}
           helperText={form.formState.errors.phoneNumber?.message}
           sx={{
+            "& .MuiInputBase-root": {
+              height: "48px",
+              minHeight: "48px",
+            },
             "& .MuiInputBase-input": {
               color: "#1C1C1C",
+              height: "48px",
               "&::placeholder": {
                 color: "#1C1C1C",
                 opacity: 1,
               },
+            },
+            "& .MuiFormHelperText-root": {
+              marginTop: { xs: "4px", sm: "6px" },
+              marginLeft: 0,
+              fontSize: { xs: "11px", sm: "12px" },
+              lineHeight: { xs: 1.4, sm: 1.5 },
             },
           }}
           slotProps={{
@@ -332,11 +418,12 @@ export const Step1 = ({ onNext }: Step1Props) => {
           variant="caption"
           sx={{
             color: "#F97066",
-            fontSize: "12px",
-            mt: -1.5,
+            fontSize: { xs: "11px", sm: "12px" },
+            mt: { xs: 0.5, sm: 0.75 },
             mb: 1.5,
             ml: 1.5,
             display: "block",
+            lineHeight: { xs: 1.4, sm: 1.5 },
           }}
         >
           {form.formState.errors.countryCode.message}
@@ -353,13 +440,24 @@ export const Step1 = ({ onNext }: Step1Props) => {
         error={Boolean(form.formState.errors.password)}
         helperText={form.formState.errors.password?.message}
         sx={{
-          mb: 1.5,
+          mb: form.formState.errors.password ? 0 : 1.5,
+          "& .MuiInputBase-root": {
+            height: "48px",
+            minHeight: "48px",
+          },
           "& .MuiInputBase-input": {
             color: "#1C1C1C",
+            height: "48px",
             "&::placeholder": {
               color: "#1C1C1C",
               opacity: 1,
             },
+          },
+          "& .MuiFormHelperText-root": {
+            marginTop: { xs: "4px", sm: "6px" },
+            marginLeft: 0,
+            fontSize: { xs: "11px", sm: "12px" },
+            lineHeight: { xs: 1.4, sm: 1.5 },
           },
         }}
         slotProps={{
@@ -383,41 +481,71 @@ export const Step1 = ({ onNext }: Step1Props) => {
           },
         }}
       />
+      {form.formState.errors.password && (
+        <Box sx={{ mb: 1.5, mt: 0.5 }} />
+      )}
 
-      <Button fullWidth type="submit" variant="secondary" sx={{ mt: 2, mb: 1 }} disabled={form.formState.isSubmitting}>
-        Next
-      </Button>
-
-      <Box sx={{ mt: 1, width: "100%" }}>
-        <Box sx={{ backgroundColor: "#F9FAFB", padding: "12px 16px", borderRadius: "8px", textAlign: "center" }}>
-          <Typography sx={{ color: "#6C737F", fontSize: "12px", fontWeight: 400, whiteSpace: "nowrap", display: "inline", fontFamily: "Inter, sans-serif" }}>
-            By clicking on Create Account I agree to the{" "}
-            <Typography component="span" sx={{ fontWeight: 600, color: "#111927", fontSize: "12px" }}>
-              Terms of Services & Privacy Policy
-            </Typography>
-          </Typography>
-        </Box>
-      </Box>
-
-      <Typography 
-        textAlign="center" 
-        sx={{ 
-          fontSize: "16px", 
-          fontWeight: 400, 
-          color: "#1C1C1C",
-          fontFamily: "Inter, sans-serif",
-          mt: 3
+      <Box
+        sx={{
+          width: "100%",
+          position: { xs: "fixed", sm: "static" },
+          bottom: { xs: 0, sm: "auto" },
+          left: { xs: 0, sm: "auto" },
+          p: { xs: 2, sm: 0 },
+          backgroundColor: { xs: "#fff", sm: "transparent" },
+          zIndex: { xs: 10, sm: "auto" },
+          boxShadow: {
+            xs: "0 -2px 10px rgba(0,0,0,0.05)",
+            sm: "none",
+          },
         }}
       >
-        Already Have an Account?{" "}
-        <Typography
-          component="span"
-          sx={{ fontSize: "16px", fontWeight: 600, color: "#1C1C1C", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
-          onClick={() => navigate("/login")}
+        <Button 
+          fullWidth 
+          type="submit" 
+          variant="secondary" 
+          sx={{ 
+            mt: { xs: 0, sm: 2 }, 
+            mb: { xs: 1, sm: 1 },
+            height: { xs: "44px", sm: "48px" },
+          }} 
+          disabled={form.formState.isSubmitting}
         >
-          Log In
+          Next
+        </Button>
+
+        <Box sx={{ mt: { xs: 1, sm: 1 }, width: "100%" }}>
+          <Box sx={{ backgroundColor: "#F9FAFB", padding: { xs: "10px 12px", sm: "12px 16px" }, borderRadius: "8px", textAlign: "center" }}>
+            <Typography sx={{ color: "#6C737F", fontSize: { xs: "11px", sm: "12px" }, fontWeight: 400, whiteSpace: { xs: "normal", sm: "nowrap" }, display: "inline", fontFamily: "Inter, sans-serif" }}>
+              By clicking on Create Account I agree to the{" "}
+              <Typography component="span" sx={{ fontWeight: 600, color: "#111927", fontSize: { xs: "11px", sm: "12px" } }}>
+                Terms of Services & Privacy Policy
+              </Typography>
+            </Typography>
+          </Box>
+        </Box>
+
+        <Typography 
+          textAlign="center" 
+          sx={{ 
+            fontSize: { xs: "14px", sm: "16px" }, 
+            fontWeight: 400, 
+            color: "#1C1C1C",
+            fontFamily: "Inter, sans-serif",
+            mt: { xs: 1.5, sm: 3 },
+            mb: { xs: 1, sm: 0 },
+          }}
+        >
+          Already Have an Account?{" "}
+          <Typography
+            component="span"
+            sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#1C1C1C", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+            onClick={() => navigate("/login")}
+          >
+            Log In
+          </Typography>
         </Typography>
-      </Typography>
+      </Box>
     </Box>
   );
 };
