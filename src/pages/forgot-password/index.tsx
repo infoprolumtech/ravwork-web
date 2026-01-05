@@ -4,8 +4,8 @@ import {
   Button,
   Typography,
   InputAdornment,
-  Stack,
   IconButton,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
@@ -241,52 +241,118 @@ export default function ForgotPassword(): JSX.Element {
             flexDirection: "column",
             minHeight: { xs: "100%", sm: "auto" },
             justifyContent: { xs: "space-between", sm: "flex-start" },
+            alignItems: { xs: "center", sm: "flex-start" },
+            textAlign: { xs: "center", sm: "left" },
+            pt: { xs: 0, sm: 2 },
+            pb: { xs: 2, sm: 2 },
           }}>
-            {/* Close button */}
+            {/* Header with back icon and logo - Only on small screens */}
+            <Box
+              sx={{
+                display: { xs: "flex", sm: "none" },
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                py: 1.5,
+                px: 2,
+                position: "relative",
+                mb: 2,
+              }}
+            >
+              {/* Back Icon */}
+              <IconButton
+                onClick={handleCloseCheckMailPopup}
+                sx={{
+                  color: "text.primary",
+                  p: 0.75,
+                  minWidth: "auto",
+                }}
+              >
+                <img
+                  src="/assets/icons/back-arrow.svg"
+                  alt="back-arrow"
+                  style={{ width: "24px", height: "24px" }}
+                />
+              </IconButton>
+              
+              {/* Logo Section */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  marginLeft: "auto",
+                }}
+              >
+                <img 
+                  src="/assets/icons/ravwork_logo_icon.svg" 
+                  alt="Ravwork Icon" 
+                  style={{ 
+                    width: "auto", 
+                    height: "auto",
+                    maxWidth: "32px",
+                    maxHeight: "32px"
+                  }} 
+                />
+                <Box
+                  component="img"
+                  src="/assets/icons/ravwork_logo_text.svg" 
+                  alt="Ravwork"
+                  sx={{
+                    width: "auto", 
+                    height: "auto",
+                    maxWidth: "100px",
+                    maxHeight: "24px"
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Close button - Only on large screens */}
             <IconButton
               onClick={handleCloseCheckMailPopup}
               sx={{
+                display: { xs: "none", sm: "block" },
                 position: "absolute",
-                top: { xs: 8, sm: 16 },
-                right: { xs: 8, sm: 16 },
-                color: "#1C1C1C",
-                zIndex: 1,
-                backgroundColor: { xs: "#F9FAFB", sm: "transparent" },
-                "&:hover": {
-                  backgroundColor: { xs: "#F3F4F6", sm: "rgba(0,0,0,0.04)" },
-                },
+                top: 16,
+                right: 16,
+                color: "#6C737F",
               }}
             >
               <CloseIcon />
             </IconButton>
 
-            {/* Email icon */}
+            {/* Email icon - Different for small and large screens */}
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "flex-start",
-                mb: { xs: 2, sm: 2 },
+                justifyContent: { xs: "center", sm: "flex-start" },
+                mb: { xs: 3, sm: 2 },
                 mt: { xs: 2, sm: 0 },
               }}
             >
+              {/* Small screen: mail.svg icon */}
               <Box
+                component="img"
+                src="/assets/icons/mail.svg"
+                alt="email-icon"
                 sx={{
-                  width: { xs: 40, sm: 48 },
-                  height: { xs: 40, sm: 48 },
-                  borderRadius: "50%",
-                  backgroundColor: "#F9FAFB",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: 1,
+                  display: { xs: "block", sm: "none" },
+                  width: "48px",
+                  height: "48px",
                 }}
-              >
-                <img
-                  src="/assets/icons/mail.svg"
-                  alt="email-icon"
-                  style={{ width: "24px", height: "24px" }}
-                />
-              </Box>
+              />
+              {/* Large screen: Outlined envelope icon (no circular background) */}
+              <Box
+                component="img"
+                src="/assets/icons/mail.svg"
+                alt="email-icon"
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  width: "40px",
+                  height: "40px",
+                }}
+              />
             </Box>
 
             {/* Title */}
@@ -297,18 +363,47 @@ export default function ForgotPassword(): JSX.Element {
               sx={{ 
                 color: "#111927",
                 fontSize: { xs: "20px", sm: "24px" },
+                textAlign: { xs: "center", sm: "left" },
               }}
             >
               Please check your mail
             </Typography>
 
-            {/* Message */}
+            {/* Message - Different layout for small and large screens */}
+            {/* Small screen: Centered, email below text */}
+            <Box sx={{ 
+              mb: { xs: 4, sm: 3 },
+              display: { xs: "block", sm: "none" },
+            }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: "#6C737F",
+                  fontSize: "14px",
+                  mb: 1,
+                }}
+              >
+                A verification link has been sent to
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ 
+                  color: "#111927",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                }}
+              >
+                {userEmail || "XYZ@gmail.com"}
+              </Typography>
+            </Box>
+            {/* Large screen: Inline text with email */}
             <Typography 
               variant="body2" 
-              mb={{ xs: 4, sm: 3 }} 
+              mb={3}
               sx={{ 
+                display: { xs: "none", sm: "block" },
                 color: "#6C737F",
-                fontSize: { xs: "14px", sm: "16px" },
+                fontSize: "16px",
               }}
             >
               A reset password link has been sent to{" "}
@@ -320,14 +415,46 @@ export default function ForgotPassword(): JSX.Element {
               </Typography>
             </Typography>
 
-            {/* Buttons */}
-            <Stack 
-              direction="row" 
-              spacing={{ xs: 1.5, sm: 2 }} 
-              justifyContent="flex-end"
+            {/* Buttons - Different for small and large screens */}
+            {/* Small screen: Single full-width button */}
+            <Box
               sx={{
+                width: "100%",
                 mt: { xs: "auto", sm: 0 },
                 pt: { xs: 2, sm: 0 },
+                display: { xs: "block", sm: "none" },
+              }}
+            >
+              <Button
+                variant="secondary"
+                onClick={handleResendVerificationLink}
+                fullWidth
+                sx={{
+                  textTransform: "none",
+                  py: 1.5,
+                  fontSize: "16px",
+                  borderRadius: "50px",
+                  backgroundColor: "#384250",
+                  color: "#FFFFFF",
+                  "&:hover": {
+                    backgroundColor: "#1F2937",
+                  },
+                }}
+              >
+                Resend Verification Link
+              </Button>
+            </Box>
+            {/* Large screen: Cancel and Resend buttons */}
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              justifyContent="flex-end"
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                mt: 0,
+                pt: 0,
+                width: "100%",
+                alignItems: "center",
               }}
             >
               <Button
@@ -337,9 +464,9 @@ export default function ForgotPassword(): JSX.Element {
                   color: "#384250",
                   borderColor: "#D1D5DB",
                   borderRadius: "50px",
-                  px: { xs: 2, sm: 3 },
-                  py: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: "14px", sm: "16px" },
+                  px: 3,
+                  py: 1.5,
+                  fontSize: "16px",
                   textTransform: "none",
                   "&:hover": {
                     borderColor: "#9CA3AF",
@@ -354,9 +481,9 @@ export default function ForgotPassword(): JSX.Element {
                 onClick={handleResendVerificationLink}
                 sx={{
                   textTransform: "none",
-                  px: { xs: 2, sm: 3 },
-                  py: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: "14px", sm: "16px" },
+                  px: 3,
+                  py: 1.5,
+                  fontSize: "16px",
                   borderRadius: "50px",
                 }}
               >
