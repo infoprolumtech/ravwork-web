@@ -18,9 +18,18 @@ export default function SignUpPage(): JSX.Element {
   const [signup] = useSignupMutation();
   const [updateProfile] = useUpdateProfileMutation();
   const [skipProfile] = useSkipProfileMutation();
+  
+  // Store form data for each step to preserve when navigating back
+  const [step1Data, setStep1Data] = useState<Step1FormInputs | null>(null);
+  const [step2Data, setStep2Data] = useState<Step2FormInputs | null>(null);
+  const [step3Data, setStep3Data] = useState<Step3FormInputs | null>(null);
+  const [step4Data, setStep4Data] = useState<Step4FormInputs | null>(null);
 
   const handleStep1Submit = async (data: Step1FormInputs) => {
     try {
+      // Store Step 1 data
+      setStep1Data(data);
+      
       // Extract username without prefix
       const PREFIX = "ravwork.link/";
       const username = data.username.startsWith(PREFIX) 
@@ -54,17 +63,22 @@ export default function SignUpPage(): JSX.Element {
 
   const handleStep2Submit = (data: Step2FormInputs) => {
     console.log("Step 2 data:", data);
+    setStep2Data(data);
     setCurrentStep(3);
   };
 
   const handleStep3Submit = (data: Step3FormInputs) => {
     console.log("Step 3 data:", data);
+    setStep3Data(data);
     // Step 3 is payment method - just proceed to next step
     setCurrentStep(4);
   };
 
   const handleStep4Submit = async (data: Step4FormInputs) => {
     try {
+      // Store Step 4 data
+      setStep4Data(data);
+      
       // Step 4 is profile completion - call updateProfile API
       // All fields are optional
       // Convert uploaded image file to URL string for API
@@ -82,8 +96,12 @@ export default function SignUpPage(): JSX.Element {
         linkedinUrl: data.linkedin || undefined,
       }).unwrap();
       
-      // Clear temporary signup token
+      // Clear temporary signup token and form data
       localStorage.removeItem("signupToken");
+      setStep1Data(null);
+      setStep2Data(null);
+      setStep3Data(null);
+      setStep4Data(null);
       dispatch(showAlert({ message: "Profile updated successfully. Please sign in to continue.", severity: "success" }));
       // Redirect to sign-in page after signup completion
       navigate("/login");
@@ -99,15 +117,23 @@ export default function SignUpPage(): JSX.Element {
   const handleSkipProfile = async () => {
     try {
       await skipProfile(undefined).unwrap();
-      // Clear temporary signup token
+      // Clear temporary signup token and form data
       localStorage.removeItem("signupToken");
+      setStep1Data(null);
+      setStep2Data(null);
+      setStep3Data(null);
+      setStep4Data(null);
       dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
       // Redirect to sign-in page after skipping profile
       navigate("/login");
     } catch (error: any) {
       console.error("Skip profile error:", error);
-      // Clear temporary signup token even if skip fails
+      // Clear temporary signup token and form data even if skip fails
       localStorage.removeItem("signupToken");
+      setStep1Data(null);
+      setStep2Data(null);
+      setStep3Data(null);
+      setStep4Data(null);
       // Even if skip fails, redirect to sign-in
       dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
       navigate("/login");
@@ -121,12 +147,12 @@ export default function SignUpPage(): JSX.Element {
   };
 
   return (
-    <SignupLayout>
+    <SignupLayout showBackIcon={currentStep > 1} onBackClick={handleBackClick}>
       <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        {currentStep === 1 && <Step1 onNext={handleStep1Submit} />}
-        {currentStep === 2 && <Step2 onNext={handleStep2Submit} onBack={handleBackClick} />}
-        {currentStep === 3 && <Step3 onNext={handleStep3Submit} onBack={handleBackClick} />}
-        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onBack={handleBackClick} onSkip={handleSkipProfile} />}
+        {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} />}
+        {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} />}
+        {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} />}
+        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} />}
       </Box>
     </SignupLayout>
   );

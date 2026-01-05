@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step4Schema } from "../validationSchemas";
@@ -9,17 +10,35 @@ import type { Step4FormInputs } from "../types";
 
 interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
-  onBack: () => void;
   onSkip: () => void;
+  initialData?: Step4FormInputs | null;
 }
 
-export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
+export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
+  const navigate = useNavigate();
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
 
   const form = useForm<Step4FormInputs>({
     resolver: yupResolver(step4Schema) as any,
-    defaultValues: { businessName: "", businessDescription: "", instagram: "", facebook: "", linkedin: "" },
+    defaultValues: initialData || { businessName: "", businessDescription: "", instagram: "", facebook: "", linkedin: "" },
   });
+
+  // Update form values when initialData changes (when navigating back)
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+      // Restore profile image preview if it exists
+      if (initialData.profileImage) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfileImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(initialData.profileImage);
+      } else {
+        setProfileImagePreview("");
+      }
+    }
+  }, [initialData, form]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -37,25 +56,48 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
     onNext(data);
   };
 
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   return (
-    <Box width="100%" maxWidth={730} sx={{ height: 846  }} component="form" onSubmit={form.handleSubmit(handleSubmit)}>
-      {/* Back Icon - Before Progress Bar */}
-      <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+    <Box 
+      width="100%" 
+      maxWidth={{ xs: "100%", sm: "730px" }} 
+      sx={{ 
+        minHeight: { xs: "auto", sm: "846px" },
+        pb: { xs: 10, sm: 0 },
+        mx: "auto",
+        position: "relative",
+      }} 
+      component="form" 
+      onSubmit={form.handleSubmit(handleSubmit)}
+    >
+      {/* Back Icon - Above progress bar for large screens */}
+      <Box
+        sx={{
+          display: { xs: "none", md: "block" },
+          mb: 2,
+        }}
+      >
         <IconButton
-          onClick={onBack}
+          onClick={handleBackClick}
           sx={{
             color: "text.primary",
             p: 1,
+            minWidth: "auto",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <img
             src="/assets/icons/back-arrow.svg"
             alt="back-arrow"
-            style={{ width: 24, height: 24 }}
+            style={{ width: "24px", height: "24px" }}
           />
         </IconButton>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
         <ProgressIndicator currentStep={4} />
       </Box>
       
@@ -64,30 +106,40 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          mb: 3,
+          mb: { xs: 2, sm: 3 },
         }}
       >
         <Box
           sx={{
-            width: 36,
-            height: 36,
+            width: { xs: 32, sm: 36 },
+            height: { xs: 32, sm: 36 },
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "6.864px",
+            padding: { xs: "5px", sm: "6.864px" },
           }}
         >
           <img
             src="/assets/icons/profile_icon.svg"
             alt="icon"
-            style={{ width: "36px", height: "36px" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Box>
       </Box>
       
       {/* Title - Centered */}
-      <Typography variant="h5" textAlign="center" mb={2} sx={{ fontSize: "34px", color: "#1C1C1C", fontWeight: 600, textAlign: "center" }}>
+      <Typography 
+        variant="h5" 
+        textAlign="center" 
+        mb={{ xs: 1.5, sm: 2 }} 
+        sx={{ 
+          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
+          color: "#1C1C1C", 
+          fontWeight: 600, 
+          textAlign: "center",
+        }}
+      >
         Profile Set Up
       </Typography>
 
@@ -103,13 +155,10 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
       </Box>
 
       {/* Name or Business Name Field - Two Column Layout */}
-      <Grid container spacing={3} sx={{ mb: 3, alignItems: "flex-start" }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
             Name or Business Name
-          </Typography>
-          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
-            Optional
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
@@ -133,17 +182,15 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
       </Grid>
 
       {/* Business Description Field - Two Column Layout */}
-      <Grid container spacing={3} sx={{ mb: 3, alignItems: "flex-start" }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
             Business Description
-          </Typography>
-          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
-            Optional
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <StyledTextField
+            fullWidth
             variant="outlined"
             placeholder="About your Business"
             margin="normal"
@@ -154,13 +201,18 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
             helperText={form.formState.errors.businessDescription?.message}
             sx={{ 
               mt: 0,
-              width: "449px",
               "& .MuiOutlinedInput-root": {
-                borderRadius: "18px",
+                borderRadius: { xs: "12px", sm: "18px" },
               },
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
+                // Hide scrollbar but keep scrolling functionality
+                scrollbarWidth: "none", // Firefox
+                "&::-webkit-scrollbar": {
+                  display: "none", // Chrome, Safari, Edge
+                },
+                msOverflowStyle: "none", // IE and Edge
               },
             }}
           />
@@ -168,13 +220,13 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
       </Grid>
 
       {/* Photo Section - Two Column Layout: Label on left, Image on right */}
-      <Grid container spacing={3} sx={{ mb: 3, alignItems: "flex-start" }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ mb: 1, fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
+          <Typography variant="body2" sx={{ mb: { xs: 0.5, sm: 1 }, fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C" }}>
             Photo
           </Typography>
-          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
-            Optional - Image must be .png & .jpg format
+          <Typography variant="caption" sx={{ color: "#6C737F", display: "block", fontSize: { xs: "12px", sm: "14px" } }}>
+            Image must be .png & .jpg format
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
@@ -186,8 +238,8 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
                   src={profileImagePreview}
                   alt="Profile"
                   sx={{
-                    width: 150,
-                    height: 150,
+                    width: { xs: 120, sm: 150 },
+                    height: { xs: 120, sm: 150 },
                     borderRadius: 2,
                     objectFit: "cover",
                     border: "1px solid #D1D5DB",
@@ -196,8 +248,8 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
               ) : (
                 <Box
                   sx={{
-                    width: 150,
-                    height: 150,
+                    width: { xs: 120, sm: 150 },
+                    height: { xs: 120, sm: 150 },
                     borderRadius: 2,
                     border: "1px solid #D1D5DB",
                     display: "flex",
@@ -261,12 +313,12 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
       </Grid>
 
       {/* Your Public URL Section - Label only */}
-      <Grid container spacing={3} sx={{ mb: -6, alignItems: "flex-start" }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: -4, sm: -6 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: "16px", fontWeight: 500, color: "#1C1C1C" }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
             Your Public URL
           </Typography>
-          <Typography variant="caption" sx={{ color: "#6C737F", display: "block" }}>
+          <Typography variant="caption" sx={{ color: "#6C737F", display: "block", fontSize: { xs: "12px", sm: "14px" } }}>
             Optional
           </Typography>
         </Grid>
@@ -274,7 +326,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
       </Grid>
 
       {/* Social Media URLs - No labels, just input fields aligned to right column */}
-      <Grid container spacing={3} sx={{ mb: 2 }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 1.5, sm: 2 } }}>
         <Grid size={{ xs: 12, sm: 4 }}></Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <StyledTextField
@@ -286,7 +338,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
               },
             }}
@@ -303,7 +355,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={3} sx={{ mb: 2 }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 1.5, sm: 2 } }}>
         <Grid size={{ xs: 12, sm: 4 }}></Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <StyledTextField
@@ -315,7 +367,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
               },
             }}
@@ -332,7 +384,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 } }}>
         <Grid size={{ xs: 12, sm: 4 }}></Grid>
         <Grid size={{ xs: 12, sm: 8 }}>
           <StyledTextField
@@ -344,7 +396,7 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
               },
             }}
@@ -361,36 +413,56 @@ export const Step4 = ({ onNext, onBack, onSkip }: Step4Props) => {
         </Grid>
       </Grid>
 
-      <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={onSkip}
-          sx={{ 
-            borderColor: "#D1D5DB", 
-            color: "#1C1C1C", 
-            backgroundColor: "#E5ECF6",
-            borderRadius: "100px",
-            textTransform: "none",
-            fontSize: "18px",
-            "&:hover": {
-              backgroundColor: "#D1E7F0",
-              borderColor: "#D1D5DB",
-            }
-          }}
-        >
-          Skip
-        </Button>
-        <Button 
-          fullWidth 
-          type="submit" 
-          variant="secondary" 
-          disabled={form.formState.isSubmitting}
-          sx={{ textTransform: "none" }}
-        >
-          Next
-        </Button>
-      </Stack>
+      <Box
+        sx={{
+          width: "100%",
+          position: { xs: "fixed", sm: "static" },
+          bottom: { xs: 0, sm: "auto" },
+          left: { xs: 0, sm: "auto" },
+          p: { xs: 2, sm: 0 },
+          backgroundColor: { xs: "#fff", sm: "transparent" },
+          zIndex: { xs: 10, sm: "auto" },
+          boxShadow: {
+            xs: "0 -2px 10px rgba(0,0,0,0.05)",
+            sm: "none",
+          },
+        }}
+      >
+        <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} sx={{ mt: { xs: 0, sm: 2 } }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={onSkip}
+            sx={{ 
+              borderColor: "#D1D5DB", 
+              color: "#1C1C1C", 
+              backgroundColor: "#E5ECF6",
+              borderRadius: "100px",
+              textTransform: "none",
+              fontSize: { xs: "16px", sm: "18px" },
+              height: { xs: "44px", sm: "48px" },
+              "&:hover": {
+                backgroundColor: "#D1E7F0",
+                borderColor: "#D1D5DB",
+              }
+            }}
+          >
+            Skip
+          </Button>
+          <Button 
+            fullWidth 
+            type="submit" 
+            variant="secondary" 
+            disabled={form.formState.isSubmitting}
+            sx={{ 
+              textTransform: "none",
+              height: { xs: "44px", sm: "48px" },
+            }}
+          >
+            Next
+          </Button>
+        </Stack>
+      </Box>
     </Box>
   );
 };

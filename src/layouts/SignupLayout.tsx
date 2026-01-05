@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Container, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { colors } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,25 +27,50 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
         backgroundColor: colors["Base-White"],
         display: "flex",
         flexDirection: "column",
+        width: "100%",
+        overflowX: "hidden",
       }}
     >
-      {/* Logo Section - Top Right */}
+      {/* Header Section - Mobile Responsive */}
       <Box
         sx={{
           display: "flex",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           alignItems: "center",
           width: "100%",
-          py: { xs: 2, md: 3 },
-          px: { xs: 2, sm: 24 },
+          py: { xs: 1.5, sm: 2, md: 3 },
+          px: { xs: 2, sm: 3, md: 4 },
           position: "relative",
         }}
       >
+        {/* Back Icon - Left side (only for small screens, if showBackIcon) */}
+        {showBackIcon ? (
+          <IconButton
+            onClick={handleBackClick}
+            sx={{
+              color: "text.primary",
+              p: { xs: 0.75, sm: 1 },
+              minWidth: "auto",
+              display: { xs: "flex", md: "none" }, // Show only on small screens
+            }}
+          >
+            <img
+              src="/assets/icons/back-arrow.svg"
+              alt="back-arrow"
+              style={{ width: "24px", height: "24px" }}
+            />
+          </IconButton>
+        ) : (
+          <Box sx={{ width: { xs: "40px", sm: "48px" } }} /> // Spacer to keep logo aligned when no back icon
+        )}
+        
+        {/* Logo Section - Always on the right, same row */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1,
+            gap: { xs: 0.75, sm: 1 },
+            marginLeft: "auto",
           }}
         >
           <img 
@@ -54,70 +79,48 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             style={{ 
               width: "auto", 
               height: "auto",
-              maxWidth: "40px",
-              maxHeight: "40px"
+              maxWidth: "32px",
+              maxHeight: "32px"
             }} 
           />
-          <img 
+          <Box
+            component="img"
             src="/assets/icons/ravwork_logo_text.svg" 
-            alt="Ravwork" 
-            style={{ 
+            alt="Ravwork"
+            sx={{
               width: "auto", 
               height: "auto",
-              maxWidth: "120px",
-              maxHeight: "30px"
-            }} 
+              maxWidth: { xs: "100px", sm: "120px" },
+              maxHeight: { xs: "24px", sm: "30px" }
+            }}
           />
         </Box>
       </Box>
 
-      {/* Main Content Section - Center Aligned */}
+      {/* Main Content Section - Mobile Responsive */}
       <Box
         sx={{
           flex: 1,
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          px: { xs: 2, sm: 4 },
-          pb: 4,
+          alignItems: { xs: "flex-start", sm: "center" },
+          px: { xs: 2, sm: 3, md: 4 },
+          pb: { xs: 2, sm: 4 },
+          pt: { xs: 0, sm: 0 },
+          width: "100%",
+          overflowY: "auto",
         }}
       >
-        <Container
-          maxWidth={false}
+        <Box
           sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
             width: "100%",
+            maxWidth: { xs: "100%", sm: "527px", md: "730px" },
             position: "relative",
-            maxWidth: {
-              xs: "100%",
-              sm: "730px",
-            },
+            py: { xs: 1, sm: 2 },
           }}
         >
-          {/* Back Icon - Top Left */}
-          {showBackIcon && (
-            <IconButton
-              onClick={handleBackClick}
-              sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                color: "text.primary",
-                p: 1,
-                zIndex: 1,
-              }}
-            >
-              <img
-                src="/assets/icons/back-arrow.svg"
-                alt="back-arrow"
-                style={{ width: 24, height: 24 }}
-              />
-            </IconButton>
-          )}
           {children}
-        </Container>
+        </Box>
       </Box>
     </Box>
   );

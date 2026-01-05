@@ -82,6 +82,14 @@ export default function AppRoutes() {
         </PublicRoute>
       ),
     },
+    {
+      path: "/change-password",
+      element: (
+        <PublicRoute>
+          <ResetPasswordPage />
+        </PublicRoute>
+      ),
+    },
 
     // Client Page (No Layout)
     {
@@ -89,9 +97,9 @@ export default function AppRoutes() {
       element: <ClientPage />,
     },
 
-    // Private Routes
+    // Private Routes - Change Password (for logged-in users)
     {
-      path: "/change-password",
+      path: "/settings/change-password",
       element: (
         <PrivateRoute>
           <ChangePasswordPage />
