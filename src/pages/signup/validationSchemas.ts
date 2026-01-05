@@ -11,7 +11,8 @@ export const step1Schema = yup.object().shape({
       return value.length > PREFIX.length;
     }),
   email: yup.string().email("Must be a valid email format").required("Email is required"),
-  phone: yup.string().required("Phone number is required").min(10, "Phone number must be at least 10 digits"),
+  countryCode: yup.string().required("Country code is required"),
+  phoneNumber: yup.string().required("Phone number is required").min(7, "Phone number must be at least 7 digits"),
   password: yup
     .string()
     .required("Password is required")
@@ -41,7 +42,11 @@ export const step3Schema = yup.object().shape({
 });
 
 export const step4Schema = yup.object().shape({
-  businessName: yup.string().required("Business name is required"),
-  businessDescription: yup.string().required("Business description is required"),
+  businessName: yup.string().notRequired(),
+  businessDescription: yup.string().notRequired(),
+  profileImage: yup.mixed().notRequired(),
+  instagram: yup.string().url("Must be a valid URL").notRequired(),
+  facebook: yup.string().url("Must be a valid URL").notRequired(),
+  linkedin: yup.string().url("Must be a valid URL").notRequired(),
 });
 

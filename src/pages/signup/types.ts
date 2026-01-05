@@ -1,7 +1,8 @@
 export interface Step1FormInputs {
   username: string;
   email: string;
-  phone: string;
+  countryCode: string;
+  phoneNumber: string;
   password: string;
 }
 
@@ -17,10 +18,9 @@ export interface Step3FormInputs {
 }
 
 export interface Step4FormInputs {
-  businessName: string;
-  businessDescription: string;
-  profileImage?: File;
-  publicUrl?: string;
+  businessName?: string;
+  businessDescription?: string;
+  profileImage?: File; // File object for UI, will be converted to URL for API
   instagram?: string;
   facebook?: string;
   linkedin?: string;

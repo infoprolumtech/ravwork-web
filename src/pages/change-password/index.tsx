@@ -59,12 +59,16 @@ export default function ChangePasswordPage() {
     useEffect(() => {
       if (isSuccess) {
         dispatch(showAlert({ message: "Password changed successfully. Please log in again with your new password.", severity: "success" }));
-        logout({}).then(() => {
+        logout(undefined).unwrap().then(() => {
+          dispatch(logoutUser());
+          navigate("/login");
+        }).catch(() => {
+          // Even if logout fails, still log out user locally
           dispatch(logoutUser());
           navigate("/login");
         });
       }
-    }, [isSuccess]);
+    }, [isSuccess, dispatch, logout, navigate]);
     return (
       <AdminLayout>
         <Grid container justifyContent="center" alignItems="center">

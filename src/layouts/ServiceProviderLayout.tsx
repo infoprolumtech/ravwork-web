@@ -110,11 +110,14 @@ const UserMenu = React.memo(() => {
 
   const handleLogoutConfirm = React.useCallback(async () => {
     try {
-      await logout({});
+      await logout(undefined).unwrap();
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if logout fails, still log out user locally
+      dispatch(logoutUser());
+      navigate("/login");
     }
   }, [logout, dispatch, navigate]);
 
@@ -221,11 +224,14 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
 
   const handleLogoutConfirm = React.useCallback(async () => {
     try {
-      await logout({});
+      await logout(undefined).unwrap();
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if logout fails, still log out user locally
+      dispatch(logoutUser());
+      navigate("/login");
     }
   }, [logout, dispatch, navigate]);
 

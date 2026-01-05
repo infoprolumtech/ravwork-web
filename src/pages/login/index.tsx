@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import {
   Box,
   Button,
@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
-import { encryptAES, StyledTextField } from "../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -26,7 +26,7 @@ export default function LoginPage(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [login, { data: successData, isSuccess }] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   const {
     register,
@@ -42,27 +42,26 @@ export default function LoginPage(): JSX.Element {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      const encryptedData = {
-        email: encryptAES(data.email),
+      const response = await login({
+        email: data.email,
         password: data.password,
-        deviceToken: "",
-        deviceType: "web",
-        actionType: "signin",
-      };
-      await login(encryptedData).unwrap();
+      }).unwrap();
+      
+      // Handle successful login response
+      if (response?.data?.tokens?.accessToken) {
+        const userData = {
+          ...response.data.user,
+          accessToken: response.data.tokens.accessToken,
+          refreshToken: response.data.tokens.refreshToken,
+        };
+        dispatch(loginUser(userData));
+        dispatch(showAlert({ message: "Login successful", severity: "success" }));
+        navigate("/dashboard");
+      }
     } catch (err: any) {
       console.error("Login error:", err);
     }
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      const user = successData?.data;
-      dispatch(loginUser(user));
-      dispatch(showAlert({ message: "Login successful", severity: "success" }));
-      navigate("/dashboard");
-    }
-  }, [isSuccess, successData, dispatch, navigate]);
 
 
   return (

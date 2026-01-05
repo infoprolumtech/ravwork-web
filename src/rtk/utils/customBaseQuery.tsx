@@ -14,15 +14,20 @@ const baseQuery = fetchBaseQuery({
   // credentials: "include", // 👈 this is equivalent to axios's withCredentials: true
   prepareHeaders: (headers, { getState }) => {
     headers.set("user-agent", "");
-    headers.set("ngrok-skip-browser-warning", "true");
+    // headers.set("ngrok-skip-browser-warning", "true");
     const state = getState() as any;
     const user = state.auth.user;
 
+    // Check for token in Redux store first
     if (user?.accessToken) {
       headers.set("Authorization", `Bearer ${user.accessToken}`);
+    } else {
+      // Check for temporary signup token in localStorage (for signup flow)
+      const signupToken = localStorage.getItem("signupToken");
+      if (signupToken) {
+        headers.set("Authorization", `Bearer ${signupToken}`);
+      }
     }
-    
- 
     
     return headers;
   },
