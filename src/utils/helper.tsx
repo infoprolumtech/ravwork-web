@@ -18,10 +18,35 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     backgroundColor: theme.palette.primary.light, // light background
     color: "#1C1C1C", // text color
     borderRadius: "100px",
-    fontSize: "16px"
+    fontSize: "16px",
+    overflow: "hidden", // Ensure autofill styling stays within bounds
   },
   "& .MuiInputBase-input": {
     padding: "12px 16px",
+    borderRadius: "100px",
+    // Override browser autofill styling - only affects the input field itself
+    "&:-webkit-autofill": {
+      WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
+      WebkitTextFillColor: "#1C1C1C !important",
+      caretColor: "#1C1C1C",
+      borderRadius: "100px",
+      transition: "background-color 5000s ease-in-out 0s",
+    },
+    "&:-webkit-autofill:hover": {
+      WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
+      WebkitTextFillColor: "#1C1C1C !important",
+      borderRadius: "100px",
+    },
+    "&:-webkit-autofill:focus": {
+      WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
+      WebkitTextFillColor: "#1C1C1C !important",
+      borderRadius: "100px",
+    },
+    "&:-webkit-autofill:active": {
+      WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
+      WebkitTextFillColor: "#1C1C1C !important",
+      borderRadius: "100px",
+    },
   },
   "& .MuiInputLabel-root": {
     display: "none", // Hide labels in auth layout
