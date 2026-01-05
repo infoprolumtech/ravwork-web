@@ -75,14 +75,6 @@ export default function AppRoutes() {
       ),
     },
     {
-      path: "/reset-password",
-      element: (
-        <PublicRoute>
-          <ResetPasswordPage />
-        </PublicRoute>
-      ),
-    },
-    {
       path: "/change-password",
       element: (
         <PublicRoute>

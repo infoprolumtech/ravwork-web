@@ -66,7 +66,10 @@ const authApi = api.injectEndpoints({
       query: (body: { token: string; newPassword: string }) => ({
         url: "/auth/reset-password",
         method: "POST",
-        body,
+        body: {
+          token: body.token, // Ensure token is sent as-is without additional encoding
+          newPassword: body.newPassword,
+        },
       }),
     }),
     // POST /api/v1/auth/logout - Logout user

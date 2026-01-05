@@ -5,9 +5,7 @@ import {
   Typography,
   InputAdornment,
   IconButton,
-  Stack,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
 import { useForm } from "react-hook-form";
@@ -18,6 +16,8 @@ import { useResetPasswordMutation } from "../../rtk/endpoints/authApi";
 import { useDispatch } from "react-redux";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import GlobalDialog from "../../components/dialog";
+import CloseIcon from "@mui/icons-material/Close";
+import { Stack } from "@mui/material";
 
 interface ResetPasswordFormInputs {
   password: string;
@@ -28,11 +28,52 @@ export default function ResetPasswordPage(): JSX.Element {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  let token = searchParams.get("token");
+  
+  // Get token from URL - handle encoding properly
+  const rawToken = searchParams.get("token");
+  let token: string | null = null;
+  
+  if (rawToken) {
+    // searchParams.get() already decodes URL encoding, but ensure we have the full token
+    token = rawToken.trim();
+    
+    // Try to get token from window.location as fallback if searchParams doesn't work
+    if (!token || token.length === 0) {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fallbackToken = urlParams.get("token");
+        if (fallbackToken) {
+          token = fallbackToken.trim();
+          console.warn("Token retrieved from window.location fallback");
+        }
+      } catch (e) {
+        console.error("Error getting token from window.location:", e);
+      }
+    }
+    
+    // Log token info for debugging
+    if (token) {
+      console.log("=== Token Debug ===");
+      console.log("Raw token from URL:", rawToken?.substring(0, 50) + "...");
+      console.log("Processed token (first 50 chars):", token.substring(0, 50) + "...");
+      console.log("Token length:", token.length);
+      console.log("Full URL:", window.location.href);
+      console.log("Token starts with:", token.substring(0, 20));
+      console.log("Token ends with:", token.substring(Math.max(0, token.length - 20)));
+      console.log("Token contains spaces:", token.includes(" "));
+      console.log("Token contains newlines:", token.includes("\n"));
+    }
+  } else {
+    console.warn("No token found in URL");
+    console.log("Full URL:", window.location.href);
+    console.log("All search params:", Object.fromEntries(searchParams.entries()));
+  }
+  
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [showCongratulationPopup, setShowCongratulationPopup] = useState(false);
   const [resetPassword, { isSuccess }] = useResetPasswordMutation();
+  
   const {
     register,
     handleSubmit,
@@ -50,15 +91,46 @@ export default function ResetPasswordPage(): JSX.Element {
     !errors.confirmPassword;
 
   const onSubmit = async (data: ResetPasswordFormInputs) => {
-    try {
-      await resetPassword({
-        token: token || "",
-        newPassword: data.password,
-      }).unwrap();
-    } catch (error: any) {
-      console.error("Reset Password Error:", error);
+    if (!token) {
       dispatch(showAlert({
-        message: error?.data?.message || "Failed to reset password. Please try again.",
+        message: "Invalid or missing reset token. Please request a new password reset link.",
+        severity: "error",
+      }));
+      navigate("/forgot-password");
+      return;
+    }
+
+    // Log the payload being sent
+    const payload = {
+      token: token,
+      newPassword: data.password,
+    };
+    
+    console.log("=== Sending Reset Password Request ===");
+    console.log("Token (first 50 chars):", token.substring(0, 50) + "...");
+    console.log("Token length:", token.length);
+    console.log("Token (last 20 chars):", token.substring(Math.max(0, token.length - 20)));
+    console.log("Has password:", !!data.password);
+    console.log("Full payload:", { token: token.substring(0, 30) + "...", newPassword: "***" });
+
+    try {
+      const response = await resetPassword(payload).unwrap();
+      console.log("Reset password successful:", response);
+    } catch (error: any) {
+      console.error("=== Reset Password Error Details ===");
+      console.error("Error object:", error);
+      console.error("Error status:", error?.status);
+      console.error("Error data:", error?.data);
+      console.error("Error message:", error?.data?.message);
+      console.error("Full error:", JSON.stringify(error, null, 2));
+      
+      const errorMessage = error?.data?.message || 
+                          error?.data?.error ||
+                          error?.error ||
+                          "Failed to reset password. Please try again.";
+      
+      dispatch(showAlert({
+        message: errorMessage,
         severity: "error",
       }));
     }
@@ -66,9 +138,13 @@ export default function ResetPasswordPage(): JSX.Element {
   
   useEffect(() => {
     if (!token) {
+      dispatch(showAlert({
+        message: "Invalid or missing reset token. Please request a new password reset link.",
+        severity: "error",
+      }));
       navigate("/forgot-password");
     }
-  }, [token, navigate]);
+  }, [token, navigate, dispatch]);
   
   useEffect(() => {
     if (isSuccess) {
@@ -85,9 +161,6 @@ export default function ResetPasswordPage(): JSX.Element {
     setShowCongratulationPopup(false);
     navigate("/login");
   };
-
-  // Watch password for confirm validation
-  const password = watch("password");
 
   return (
     <SignupLayout showBackIcon={false} onBackClick={() => navigate(-1)}>
@@ -161,13 +234,7 @@ export default function ResetPasswordPage(): JSX.Element {
           type={showPassword ? "text" : "password"}
           placeholder="Enter new password"
           margin="normal"
-          {...register("password", {
-            required: "Password is required",
-            minLength: {
-              value: 6,
-              message: "Password must be at least 6 characters",
-            },
-          })}
+          {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
           slotProps={{
@@ -206,10 +273,7 @@ export default function ResetPasswordPage(): JSX.Element {
           type={showConfirmPassword ? "text" : "password"}
           placeholder="Confirm new password"
           margin="normal"
-          {...register("confirmPassword", {
-            required: "Confirm Password is required",
-            validate: (value) => value === password || "Passwords must match",
-          })}
+          {...register("confirmPassword")}
           error={Boolean(errors.confirmPassword)}
           helperText={errors.confirmPassword?.message}
           slotProps={{
@@ -290,73 +354,123 @@ export default function ResetPasswordPage(): JSX.Element {
             flexDirection: "column",
             minHeight: { xs: "100%", sm: "auto" },
             justifyContent: { xs: "space-between", sm: "flex-start" },
-            alignItems: "center",
-            textAlign: "center",
+            alignItems: { xs: "center", sm: "flex-start" },
+            textAlign: { xs: "center", sm: "left" },
+            pt: { xs: 0, sm: 2 },
+            pb: { xs: 2, sm: 2 },
           }}>
-            {/* Close button */}
+            {/* Header with back icon and logo - Only on small screens */}
+            <Box
+              sx={{
+                display: { xs: "flex", sm: "none" },
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                py: 1.5,
+                px: 2,
+                position: "relative",
+                mb: 2,
+              }}
+            >
+              {/* Back Icon */}
+              <IconButton
+                onClick={handleCloseCongratulationPopup}
+                sx={{
+                  color: "text.primary",
+                  p: 0.75,
+                  minWidth: "auto",
+                }}
+              >
+                <img
+                  src="/assets/icons/back-arrow.svg"
+                  alt="back-arrow"
+                  style={{ width: "24px", height: "24px" }}
+                />
+              </IconButton>
+              
+              {/* Logo Section */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  marginLeft: "auto",
+                }}
+              >
+                <img 
+                  src="/assets/icons/ravwork_logo_icon.svg" 
+                  alt="Ravwork Icon" 
+                  style={{ 
+                    width: "auto", 
+                    height: "auto",
+                    maxWidth: "32px",
+                    maxHeight: "32px"
+                  }} 
+                />
+                <Box
+                  component="img"
+                  src="/assets/icons/ravwork_logo_text.svg" 
+                  alt="Ravwork"
+                  sx={{
+                    width: "auto", 
+                    height: "auto",
+                    maxWidth: "100px",
+                    maxHeight: "24px"
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Close button - Only on large screens */}
             <IconButton
               onClick={handleCloseCongratulationPopup}
               sx={{
+                display: { xs: "none", sm: "block" },
                 position: "absolute",
-                top: { xs: 8, sm: 16 },
-                right: { xs: 8, sm: 16 },
+                top: 16,
+                right: 16,
                 color: "#1C1C1C",
                 zIndex: 1,
-                backgroundColor: { xs: "#F9FAFB", sm: "transparent" },
-                "&:hover": {
-                  backgroundColor: { xs: "#F3F4F6", sm: "rgba(0,0,0,0.04)" },
-                },
               }}
             >
               <CloseIcon />
             </IconButton>
 
-            {/* Success Icon */}
+
+            {/* Success icon - Different for small and large screens */}
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
-                mb: { xs: 2, sm: 3 },
+                justifyContent: { xs: "center", sm: "flex-start" },
+                mb: { xs: 2, sm: 2 },
                 mt: { xs: 2, sm: 0 },
+                ml: { xs: 0, sm: 2 },
               }}
             >
+              {/* Small screen: Centered icon */}
               <Box
+                component="img"
+                src="/assets/icons/congratulation.svg"
+                alt="congratulation-icon"
                 sx={{
-                  width: { xs: 64, sm: 80 },
-                  height: { xs: 64, sm: 80 },
-                  borderRadius: "50%",
-                  backgroundColor: "#D1FAE5",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "2px solid #10B981",
+                  display: { xs: "block", sm: "none" },
+                  width: { xs: "64px", sm: "80px" },
+                  height: { xs: "64px", sm: "80px" },
                 }}
-              >
-                <Box
-                  sx={{
-                    width: { xs: 32, sm: 40 },
-                    height: { xs: 32, sm: 40 },
-                    borderRadius: "50%",
-                    backgroundColor: "#10B981",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#fff",
-                      fontSize: { xs: "20px", sm: "24px" },
-                      fontWeight: 600,
-                    }}
-                  >
-                    ✓
-                  </Typography>
-                </Box>
-              </Box>
+              />
+              {/* Large screen: Icon on the left */}
+              <Box
+                component="img"
+                src="/assets/icons/congratulation.svg"
+                alt="congratulation-icon"
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  width: "80px",
+                  height: "80px",
+                }}
+              />
             </Box>
 
-            {/* Title */}
             <Typography
               variant="h5"
               fontWeight={600}
@@ -364,31 +478,36 @@ export default function ResetPasswordPage(): JSX.Element {
               sx={{ 
                 color: "#111927",
                 fontSize: { xs: "20px", sm: "24px" },
+                textAlign: { xs: "center", sm: "left" },
+                ml: { xs: 0, sm: 2 },
               }}
             >
               Congratulation!!
             </Typography>
 
-            {/* Message */}
             <Typography 
               variant="body2" 
               mb={{ xs: 4, sm: 3 }} 
               sx={{ 
                 color: "#6C737F",
                 fontSize: { xs: "14px", sm: "16px" },
+                textAlign: { xs: "center", sm: "left" },
+                ml: { xs: 0, sm: 2 },
               }}
             >
               Your Password has been Successfully changed
             </Typography>
 
-            {/* Buttons */}
+            {/* Buttons - Different for small and large screens */}
+            {/* Small screen: Centered buttons */}
             <Stack 
               direction="row" 
               spacing={{ xs: 1.5, sm: 2 }} 
               justifyContent="center"
               sx={{
-                mt: { xs: "auto", sm: 0 },
-                pt: { xs: 2, sm: 0 },
+                display: { xs: "flex", sm: "none" },
+                mt: "auto",
+                pt: 2,
                 width: "100%",
               }}
             >
@@ -399,11 +518,54 @@ export default function ResetPasswordPage(): JSX.Element {
                   color: "#384250",
                   borderColor: "#D1D5DB",
                   borderRadius: "50px",
-                  px: { xs: 2, sm: 3 },
-                  py: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: "14px", sm: "16px" },
+                  px: 2,
+                  py: 1,
+                  fontSize: "14px",
                   textTransform: "none",
-                  flex: { xs: 1, sm: "none" },
+                  flex: 1,
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleSignIn}
+                sx={{
+                  textTransform: "none",
+                  px: 2,
+                  py: 1,
+                  fontSize: "14px",
+                  borderRadius: "50px",
+                  flex: 1,
+                }}
+              >
+                Sign In
+              </Button>
+            </Stack>
+            {/* Large screen: Buttons at bottom-right */}
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              justifyContent="flex-end"
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                mt: 0,
+                pt: 0,
+                width: "100%",
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={handleCloseCongratulationPopup}
+                sx={{
+                  color: "#384250",
+                  borderColor: "#D1D5DB",
+                  borderRadius: "50px",
+                  px: 3,
+                  py: 1.5,
+                  fontSize: "16px",
+                  textTransform: "none",
+                  backgroundColor: "transparent",
                   "&:hover": {
                     borderColor: "#9CA3AF",
                     backgroundColor: "#F9FAFB",
@@ -417,14 +579,18 @@ export default function ResetPasswordPage(): JSX.Element {
                 onClick={handleSignIn}
                 sx={{
                   textTransform: "none",
-                  px: { xs: 2, sm: 3 },
-                  py: { xs: 1, sm: 1.5 },
-                  fontSize: { xs: "14px", sm: "16px" },
+                  px: 3,
+                  py: 1.5,
+                  fontSize: "16px",
                   borderRadius: "50px",
-                  flex: { xs: 1, sm: "none" },
+                  backgroundColor: "#111927",
+                  color: "#FFFFFF",
+                  "&:hover": {
+                    backgroundColor: "#1F2937",
+                  },
                 }}
               >
-                Sign In
+                SignIn
               </Button>
             </Stack>
           </Box>
