@@ -199,10 +199,6 @@ export default function LoginPage(): JSX.Element {
             p: { xs: 2, sm: 0 },
             backgroundColor: { xs: "#fff", sm: "transparent" },
             zIndex: { xs: 10, sm: "auto" },
-            boxShadow: {
-              xs: "0 -2px 10px rgba(0,0,0,0.05)",
-              sm: "none",
-            },
           }}
         >
           <Button
@@ -222,7 +218,7 @@ export default function LoginPage(): JSX.Element {
             sx={{ 
               mt: { xs: 1.5, sm: 2 },
               fontSize: { xs: "14px", sm: "16px" },
-              display: { xs: "none", sm: "block" },
+              display: "block",
             }}
           >
             Don't Have an Account?{" "}

@@ -422,10 +422,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
           p: { xs: 2, sm: 0 },
           backgroundColor: { xs: "#fff", sm: "transparent" },
           zIndex: { xs: 10, sm: "auto" },
-          boxShadow: {
-            xs: "0 -2px 10px rgba(0,0,0,0.05)",
-            sm: "none",
-          },
+          
         }}
       >
         <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} sx={{ mt: { xs: 0, sm: 2 } }}>
