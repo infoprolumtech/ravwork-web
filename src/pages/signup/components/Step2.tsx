@@ -239,10 +239,7 @@ export const Step2 = ({ onNext, initialData }: Step2Props) => {
           p: { xs: 2, sm: 0 },
           backgroundColor: { xs: "#fff", sm: "transparent" },
           zIndex: { xs: 10, sm: "auto" },
-          boxShadow: {
-            xs: "0 -2px 10px rgba(0,0,0,0.05)",
-            sm: "none",
-          },
+          
         }}
       >
         <Button 
