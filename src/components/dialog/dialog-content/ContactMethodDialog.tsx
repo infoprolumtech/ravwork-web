@@ -1,0 +1,333 @@
+import React, { type JSX } from "react";
+import {
+  Box,
+  Button,
+  Stack,
+  Typography,
+  IconButton,
+  RadioGroup,
+  FormControlLabel,
+} from "@mui/material";
+import { Close, HeadsetMic } from "@mui/icons-material";
+
+interface ContactMethodDialogProps {
+  handleClose: () => void;
+  onSelect: (method: "quick_contact" | "contact_info_questions") => void;
+}
+
+export default function ContactMethodDialog({
+  handleClose,
+  onSelect,
+}: ContactMethodDialogProps): JSX.Element {
+  const [selectedMethod, setSelectedMethod] = React.useState<
+    "quick_contact" | "contact_info_questions" | ""
+  >("");
+
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (selectedMethod) {
+      onSelect(selectedMethod as "quick_contact" | "contact_info_questions");
+    }
+  };
+
+  return (
+    <Stack
+      sx={{
+        padding: "40px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: "24px",
+        width: "100%",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
+      {/* Header */}
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        spacing={2}
+        sx={{ width: "100%" }}
+      >
+        <Stack direction="column" spacing={1} sx={{ width: "100%" }}>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            {/* Icon */}
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                backgroundColor: "#12B76A",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <HeadsetMic sx={{ color: "white", fontSize: "24px" }} />
+            </Box>
+            {/* Title */}
+            <Typography
+              variant="h5"
+              sx={{
+                fontSize: "28px",
+                fontWeight: 600,
+                color: "#111927",
+              }}
+            >
+              How Should Clients Reach Out?
+            </Typography>
+          </Stack>
+          {/* Subtitle */}
+          <Typography
+            sx={{
+              fontSize: "14px",
+              fontWeight: 400,
+              color: "#6C737F",
+              pl: 7,
+            }}
+          >
+            Choose how much information you want to collect before the job
+          </Typography>
+        </Stack>
+        {/* Close Button */}
+        <IconButton
+          onClick={handleClose}
+          sx={{
+            color: "#111927",
+            padding: "8px",
+            "&:hover": {
+              backgroundColor: "#F3F4F6",
+            },
+          }}
+        >
+          <Close />
+        </IconButton>
+      </Stack>
+
+      {/* Contact Method Options */}
+      <RadioGroup
+        value={selectedMethod}
+        onChange={(e) =>
+          setSelectedMethod(
+            e.target.value as "quick_contact" | "contact_info_questions"
+          )
+        }
+        sx={{ width: "100%", gap: 2 }}
+      >
+        {/* Quick Contact Option */}
+        <FormControlLabel
+          value="quick_contact"
+          control={<Box sx={{ display: "none" }} />}
+          onClick={() => setSelectedMethod("quick_contact")}
+          label={
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 2,
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    sx={{
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      color: "#111927",
+                      mb: 0.5,
+                    }}
+                  >
+                    Quick Contact
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: 400,
+                      color: "#6C737F",
+                    }}
+                  >
+                    Collect Basic Information to get booked faster
+                  </Typography>
+                </Box>
+                {/* Lightning bolt icon at top right */}
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "8px",
+                    backgroundColor: "#12B76A",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src="/assets/icons/sidebar_menu_icon/flash.svg"
+                    alt="Lightning"
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      filter: "brightness(0) invert(1)",
+                    }}
+                  />
+                </Box>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Typography
+                  sx={{ fontSize: "14px", fontWeight: 400, color: "#6C737F" }}
+                >
+                  • Name
+                </Typography>
+                <Typography
+                  sx={{ fontSize: "14px", fontWeight: 400, color: "#6C737F" }}
+                >
+                  • Phone Number
+                </Typography>
+              </Box>
+            </Box>
+          }
+          sx={{
+            border: "1px solid #E5E7EB",
+            borderRadius: "8px",
+            p: 2,
+            width: "100%",
+            margin: 0,
+            backgroundColor: "#F9FAFB",
+            "&:hover": { backgroundColor: "#F9FAFB" },
+            cursor: "pointer",
+            "& .MuiFormControlLabel-label": {
+              marginLeft: 0,
+              width: "100%",
+            },
+          }}
+        />
+
+        {/* Contact Info + Job Questions Option */}
+        <FormControlLabel
+          value="contact_info_questions"
+          control={<Box sx={{ display: "none" }} />}
+          onClick={() => setSelectedMethod("contact_info_questions")}
+          label={
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 2,
+                width: "100%",
+              }}
+            >
+              <Box sx={{ flex: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#111927",
+                    mb: 0.5,
+                  }}
+                >
+                  Contact info + Job Questions
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    color: "#6C737F",
+                    mb: 0.5,
+                  }}
+                >
+                  Collect job details with a custom form
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    color: "#6C737F",
+                  }}
+                >
+                  you can create questions for your client to answer
+                </Typography>
+              </Box>
+              {/* Document icon at top right */}
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "8px",
+                  backgroundColor: "#4693DD",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "20px",
+                    height: "20px",
+                    backgroundColor: "white",
+                    borderRadius: "2px",
+                  }}
+                />
+              </Box>
+            </Box>
+          }
+          sx={{
+            border: "1px solid #E5E7EB",
+            borderRadius: "8px",
+            p: 2,
+            width: "100%",
+            margin: 0,
+            backgroundColor: "#F9FAFB",
+            "&:hover": { backgroundColor: "#F9FAFB" },
+            cursor: "pointer",
+            "& .MuiFormControlLabel-label": {
+              marginLeft: 0,
+              width: "100%",
+            },
+          }}
+        />
+      </RadioGroup>
+
+      {/* Action Buttons */}
+      <Stack direction="row" justifyContent="flex-end" spacing={2}>
+        <Button
+          variant="primary"
+          onClick={handleClose}
+          sx={{
+            backgroundColor: "#FFFFFF",
+            color: "#111927",
+            "&:hover": {
+              backgroundColor: "#F3F4F6",
+            },
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={handleSubmit}
+          disabled={!selectedMethod}
+        >
+          Select
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
+
