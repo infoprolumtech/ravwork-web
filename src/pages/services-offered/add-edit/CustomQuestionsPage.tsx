@@ -7,7 +7,7 @@ import {
   IconButton,
   MenuItem,
 } from "@mui/material";
-import { DeleteOutline, People } from "@mui/icons-material";
+import { DeleteOutline, Edit, People } from "@mui/icons-material";
 import { StyledTextField } from "../../../utils/helper";
 
 interface CustomQuestionsPageProps {
@@ -42,6 +42,7 @@ export default function CustomQuestionsPage({
   const [answerType, setAnswerType] = React.useState("");
   const [options, setOptions] = React.useState<string[]>(["", ""]);
   const [createdQuestions, setCreatedQuestions] = React.useState<CustomQuestionData[]>(initialQuestions || []);
+  const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
 
   // Update state when initialQuestions changes
   React.useEffect(() => {
@@ -69,6 +70,24 @@ export default function CustomQuestionsPage({
     setOptions(newOptions);
   };
 
+  const handleEditQuestion = (index: number) => {
+    const questionToEdit = createdQuestions[index];
+    setQuestion(questionToEdit.question);
+    setAnswerType(questionToEdit.answerType);
+    
+    // Set options if they exist, otherwise set default empty options
+    if (questionToEdit.options && questionToEdit.options.length > 0) {
+      setOptions([...questionToEdit.options, ""]); // Add one empty option for adding more
+    } else {
+      setOptions(["", ""]);
+    }
+    
+    setEditingIndex(index);
+    // Remove the question from the list (will be re-added when user clicks "Add Questions")
+    const newQuestions = createdQuestions.filter((_, i) => i !== index);
+    setCreatedQuestions(newQuestions);
+  };
+
   const handleAddQuestion = () => {
     if (!question.trim() || !answerType) return;
 
@@ -78,7 +97,17 @@ export default function CustomQuestionsPage({
       options: showOptions ? options.filter((opt) => opt.trim() !== "") : undefined,
     };
 
-    setCreatedQuestions([...createdQuestions, questionData]);
+    if (editingIndex !== null) {
+      // If editing, insert at the original position
+      const newQuestions = [...createdQuestions];
+      newQuestions.splice(editingIndex, 0, questionData);
+      setCreatedQuestions(newQuestions);
+      setEditingIndex(null);
+    } else {
+      // If adding new, append to the end
+      setCreatedQuestions([...createdQuestions, questionData]);
+    }
+    
     setQuestion("");
     setAnswerType("");
     setOptions(["", ""]);
@@ -346,12 +375,12 @@ export default function CustomQuestionsPage({
           disabled={!question.trim() || !answerType || (showOptions && options.filter((opt) => opt.trim() !== "").length < 2)}
           sx={{
             backgroundColor: "#E3F0F8",
-            color: "#0D4FAB",
+            color: "#111927",
             textTransform: "none",
             fontSize: "16px",
             fontWeight: 500,
             alignSelf: "flex-start",
-            padding: "10px 16px",
+            padding: "12px 24px",
             borderRadius: "100px",
             "&:hover": {
               backgroundColor: "#D2E7F5",
@@ -362,7 +391,7 @@ export default function CustomQuestionsPage({
             },
           }}
         >
-          Add Questions
+          {editingIndex !== null ? "Update Question" : "Add Questions"}
         </Button>
 
         {/* Added Questions List */}
@@ -453,21 +482,35 @@ export default function CustomQuestionsPage({
                           </Box>
                         )}
                       </Box>
-                      <IconButton
-                        onClick={() => {
-                          const newQuestions = createdQuestions.filter((_, i) => i !== index);
-                          setCreatedQuestions(newQuestions);
-                        }}
-                        sx={{
-                          color: "#F04438",
-                          padding: "4px",
-                          "&:hover": {
-                            backgroundColor: "#FEE4E2",
-                          },
-                        }}
-                      >
-                        <DeleteOutline sx={{ fontSize: "18px" }} />
-                      </IconButton>
+                      <Stack direction="row" spacing={0.5}>
+                        <IconButton
+                          onClick={() => handleEditQuestion(index)}
+                          sx={{
+                            color: "#0D4FAB",
+                            padding: "4px",
+                            "&:hover": {
+                              backgroundColor: "#E3F0F8",
+                            },
+                          }}
+                        >
+                          <Edit sx={{ fontSize: "18px" }} />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => {
+                            const newQuestions = createdQuestions.filter((_, i) => i !== index);
+                            setCreatedQuestions(newQuestions);
+                          }}
+                          sx={{
+                            color: "#F04438",
+                            padding: "4px",
+                            "&:hover": {
+                              backgroundColor: "#FEE4E2",
+                            },
+                          }}
+                        >
+                          <DeleteOutline sx={{ fontSize: "18px" }} />
+                        </IconButton>
+                      </Stack>
                     </Stack>
                   </Box>
                 );
@@ -487,15 +530,16 @@ export default function CustomQuestionsPage({
         <Button
           onClick={onCancel}
           sx={{
-            backgroundColor: "#F3F4F6",
+            backgroundColor: "#FFFFFF",
             color: "#111927",
             textTransform: "none",
             fontSize: "16px",
             fontWeight: 500,
             padding: "12px 24px",
             borderRadius: "100px",
+            border: "1px solid #E5E7EB",
             "&:hover": {
-              backgroundColor: "#E5E7EB",
+              backgroundColor: "#F9FAFB",
             },
           }}
         >
@@ -505,15 +549,15 @@ export default function CustomQuestionsPage({
           onClick={handleCreateQuestion}
           disabled={createdQuestions.length === 0 && (!question.trim() || !answerType)}
           sx={{
-            backgroundColor: "#F3F4F6",
-            color: "#111927",
+            backgroundColor: "#111927",
+            color: "#FFFFFF",
             textTransform: "none",
             fontSize: "16px",
             fontWeight: 500,
             padding: "12px 24px",
             borderRadius: "100px",
             "&:hover": {
-              backgroundColor: "#E5E7EB",
+              backgroundColor: "#1F2937",
             },
             "&:disabled": {
               backgroundColor: "#D1D5DB",

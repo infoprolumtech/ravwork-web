@@ -110,19 +110,10 @@ export default function AddEditServicePage(): JSX.Element {
           setServiceData(formData);
 
           // Pre-fill contact info from current user's profile data
-          let phoneNumber = "";
-          if (user?.phoneNumber) {
-            phoneNumber = decryptAES(user.phoneNumber);
-            if (user?.countryCode) {
-              const countryCode = decryptAES(user.countryCode);
-              phoneNumber = `${countryCode} ${phoneNumber}`;
-            }
-          }
-          
           const userContactInfo: ContactInfoFormData = {
             fullName: user?.firstName ? decryptAES(user.firstName) : "",
             email: user?.email ? decryptAES(user.email) : "",
-            phoneNumber: phoneNumber,
+            phoneNumber: "", // Phone number should be empty by default
           };
           setContactInfoData(userContactInfo);
 
@@ -142,19 +133,10 @@ export default function AddEditServicePage(): JSX.Element {
       loadService();
     } else {
       // For new service, pre-fill contact info from user profile
-      let phoneNumber = "";
-      if (user?.phoneNumber) {
-        phoneNumber = decryptAES(user.phoneNumber);
-        if (user?.countryCode) {
-          const countryCode = decryptAES(user.countryCode);
-          phoneNumber = `${countryCode} ${phoneNumber}`;
-        }
-      }
-      
       const userContactInfo: ContactInfoFormData = {
         fullName: user?.firstName ? decryptAES(user.firstName) : "",
         email: user?.email ? decryptAES(user.email) : "",
-        phoneNumber: phoneNumber,
+        phoneNumber: "", // Phone number should be empty by default
       };
       setContactInfoData(userContactInfo);
     }
