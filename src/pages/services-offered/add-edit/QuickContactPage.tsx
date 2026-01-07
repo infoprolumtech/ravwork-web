@@ -23,7 +23,7 @@ export interface QuickContactFormData {
 }
 
 export default function QuickContactPage({
-  onBack,
+  onBack: _onBack,
   onCancel,
   onSubmit,
   initialData,
