@@ -13,6 +13,7 @@ import OTPVerificationPage from "../pages/otp-verification";
 import Dashboard from "../pages/dashboard";
 import MyJobs from "../pages/my-jobs";
 import ServicesOffered from "../pages/services-offered";
+import AddEditServicePage from "../pages/services-offered/add-edit";
 import Earnings from "../pages/earnings";
 import MyProfile from "../pages/my-profile";
 import Notifications from "../pages/notifications";
@@ -125,6 +126,22 @@ export default function AppRoutes() {
       element: (
         <PrivateRoute>
           <ServicesOffered />
+        </PrivateRoute>
+      ),
+    },
+    {
+      path: "/services-offered/add-new-service",
+      element: (
+        <PrivateRoute>
+          <AddEditServicePage />
+        </PrivateRoute>
+      ),
+    },
+    {
+      path: "/services-offered/edit/:id",
+      element: (
+        <PrivateRoute>
+          <AddEditServicePage />
         </PrivateRoute>
       ),
     },

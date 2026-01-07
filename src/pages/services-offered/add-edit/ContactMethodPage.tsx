@@ -4,21 +4,22 @@ import {
   Button,
   Stack,
   Typography,
-  IconButton,
   RadioGroup,
   FormControlLabel,
 } from "@mui/material";
-import { Close, HeadsetMic } from "@mui/icons-material";
+import { HeadsetMic } from "@mui/icons-material";
 
-interface ContactMethodDialogProps {
-  handleClose: () => void;
+interface ContactMethodPageProps {
+  onBack: () => void;
+  onCancel: () => void;
   onSelect: (method: "quick_contact" | "contact_info_questions") => void;
 }
 
-export default function ContactMethodDialog({
-  handleClose,
+export default function ContactMethodPage({
+  onBack: _onBack,
+  onCancel,
   onSelect,
-}: ContactMethodDialogProps): JSX.Element {
+}: ContactMethodPageProps): JSX.Element {
   const [selectedMethod, setSelectedMethod] = React.useState<
     "quick_contact" | "contact_info_questions" | ""
   >("");
@@ -55,63 +56,52 @@ export default function ContactMethodDialog({
         spacing={2}
         sx={{ width: "100%" }}
       >
-        <Stack direction="column" spacing={1} sx={{ width: "100%" }}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            {/* Icon */}
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: "50%",
-                backgroundColor: "#12B76A",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <HeadsetMic sx={{ color: "white", fontSize: "24px" }} />
-            </Box>
-            {/* Title */}
-            <Typography
-              variant="h5"
-              sx={{
-                fontSize: "28px",
-                fontWeight: 600,
-                color: "#111927",
-              }}
-            >
-              How Should Clients Reach Out?
-            </Typography>
-          </Stack>
-          {/* Subtitle */}
+        <Stack direction="row" alignItems="center" spacing={2}>
+          {/* Icon */}
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: "8px",
+              backgroundColor: "#12B76A",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <HeadsetMic sx={{ color: "white", fontSize: "24px" }} />
+          </Box>
+        </Stack>
+      </Stack>
+
+      {/* Form Fields */}
+      <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
+        {/* Title */}
+        <Box>
+          <Typography
+            variant="h5"
+            sx={{
+              fontSize: "28px",
+              fontWeight: 600,
+              color: "#111927",
+            }}
+          >
+            How Should Clients Reach Out?
+          </Typography>
           <Typography
             sx={{
               fontSize: "14px",
               fontWeight: 400,
               color: "#6C737F",
-              pl: 7,
+              mt: 1,
             }}
           >
             Choose how much information you want to collect before the job
           </Typography>
-        </Stack>
-        {/* Close Button */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            color: "#111927",
-            padding: "8px",
-            "&:hover": {
-              backgroundColor: "#F3F4F6",
-            },
-          }}
-        >
-          <Close />
-        </IconButton>
-      </Stack>
+        </Box>
 
-      {/* Contact Method Options */}
-      <RadioGroup
+        {/* Contact Method Options */}
+        <RadioGroup
         value={selectedMethod}
         onChange={(e) =>
           setSelectedMethod(
@@ -304,28 +294,29 @@ export default function ContactMethodDialog({
         />
       </RadioGroup>
 
-      {/* Action Buttons */}
-      <Stack direction="row" justifyContent="flex-end" spacing={2}>
-        <Button
-          variant="primary"
-          onClick={handleClose}
-          sx={{
-            backgroundColor: "#FFFFFF",
-            color: "#111927",
-            "&:hover": {
-              backgroundColor: "#F3F4F6",
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={handleSubmit}
-          disabled={!selectedMethod}
-        >
-          Select
-        </Button>
+        {/* Action Buttons */}
+        <Stack direction="row" justifyContent="flex-end" spacing={2}>
+          <Button
+            variant="primary"
+            onClick={onCancel}
+            sx={{
+              backgroundColor: "#FFFFFF",
+              color: "#111927",
+              "&:hover": {
+                backgroundColor: "#F3F4F6",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleSubmit}
+            disabled={!selectedMethod}
+          >
+            Select
+          </Button>
+        </Stack>
       </Stack>
     </Stack>
   );

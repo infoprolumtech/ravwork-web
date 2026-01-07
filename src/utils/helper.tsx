@@ -49,14 +49,28 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     },
   },
   "& .MuiInputLabel-root": {
-    display: "none", // Hide labels in auth layout
+    // display: "none", // Hide labels in auth layout
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#111927",
+    marginBottom: "8px",
   },
 
   "& .MuiInputLabel-root.Mui-focused": {
-    display: "none", // Hide labels in auth layout
+    // display: "none", // Hide labels in auth layout
+    fontSize: "18px",
+    fontWeight: 600,
+    color: "#111927",
+    marginBottom: "8px",
+    backgroundColor: "#ffffff",
+    paddingHorizontal: "12px",
   },
   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-    display: "none", // Hide labels in auth layout
+    // display: "none", // Hide labels in auth layout
+    fontSize: "14px",
+    fontWeight: 500,
+    color: "#111927",
+    marginBottom: "8px",
   },
   '& .MuiInputBase-input::placeholder': {
     color: "#1C1C1C"
@@ -75,10 +89,9 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
       maxWidth: 0,
       transition: "max-width 0.1s ease-in-out",
     },
-    // "&.Mui-focused legend": {
-    //   width:"50%",
-
-    // },
+    "&.Mui-focused legend": {
+      width:"50%",
+    },
   },
 
   "& .MuiSvgIcon-root": {

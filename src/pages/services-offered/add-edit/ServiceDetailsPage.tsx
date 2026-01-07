@@ -4,77 +4,15 @@ import {
   Button,
   Stack,
   Typography,
-  IconButton,
-  TextField,
-  FormControl,
-  Select,
   MenuItem,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
-import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
-import { styled } from "@mui/material/styles";
+import { StyledTextField } from "../../../utils/helper";
 
-const DropdownArrowIcon = () => (
-  <img src={DropdownArrow} alt="open select menu" style={{ marginRight: 8 }} />
-);
-
-const DialogTextField = styled(TextField)(() => ({
-  "& .MuiInputBase-root": {
-    backgroundColor: "#FFFFFF",
-    color: "#111927",
-    borderRadius: "8px",
-    fontSize: "16px",
-  },
-  "& .MuiInputBase-input": {
-    padding: "12px 16px",
-  },
-  "& .MuiInputLabel-root": {
-    display: "block",
-    position: "static",
-    transform: "none",
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#111927",
-    marginBottom: "8px",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "#9DA4AE",
-  },
-}));
-
-const DialogSelect = styled(Select)(() => ({
-  borderRadius: "8px",
-  "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "& .MuiSelect-select": {
-    fontSize: "16px",
-    fontWeight: 400,
-    color: "#111927",
-    padding: "12px 16px",
-  },
-}));
-
-interface ServiceDetailsDialogProps {
-  handleClose: () => void;
+interface ServiceDetailsPageProps {
+  onBack: () => void;
+  onCancel: () => void;
   onNext: (data: ServiceFormData) => void;
+  initialData?: ServiceFormData | null;
 }
 
 export interface ServiceFormData {
@@ -92,14 +30,26 @@ const responseTimeOptions = [
   { value: "no_response_time", label: "No response time" },
 ];
 
-export default function ServiceDetailsDialog({
-  handleClose,
+export default function ServiceDetailsPage({
+  onBack: _onBack,
+  onCancel,
   onNext,
-}: ServiceDetailsDialogProps): JSX.Element {
-  const [serviceTitle, setServiceTitle] = React.useState("");
-  const [whatsIncluded, setWhatsIncluded] = React.useState("");
-  const [servicePrice, setServicePrice] = React.useState("");
-  const [responseTime, setResponseTime] = React.useState("");
+  initialData,
+}: ServiceDetailsPageProps): JSX.Element {
+  const [serviceTitle, setServiceTitle] = React.useState(initialData?.serviceTitle || "");
+  const [whatsIncluded, setWhatsIncluded] = React.useState(initialData?.whatsIncluded || "");
+  const [servicePrice, setServicePrice] = React.useState(initialData?.servicePrice || "");
+  const [responseTime, setResponseTime] = React.useState(initialData?.responseTime || "");
+
+  // Update state when initialData changes
+  React.useEffect(() => {
+    if (initialData) {
+      setServiceTitle(initialData.serviceTitle);
+      setWhatsIncluded(initialData.whatsIncluded);
+      setServicePrice(initialData.servicePrice);
+      setResponseTime(initialData.responseTime);
+    }
+  }, [initialData]);
 
   const handleSubmit = () => {
     const formData: ServiceFormData = {
@@ -159,34 +109,15 @@ export default function ServiceDetailsDialog({
               }}
             />
           </Box>
-          
         </Stack>
-        {/* Close Button */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            color: "#111927",
-            padding: "8px",
-            "&:hover": {
-              backgroundColor: "#F3F4F6",
-            },
-          }}
-        >
-          <Close />
-        </IconButton>
-
-        
       </Stack>
-
-      
 
       {/* Form Fields */}
       <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
         {/* Service Title */}
         <Box>
-
-            {/* Title */}
-      <Typography
+          {/* Title */}
+          <Typography
             variant="h5"
             sx={{
               fontSize: "28px",
@@ -196,38 +127,32 @@ export default function ServiceDetailsDialog({
           >
             Service details
           </Typography>
-          <DialogTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Service title"
             placeholder="e.g. TV Mounting, House Cleaning"
             value={serviceTitle}
             onChange={(e) => setServiceTitle(e.target.value)}
+            sx={{ mt: 2 }}
           />
         </Box>
 
         {/* What's included */}
         <Box>
-          <DialogTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="What's included?"
             placeholder="Describe Here (optional)"
             value={whatsIncluded}
             onChange={(e) => setWhatsIncluded(e.target.value)}
-            multiline
-            rows={3}
-            sx={{
-              "& .MuiInputBase-root": {
-                borderRadius: "8px",
-              },
-            }}
           />
         </Box>
 
         {/* Service Price */}
         <Box>
-          <DialogTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Service price"
@@ -239,23 +164,25 @@ export default function ServiceDetailsDialog({
 
         {/* Response Time */}
         <Box>
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: 500,
-              color: "#111927",
-              marginBottom: "8px",
-            }}
-          >
-            Response time
-          </Typography>
-          <FormControl fullWidth>
-            <DialogSelect
-              value={responseTime}
-              onChange={(e) => setResponseTime(e.target.value as string)}
-              displayEmpty
-              IconComponent={DropdownArrowIcon}
-              MenuProps={{
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            label="Response time"
+            value={responseTime}
+            onChange={(e) => setResponseTime(e.target.value as string)}
+            select
+            SelectProps={{
+              displayEmpty: true,
+              renderValue: (selected) => {
+                if (!selected) {
+                  return "";
+                }
+                const selectedOption = responseTimeOptions.find(
+                  (o) => o.value === selected
+                );
+                return selectedOption ? selectedOption.label : "";
+              },
+              MenuProps: {
                 disablePortal: false,
                 PaperProps: {
                   style: {
@@ -281,31 +208,22 @@ export default function ServiceDetailsDialog({
                     msOverflowStyle: "none",
                   },
                 },
-              }}
-              renderValue={(selected) => {
-                if (!selected) {
-                  return <span style={{ color: "#6C737F" }}>Select</span>;
-                }
-                const selectedOption = responseTimeOptions.find(
-                  (o) => o.value === selected
-                );
-                return selectedOption ? selectedOption.label : "";
-              }}
-            >
-              <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
-                Select
+              },
+            }}
+          >
+            <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
+              Select
+            </MenuItem>
+            {responseTimeOptions.map((option) => (
+              <MenuItem
+                key={option.value}
+                value={option.value}
+                sx={{ fontSize: "16px", color: "#111927" }}
+              >
+                {option.label}
               </MenuItem>
-              {responseTimeOptions.map((option) => (
-                <MenuItem
-                  key={option.value}
-                  value={option.value}
-                  sx={{ fontSize: "16px", color: "#111927" }}
-                >
-                  {option.label}
-                </MenuItem>
-              ))}
-            </DialogSelect>
-          </FormControl>
+            ))}
+          </StyledTextField>
         </Box>
       </Stack>
 
@@ -317,7 +235,7 @@ export default function ServiceDetailsDialog({
       >
         <Button
           variant="primary"
-          onClick={handleClose}
+          onClick={onCancel}
           sx={{
             backgroundColor: "#FFFFFF",
             color: "#111927",
@@ -335,4 +253,5 @@ export default function ServiceDetailsDialog({
     </Stack>
   );
 }
+
 
