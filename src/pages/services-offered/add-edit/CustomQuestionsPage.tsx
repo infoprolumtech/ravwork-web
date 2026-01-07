@@ -5,72 +5,10 @@ import {
   Stack,
   Typography,
   IconButton,
-  TextField,
-  FormControl,
-  Select,
   MenuItem,
 } from "@mui/material";
 import { DeleteOutline, People } from "@mui/icons-material";
-import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
-import { styled } from "@mui/material/styles";
-
-const DropdownArrowIcon = () => (
-  <img src={DropdownArrow} alt="open select menu" style={{ marginRight: 8 }} />
-);
-
-const PageTextField = styled(TextField)(() => ({
-  "& .MuiInputBase-root": {
-    backgroundColor: "#FFFFFF",
-    color: "#111927",
-    borderRadius: "8px",
-    fontSize: "16px",
-  },
-  "& .MuiInputBase-input": {
-    padding: "12px 16px",
-  },
-  "& .MuiInputLabel-root": {
-    display: "block",
-    position: "static",
-    transform: "none",
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#111927",
-    marginBottom: "8px",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "#9DA4AE",
-  },
-}));
-
-const PageSelect = styled(Select)(() => ({
-  borderRadius: "8px",
-  "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "& .MuiSelect-select": {
-    fontSize: "16px",
-    fontWeight: 400,
-    color: "#111927",
-    padding: "12px 16px",
-  },
-}));
+import { StyledTextField } from "../../../utils/helper";
 
 interface CustomQuestionsPageProps {
   onBack: () => void;
@@ -244,35 +182,38 @@ export default function CustomQuestionsPage({
 
         {/* Question */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Question"
             placeholder="e.g. What is the event location"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
+            sx={{ mt: 2 }}
           />
         </Box>
 
         {/* Answer Type */}
         <Box>
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: 500,
-              color: "#111927",
-              marginBottom: "8px",
-            }}
-          >
-            Answer Type
-          </Typography>
-          <FormControl fullWidth>
-            <PageSelect
-              value={answerType}
-              onChange={(e) => setAnswerType(e.target.value as string)}
-              displayEmpty
-              IconComponent={DropdownArrowIcon}
-              MenuProps={{
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            label="Answer Type"
+            value={answerType}
+            onChange={(e) => setAnswerType(e.target.value as string)}
+            select
+            SelectProps={{
+              displayEmpty: true,
+              renderValue: (selected) => {
+                if (!selected) {
+                  return "";
+                }
+                const selectedOption = answerTypeOptions.find(
+                  (o) => o.value === selected
+                );
+                return selectedOption ? selectedOption.label : "";
+              },
+              MenuProps: {
                 disablePortal: false,
                 PaperProps: {
                   style: {
@@ -298,31 +239,22 @@ export default function CustomQuestionsPage({
                     msOverflowStyle: "none",
                   },
                 },
-              }}
-              renderValue={(selected) => {
-                if (!selected) {
-                  return <span style={{ color: "#6C737F" }}>Select</span>;
-                }
-                const selectedOption = answerTypeOptions.find(
-                  (o) => o.value === selected
-                );
-                return selectedOption ? selectedOption.label : "";
-              }}
-            >
-              <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
-                Select
+              },
+            }}
+          >
+            <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
+              Select
+            </MenuItem>
+            {answerTypeOptions.map((option) => (
+              <MenuItem
+                key={option.value}
+                value={option.value}
+                sx={{ fontSize: "16px", color: "#111927" }}
+              >
+                {option.label}
               </MenuItem>
-              {answerTypeOptions.map((option) => (
-                <MenuItem
-                  key={option.value}
-                  value={option.value}
-                  sx={{ fontSize: "16px", color: "#111927" }}
-                >
-                  {option.label}
-                </MenuItem>
-              ))}
-            </PageSelect>
-          </FormControl>
+            ))}
+          </StyledTextField>
         </Box>
 
         {/* Options Section (shown when Single choice or Multiselect is selected) */}
@@ -348,20 +280,12 @@ export default function CustomQuestionsPage({
                     gap: 1,
                   }}
                 >
-                  <PageTextField
+                  <StyledTextField
                     fullWidth
                     variant="outlined"
                     placeholder={`Option ${index + 1}`}
                     value={option}
                     onChange={(e) => handleOptionChange(index, e.target.value)}
-                    sx={{
-                      "& .MuiInputBase-root": {
-                        paddingRight: "8px",
-                      },
-                      "& .MuiInputLabel-root": {
-                        display: "none",
-                      },
-                    }}
                   />
                   {options.length > 1 && (
                     <IconButton
@@ -603,4 +527,5 @@ export default function CustomQuestionsPage({
     </Stack>
   );
 }
+
 

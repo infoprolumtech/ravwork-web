@@ -4,44 +4,8 @@ import {
   Button,
   Stack,
   Typography,
-  TextField,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const PageTextField = styled(TextField)(() => ({
-  "& .MuiInputBase-root": {
-    backgroundColor: "#FFFFFF",
-    color: "#111927",
-    borderRadius: "8px",
-    fontSize: "16px",
-  },
-  "& .MuiInputBase-input": {
-    padding: "12px 16px",
-  },
-  "& .MuiInputLabel-root": {
-    display: "block",
-    position: "static",
-    transform: "none",
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#111927",
-    marginBottom: "8px",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "#9DA4AE",
-  },
-}));
+import { StyledTextField } from "../../../utils/helper";
 
 interface ContactInfoPageProps {
   onBack: () => void;
@@ -153,19 +117,20 @@ export default function ContactInfoPage({
 
         {/* Full Name */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Full name"
             placeholder="Enter your full name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
+            sx={{ mt: 2 }}
           />
         </Box>
 
         {/* Email */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Email (optional)"
@@ -177,7 +142,7 @@ export default function ContactInfoPage({
 
         {/* Phone Number */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Phone Number"
@@ -210,4 +175,5 @@ export default function ContactInfoPage({
     </Stack>
   );
 }
+
 

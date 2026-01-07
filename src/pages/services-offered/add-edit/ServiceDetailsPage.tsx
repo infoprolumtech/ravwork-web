@@ -4,71 +4,9 @@ import {
   Button,
   Stack,
   Typography,
-  TextField,
-  FormControl,
-  Select,
   MenuItem,
 } from "@mui/material";
-import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
-import { styled } from "@mui/material/styles";
-
-const DropdownArrowIcon = () => (
-  <img src={DropdownArrow} alt="open select menu" style={{ marginRight: 8 }} />
-);
-
-const PageTextField = styled(TextField)(() => ({
-  "& .MuiInputBase-root": {
-    backgroundColor: "#FFFFFF",
-    color: "#111927",
-    borderRadius: "8px",
-    fontSize: "16px",
-  },
-  "& .MuiInputBase-input": {
-    padding: "12px 16px",
-  },
-  "& .MuiInputLabel-root": {
-    display: "block",
-    position: "static",
-    transform: "none",
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#111927",
-    marginBottom: "8px",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      border: `1px solid #E5E7EB`,
-    },
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: "#9DA4AE",
-  },
-}));
-
-const PageSelect = styled(Select)(() => ({
-  borderRadius: "8px",
-  "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#E5E7EB",
-  },
-  "& .MuiSelect-select": {
-    fontSize: "16px",
-    fontWeight: 400,
-    color: "#111927",
-    padding: "12px 16px",
-  },
-}));
+import { StyledTextField } from "../../../utils/helper";
 
 interface ServiceDetailsPageProps {
   onBack: () => void;
@@ -189,7 +127,7 @@ export default function ServiceDetailsPage({
           >
             Service details
           </Typography>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Service title"
@@ -202,26 +140,19 @@ export default function ServiceDetailsPage({
 
         {/* What's included */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="What's included?"
             placeholder="Describe Here (optional)"
             value={whatsIncluded}
             onChange={(e) => setWhatsIncluded(e.target.value)}
-            multiline
-            rows={3}
-            sx={{
-              "& .MuiInputBase-root": {
-                borderRadius: "8px",
-              },
-            }}
           />
         </Box>
 
         {/* Service Price */}
         <Box>
-          <PageTextField
+          <StyledTextField
             fullWidth
             variant="outlined"
             label="Service price"
@@ -233,23 +164,25 @@ export default function ServiceDetailsPage({
 
         {/* Response Time */}
         <Box>
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: 500,
-              color: "#111927",
-              marginBottom: "8px",
-            }}
-          >
-            Response time
-          </Typography>
-          <FormControl fullWidth>
-            <PageSelect
-              value={responseTime}
-              onChange={(e) => setResponseTime(e.target.value as string)}
-              displayEmpty
-              IconComponent={DropdownArrowIcon}
-              MenuProps={{
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            label="Response time"
+            value={responseTime}
+            onChange={(e) => setResponseTime(e.target.value as string)}
+            select
+            SelectProps={{
+              displayEmpty: true,
+              renderValue: (selected) => {
+                if (!selected) {
+                  return "";
+                }
+                const selectedOption = responseTimeOptions.find(
+                  (o) => o.value === selected
+                );
+                return selectedOption ? selectedOption.label : "";
+              },
+              MenuProps: {
                 disablePortal: false,
                 PaperProps: {
                   style: {
@@ -275,31 +208,22 @@ export default function ServiceDetailsPage({
                     msOverflowStyle: "none",
                   },
                 },
-              }}
-              renderValue={(selected) => {
-                if (!selected) {
-                  return <span style={{ color: "#6C737F" }}>Select</span>;
-                }
-                const selectedOption = responseTimeOptions.find(
-                  (o) => o.value === selected
-                );
-                return selectedOption ? selectedOption.label : "";
-              }}
-            >
-              <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
-                Select
+              },
+            }}
+          >
+            <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
+              Select
+            </MenuItem>
+            {responseTimeOptions.map((option) => (
+              <MenuItem
+                key={option.value}
+                value={option.value}
+                sx={{ fontSize: "16px", color: "#111927" }}
+              >
+                {option.label}
               </MenuItem>
-              {responseTimeOptions.map((option) => (
-                <MenuItem
-                  key={option.value}
-                  value={option.value}
-                  sx={{ fontSize: "16px", color: "#111927" }}
-                >
-                  {option.label}
-                </MenuItem>
-              ))}
-            </PageSelect>
-          </FormControl>
+            ))}
+          </StyledTextField>
         </Box>
       </Stack>
 
@@ -329,4 +253,5 @@ export default function ServiceDetailsPage({
     </Stack>
   );
 }
+
 
