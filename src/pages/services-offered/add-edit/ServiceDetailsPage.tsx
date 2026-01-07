@@ -4,13 +4,11 @@ import {
   Button,
   Stack,
   Typography,
-  IconButton,
   TextField,
   FormControl,
   Select,
   MenuItem,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
 import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
 import { styled } from "@mui/material/styles";
 
@@ -18,7 +16,7 @@ const DropdownArrowIcon = () => (
   <img src={DropdownArrow} alt="open select menu" style={{ marginRight: 8 }} />
 );
 
-const DialogTextField = styled(TextField)(() => ({
+const PageTextField = styled(TextField)(() => ({
   "& .MuiInputBase-root": {
     backgroundColor: "#FFFFFF",
     color: "#111927",
@@ -53,7 +51,7 @@ const DialogTextField = styled(TextField)(() => ({
   },
 }));
 
-const DialogSelect = styled(Select)(() => ({
+const PageSelect = styled(Select)(() => ({
   borderRadius: "8px",
   "& .MuiOutlinedInput-notchedOutline": {
     borderColor: "#E5E7EB",
@@ -72,9 +70,11 @@ const DialogSelect = styled(Select)(() => ({
   },
 }));
 
-interface ServiceDetailsDialogProps {
-  handleClose: () => void;
+interface ServiceDetailsPageProps {
+  onBack: () => void;
+  onCancel: () => void;
   onNext: (data: ServiceFormData) => void;
+  initialData?: ServiceFormData | null;
 }
 
 export interface ServiceFormData {
@@ -92,14 +92,26 @@ const responseTimeOptions = [
   { value: "no_response_time", label: "No response time" },
 ];
 
-export default function ServiceDetailsDialog({
-  handleClose,
+export default function ServiceDetailsPage({
+  onBack: _onBack,
+  onCancel,
   onNext,
-}: ServiceDetailsDialogProps): JSX.Element {
-  const [serviceTitle, setServiceTitle] = React.useState("");
-  const [whatsIncluded, setWhatsIncluded] = React.useState("");
-  const [servicePrice, setServicePrice] = React.useState("");
-  const [responseTime, setResponseTime] = React.useState("");
+  initialData,
+}: ServiceDetailsPageProps): JSX.Element {
+  const [serviceTitle, setServiceTitle] = React.useState(initialData?.serviceTitle || "");
+  const [whatsIncluded, setWhatsIncluded] = React.useState(initialData?.whatsIncluded || "");
+  const [servicePrice, setServicePrice] = React.useState(initialData?.servicePrice || "");
+  const [responseTime, setResponseTime] = React.useState(initialData?.responseTime || "");
+
+  // Update state when initialData changes
+  React.useEffect(() => {
+    if (initialData) {
+      setServiceTitle(initialData.serviceTitle);
+      setWhatsIncluded(initialData.whatsIncluded);
+      setServicePrice(initialData.servicePrice);
+      setResponseTime(initialData.responseTime);
+    }
+  }, [initialData]);
 
   const handleSubmit = () => {
     const formData: ServiceFormData = {
@@ -159,34 +171,15 @@ export default function ServiceDetailsDialog({
               }}
             />
           </Box>
-          
         </Stack>
-        {/* Close Button */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            color: "#111927",
-            padding: "8px",
-            "&:hover": {
-              backgroundColor: "#F3F4F6",
-            },
-          }}
-        >
-          <Close />
-        </IconButton>
-
-        
       </Stack>
-
-      
 
       {/* Form Fields */}
       <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
         {/* Service Title */}
         <Box>
-
-            {/* Title */}
-      <Typography
+          {/* Title */}
+          <Typography
             variant="h5"
             sx={{
               fontSize: "28px",
@@ -196,19 +189,20 @@ export default function ServiceDetailsDialog({
           >
             Service details
           </Typography>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="Service title"
             placeholder="e.g. TV Mounting, House Cleaning"
             value={serviceTitle}
             onChange={(e) => setServiceTitle(e.target.value)}
+            sx={{ mt: 2 }}
           />
         </Box>
 
         {/* What's included */}
         <Box>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="What's included?"
@@ -227,7 +221,7 @@ export default function ServiceDetailsDialog({
 
         {/* Service Price */}
         <Box>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="Service price"
@@ -250,7 +244,7 @@ export default function ServiceDetailsDialog({
             Response time
           </Typography>
           <FormControl fullWidth>
-            <DialogSelect
+            <PageSelect
               value={responseTime}
               onChange={(e) => setResponseTime(e.target.value as string)}
               displayEmpty
@@ -304,7 +298,7 @@ export default function ServiceDetailsDialog({
                   {option.label}
                 </MenuItem>
               ))}
-            </DialogSelect>
+            </PageSelect>
           </FormControl>
         </Box>
       </Stack>
@@ -317,7 +311,7 @@ export default function ServiceDetailsDialog({
       >
         <Button
           variant="primary"
-          onClick={handleClose}
+          onClick={onCancel}
           sx={{
             backgroundColor: "#FFFFFF",
             color: "#111927",

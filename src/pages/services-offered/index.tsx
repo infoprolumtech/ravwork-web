@@ -4,118 +4,95 @@ import {
   Typography,
   Card,
   Stack,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import ServiceOfferedCard from "../../components/reusecard/ServiceOfferedCard";
-import ServiceDetailsDialog, { type ServiceFormData } from "../../components/dialog/dialog-content/ServiceDetailsDialog";
-import ContactMethodDialog from "../../components/dialog/dialog-content/ContactMethodDialog";
-import QuickContactDialog, { type QuickContactFormData } from "../../components/dialog/dialog-content/QuickContactDialog";
-import ContactInfoDialog, { type ContactInfoFormData } from "../../components/dialog/dialog-content/ContactInfoDialog";
-import CustomQuestionsDialog from "../../components/dialog/dialog-content/CustomQuestionsDialog";
-import Dialog from "@mui/material/Dialog";
+import {
+  useGetServicesQuery,
+  useDeleteServiceMutation,
+  type Service,
+} from "../../rtk/endpoints/serviceApi";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import { useDispatch } from "react-redux";
 
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  price: string;
-  contactMethod: string;
-  iconColor: string;
-  iconType: "lightning" | "document";
-}
+// Map form responseTime to API responseTime
+const mapResponseTimeToAPI = (formResponseTime: string): "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" => {
+  const mapping: Record<string, "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible"> = {
+    "within_1_hour": "within_1_hour",
+    "within_few_hours": "within_24_hours",
+    "same_day": "within_24_hours",
+    "within_24_hours": "within_24_hours",
+    "no_response_time": "flexible",
+  };
+  return mapping[formResponseTime] || "flexible";
+};
 
-// Mock data - replace with API call
-const mockServices: Service[] = [
-  {
-    id: "1",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$566",
-    contactMethod: "Contact Method: Quick Contact",
-    iconColor: "#12B76A",
-    iconType: "lightning",
-  },
-  {
-    id: "2",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$900",
-    contactMethod: "Contact Method: Contact info + Job Questions",
-    iconColor: "#4693DD",
-    iconType: "document",
-  },
-  {
-    id: "3",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$566",
-    contactMethod: "Contact Method: Quick Contact",
-    iconColor: "#12B76A",
-    iconType: "lightning",
-  },
-];
+// Transform API Service to UI format
+const transformServiceToUI = (service: Service) => {
+  const contactMethodMap: Record<string, string> = {
+    quick_contact: "Contact Method: Quick Contact",
+    custom_form: "Contact Method: Custom Form",
+  };
 
-type DialogStep = "service_details" | "contact_method" | "quick_contact" | "contact_info" | "contact_info_questions" | null;
+  const hasFormFields = service.formFields && service.formFields.length > 0;
+  const contactMethodText = contactMethodMap[service.contactMethod] || "Contact Method: " + service.contactMethod;
+  const finalContactMethod = hasFormFields 
+    ? `${contactMethodText} + Job Questions`
+    : contactMethodText;
+
+  return {
+    id: service.id,
+    title: service.name,
+    description: service.description,
+    price: `$${service.price}`,
+    contactMethod: finalContactMethod,
+    iconColor: hasFormFields ? "#4693DD" : "#12B76A",
+    iconType: (hasFormFields ? "document" : "lightning") as "lightning" | "document",
+  };
+};
 
 export default function ServicesOfferedPage(): JSX.Element {
-  const [dialogStep, setDialogStep] = React.useState<DialogStep>(null);
-  const [serviceData, setServiceData] = React.useState<ServiceFormData | null>(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // API hooks
+  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery();
+  const [deleteService] = useDeleteServiceMutation();
+
+  // Transform services data
+  const services = React.useMemo(() => {
+    if (!servicesResponse?.data || !Array.isArray(servicesResponse.data)) {
+      return [];
+    }
+    return servicesResponse.data.map(transformServiceToUI);
+  }, [servicesResponse]);
 
   const handleAddService = () => {
-    setDialogStep("service_details");
-  };
-
-  const handleCloseDialog = () => {
-    setDialogStep(null);
-    setServiceData(null);
-  };
-
-  const handleServiceDetailsNext = (data: ServiceFormData) => {
-    setServiceData(data);
-    setDialogStep("contact_method");
-  };
-
-  const handleContactMethodSelect = (method: "quick_contact" | "contact_info_questions") => {
-    if (method === "quick_contact") {
-      setDialogStep("quick_contact");
-    } else {
-      // For "contact_info_questions", first show contact info form
-      setDialogStep("contact_info");
-    }
-  };
-
-  const handleContactInfoNext = (data: ContactInfoFormData) => {
-    console.log("Contact info data:", data);
-    // Store contact info data and proceed to custom questions
-    setDialogStep("contact_info_questions");
-  };
-
-  const handleCreateQuestion = (questions: any[]) => {
-    console.log("Service data:", serviceData);
-    console.log("Custom questions data:", questions);
-    // TODO: Implement API call to save service with custom questions
-    setDialogStep(null);
-    setServiceData(null);
-  };
-
-  const handleQuickContactSubmit = (data: QuickContactFormData) => {
-    console.log("Service data:", serviceData);
-    console.log("Quick contact data:", data);
-    // TODO: Implement API call to save service with quick contact method
-    setDialogStep(null);
-    setServiceData(null);
+    navigate("/services-offered/add-new-service");
   };
 
   const handleEditService = (id: string) => {
-    // TODO: Implement edit service functionality
-    console.log("Edit service:", id);
+    navigate(`/services-offered/edit/${id}`);
   };
 
-  const handleDeleteService = (id: string) => {
-    // TODO: Implement delete service functionality
-    console.log("Delete service:", id);
+  const handleDeleteService = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this service?")) {
+      return;
+    }
+
+    try {
+      await deleteService(id).unwrap();
+      dispatch(showAlert({ message: "Service deleted successfully", severity: "success" }));
+      refetch();
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to delete service";
+      dispatch(showAlert({ message: errorMessage, severity: "error" }));
+    }
   };
 
   return (
@@ -185,168 +162,53 @@ export default function ServicesOfferedPage(): JSX.Element {
           Your services
         </Typography>
 
-        <Stack spacing={{ xs: 1.5, md: 2 }}>
-          {mockServices.map((service) => (
-            <ServiceOfferedCard
-              key={service.id}
-              id={service.id}
-              title={service.title}
-              description={service.description}
-              price={service.price}
-              contactMethod={service.contactMethod}
-              iconColor={service.iconColor}
-              iconType={service.iconType}
-              onEdit={handleEditService}
-              onDelete={handleDeleteService}
-            />
-          ))}
-        </Stack>
+        {/* Loading State */}
+        {isLoading && (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress />
+          </Box>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Failed to load services. Please try again.
+          </Alert>
+        )}
+
+        {/* Services List */}
+        {!isLoading && !error && (
+          <Stack spacing={{ xs: 1.5, md: 2 }}>
+            {services.length === 0 ? (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#6C737F",
+                  textAlign: "center",
+                  py: 4,
+                }}
+              >
+                No services yet. Click "Add New Service" to get started.
+              </Typography>
+            ) : (
+              services.map((service) => (
+                <ServiceOfferedCard
+                  key={service.id}
+                  id={service.id}
+                  title={service.title}
+                  description={service.description}
+                  price={service.price}
+                  contactMethod={service.contactMethod}
+                  iconColor={service.iconColor}
+                  iconType={service.iconType}
+                  onEdit={handleEditService}
+                  onDelete={handleDeleteService}
+                />
+              ))
+            )}
+          </Stack>
+        )}
       </Box>
-
-      {/* Service Details Dialog - Step 1 */}
-      <Dialog
-        open={dialogStep === "service_details"}
-        onClose={handleCloseDialog}
-        aria-labelledby="service-details-dialog-title"
-        aria-describedby="service-details-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "768px",
-            maxWidth: { xs: "calc(100% - 32px)", sm: "768px" },
-            borderRadius: "32px",
-            background: "#FFF",
-            padding: 0,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          },
-          zIndex: 1600,
-        }}
-      >
-        <ServiceDetailsDialog
-          handleClose={handleCloseDialog}
-          onNext={handleServiceDetailsNext}
-        />
-      </Dialog>
-
-      {/* Contact Method Dialog - Step 2 */}
-      <Dialog
-        open={dialogStep === "contact_method"}
-        onClose={(_event, reason) => {
-          // Only close if clicking backdrop or pressing escape, not when selecting a method
-          if (reason === "backdropClick" || reason === "escapeKeyDown") {
-            handleCloseDialog();
-          }
-        }}
-        aria-labelledby="contact-method-dialog-title"
-        aria-describedby="contact-method-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "768px",
-            maxWidth: { xs: "calc(100% - 32px)", sm: "768px" },
-            borderRadius: "32px",
-            background: "#FFF",
-            padding: 0,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          },
-          zIndex: 1600,
-        }}
-      >
-        <ContactMethodDialog
-          handleClose={handleCloseDialog}
-          onSelect={handleContactMethodSelect}
-        />
-      </Dialog>
-
-      {/* Quick Contact Dialog - Step 3a */}
-      <Dialog
-        open={dialogStep === "quick_contact"}
-        onClose={handleCloseDialog}
-        aria-labelledby="quick-contact-dialog-title"
-        aria-describedby="quick-contact-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "768px",
-            maxWidth: { xs: "calc(100% - 32px)", sm: "768px" },
-            borderRadius: "32px",
-            background: "#FFF",
-            padding: 0,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          },
-          zIndex: 1600,
-        }}
-      >
-        <QuickContactDialog
-          handleClose={handleCloseDialog}
-          onSubmit={handleQuickContactSubmit}
-        />
-      </Dialog>
-
-      {/* Contact Info Dialog - Step 3a (for Contact Info + Job Questions path) */}
-      <Dialog
-        open={dialogStep === "contact_info"}
-        onClose={handleCloseDialog}
-        aria-labelledby="contact-info-dialog-title"
-        aria-describedby="contact-info-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "768px",
-            maxWidth: { xs: "calc(100% - 32px)", sm: "768px" },
-            borderRadius: "32px",
-            background: "#FFF",
-            padding: 0,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          },
-          zIndex: 1600,
-        }}
-      >
-        <ContactInfoDialog
-          handleClose={handleCloseDialog}
-          onNext={handleContactInfoNext}
-        />
-      </Dialog>
-
-      {/* Custom Questions Dialog - Step 3b */}
-      <Dialog
-        open={dialogStep === "contact_info_questions"}
-        onClose={handleCloseDialog}
-        aria-labelledby="custom-questions-dialog-title"
-        aria-describedby="custom-questions-dialog-description"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "768px",
-            maxWidth: { xs: "calc(100% - 32px)", sm: "768px" },
-            borderRadius: "32px",
-            background: "#FFF",
-            padding: 0,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          },
-          zIndex: 1600,
-        }}
-      >
-        <CustomQuestionsDialog
-          handleClose={handleCloseDialog}
-          onCreateQuestion={handleCreateQuestion}
-        />
-      </Dialog>
     </ServiceProviderLayout>
   );
 }

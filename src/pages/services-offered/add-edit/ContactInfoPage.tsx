@@ -4,13 +4,11 @@ import {
   Button,
   Stack,
   Typography,
-  IconButton,
   TextField,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 
-const DialogTextField = styled(TextField)(() => ({
+const PageTextField = styled(TextField)(() => ({
   "& .MuiInputBase-root": {
     backgroundColor: "#FFFFFF",
     color: "#111927",
@@ -45,9 +43,11 @@ const DialogTextField = styled(TextField)(() => ({
   },
 }));
 
-interface ContactInfoDialogProps {
-  handleClose: () => void;
+interface ContactInfoPageProps {
+  onBack: () => void;
+  onCancel: () => void;
   onNext: (data: ContactInfoFormData) => void;
+  initialData?: ContactInfoFormData | null;
 }
 
 export interface ContactInfoFormData {
@@ -56,13 +56,24 @@ export interface ContactInfoFormData {
   phoneNumber: string;
 }
 
-export default function ContactInfoDialog({
-  handleClose,
+export default function ContactInfoPage({
+  onBack: _onBack,
+  onCancel,
   onNext,
-}: ContactInfoDialogProps): JSX.Element {
-  const [fullName, setFullName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [phoneNumber, setPhoneNumber] = React.useState("");
+  initialData,
+}: ContactInfoPageProps): JSX.Element {
+  const [fullName, setFullName] = React.useState(initialData?.fullName || "");
+  const [email, setEmail] = React.useState(initialData?.email || "");
+  const [phoneNumber, setPhoneNumber] = React.useState(initialData?.phoneNumber || "");
+
+  // Update state when initialData changes
+  React.useEffect(() => {
+    if (initialData) {
+      setFullName(initialData.fullName);
+      setEmail(initialData.email);
+      setPhoneNumber(initialData.phoneNumber);
+    }
+  }, [initialData]);
 
   const handleNext = () => {
     const formData: ContactInfoFormData = {
@@ -97,37 +108,52 @@ export default function ContactInfoDialog({
         spacing={2}
         sx={{ width: "100%" }}
       >
-        {/* Title */}
-        <Typography
-          variant="h5"
-          sx={{
-            fontSize: "28px",
-            fontWeight: 600,
-            color: "#111927",
-          }}
-        >
-          Enter your details to request this service.
-        </Typography>
-        {/* Close Button */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            color: "#111927",
-            padding: "8px",
-            "&:hover": {
-              backgroundColor: "#F3F4F6",
-            },
-          }}
-        >
-          <Close />
-        </IconButton>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          {/* Icon */}
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: "8px",
+              backgroundColor: "#12B76A",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              component="img"
+              src="/assets/icons/sidebar_menu_icon/flash.svg"
+              alt="Service"
+              sx={{
+                width: "24px",
+                height: "24px",
+                filter: "brightness(0) invert(1)",
+              }}
+            />
+          </Box>
+        </Stack>
       </Stack>
 
       {/* Form Fields */}
       <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "24px" }}>
+        {/* Title */}
+        <Box>
+          <Typography
+            variant="h5"
+            sx={{
+              fontSize: "28px",
+              fontWeight: 600,
+              color: "#111927",
+            }}
+          >
+            Enter your details to request this service.
+          </Typography>
+        </Box>
+
         {/* Full Name */}
         <Box>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="Full name"
@@ -139,7 +165,7 @@ export default function ContactInfoDialog({
 
         {/* Email */}
         <Box>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="Email (optional)"
@@ -151,7 +177,7 @@ export default function ContactInfoDialog({
 
         {/* Phone Number */}
         <Box>
-          <DialogTextField
+          <PageTextField
             fullWidth
             variant="outlined"
             label="Phone Number"
@@ -166,7 +192,7 @@ export default function ContactInfoDialog({
       <Stack direction="row" justifyContent="flex-end" spacing={2}>
         <Button
           variant="primary"
-          onClick={handleClose}
+          onClick={onCancel}
           sx={{
             backgroundColor: "#FFFFFF",
             color: "#111927",
