@@ -80,7 +80,7 @@ const serviceApi = api.injectEndpoints({
         url: `/service/${id}`,
         method: "GET",
       }),
-      providesTags: (result, error, id) => [{ type: "Services", id }],
+      providesTags: (_result, _error, id) => [{ type: "Services", id }],
     }),
 
     // PATCH /api/v1/service/{id} - Update service
@@ -90,7 +90,7 @@ const serviceApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_result, _error, { id }) => [
         { type: "Services", id },
         "Services",
       ],
@@ -102,7 +102,7 @@ const serviceApi = api.injectEndpoints({
         url: `/service/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         { type: "Services", id },
         "Services",
       ],

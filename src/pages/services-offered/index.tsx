@@ -20,17 +20,6 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import { useDispatch } from "react-redux";
 
 
-// Map form responseTime to API responseTime
-const mapResponseTimeToAPI = (formResponseTime: string): "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" => {
-  const mapping: Record<string, "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible"> = {
-    "within_1_hour": "within_1_hour",
-    "within_few_hours": "within_24_hours",
-    "same_day": "within_24_hours",
-    "within_24_hours": "within_24_hours",
-    "no_response_time": "flexible",
-  };
-  return mapping[formResponseTime] || "flexible";
-};
 
 // Transform API Service to UI format
 const transformServiceToUI = (service: Service) => {
