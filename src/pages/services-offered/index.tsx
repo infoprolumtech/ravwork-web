@@ -17,7 +17,7 @@ import {
   type Service,
 } from "../../rtk/endpoints/serviceApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 
 
 
@@ -46,7 +46,7 @@ const transformServiceToUI = (service: Service) => {
 };
 
 export default function ServicesOfferedPage(): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   // API hooks

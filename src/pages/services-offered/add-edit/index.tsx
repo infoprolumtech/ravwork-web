@@ -24,7 +24,8 @@ import {
   type CreateServiceRequest,
 } from "../../../rtk/endpoints/serviceApi";
 import { showAlert } from "../../../rtk/feature/alertSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../../rtk/store";
+import type { RootState } from "../../../rtk/store";
 import { decryptAES } from "../../../utils/helper";
 
 type StepType = "service_details" | "contact_method" | "quick_contact" | "contact_info" | "contact_info_questions";
@@ -71,8 +72,8 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
 export default function AddEditServicePage(): JSX.Element {
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
-  const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: RootState) => state.auth.user);
   const isEditMode = !!id;
 
   const [currentStep, setCurrentStep] = useState<StepType>("service_details");

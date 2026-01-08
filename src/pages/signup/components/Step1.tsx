@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Box, Button, Typography, InputAdornment, IconButton, MenuItem, Select, FormControl } from "@mui/material";
+import { useEffect } from "react";
+import { Box, Button, Typography, MenuItem, Select, FormControl, CircularProgress } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,15 @@ import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step1Schema } from "../validationSchemas";
 import type { Step1FormInputs } from "../types";
+import Icon from "../../../components/shared/Icon";
+import PasswordField from "../../../components/shared/PasswordField";
+import PageIcon from "../../../components/shared/PageIcon";
+import {
+  pageTitleSx,
+  bottomButtonContainerSx,
+  inputFieldSx,
+  helperTextSx,
+} from "./commonStyles";
 
 // Common country codes with ISO codes
 const COUNTRY_CODES = [
@@ -35,15 +44,17 @@ const COUNTRY_CODES = [
 interface Step1Props {
   onNext: (data: Step1FormInputs) => void;
   initialData?: Step1FormInputs | null;
+  onBack?: () => void;
+  isSignupCompleted?: boolean;
 }
 
-export const Step1 = ({ onNext, initialData }: Step1Props) => {
+export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }: Step1Props) => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const PREFIX = "ravwork.link/";
 
   const form = useForm<Step1FormInputs>({
     resolver: yupResolver(step1Schema) as any,
+    mode: "onChange", // Validate on change (while typing)
     defaultValues: initialData || { username: PREFIX, email: "", countryCode: "+1", phoneNumber: "", password: "" },
   });
 
@@ -51,8 +62,21 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
+      // Clear form errors when navigating back (since signup was already successful)
+      // This prevents showing "email already exists" error when user goes back
+      form.clearErrors();
     }
   }, [initialData, form]);
+
+  // Clear form errors when component mounts if signup was already successful
+  useEffect(() => {
+    // Check if signup was already successful (signupToken exists)
+    const signupToken = localStorage.getItem("signupToken");
+    if (signupToken && initialData) {
+      // Clear all form errors since account was already created
+      form.clearErrors();
+    }
+  }, [form, initialData]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -61,12 +85,12 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
     if (!value.startsWith(PREFIX)) {
       // If user is typing and field doesn't have prefix, add it
       if (value.length > 0) {
-        form.setValue("username", PREFIX + value.replace(PREFIX, ""));
+        form.setValue("username", PREFIX + value.replace(PREFIX, ""), { shouldValidate: true });
       } else {
-        form.setValue("username", "");
+        form.setValue("username", "", { shouldValidate: true });
       }
     } else {
-      form.setValue("username", value);
+      form.setValue("username", value, { shouldValidate: true });
     }
   };
 
@@ -113,6 +137,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   };
 
   const handleSubmit = (data: Step1FormInputs) => {
+    // Always call onNext - parent component will handle whether to call API or not
     onNext(data);
   };
 
@@ -130,110 +155,51 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
       </Box>
       
       {/* Icon above title */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mb: { xs: 2, sm: 3 },
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: 32, sm: 36 },
-            height: { xs: 32, sm: 36 },
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: { xs: "5px", sm: "6.864px" },
-          }}
-        >
-          <img
-            src="/assets/icons/sigup_icon.svg"
-            alt="email-icon"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
-      </Box>
+      <PageIcon iconSrc="/assets/icons/sigup_icon.svg" iconAlt="email-icon" />
       
-      <Typography 
-        variant="h5" 
-        textAlign="center" 
-        mb={{ xs: 2, sm: 3 }} 
-        sx={{ 
-          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
-          color: "#1C1C1C", 
-          fontWeight: 600, 
-          textAlign: "center",
-          lineHeight: { xs: 1.3, sm: 1.2 },
-        }}
-      >
+      <Typography variant="h5" textAlign="center" mb={{ xs: 2, sm: 3 }} sx={pageTitleSx}>
         Let's help client book<br />you instantly.
       </Typography>
 
-      <Box sx={{ position: "relative", mb: form.formState.errors.username ? 0 : 1.5 }}>
+      <Box sx={{ position: "relative", mb: 0 }}>
         <Box sx={{ position: "relative" }}>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            margin="none"
-            value={form.watch("username")}
-            onChange={handleUsernameChange}
-            onKeyDown={handleUsernameKeyDown}
-            onFocus={handleUsernameFocus}
-            error={Boolean(form.formState.errors.username)}
-            helperText={form.formState.errors.username?.message}
-            sx={{
-              "& .MuiInputBase-root": {
-                height: "48px",
-                minHeight: "48px",
-                overflow: "hidden", // Ensure autofill styling stays within input box
-              },
-              "& .MuiInputBase-input": {
-                color: "#1C1C1C",
-                height: "48px",
-                padding: "12px 16px",
-                borderRadius: "100px",
-                // Override browser autofill styling - only affects the input field box
-                "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  caretColor: "#1C1C1C",
-                  borderRadius: "100px",
-                  transition: "background-color 5000s ease-in-out 0s",
-                },
-                "&:-webkit-autofill:hover": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
-                "&:-webkit-autofill:focus": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
-                "&:-webkit-autofill:active": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
-              },
-              "& .MuiFormHelperText-root": {
-                marginTop: { xs: "4px", sm: "6px" },
-                marginLeft: 0,
-                fontSize: { xs: "11px", sm: "12px" },
-                lineHeight: { xs: 1.4, sm: 1.5 },
-              },
-            }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/at-sign.svg" alt="username-icon" style={{ width: "20px", height: "20px" }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
+          <Controller
+            name="username"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                fullWidth
+                variant="outlined"
+                margin="none"
+                value={form.watch("username")}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleUsernameChange(e);
+                  form.trigger("username"); // Trigger validation
+                }}
+                onKeyDown={handleUsernameKeyDown}
+                onFocus={handleUsernameFocus}
+                onBlur={() => {
+                  field.onBlur();
+                  form.trigger("username"); // Trigger validation on blur
+                }}
+                error={Boolean(form.formState.errors.username)}
+                helperText={form.formState.errors.username?.message}
+                sx={inputFieldSx(Boolean(form.formState.errors.username), {
+                  "& .MuiInputBase-input": {
+                    padding: "12px 16px",
+                  },
+                })}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                        <Icon src="/assets/icons/at-sign.svg" alt="username-icon" size={20} />
+                      </Box>
+                    ),
+                  },
+                }}
+              />
+            )}
           />
           {!form.watch("username") && (
             <Typography
@@ -261,17 +227,12 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             <Typography
               sx={{
                 position: "absolute",
-                left: { 
-                  xs: "calc(40px + 14ch)", 
-                  sm: "calc(48px + 10ch)",
-                  md: "calc(48px + 10ch)",
-                  lg: "calc(48px + 10ch)"
-                },
+                left: { xs: "calc(40px + 14ch)", sm: "calc(48px + 10ch)" },
                 top: "24px",
                 transform: "translateY(-50%)",
                 pointerEvents: "none",
                 color: "#6C737F",
-                fontSize: { xs: "12px", sm: "16px", md: "16px", lg: "16px" },
+                fontSize: { xs: "12px", sm: "16px" },
                 fontFamily: "Inter, sans-serif",
                 zIndex: 1,
                 maxWidth: { xs: "calc(100% - 45px)", sm: "calc(100% - 250px)", md: "calc(100% - 280px)", lg: "none" },
@@ -286,80 +247,31 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           )}
         </Box>
       </Box>
-      {form.formState.errors.username && (
-        <Box sx={{ mb: 1.5, mt: 0.5 }} />
-      )}
 
       <StyledTextField
         fullWidth
         variant="outlined"
         placeholder="Email"
         margin="none"
-        {...form.register("email")}
+        {...form.register("email", {
+          onChange: () => form.trigger("email"),
+        })}
         error={Boolean(form.formState.errors.email)}
         helperText={form.formState.errors.email?.message}
-        sx={{
-          mb: form.formState.errors.email ? 0 : 1.5,
-          "& .MuiInputBase-root": {
-            height: "48px",
-            minHeight: "48px",
-            overflow: "hidden", // Ensure autofill styling stays within input box
-          },
-          "& .MuiInputBase-input": {
-            color: "#1C1C1C",
-            height: "48px",
-            borderRadius: "100px",
-            "&::placeholder": {
-              color: "#1C1C1C",
-              opacity: 1,
-            },
-            // Override browser autofill styling - only affects the input field box
-            "&:-webkit-autofill": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              caretColor: "#1C1C1C",
-              borderRadius: "100px",
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-            "&:-webkit-autofill:hover": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:focus": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:active": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-          },
-          "& .MuiFormHelperText-root": {
-            marginTop: { xs: "4px", sm: "6px" },
-            marginLeft: 0,
-            fontSize: { xs: "11px", sm: "12px" },
-            lineHeight: { xs: 1.4, sm: 1.5 },
-          },
-        }}
+        sx={inputFieldSx(Boolean(form.formState.errors.email))}
         slotProps={{
           input: {
             startAdornment: (
-              <InputAdornment position="start" sx={{ mr: 0 }}>
-                <img src="/assets/icons/mail.svg" alt="email-icon" style={{ width: "20px", height: "20px" }} />
-              </InputAdornment>
+              <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                <Icon src="/assets/icons/mail.svg" alt="email-icon" size={20} />
+              </Box>
             ),
           },
         }}
       />
-      {form.formState.errors.email && (
-        <Box sx={{ mb: 1.5, mt: 0.5 }} />
-      )}
 
       {/* Country Code and Phone Number in Same Row */}
-      <Box sx={{ display: "flex", gap: { xs: 1, sm: 1.5 }, mb: (form.formState.errors.countryCode || form.formState.errors.phoneNumber) ? 0 : 1.5, flexDirection: "row" }}>
+      <Box sx={{ display: "flex", gap: { xs: 1, sm: 1.5 }, mb: 1.5, flexDirection: "row" }}>
         {/* Country Code Selector */}
         <FormControl
           error={Boolean(form.formState.errors.countryCode)}
@@ -369,15 +281,20 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             "& .MuiOutlinedInput-root": {
               backgroundColor: "#F9FAFB",
               borderRadius: "100px",
-              height: { xs: "44px", sm: "48px" },
+              height: "48px",
+              minHeight: "48px",
+              padding: 0,
               "& fieldset": {
-                border: "1px solid #D1D5DB",
+                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #D1D5DB",
               },
               "&:hover fieldset": {
-                border: "1px solid #D1D5DB",
+                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #D1D5DB",
               },
               "&.Mui-focused fieldset": {
-                border: "1px solid #9CA3AF",
+                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #9CA3AF",
+              },
+              "&.Mui-error fieldset": {
+                border: "1px solid #F97066",
               },
             },
           }}
@@ -388,18 +305,57 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             render={({ field }) => (
               <Select
                 {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  form.trigger("countryCode");
+                }}
                 displayEmpty
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      borderRadius: "12px",
+                      mt: 1,
+                      boxShadow: "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                      maxHeight: 300,
+                      // Hide scrollbar but keep scrolling functionality
+                      scrollbarWidth: "none", // Firefox
+                      "&::-webkit-scrollbar": {
+                        display: "none", // Chrome, Safari, Edge
+                      },
+                      msOverflowStyle: "none", // IE and Edge
+                      "& .MuiMenuItem-root": {
+                        py: 1.5,
+                        px: 2,
+                        fontSize: "16px",
+                        "&:hover": {
+                          backgroundColor: "#F9FAFB",
+                        },
+                        "&.Mui-selected": {
+                          backgroundColor: "#E5ECF6",
+                          "&:hover": {
+                            backgroundColor: "#D1E7F0",
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
                 sx={{
                   borderRadius: "100px",
                   fontSize: { xs: "14px", sm: "16px" },
+                  color: "#1C1C1C",
+                  height: "48px",
                   "& .MuiSelect-select": {
-                    py: { xs: 1.25, sm: 1.5 },
+                    py: 0,
                     px: { xs: 1.5, sm: 2 },
+                    height: "48px",
                     display: "flex",
                     alignItems: "center",
+                    minHeight: "48px",
                   },
                   "& .MuiSelect-icon": {
                     color: "#6C737F",
+                    right: { xs: 8, sm: 12 },
                   },
                 }}
                 renderValue={(value) => {
@@ -408,7 +364,14 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
                 }}
               >
                 {COUNTRY_CODES.map((country) => (
-                  <MenuItem key={country.code} value={country.code}>
+                  <MenuItem 
+                    key={country.code} 
+                    value={country.code}
+                    sx={{
+                      py: 1.5,
+                      px: 2,
+                    }}
+                  >
                     {country.flag} {country.iso} ({country.code}) - {country.country}
                   </MenuItem>
                 ))}
@@ -427,37 +390,24 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             onChange: (e) => {
               // Only allow digits
               const value = e.target.value.replace(/[^0-9]/g, "");
-              form.setValue("phoneNumber", value);
+              form.setValue("phoneNumber", value, { shouldValidate: true });
             },
           })}
           error={Boolean(form.formState.errors.phoneNumber)}
           helperText={form.formState.errors.phoneNumber?.message}
-          sx={{
+          sx={inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
+            mb: 0,
             "& .MuiInputBase-root": {
               height: "48px",
               minHeight: "48px",
             },
-            "& .MuiInputBase-input": {
-              color: "#1C1C1C",
-              height: "48px",
-              "&::placeholder": {
-                color: "#1C1C1C",
-                opacity: 1,
-              },
-            },
-            "& .MuiFormHelperText-root": {
-              marginTop: { xs: "4px", sm: "6px" },
-              marginLeft: 0,
-              fontSize: { xs: "11px", sm: "12px" },
-              lineHeight: { xs: 1.4, sm: 1.5 },
-            },
-          }}
+          })}
           slotProps={{
             input: {
               startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img src="/assets/icons/phone.svg" alt="phone-icon" style={{ width: "20px", height: "20px" }} />
-                </InputAdornment>
+                <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                  <Icon src="/assets/icons/phone.svg" alt="phone-icon" size={20} />
+                </Box>
               ),
             },
           }}
@@ -468,110 +418,32 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           variant="caption"
           sx={{
             color: "#F97066",
-            fontSize: { xs: "11px", sm: "12px" },
             mt: { xs: 0.5, sm: 0.75 },
             mb: 1.5,
             ml: 1.5,
             display: "block",
-            lineHeight: { xs: 1.4, sm: 1.5 },
+            ...helperTextSx,
           }}
         >
           {form.formState.errors.countryCode.message}
         </Typography>
       )}
 
-      <StyledTextField
+      <PasswordField
         fullWidth
         variant="outlined"
-        type={showPassword ? "text" : "password"}
         placeholder="Create Password"
         margin="none"
-        {...form.register("password")}
+        lockIconSrc="/assets/icons/lock_signup.svg"
+        {...form.register("password", {
+          onChange: () => form.trigger("password"),
+        })}
         error={Boolean(form.formState.errors.password)}
         helperText={form.formState.errors.password?.message}
-        sx={{
-          mb: form.formState.errors.password ? 0 : 1.5,
-          "& .MuiInputBase-root": {
-            height: "48px",
-            minHeight: "48px",
-            overflow: "hidden", // Ensure autofill styling stays within input box
-          },
-          "& .MuiInputBase-input": {
-            color: "#1C1C1C",
-            height: "48px",
-            borderRadius: "100px",
-            "&::placeholder": {
-              color: "#1C1C1C",
-              opacity: 1,
-            },
-            // Override browser autofill styling - only affects the input field box
-            "&:-webkit-autofill": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              caretColor: "#1C1C1C",
-              borderRadius: "100px",
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-            "&:-webkit-autofill:hover": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:focus": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:active": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-          },
-          "& .MuiFormHelperText-root": {
-            marginTop: { xs: "4px", sm: "6px" },
-            marginLeft: 0,
-            fontSize: { xs: "11px", sm: "12px" },
-            lineHeight: { xs: 1.4, sm: 1.5 },
-          },
-        }}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ mr: 0 }}>
-                <img src="/assets/icons/lock_signup.svg" alt="lock-icon" style={{ width: "20px", height: "20px" }} />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)}>
-                  <img
-                    src={showPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                    alt={showPassword ? "hide-password" : "show-password"}
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
-        }}
+        sx={inputFieldSx(Boolean(form.formState.errors.password))}
       />
-      {form.formState.errors.password && (
-        <Box sx={{ mb: 1.5, mt: 0.5 }} />
-      )}
 
-      <Box
-        sx={{
-          width: "100%",
-          position: { xs: "fixed", sm: "static" },
-          bottom: { xs: 0, sm: "auto" },
-          left: { xs: 0, sm: "auto" },
-          p: { xs: 2, sm: 0 },
-          backgroundColor: { xs: "#fff", sm: "transparent" },
-          zIndex: { xs: 10, sm: "auto" },
-          
-        }}
-      >
+      <Box sx={bottomButtonContainerSx}>
         <Button 
           fullWidth 
           type="submit" 
@@ -583,7 +455,11 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           }} 
           disabled={form.formState.isSubmitting}
         >
-          Next
+          {form.formState.isSubmitting ? (
+            <CircularProgress size={24} sx={{ color: "#fff" }} />
+          ) : (
+            "Next"
+          )}
         </Button>
 
         <Box sx={{ mt: { xs: 1, sm: 1 }, width: "100%" }}>
@@ -598,6 +474,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
         </Box>
 
         <Typography 
+          variant="body2" 
           textAlign="center" 
           sx={{ 
             fontSize: { xs: "14px", sm: "16px" }, 

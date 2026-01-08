@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Box, IconButton } from '@mui/material';
 // import { colors } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,38 @@ interface SignupLayoutProps {
 
 const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLayoutProps) => {
   const navigate = useNavigate();
+
+  // Hide scrollbar on body/html when this layout is mounted (but keep scrolling enabled)
+  useEffect(() => {
+    // Add CSS to hide scrollbar while keeping scroll functionality
+    const style = document.createElement('style');
+    style.id = 'hide-scrollbar-signup';
+    style.textContent = `
+      body::-webkit-scrollbar,
+      html::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      html {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Cleanup on unmount
+    return () => {
+      const styleElement = document.getElementById('hide-scrollbar-signup');
+      if (styleElement) {
+        styleElement.remove();
+      }
+    };
+  }, []);
 
   const handleBackClick = () => {
     if (onBackClick) {
@@ -29,6 +61,12 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
         flexDirection: "column",
         width: "100%",
         overflowX: "hidden",
+        // Hide scrollbar on root container
+        scrollbarWidth: "none", // Firefox
+        "&::-webkit-scrollbar": {
+          display: "none", // Chrome, Safari, Edge
+        },
+        msOverflowStyle: "none", // IE and Edge
       }}
     >
       {/* Header Section - Mobile Responsive */}
@@ -71,6 +109,7 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             alignItems: "center",
             gap: { xs: 0.75, sm: 1 },
             marginLeft: "auto",
+            marginRight: { xs: "0px", sm: "100px" },
           }}
         >
           <img 
@@ -109,6 +148,12 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
           pt: { xs: 0, sm: 0 },
           width: "100%",
           overflowY: "auto",
+          // Hide scrollbar but keep scrolling functionality
+          scrollbarWidth: "none", // Firefox
+          "&::-webkit-scrollbar": {
+            display: "none", // Chrome, Safari, Edge
+          },
+          msOverflowStyle: "none", // IE and Edge
         }}
       >
         <Box

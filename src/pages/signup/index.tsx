@@ -1,7 +1,7 @@
 import { useState, type JSX } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import SignupLayout from "../../layouts/SignupLayout";
 import { Step1 } from "./components/Step1";
 import { Step2 } from "./components/Step2";
@@ -13,10 +13,10 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 
 export default function SignUpPage(): JSX.Element {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [signup] = useSignupMutation();
-  const [updateProfile] = useUpdateProfileMutation();
+  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
   const [skipProfile] = useSkipProfileMutation();
   
   // Store form data for each step to preserve when navigating back
@@ -27,15 +27,26 @@ export default function SignUpPage(): JSX.Element {
 
   const handleStep1Submit = async (data: Step1FormInputs) => {
     try {
-      // Store Step 1 data
-      setStep1Data(data);
-      
       // Extract username without prefix
       const PREFIX = "ravwork.link/";
       const username = data.username.startsWith(PREFIX) 
         ? data.username.replace(PREFIX, "") 
         : data.username;
 
+      // Check if signup was already completed (only skip API if we have previous step1Data)
+      // This means we've already successfully submitted Step 1 before
+      const signupToken = localStorage.getItem("signupToken");
+      if (signupToken && step1Data) {
+        // Signup was already successful and we're navigating back, just proceed to next step
+        setStep1Data(data);
+        setCurrentStep(2);
+        return;
+      }
+
+      // Store Step 1 data
+      setStep1Data(data);
+      
+      // Call signup API (always call on first submission)
       const response = await signup({
         username,
         email: data.email,
@@ -81,16 +92,12 @@ export default function SignUpPage(): JSX.Element {
       
       // Step 4 is profile completion - call updateProfile API
       // All fields are optional
-      // Convert uploaded image file to URL string for API
-      let profilePhotoUrl: string | undefined = undefined;
-      if (data.profileImage) {
-        profilePhotoUrl = URL.createObjectURL(data.profileImage);
-      }
-
+      // profilePhoto is the full S3 URL extracted from the presigned URL after upload
+      // Format: https://bucket.s3.region.amazonaws.com/profile-photos/file.jpg
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
-        profilePhoto: profilePhotoUrl, // Send URL string to API
+        profilePhoto: data.profilePhoto || undefined, // Full S3 URL from presigned URL upload
         instagramUrl: data.instagram || undefined,
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
@@ -141,18 +148,23 @@ export default function SignUpPage(): JSX.Element {
   };
 
   const handleBackClick = () => {
+    // Only allow navigation between steps 1-4, never go back to login
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+    // If on step 1, do nothing (back button won't be shown anyway)
   };
+
+  // Check if signup was already successful (to prevent re-submission)
+  const isSignupCompleted = !!localStorage.getItem("signupToken");
 
   return (
     <SignupLayout showBackIcon={currentStep > 1} onBackClick={handleBackClick}>
       <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} />}
-        {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} />}
-        {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} />}
-        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} />}
+        {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} onBack={handleBackClick} isSignupCompleted={isSignupCompleted} />}
+        {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} onBack={handleBackClick} />}
+        {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} onBack={handleBackClick} />}
+        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} onBack={handleBackClick} isSubmitting={isUpdatingProfile} />}
       </Box>
     </SignupLayout>
   );

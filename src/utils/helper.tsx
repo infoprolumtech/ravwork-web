@@ -133,53 +133,17 @@ export const StyledHeaderTypography = styled((props: TypographyProps) => (
 }));
 
 const IV_KEY = import.meta.env.VITE_IV_KEY || "";
-const AES_KEY = import.meta.env.VITE_AES_KEY || ""; // 16 bytes for IV
-
-// export function encryptAES(plaintext: string): string {
-//   try {
-//     const key = CryptoJS.enc.Utf8.parse(AES_KEY);
-//     const iv = CryptoJS.enc.Utf8.parse(IV_KEY);
-
-//     const encrypted = CryptoJS.AES.encrypt(plaintext, key, {
-//       iv: iv,
-//       mode: CryptoJS.mode.CBC,
-//       padding: CryptoJS.pad.Pkcs7,
-//     });
-
-//     return encrypted.ciphertext.toString(CryptoJS.enc.Hex); // return hex
-//   } catch (error) {
-//     console.error("Encryption error:", error);
-//     return "";
-//   }
-// }
-
-// export function decryptAES(cipherHex: string): string {
-//   try {
-//     const key = CryptoJS.enc.Utf8.parse(AES_KEY);
-//     const iv = CryptoJS.enc.Utf8.parse(IV_KEY);
-
-//     const cipherParams = CryptoJS.enc.Hex.parse(cipherHex);
-//     const encryptedBase64 = CryptoJS.enc.Base64.stringify(cipherParams);
-
-//     const decrypted = CryptoJS.AES.decrypt(encryptedBase64, key, {
-//       iv: iv,
-//       mode: CryptoJS.mode.CBC,
-//       padding: CryptoJS.pad.Pkcs7,
-//     });
-
-//     return decrypted.toString(CryptoJS.enc.Utf8);
-//   } catch (error) {
-//     console.error("Decryption error:", error);
-//     return cipherHex;
-//   }
-// }
-
-
+const AES_KEY = import.meta.env.VITE_AES_KEY || "";
 
 export function encryptAES(plaintext: string): string {
+  if (!AES_KEY || !IV_KEY) {
+    console.error("AES encryption keys are not configured");
+    return "";
+  }
+
   try {
-    const key = CryptoJS.enc.Hex.parse(AES_KEY); // Hex decoding
-    const iv = CryptoJS.enc.Hex.parse(IV_KEY);   // Hex decoding
+    const key = CryptoJS.enc.Hex.parse(AES_KEY);
+    const iv = CryptoJS.enc.Hex.parse(IV_KEY);
 
     const encrypted = CryptoJS.AES.encrypt(plaintext, key, {
       iv,
@@ -187,20 +151,22 @@ export function encryptAES(plaintext: string): string {
       padding: CryptoJS.pad.Pkcs7,
     });
 
-    return encrypted.ciphertext.toString(CryptoJS.enc.Hex); // Return raw hex like backend
+    return encrypted.ciphertext.toString(CryptoJS.enc.Hex);
   } catch (error) {
     console.error("Encryption error:", error);
     return "";
   }
 }
 
-export function decryptAES(cipherHex: string|null|undefined): string {
+export function decryptAES(cipherHex: string | null | undefined): string {
+  if (!cipherHex || !AES_KEY || !IV_KEY) {
+    return "";
+  }
+
   try {
-    if (!cipherHex) return "";
     const key = CryptoJS.enc.Hex.parse(AES_KEY);
     const iv = CryptoJS.enc.Hex.parse(IV_KEY);
 
-    // Convert hex to Base64 for CryptoJS decryption
     const cipherParams = CryptoJS.enc.Hex.parse(cipherHex);
     const encryptedBase64 = CryptoJS.enc.Base64.stringify(cipherParams);
 

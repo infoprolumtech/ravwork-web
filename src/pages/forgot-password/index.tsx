@@ -6,27 +6,29 @@ import {
   InputAdornment,
   IconButton,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { useNavigate } from "react-router-dom";
 import { forgotPassSchema } from "../../utils/yup-config";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForgotPasswordMutation } from "../../rtk/endpoints/authApi";
 import GlobalDialog from "../../components/dialog";
+import PageIcon from "../../components/shared/PageIcon";
 
 type FormData = {
   email: string;
 };
 
 export default function ForgotPassword(): JSX.Element {
-  const [forgotPassword, { isSuccess }] = useForgotPasswordMutation();
+  const [forgotPassword, { isSuccess, isLoading: isResending }] = useForgotPasswordMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [showCheckMailPopup, setShowCheckMailPopup] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
@@ -34,9 +36,11 @@ export default function ForgotPassword(): JSX.Element {
     register,
     handleSubmit,
     watch,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: yupResolver(forgotPassSchema),
+    mode: "onChange", // Validate on change (while typing)
   });
 
   const watchedFields = watch();
@@ -123,32 +127,7 @@ export default function ForgotPassword(): JSX.Element {
           </IconButton>
         </Box>
         {/* Icon above title */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mb: { xs: 2, sm: 3 },
-            mt: { xs: 0, sm: 2 },
-          }}
-        >
-          <Box
-            sx={{
-              width: { xs: 32, sm: 36 },
-              height: { xs: 32, sm: 36 },
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: { xs: "5px", sm: "6.864px" },
-            }}
-          >
-            <img
-              src="/assets/icons/forgot_icon.svg"
-              alt="forgot-password-icon"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Box>
-        </Box>
+        <PageIcon iconSrc="/assets/icons/forgot_icon.svg" iconAlt="forgot-password-icon" />
 
         <Typography 
           variant="h5" 
@@ -178,7 +157,9 @@ export default function ForgotPassword(): JSX.Element {
           type="email"
           placeholder="Email"
           margin="normal"
-          {...register("email", { required: "Email is required" })}
+          {...register("email", {
+            onChange: () => trigger("email"),
+          })}
           error={Boolean(errors.email)}
           helperText={errors.email?.message}
           slotProps={{
@@ -220,7 +201,11 @@ export default function ForgotPassword(): JSX.Element {
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            Send Verification Link
+            {isSubmitting ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Send Verification Link"
+            )}
           </Button>
         </Box>
       </Box>
@@ -424,6 +409,7 @@ export default function ForgotPassword(): JSX.Element {
               <Button
                 variant="secondary"
                 onClick={handleResendVerificationLink}
+                disabled={isResending}
                 fullWidth
                 sx={{
                   textTransform: "none",
@@ -435,9 +421,17 @@ export default function ForgotPassword(): JSX.Element {
                   "&:hover": {
                     backgroundColor: "#1F2937",
                   },
+                  "&:disabled": {
+                    backgroundColor: "#384250",
+                    opacity: 0.7,
+                  },
                 }}
               >
-                Resend Verification Link
+                {isResending ? (
+                  <CircularProgress size={20} sx={{ color: "#fff" }} />
+                ) : (
+                  "Resend Verification Link"
+                )}
               </Button>
             </Box>
             {/* Large screen: Cancel and Resend buttons */}
@@ -475,15 +469,23 @@ export default function ForgotPassword(): JSX.Element {
               <Button
                 variant="secondary"
                 onClick={handleResendVerificationLink}
+                disabled={isResending}
                 sx={{
                   textTransform: "none",
                   px: 3,
                   py: 1.5,
                   fontSize: "16px",
                   borderRadius: "50px",
+                  "&:disabled": {
+                    opacity: 0.7,
+                  },
                 }}
               >
-                Resend Verification Link
+                {isResending ? (
+                  <CircularProgress size={20} sx={{ color: "#fff" }} />
+                ) : (
+                  "Resend Verification Link"
+                )}
               </Button>
             </Stack>
           </Box>

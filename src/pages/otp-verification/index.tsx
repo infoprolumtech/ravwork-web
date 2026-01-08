@@ -8,7 +8,7 @@ import {
 import SignupLayout from "../../layouts/SignupLayout";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // OTP verification is not part of the current API flow - this page may need to be updated
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import OTPInput from "../../components/Otp";
 // import { encryptAES } from "../../utils/helper";
@@ -16,7 +16,7 @@ import OTPInput from "../../components/Otp";
 export default function OTPVerificationPage(): JSX.Element {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   // TODO: OTP verification endpoints removed - need to implement based on new API
   // const [verifyOtp, { data: verifyData, isSuccess: isVerifySuccess }] = useVerifyOtpMutation();

@@ -335,10 +335,11 @@ export default function CustomQuestionsPage({
             </Stack>
             <Button
               startIcon={
-                <img 
-                  src="/assets/icons/add.svg" 
-                  alt="add" 
-                  style={{ width: "18px", height: "18px" }}
+                <Box
+                  component="img"
+                  src="/assets/icons/add.svg"
+                  alt="add"
+                  sx={{ width: "18px", height: "18px" }}
                 />
               }
               onClick={handleAddOption}
@@ -365,10 +366,11 @@ export default function CustomQuestionsPage({
         {/* Add Question Button */}
         <Button
           startIcon={
-            <img 
-              src="/assets/icons/add.svg" 
-              alt="add" 
-              style={{ width: "20px", height: "20px" }}
+            <Box
+              component="img"
+              src="/assets/icons/add.svg"
+              alt="add"
+              sx={{ width: "20px", height: "20px" }}
             />
           }
           onClick={handleAddQuestion}

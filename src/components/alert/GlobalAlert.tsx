@@ -1,11 +1,11 @@
 
 
 import React, { useEffect, useState, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { closeAlert } from "../../rtk/feature/alertSlice";
-import type { AppDispatch, RootState } from "../../rtk/store";
+import { useAppDispatch, useAppSelector } from "../../rtk/store";
+import type { RootState } from "../../rtk/store";
 
 
 // Define AlertState interface (adjust according to your actual alertSlice)
@@ -16,8 +16,8 @@ interface AlertState {
 }
 
 const GlobalAlert: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const alert = useSelector((state: RootState) => state.alert as AlertState);
+  const dispatch = useAppDispatch();
+  const alert = useAppSelector((state: RootState) => state.alert as AlertState);
   const [show, setShow] = useState<boolean>(alert?.open);
 
   useEffect(() => {

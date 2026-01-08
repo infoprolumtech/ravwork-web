@@ -20,8 +20,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../rtk/feature/authSlice";
+import { useAppSelector, useAppDispatch } from "../rtk/store";
+import type { RootState } from "../rtk/store";
 import theme from "../theme";
 import GlobalDialog from "../components/dialog";
 import CommonDialog from "../components/dialog/dialog-content/CommonDialog";
@@ -86,10 +87,10 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 // Memoized UserMenu component (currently unused but kept for future use)
 const UserMenu = React.memo(() => {
   const [openDialog, setOpenDialog] = React.useState(false);
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useAppSelector((state: RootState) => state.auth.user);
   const [logout] = useLogoutMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -202,8 +203,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const [openLogoutDialog, setOpenLogoutDialog] = React.useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state: RootState) => state.auth.user);
   const [logout] = useLogoutMutation();
 
   const handleDrawerToggle = React.useCallback(() => {
@@ -660,10 +661,11 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               <MenuIcon />
             </IconButton>
             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
-              <img
+              <Box
+                component="img"
                 src={currentPageInfo.icon}
                 alt={currentPageInfo.title}
-                style={{ width: "20px", height: "20px", flexShrink: 0 }}
+                sx={{ width: "20px", height: "20px", flexShrink: 0 }}
               />
               <Typography
                 variant="body2"
@@ -688,15 +690,17 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             gap: { xs: 0.5, md: 1 },
             flexShrink: 0,
           }}>
-            <img
+            <Box
+              component="img"
               src="/assets/icons/ravwork_logo_icon.svg"
               alt="Ravwork Icon"
-              style={{ height: "35px", width: "26px", maxWidth: "100%" }}
+              sx={{ height: "35px", width: "26px", maxWidth: "100%" }}
             />
-            <img
+            <Box
+              component="img"
               src="/assets/icons/ravwork_logo_text.svg"
               alt="Ravwork"
-              style={{ width: "69px", height: "20px", maxWidth: "100%" }}
+              sx={{ width: "69px", height: "20px", maxWidth: "100%" }}
             />
           </Box>
         </Toolbar>

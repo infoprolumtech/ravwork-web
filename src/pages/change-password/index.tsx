@@ -3,18 +3,19 @@ import {
     Box,
     Button,
     Typography,
-    InputAdornment,
+    CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { StyledTextField } from '../../utils/helper';
 import SignupLayout from '../../layouts/SignupLayout';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changePassSchema } from '../../utils/yup-config';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../rtk/store';
 import { showAlert } from '../../rtk/feature/alertSlice';
 import { useNavigate } from 'react-router-dom';
 import { useChangePasswordMutation, useLogoutMutation } from '../../rtk/endpoints/authApi';
 import { logoutUser } from '../../rtk/feature/authSlice';
+import PasswordField from '../../components/shared/PasswordField';
+import Icon from '../../components/shared/Icon';
 
 interface ChangePasswordFormInputs {
     newPassword: string;
@@ -24,7 +25,7 @@ interface ChangePasswordFormInputs {
 export default function ChangePasswordPage() {
     const [changePassword, {isSuccess}] = useChangePasswordMutation();
     const [logout] = useLogoutMutation();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const {
@@ -99,10 +100,10 @@ export default function ChangePasswordPage() {
                 padding: { xs: "5px", sm: "6.864px" },
               }}
             >
-              <img
+              <Icon
                 src="/assets/icons/forgot_icon.svg"
                 alt="forgot-password-icon"
-                style={{ width: "100%", height: "100%" }}
+                sx={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             </Box>
           </Box>
@@ -132,55 +133,25 @@ export default function ChangePasswordPage() {
           </Typography>
 
           {/* New Password Field */}
-          <StyledTextField
+          <PasswordField
             fullWidth
-            type="password"
             placeholder="Enter new password"
             margin="normal"
             {...register("newPassword")}
             error={Boolean(errors.newPassword)}
             helperText={errors.newPassword?.message}
             sx={{ mb: 1.5 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img
-                      src="/assets/icons/lock.svg"
-                      alt="lock-icon"
-                      loading="lazy"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </InputAdornment>
-                ),
-              },
-            }}
           />
 
           {/* Confirm Password Field */}
-          <StyledTextField
+          <PasswordField
             fullWidth
-            type="password"
             placeholder="Confirm new password"
             margin="normal"
             {...register("confirmPassword")}
             error={Boolean(errors.confirmPassword)}
             helperText={errors.confirmPassword?.message}
             sx={{ mb: 1.5 }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img
-                      src="/assets/icons/lock.svg"
-                      alt="lock-icon"
-                      loading="lazy"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </InputAdornment>
-                ),
-              },
-            }}
           />
 
           <Box
@@ -207,7 +178,11 @@ export default function ChangePasswordPage() {
                 height: { xs: "44px", sm: "48px" },
               }}
             >
-              {isSubmitting ? "Changing Password..." : "Change Password"}
+              {isSubmitting ? (
+                <CircularProgress size={24} sx={{ color: "#fff" }} />
+              ) : (
+                "Change Password"
+              )}
             </Button>
           </Box>
         </Box>

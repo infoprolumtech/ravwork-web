@@ -1,25 +1,35 @@
 import { useState, useEffect } from "react";
-import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from "@mui/material";
+import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton, CircularProgress } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step4Schema } from "../validationSchemas";
 import type { Step4FormInputs } from "../types";
+import PageIcon from "../../../components/shared/PageIcon";
+import Icon from "../../../components/shared/Icon";
+import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } from "./commonStyles";
+import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
+import { useAppDispatch } from "../../../rtk/store";
+import { showAlert } from "../../../rtk/feature/alertSlice";
 
 interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
   onSkip: () => void;
   initialData?: Step4FormInputs | null;
+  onBack?: () => void;
+  isSubmitting?: boolean;
 }
 
-export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
-  const navigate = useNavigate();
+export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = false }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
+  const dispatch = useAppDispatch();
+  const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
 
   const form = useForm<Step4FormInputs>({
     resolver: yupResolver(step4Schema) as any,
+    mode: "onChange", // Validate on change (while typing)
     defaultValues: initialData || { businessName: "", businessDescription: "", instagram: "", facebook: "", linkedin: "" },
   });
 
@@ -40,24 +50,105 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
     }
   }, [initialData, form]);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+      dispatch(showAlert({ 
+        message: "Invalid file type. Please upload a PNG or JPG image.", 
+        severity: "error" 
+      }));
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      const fileName = `user-${timestamp}-${randomString}.${fileExtension}`;
+
+      // Step 1: Generate presigned URL
+      const presignedResponse = await generatePresignedUrl({
+        type: "PUT",
+        files: [
+          {
+            folderName: "profile-photos",
+            fileName: fileName,
+          },
+        ],
+      }).unwrap();
+
+      if (!presignedResponse?.data?.[0]?.signedUrl) {
+        throw new Error("Failed to generate presigned URL");
+      }
+
+      const signedUrl = presignedResponse.data[0].signedUrl;
+
+      // Step 2: Upload file to S3 using presigned URL
+      // Note: Do not set Content-Type header as it's already included in the presigned URL signature
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image to S3");
+      }
+
+      // Step 3: Extract the full S3 URL from the presigned URL (remove query parameters)
+      // The signedUrl format: https://bucket.s3.region.amazonaws.com/path/file.jpg?X-Amz-Signature=...
+      // We need the clean URL: https://bucket.s3.region.amazonaws.com/path/file.jpg
+      // This URL will be sent to the backend API when user clicks Next
+      const s3Url = new URL(signedUrl);
+      const profilePhotoUrl = `${s3Url.origin}${s3Url.pathname}`;
+
+      // Step 4: Store file (for preview) and full S3 URL (for API submission) in form
       form.setValue("profileImage", file);
+      form.setValue("profilePhoto", profilePhotoUrl);
+
+      // Update preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+      dispatch(showAlert({ 
+        message: "Profile picture uploaded successfully", 
+        severity: "success" 
+      }));
+    } catch (error: any) {
+      console.error("Image upload error:", error);
+      dispatch(showAlert({ 
+        message: error?.data?.message || "Failed to upload image. Please try again.", 
+        severity: "error" 
+      }));
+      // Clear file input
+      event.target.value = "";
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleSubmit = (data: Step4FormInputs) => {
+  const handleSubmit = async (data: Step4FormInputs) => {
+    // Validate form before submitting (only when clicking Next)
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return; // Don't submit if validation fails
+    }
     onNext(data);
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Use parent's navigation handler to stay within signup flow
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -74,27 +165,9 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
       onSubmit={form.handleSubmit(handleSubmit)}
     >
       {/* Back Icon - Above progress bar for large screens */}
-      <Box
-        sx={{
-          display: { xs: "none", md: "block" },
-          mb: 2,
-        }}
-      >
-        <IconButton
-          onClick={handleBackClick}
-          sx={{
-            color: "text.primary",
-            p: 1,
-            minWidth: "auto",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <img
-            src="/assets/icons/back-arrow.svg"
-            alt="back-arrow"
-            style={{ width: "24px", height: "24px" }}
-          />
+      <Box sx={backIconButtonSx}>
+        <IconButton onClick={handleBackClick} sx={iconButtonSx}>
+          <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24} />
         </IconButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
@@ -102,44 +175,10 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
       </Box>
       
       {/* Icon above title */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mb: { xs: 2, sm: 3 },
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: 32, sm: 36 },
-            height: { xs: 32, sm: 36 },
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: { xs: "5px", sm: "6.864px" },
-          }}
-        >
-          <img
-            src="/assets/icons/profile_icon.svg"
-            alt="icon"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
-      </Box>
+      <PageIcon iconSrc="/assets/icons/profile_icon.svg" iconAlt="icon" />
       
       {/* Title - Centered */}
-      <Typography 
-        variant="h5" 
-        textAlign="center" 
-        mb={{ xs: 1.5, sm: 2 }} 
-        sx={{ 
-          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
-          color: "#1C1C1C", 
-          fontWeight: 600, 
-          textAlign: "center",
-        }}
-      >
+      <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
         Profile Set Up
       </Typography>
 
@@ -167,13 +206,15 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Enter Name or Business Name"
             margin="normal"
-            {...form.register("businessName")}
+            {...form.register("businessName", {
+              onChange: () => form.trigger("businessName"),
+            })}
             error={Boolean(form.formState.errors.businessName)}
             helperText={form.formState.errors.businessName?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
               },
             }}
@@ -196,7 +237,9 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             margin="normal"
             multiline
             rows={1}
-            {...form.register("businessDescription")}
+            {...form.register("businessDescription", {
+              onChange: () => form.trigger("businessDescription"),
+            })}
             error={Boolean(form.formState.errors.businessDescription)}
             helperText={form.formState.errors.businessDescription?.message}
             sx={{ 
@@ -207,12 +250,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
-                // Hide scrollbar but keep scrolling functionality
-                scrollbarWidth: "none", // Firefox
+                scrollbarWidth: "none",
                 "&::-webkit-scrollbar": {
-                  display: "none", // Chrome, Safari, Edge
+                  display: "none",
                 },
-                msOverflowStyle: "none", // IE and Edge
+                msOverflowStyle: "none",
               },
             }}
           />
@@ -232,7 +274,21 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
         <Grid size={{ xs: 12, sm: 8 }}>
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <Box sx={{ position: "relative", display: "inline-block" }}>
-              {profileImagePreview ? (
+              {isUploading ? (
+                <Box
+                  sx={{
+                    width: { xs: 120, sm: 150 },
+                    height: { xs: 120, sm: 150 },
+                    borderRadius: 2,
+                    border: "1px solid #D1D5DB",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CircularProgress size={40} />
+                </Box>
+              ) : profileImagePreview ? (
                 <Box
                   component="img"
                   src={profileImagePreview}
@@ -264,10 +320,12 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
                 id="profile-image-upload"
                 type="file"
                 onChange={handleImageUpload}
+                disabled={isUploading}
               />
               <label htmlFor="profile-image-upload">
                 <Button
                   component="span"
+                  disabled={isUploading}
                   sx={{
                     position: "absolute",
                     top: "50%",
@@ -280,9 +338,10 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
                     width: 40,
                     height: 40,
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                    "&:disabled": { backgroundColor: "rgba(0,0,0,0.3)" },
                   }}
                 >
-                  <img src="/assets/icons/upload.svg" alt="upload" style={{ width: "20px", height: "20px", filter: "invert(1)" }} />
+                  <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
                 </Button>
               </label>
               {profileImagePreview && (
@@ -302,6 +361,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
                   onClick={() => {
                     setProfileImagePreview("");
                     form.setValue("profileImage", undefined);
+                    form.setValue("profilePhoto", undefined);
                   }}
                 >
                   Remove Profile Picture
@@ -334,7 +394,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("instagram")}
+            {...form.register("instagram", {
+              onChange: () => form.trigger("instagram"),
+            })}
+            error={Boolean(form.formState.errors.instagram)}
+            helperText={form.formState.errors.instagram?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
@@ -346,7 +410,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/instagram.svg" alt="instagram" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/instagram.svg" alt="instagram" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -363,7 +427,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("facebook")}
+            {...form.register("facebook", {
+              onChange: () => form.trigger("facebook"),
+            })}
+            error={Boolean(form.formState.errors.facebook)}
+            helperText={form.formState.errors.facebook?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
@@ -375,7 +443,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/Facebook.svg" alt="facebook" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/Facebook.svg" alt="facebook" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -392,7 +460,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("linkedin")}
+            {...form.register("linkedin", {
+              onChange: () => form.trigger("linkedin"),
+            })}
+            error={Boolean(form.formState.errors.linkedin)}
+            helperText={form.formState.errors.linkedin?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
@@ -404,7 +476,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/linkedin.svg" alt="linkedin" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/linkedin.svg" alt="linkedin" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -413,18 +485,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
         </Grid>
       </Grid>
 
-      <Box
-        sx={{
-          width: "100%",
-          position: { xs: "fixed", sm: "static" },
-          bottom: { xs: 0, sm: "auto" },
-          left: { xs: 0, sm: "auto" },
-          p: { xs: 2, sm: 0 },
-          backgroundColor: { xs: "#fff", sm: "transparent" },
-          zIndex: { xs: 10, sm: "auto" },
-          
-        }}
-      >
+      <Box sx={bottomButtonContainerSx}>
         <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} sx={{ mt: { xs: 0, sm: 2 } }}>
           <Button
             fullWidth
@@ -450,13 +511,17 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             fullWidth 
             type="submit" 
             variant="secondary" 
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isSubmitting}
             sx={{ 
               textTransform: "none",
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            Next
+            {(form.formState.isSubmitting || isSubmitting) ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Next"
+            )}
           </Button>
         </Stack>
       </Box>
