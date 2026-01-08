@@ -5,15 +5,59 @@ import {
   Button,
   Card,
   CardContent,
+  Stack,
   Typography,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
 
-
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
+  const InfoItem = ({
+    icon,
+    value,
+    label,
+    showImg = true,
+  }: {
+    icon: string;
+    value: string;
+    label: string;
+    showImg?: boolean;
+  }) => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {showImg && (
+        <Box
+          component="img"
+          src="./assets/icons/Vector 37.svg"
+          alt=""
+          sx={{ display: { xs: "none", sm: "block" }, marginRight: "24px" }}
+        />
+      )}
 
+      <Box
+        sx={{
+          width: 24,
+          height: 24,
+          bgcolor: "#FFFFFF",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "50%",
+        }}
+      >
+        <img src={icon} width={15.2} height={15.2} alt="" />
+      </Box>
+
+      <Box>
+        <Typography fontWeight={600} fontSize={14} lineHeight="20px">
+          {value}
+        </Typography>
+        <Typography fontSize={12} fontWeight={500}>
+          {label}
+        </Typography>
+      </Box>
+    </Box>
+  );
   const id = "12345"; // Example user ID, replace with actual data as needed
   return (
     <ServiceProviderLayout>
@@ -114,6 +158,37 @@ export default function MyProfilePage(): JSX.Element {
                 </Box>
               </Box>
             </Box>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              marginTop={"14px"}
+              justifyContent={"space-between"}
+            >
+              <InfoItem
+                icon="./assets/icons/personalcard.svg"
+                value="Sarah Johnson"
+                label="Company Name"
+                showImg={false}
+              />
+
+              <InfoItem
+                icon="./assets/icons/mailwBG.svg"
+                value="sarahjohnson@email.com"
+                label="Service Provider email id "
+              />
+
+              <InfoItem
+                icon="./assets/icons/phone.svg"
+                value="+1 999-999-8989"
+                label="Client Phone"
+              />
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              ></Box>
+            </Stack>
           </CardContent>
         </Card>
         <Card
@@ -145,7 +220,7 @@ export default function MyProfilePage(): JSX.Element {
             {/* Social / Benefits */}
             <Box mt={2} display="flex" flexDirection="column" gap={1.2}>
               <Box display="flex" alignItems="center" gap={1}>
-                <img src="./assets/icons/instagram.svg" alt=""/>
+                <img src="./assets/icons/instagram.svg" alt="" />
                 <Typography fontSize={13} color="#6C737F">
                   Paste Url goes here of insta
                 </Typography>
@@ -159,7 +234,7 @@ export default function MyProfilePage(): JSX.Element {
               </Box>
 
               <Box display="flex" alignItems="center" gap={1}>
-                <img src="./assets/icons/linkedin.svg" alt=""/>
+                <img src="./assets/icons/linkedin.svg" alt="" />
                 <Typography fontSize={13} color="#6C737F">
                   Benefits of Premium Plan Goes here
                 </Typography>
