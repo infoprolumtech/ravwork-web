@@ -20,7 +20,8 @@ export interface Step3FormInputs {
 export interface Step4FormInputs {
   businessName?: string;
   businessDescription?: string;
-  profileImage?: File; // File object for UI, will be converted to URL for API
+  profileImage?: File; // File object for UI preview
+  profilePhoto?: string; // S3 path (e.g., "profile-photos/<generated-file-name>")
   instagram?: string;
   facebook?: string;
   linkedin?: string;

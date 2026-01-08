@@ -87,6 +87,20 @@ const authApi = api.injectEndpoints({
         body,
       }),
     }),
+    // POST /api/v1/user/signed-urls - Generate presigned URLs for S3 upload
+    generatePresignedUrl: builder.mutation({
+      query: (body: {
+        type: "PUT" | "GET";
+        files: Array<{
+          folderName: string;
+          fileName: string;
+        }>;
+      }) => ({
+        url: "/user/signed-urls",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -101,4 +115,5 @@ export const {
   useResetPasswordMutation,
   useLogoutMutation,
   useChangePasswordMutation,
+  useGeneratePresignedUrlMutation,
 } = authApi;

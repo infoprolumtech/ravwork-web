@@ -92,24 +92,11 @@ export default function SignUpPage(): JSX.Element {
       
       // Step 4 is profile completion - call updateProfile API
       // All fields are optional
-      // Convert uploaded image file to base64 data URI for API
-      let profilePhotoUrl: string | undefined = undefined;
-      if (data.profileImage) {
-        // Convert File to base64 data URI (valid URI format)
-        profilePhotoUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve(reader.result as string);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(data.profileImage!);
-        });
-      }
-
+      // Use the profilePhoto path from S3 upload (e.g., "profile-photos/<generated-file-name>")
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
-        profilePhoto: profilePhotoUrl, // Send base64 data URI to API
+        profilePhoto: data.profilePhoto || undefined, // S3 path from presigned URL upload
         instagramUrl: data.instagram || undefined,
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
