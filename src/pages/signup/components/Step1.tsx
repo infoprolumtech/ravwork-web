@@ -48,7 +48,7 @@ interface Step1Props {
   isSignupCompleted?: boolean;
 }
 
-export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }: Step1Props) => {
+export const Step1 = ({ onNext, initialData }: Step1Props) => {
   const navigate = useNavigate();
   const PREFIX = "ravwork.link/";
 
