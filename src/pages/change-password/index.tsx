@@ -3,10 +3,8 @@ import {
     Box,
     Button,
     Typography,
-    InputAdornment,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { StyledTextField } from '../../utils/helper';
 import SignupLayout from '../../layouts/SignupLayout';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { changePassSchema } from '../../utils/yup-config';

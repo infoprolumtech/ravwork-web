@@ -53,17 +53,21 @@ export const inputTextSx: SxProps<Theme> = {
   height: "48px",
   borderRadius: "100px",
   "&::placeholder": {
-    color: "#1C1C1C",
+    color: "#6C737F !important",
+    opacity: 1,
+  },
+  "& .MuiInputBase-input::placeholder": {
+    color: "#6C737F !important",
     opacity: 1,
   },
 };
 
 // Input field sx - minimal override since StyledTextField already has autofill styles
 export const inputFieldSx = (
-  hasError: boolean,
+  _hasError: boolean,
   additionalSx?: SxProps<Theme>
 ): SxProps<Theme> => ({
-  mb: hasError ? 0 : 1.5,
+  mb: 1.5, // Consistent spacing between fields
   "& .MuiInputBase-root": inputBaseSx,
   "& .MuiInputBase-input": inputTextSx,
   "& .MuiFormHelperText-root": helperTextSx,

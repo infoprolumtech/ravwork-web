@@ -10,7 +10,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 // OTP verification is not part of the current API flow - this page may need to be updated
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import Icon from "../../components/shared/Icon";
 import OTPInput from "../../components/Otp";
 // import { encryptAES } from "../../utils/helper";
 

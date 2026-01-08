@@ -8,15 +8,67 @@ export const step1Schema = yup.object().shape({
       const PREFIX = "ravwork.link/";
       if (!value) return false;
       // Check if value is longer than just the prefix
-      return value.length > PREFIX.length;
+      const usernameWithoutPrefix = value.replace(PREFIX, "");
+      return usernameWithoutPrefix.length > 0;
+    })
+    .test("username-length", "Username must be between 3 and 50 characters", function(value) {
+      const PREFIX = "ravwork.link/";
+      if (!value) return false;
+      const usernameWithoutPrefix = value.replace(PREFIX, "");
+      return usernameWithoutPrefix.length >= 3 && usernameWithoutPrefix.length <= 50;
+    })
+    .test("username-format", "Alphanumeric and underscores, must start with letter", function(value) {
+      const PREFIX = "ravwork.link/";
+      if (!value) return false;
+      const usernameWithoutPrefix = value.replace(PREFIX, "");
+      if (usernameWithoutPrefix.length === 0) return true; // Length validation will catch empty
+      // Must start with letter
+      if (!/^[a-zA-Z]/.test(usernameWithoutPrefix)) {
+        return this.createError({
+          message: "Alphanumeric and underscores, must start with letter",
+        });
+      }
+      // Only alphanumeric and underscores
+      if (!/^[a-zA-Z0-9_]+$/.test(usernameWithoutPrefix)) {
+        return this.createError({
+          message: "Alphanumeric and underscores, must start with letter",
+        });
+      }
+      return true;
     }),
-  email: yup.string().email("Must be a valid email format").required("Email is required"),
-  countryCode: yup.string().required("Country code is required"),
-  phoneNumber: yup.string().required("Phone number is required").min(7, "Phone number must be at least 7 digits"),
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Must be a valid email format"),
+  countryCode: yup
+    .string()
+    .required("Country code is required")
+    .test("country-code-format", "Country code must start with +", function(value) {
+      return value ? value.startsWith("+") : false;
+    }),
+  phoneNumber: yup
+    .string()
+    .required("Phone number is required")
+    .matches(/^\d+$/, "Phone number must contain only digits")
+    .min(7, "Phone number must be at least 7 digits")
+    .max(15, "Phone number must be at most 15 digits"),
   password: yup
     .string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(8, "Password must be at least 8 characters")
+    .max(15, "Password must be at most 15 characters")
+    .test("password-uppercase", "Password must contain at least one uppercase letter", function(value) {
+      return value ? /[A-Z]/.test(value) : false;
+    })
+    .test("password-lowercase", "Password must contain at least one lowercase letter", function(value) {
+      return value ? /[a-z]/.test(value) : false;
+    })
+    .test("password-number", "Password must contain at least one number", function(value) {
+      return value ? /\d/.test(value) : false;
+    })
+    .test("password-special", "Password must contain at least one special character", function(value) {
+      return value ? /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value) : false;
+    }),
 });
 
 export const step2Schema = yup.object().shape({

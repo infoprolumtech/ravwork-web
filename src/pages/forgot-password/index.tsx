@@ -13,14 +13,12 @@ import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import Icon from "../../components/shared/Icon";
-import PageIcon from "../../components/shared/PageIcon";
-import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import { useNavigate } from "react-router-dom";
 import { forgotPassSchema } from "../../utils/yup-config";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForgotPasswordMutation } from "../../rtk/endpoints/authApi";
 import GlobalDialog from "../../components/dialog";
+import PageIcon from "../../components/shared/PageIcon";
 
 type FormData = {
   email: string;
@@ -126,32 +124,7 @@ export default function ForgotPassword(): JSX.Element {
           </IconButton>
         </Box>
         {/* Icon above title */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mb: { xs: 2, sm: 3 },
-            mt: { xs: 0, sm: 2 },
-          }}
-        >
-          <Box
-            sx={{
-              width: { xs: 32, sm: 36 },
-              height: { xs: 32, sm: 36 },
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: { xs: "5px", sm: "6.864px" },
-            }}
-          >
-            <img
-              src="/assets/icons/forgot_icon.svg"
-              alt="forgot-password-icon"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Box>
-        </Box>
+        <PageIcon iconSrc="/assets/icons/forgot_icon.svg" iconAlt="forgot-password-icon" />
 
         <Typography 
           variant="h5" 

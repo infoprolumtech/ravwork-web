@@ -1,11 +1,12 @@
-import React, { useEffect, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import {
   Box,
   Button,
   Typography,
+  IconButton,
+  Stack,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
-import { StyledTextField } from "../../utils/helper";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,10 +16,8 @@ import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import PasswordField from "../../components/shared/PasswordField";
 import PageIcon from "../../components/shared/PageIcon";
-import Icon from "../../components/shared/Icon";
 import GlobalDialog from "../../components/dialog";
 import CloseIcon from "@mui/icons-material/Close";
-import { Stack } from "@mui/material";
 
 interface ResetPasswordFormInputs {
   password: string;
@@ -210,6 +209,7 @@ export default function ResetPasswordPage(): JSX.Element {
           fullWidth
           placeholder="Enter new password"
           margin="normal"
+          lockIconSrc="/assets/icons/lock_signup.svg"
           {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
@@ -220,6 +220,7 @@ export default function ResetPasswordPage(): JSX.Element {
           fullWidth
           placeholder="Confirm new password"
           margin="normal"
+          lockIconSrc="/assets/icons/lock_signup.svg"
           {...register("confirmPassword")}
           error={Boolean(errors.confirmPassword)}
           helperText={errors.confirmPassword?.message}

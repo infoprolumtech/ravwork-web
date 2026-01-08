@@ -5,7 +5,6 @@ import {
   Typography,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
-import { StyledTextField } from "../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,7 +13,6 @@ import { useLoginMutation } from "../../rtk/endpoints/authApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { useAppDispatch } from "../../rtk/store";
 import { loginUser } from "../../rtk/feature/authSlice";
-import Icon from "../../components/shared/Icon";
 import PageIcon from "../../components/shared/PageIcon";
 import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import PasswordField from "../../components/shared/PasswordField";
@@ -113,6 +111,7 @@ export default function LoginPage(): JSX.Element {
           variant="outlined"
           placeholder="Enter Password"
           margin="normal"
+          lockIconSrc="/assets/icons/lock_signup.svg"
           {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
@@ -174,6 +173,7 @@ export default function LoginPage(): JSX.Element {
               component="span"
               sx={{ 
                 fontWeight: 600, 
+                fontSize: { xs: "14px", sm: "16px" },
                 color: "#111927", 
                 cursor: "pointer", 
                 "&:hover": { textDecoration: "underline" } 

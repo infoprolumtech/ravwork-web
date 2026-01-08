@@ -4,7 +4,6 @@ import {
   MenuItem,
   Select,
   useTheme,
-  Box,
 } from "@mui/material";
 import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
 import Icon from "../shared/Icon";

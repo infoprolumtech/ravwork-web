@@ -1,4 +1,4 @@
-import { Button, Stack, Typography, Box } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import Icon from "../../shared/Icon";
 
 interface CommonDialogProps {
