@@ -7,7 +7,6 @@ import {
   Stack,
   IconButton,
 } from "@mui/material";
-import { Edit } from "@mui/icons-material";
 
 export interface ServiceOfferedCardProps {
   id: string;
@@ -15,7 +14,6 @@ export interface ServiceOfferedCardProps {
   description: string;
   price: string;
   contactMethod: string;
-  iconColor: string;
   iconType: "lightning" | "document";
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -27,7 +25,6 @@ export default function ServiceOfferedCard({
   description,
   price,
   contactMethod,
-  iconColor,
   iconType,
   onEdit,
   onDelete,
@@ -69,14 +66,35 @@ export default function ServiceOfferedCard({
               width: { xs: 40, md: 48 },
               height: { xs: 40, md: 48 },
               borderRadius: "50%",
-              backgroundColor: iconColor,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            {iconType === "lightning" ? (
+            {contactMethod.toLowerCase().includes("quick contact") ? (
+              <Box
+                component="img"
+                src="/assets/icons/service_offered_icons/quick_contact.svg"
+                alt="Quick Contact"
+                sx={{
+                  width: "39px",
+                  height: "39px",
+                  objectFit: "contain",
+                }}
+              />
+            ) : contactMethod.toLowerCase().includes("custom form") ? (
+              <Box
+                component="img"
+                src="/assets/icons/service_offered_icons/custom_form.svg"
+                alt="Custom Form"
+                sx={{
+                  width: "39px",
+                  height: "39px",
+                  objectFit: "contain",
+                }}
+              />
+            ) : iconType === "lightning" ? (
               <Box
                 component="img"
                 src="/assets/icons/sidebar_menu_icon/flash.svg"
@@ -158,6 +176,7 @@ export default function ServiceOfferedCard({
               minWidth: "auto",
               px: { xs: 2, md: 2.5 },
               py: { xs: 0.75, md: 1 },
+              height: { xs: 36, md: 40 },
               borderRadius: "8px",
               "&:hover": {
                 backgroundColor: "#D92D20",
@@ -179,7 +198,15 @@ export default function ServiceOfferedCard({
               },
             }}
           >
-            <Edit sx={{ fontSize: { xs: 18, md: 20 } }} />
+            <Box
+              component="img"
+              src="/assets/icons/service_offered_icons/service_edit.svg"
+              alt="Edit"
+              sx={{
+                width: "20px",
+                height: "20px",
+              }}
+            />
           </IconButton>
         </Stack>
 
