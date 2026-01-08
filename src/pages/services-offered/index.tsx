@@ -188,7 +188,6 @@ export default function ServicesOfferedPage(): JSX.Element {
                   description={service.description}
                   price={service.price}
                   contactMethod={service.contactMethod}
-                  iconColor={service.iconColor}
                   iconType={service.iconType}
                   onEdit={handleEditService}
                   onDelete={handleDeleteService}
