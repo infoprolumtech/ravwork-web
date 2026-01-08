@@ -71,6 +71,7 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             alignItems: "center",
             gap: { xs: 0.75, sm: 1 },
             marginLeft: "auto",
+            marginRight: "40px",
           }}
         >
           <img 

@@ -7,6 +7,9 @@ import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step4Schema } from "../validationSchemas";
 import type { Step4FormInputs } from "../types";
+import PageIcon from "../../../components/shared/PageIcon";
+import Icon from "../../../components/shared/Icon";
+import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } from "./commonStyles";
 
 interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
@@ -74,27 +77,9 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
       onSubmit={form.handleSubmit(handleSubmit)}
     >
       {/* Back Icon - Above progress bar for large screens */}
-      <Box
-        sx={{
-          display: { xs: "none", md: "block" },
-          mb: 2,
-        }}
-      >
-        <IconButton
-          onClick={handleBackClick}
-          sx={{
-            color: "text.primary",
-            p: 1,
-            minWidth: "auto",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <img
-            src="/assets/icons/back-arrow.svg"
-            alt="back-arrow"
-            style={{ width: "24px", height: "24px" }}
-          />
+      <Box sx={backIconButtonSx}>
+        <IconButton onClick={handleBackClick} sx={iconButtonSx}>
+          <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24} />
         </IconButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
@@ -102,44 +87,10 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
       </Box>
       
       {/* Icon above title */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mb: { xs: 2, sm: 3 },
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: 32, sm: 36 },
-            height: { xs: 32, sm: 36 },
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: { xs: "5px", sm: "6.864px" },
-          }}
-        >
-          <img
-            src="/assets/icons/profile_icon.svg"
-            alt="icon"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
-      </Box>
+      <PageIcon iconSrc="/assets/icons/profile_icon.svg" iconAlt="icon" />
       
       {/* Title - Centered */}
-      <Typography 
-        variant="h5" 
-        textAlign="center" 
-        mb={{ xs: 1.5, sm: 2 }} 
-        sx={{ 
-          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
-          color: "#1C1C1C", 
-          fontWeight: 600, 
-          textAlign: "center",
-        }}
-      >
+      <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
         Profile Set Up
       </Typography>
 
@@ -173,7 +124,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
-                fontSize: "16px",
+                fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
               },
             }}
@@ -207,12 +158,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
                 fontWeight: 400,
-                // Hide scrollbar but keep scrolling functionality
-                scrollbarWidth: "none", // Firefox
+                scrollbarWidth: "none",
                 "&::-webkit-scrollbar": {
-                  display: "none", // Chrome, Safari, Edge
+                  display: "none",
                 },
-                msOverflowStyle: "none", // IE and Edge
+                msOverflowStyle: "none",
               },
             }}
           />
@@ -282,7 +232,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
                   }}
                 >
-                  <img src="/assets/icons/upload.svg" alt="upload" style={{ width: "20px", height: "20px", filter: "invert(1)" }} />
+                  <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
                 </Button>
               </label>
               {profileImagePreview && (
@@ -346,7 +296,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/instagram.svg" alt="instagram" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/instagram.svg" alt="instagram" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -375,7 +325,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/Facebook.svg" alt="facebook" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/Facebook.svg" alt="facebook" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -404,7 +354,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
               input: {
                 startAdornment: (
                   <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/linkedin.svg" alt="linkedin" style={{ width: "24px", height: "24px" }} />
+                    <Icon src="/assets/icons/linkedin.svg" alt="linkedin" size={24} />
                   </InputAdornment>
                 ),
               },
@@ -413,18 +363,7 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
         </Grid>
       </Grid>
 
-      <Box
-        sx={{
-          width: "100%",
-          position: { xs: "fixed", sm: "static" },
-          bottom: { xs: 0, sm: "auto" },
-          left: { xs: 0, sm: "auto" },
-          p: { xs: 2, sm: 0 },
-          backgroundColor: { xs: "#fff", sm: "transparent" },
-          zIndex: { xs: 10, sm: "auto" },
-          
-        }}
-      >
+      <Box sx={bottomButtonContainerSx}>
         <Stack direction="row" spacing={{ xs: 1.5, sm: 2 }} sx={{ mt: { xs: 0, sm: 2 } }}>
           <Button
             fullWidth

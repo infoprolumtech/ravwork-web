@@ -1,19 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type {
+  AlertState,
+  ShowAlertPayload,
+  ShowJobPostModalPayload,
+} from "../../types";
+
+const initialState: AlertState = {
+  open: false,
+  message: "",
+  severity: "info",
+  jobPostModal: {
+    jobPostModalShow: false,
+    jobPostType: null,
+  },
+  isRedirection: false,
+};
 
 const alertSlice = createSlice({
   name: "alert",
-  initialState: {
-    open: false,
-    message: "",
-    severity: "info", // info, success, warning, error
-    jobPostModal: {
-      jobPostModalShow: false,
-      jobPostType: null,
-    },
-    isRedirection: false,
-  },
+  initialState,
   reducers: {
-    showAlert: (state, action) => {
+    showAlert: (state, action: PayloadAction<ShowAlertPayload>) => {
       state.open = true;
       state.message = action.payload.message;
       state.severity = action.payload.severity || "info";
@@ -23,11 +30,11 @@ const alertSlice = createSlice({
       state.message = "";
       state.severity = "info";
     },
-    showJobPostModal: (state, action) => {
+    showJobPostModal: (state, action: PayloadAction<ShowJobPostModalPayload>) => {
       state.jobPostModal.jobPostModalShow = action.payload.jobPostModalShow;
       state.jobPostModal.jobPostType = action.payload.jobPostType;
     },
-    setIsRedirection: (state, action) => {
+    setIsRedirection: (state, action: PayloadAction<boolean>) => {
       state.isRedirection = action.payload;
     },
   },

@@ -1,6 +1,75 @@
-# React + TypeScript + Vite
+# Ravwork Link Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React + TypeScript + Vite application for service providers to manage their services, jobs, and profiles.
+
+## Overview
+
+This is a service provider platform built with:
+- **React 19** with TypeScript
+- **Vite** for fast development and building
+- **Material-UI (MUI)** for UI components
+- **Redux Toolkit** with RTK Query for state management
+- **React Router** for navigation
+- **React Hook Form** with Yup for form validation
+
+## Project Structure
+
+```
+src/
+├── components/     # Reusable UI components
+├── layouts/        # Layout wrappers
+├── pages/          # Page components
+├── routes/         # Routing configuration
+├── rtk/            # Redux store & API endpoints
+│   ├── endpoints/  # API definitions
+│   ├── feature/    # Redux slices
+│   └── services/   # RTK Query base API
+├── types/          # TypeScript type definitions
+└── utils/          # Helper functions & constants
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root directory with the following variables:
+   ```env
+   VITE_BASE_URL=http://localhost:5173/api/v1
+   VITE_PUBLIC_ENV=DEV
+   VITE_AES_KEY=your_32_character_hex_key_here
+   VITE_IV_KEY=your_32_character_hex_iv_here
+   VITE_AES_SECRET_KEY=your_redux_persist_encryption_key_here
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+## Project Standards
+
+This project follows modern React/TypeScript best practices. See [OPTIMIZATION.md](./OPTIMIZATION.md) for detailed documentation on:
+- Type safety standards
+- Redux patterns
+- Code organization
+- Best practices
 
 Currently, two official plugins are available:
 

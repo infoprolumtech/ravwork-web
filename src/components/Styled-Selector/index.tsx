@@ -4,10 +4,14 @@ import {
   MenuItem,
   Select,
   useTheme,
+  Box,
 } from "@mui/material";
 import DropdownArrow from "/assets/icons/dropdown-arrow-black.svg";
+import Icon from "../shared/Icon";
 
-const DropdownArrowIcon = () => <img src={DropdownArrow} alt="open select menu" style={{marginRight:8}}/>;
+const DropdownArrowIcon = () => (
+  <Icon src={DropdownArrow} alt="open select menu" sx={{ marginRight: 1 }} />
+);
 interface Option {
   label: string;
   value: string;

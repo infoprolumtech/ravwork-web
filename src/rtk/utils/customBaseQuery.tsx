@@ -11,11 +11,9 @@ const mutex = new Mutex();
 // Base query setup
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL,
-  // credentials: "include", // 👈 this is equivalent to axios's withCredentials: true
   prepareHeaders: (headers, { getState }) => {
     headers.set("user-agent", "");
-    // headers.set("ngrok-skip-browser-warning", "true");
-    const state = getState() as any;
+    const state = getState() as { auth: { user: { accessToken?: string } | null } };
     const user = state.auth.user;
 
     // Check for token in Redux store first

@@ -1,10 +1,8 @@
-import { useState, type JSX } from "react";
+import { type JSX } from "react";
 import {
   Box,
   Button,
   Typography,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
@@ -14,8 +12,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "../../utils/yup-config";
 import { useLoginMutation } from "../../rtk/endpoints/authApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import { loginUser } from "../../rtk/feature/authSlice";
+import Icon from "../../components/shared/Icon";
+import PageIcon from "../../components/shared/PageIcon";
+import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
+import PasswordField from "../../components/shared/PasswordField";
 
 interface LoginFormInputs {
   email: string;
@@ -23,9 +25,8 @@ interface LoginFormInputs {
 }
 
 export default function LoginPage(): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const [login] = useLoginMutation();
 
   const {
@@ -79,25 +80,10 @@ export default function LoginPage(): JSX.Element {
         }}
       >
         {/* Icon above title */}
-        <Box
-          sx={{
-            width: { xs: 32, sm: 36 },
-            height: { xs: 32, sm: 36 },
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: { xs: "5px", sm: "6.864px" },
-            mb: { xs: 2, sm: 2 },
-            mt: { xs: 0, sm: 2 },
-          }}
-        >
-          <img
-            src="/assets/icons/sigup_icon.svg"
-            alt="email-icon"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
+        <PageIcon
+          iconSrc="/assets/icons/sigup_icon.svg"
+          iconAlt="signup-icon"
+        />
 
         <Typography 
           variant="h5" 
@@ -108,67 +94,29 @@ export default function LoginPage(): JSX.Element {
         >
           Sign In
         </Typography>
-        <StyledTextField
+        <FormFieldWithIcon
           fullWidth
           variant="outlined"
           type="text"
           placeholder="Email"
           margin="normal"
+          iconSrc="/assets/icons/mail.svg"
+          iconAlt="email-icon"
           {...register("email")}
           error={Boolean(errors.email)}
           helperText={errors.email?.message}
           sx={{ mb: 1.5 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img
-                    src="/assets/icons/mail.svg"
-                    alt="email-icon"
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                </InputAdornment>
-              ),
-            },
-          }}
         />
 
-        <StyledTextField
+        <PasswordField
           fullWidth
           variant="outlined"
-          type={showPassword ? "text" : "password"}
           placeholder="Enter Password"
           margin="normal"
           {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
           sx={{ mb: 1 }}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img
-                    src="/assets/icons/lock.svg"
-                    alt="lock-icon"
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    <img
-                      src={showPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                      alt={showPassword ? "hide-password" : "show-password"}
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
         />
 
         <Typography

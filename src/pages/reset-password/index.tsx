@@ -1,10 +1,8 @@
-import React, { useEffect, useState, type JSX } from "react";
+import React, { useEffect, type JSX } from "react";
 import {
   Box,
   Button,
   Typography,
-  InputAdornment,
-  IconButton,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
@@ -13,8 +11,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { resetPassSchema } from "../../utils/yup-config";
 import { useResetPasswordMutation } from "../../rtk/endpoints/authApi";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
+import PasswordField from "../../components/shared/PasswordField";
+import PageIcon from "../../components/shared/PageIcon";
+import Icon from "../../components/shared/Icon";
 import GlobalDialog from "../../components/dialog";
 import CloseIcon from "@mui/icons-material/Close";
 import { Stack } from "@mui/material";
@@ -27,7 +28,7 @@ interface ResetPasswordFormInputs {
 export default function ResetPasswordPage(): JSX.Element {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   
   // Get token from URL - handle encoding properly
   const rawToken = searchParams.get("token");
@@ -69,8 +70,6 @@ export default function ResetPasswordPage(): JSX.Element {
     console.log("All search params:", Object.fromEntries(searchParams.entries()));
   }
   
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [showCongratulationPopup, setShowCongratulationPopup] = useState(false);
   const [resetPassword, { isSuccess }] = useResetPasswordMutation();
   
@@ -177,32 +176,10 @@ export default function ResetPasswordPage(): JSX.Element {
         }}
       >
         {/* Icon above title */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mb: { xs: 2, sm: 3 },
-            mt: { xs: 0, sm: 2 },
-          }}
-        >
-          <Box
-            sx={{
-              width: { xs: 32, sm: 36 },
-              height: { xs: 32, sm: 36 },
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: { xs: "5px", sm: "6.864px" },
-            }}
-          >
-            <img
-              src="/assets/icons/forgot_icon.svg"
-              alt="forgot-password-icon"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Box>
-        </Box>
+        <PageIcon
+          iconSrc="/assets/icons/forgot_icon.svg"
+          iconAlt="forgot-password-icon"
+        />
 
         <Typography 
           variant="h5" 
@@ -229,88 +206,24 @@ export default function ResetPasswordPage(): JSX.Element {
         </Typography>
 
         {/* Password Field */}
-        <StyledTextField
+        <PasswordField
           fullWidth
-          type={showPassword ? "text" : "password"}
           placeholder="Enter new password"
           margin="normal"
           {...register("password")}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img
-                    src="/assets/icons/lock.svg"
-                    alt="lock-icon"
-                    loading="lazy"
-                  />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    <img
-                      src={
-                        showPassword
-                          ? "/assets/icons/eye-slash.svg"
-                          : "/assets/icons/eye.svg"
-                      }
-                      alt={showPassword ? "hide-password" : "show-password"}
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
         />
 
         {/* Confirm Password Field */}
-        <StyledTextField
+        <PasswordField
           fullWidth
-          type={showConfirmPassword ? "text" : "password"}
           placeholder="Confirm new password"
           margin="normal"
           {...register("confirmPassword")}
           error={Boolean(errors.confirmPassword)}
           helperText={errors.confirmPassword?.message}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img
-                    src="/assets/icons/lock.svg"
-                    alt="lock-icon"
-                    loading="lazy"
-                  />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    <img
-                      src={
-                        showConfirmPassword
-                          ? "/assets/icons/eye-slash.svg"
-                          : "/assets/icons/eye.svg"
-                      }
-                      alt={
-                        showConfirmPassword ? "hide-password" : "show-password"
-                      }
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{
-            mb: 2,
-          }}
+          sx={{ mb: 2 }}
         />
 
         <Box

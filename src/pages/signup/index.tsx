@@ -1,7 +1,7 @@
 import { useState, type JSX } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import SignupLayout from "../../layouts/SignupLayout";
 import { Step1 } from "./components/Step1";
 import { Step2 } from "./components/Step2";
@@ -13,7 +13,7 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 
 export default function SignUpPage(): JSX.Element {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [signup] = useSignupMutation();
   const [updateProfile] = useUpdateProfileMutation();

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Box, Button, Typography, InputAdornment, IconButton, MenuItem, Select, FormControl } from "@mui/material";
+import { useEffect } from "react";
+import { Box, Button, Typography, MenuItem, Select, FormControl } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,15 @@ import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step1Schema } from "../validationSchemas";
 import type { Step1FormInputs } from "../types";
+import Icon from "../../../components/shared/Icon";
+import PasswordField from "../../../components/shared/PasswordField";
+import PageIcon from "../../../components/shared/PageIcon";
+import {
+  pageTitleSx,
+  bottomButtonContainerSx,
+  inputFieldSx,
+  helperTextSx,
+} from "./commonStyles";
 
 // Common country codes with ISO codes
 const COUNTRY_CODES = [
@@ -39,7 +48,6 @@ interface Step1Props {
 
 export const Step1 = ({ onNext, initialData }: Step1Props) => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const PREFIX = "ravwork.link/";
 
   const form = useForm<Step1FormInputs>({
@@ -130,44 +138,9 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
       </Box>
       
       {/* Icon above title */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mb: { xs: 2, sm: 3 },
-        }}
-      >
-        <Box
-          sx={{
-            width: { xs: 32, sm: 36 },
-            height: { xs: 32, sm: 36 },
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: { xs: "5px", sm: "6.864px" },
-          }}
-        >
-          <img
-            src="/assets/icons/sigup_icon.svg"
-            alt="email-icon"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </Box>
-      </Box>
+      <PageIcon iconSrc="/assets/icons/sigup_icon.svg" iconAlt="email-icon" />
       
-      <Typography 
-        variant="h5" 
-        textAlign="center" 
-        mb={{ xs: 2, sm: 3 }} 
-        sx={{ 
-          fontSize: { xs: "24px", sm: "28px", md: "34px" }, 
-          color: "#1C1C1C", 
-          fontWeight: 600, 
-          textAlign: "center",
-          lineHeight: { xs: 1.3, sm: 1.2 },
-        }}
-      >
+      <Typography variant="h5" textAlign="center" mb={{ xs: 2, sm: 3 }} sx={pageTitleSx}>
         Let's help client book<br />you instantly.
       </Typography>
 
@@ -183,54 +156,17 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             onFocus={handleUsernameFocus}
             error={Boolean(form.formState.errors.username)}
             helperText={form.formState.errors.username?.message}
-            sx={{
-              "& .MuiInputBase-root": {
-                height: "48px",
-                minHeight: "48px",
-                overflow: "hidden", // Ensure autofill styling stays within input box
-              },
+            sx={inputFieldSx(Boolean(form.formState.errors.username), {
               "& .MuiInputBase-input": {
-                color: "#1C1C1C",
-                height: "48px",
                 padding: "12px 16px",
-                borderRadius: "100px",
-                // Override browser autofill styling - only affects the input field box
-                "&:-webkit-autofill": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  caretColor: "#1C1C1C",
-                  borderRadius: "100px",
-                  transition: "background-color 5000s ease-in-out 0s",
-                },
-                "&:-webkit-autofill:hover": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
-                "&:-webkit-autofill:focus": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
-                "&:-webkit-autofill:active": {
-                  WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-                  WebkitTextFillColor: "#1C1C1C !important",
-                  borderRadius: "100px",
-                },
               },
-              "& .MuiFormHelperText-root": {
-                marginTop: { xs: "4px", sm: "6px" },
-                marginLeft: 0,
-                fontSize: { xs: "11px", sm: "12px" },
-                lineHeight: { xs: 1.4, sm: 1.5 },
-              },
-            }}
+            })}
             slotProps={{
               input: {
                 startAdornment: (
-                  <InputAdornment position="start" sx={{ mr: 0 }}>
-                    <img src="/assets/icons/at-sign.svg" alt="username-icon" style={{ width: "20px", height: "20px" }} />
-                  </InputAdornment>
+                  <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                    <Icon src="/assets/icons/at-sign.svg" alt="username-icon" size={20} />
+                  </Box>
                 ),
               },
             }}
@@ -261,17 +197,12 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             <Typography
               sx={{
                 position: "absolute",
-                left: { 
-                  xs: "calc(40px + 14ch)", 
-                  sm: "calc(48px + 10ch)",
-                  md: "calc(48px + 10ch)",
-                  lg: "calc(48px + 10ch)"
-                },
+                left: { xs: "calc(40px + 14ch)", sm: "calc(48px + 10ch)" },
                 top: "24px",
                 transform: "translateY(-50%)",
                 pointerEvents: "none",
                 color: "#6C737F",
-                fontSize: { xs: "12px", sm: "16px", md: "16px", lg: "16px" },
+                fontSize: { xs: "12px", sm: "16px" },
                 fontFamily: "Inter, sans-serif",
                 zIndex: 1,
                 maxWidth: { xs: "calc(100% - 45px)", sm: "calc(100% - 250px)", md: "calc(100% - 280px)", lg: "none" },
@@ -298,58 +229,13 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
         {...form.register("email")}
         error={Boolean(form.formState.errors.email)}
         helperText={form.formState.errors.email?.message}
-        sx={{
-          mb: form.formState.errors.email ? 0 : 1.5,
-          "& .MuiInputBase-root": {
-            height: "48px",
-            minHeight: "48px",
-            overflow: "hidden", // Ensure autofill styling stays within input box
-          },
-          "& .MuiInputBase-input": {
-            color: "#1C1C1C",
-            height: "48px",
-            borderRadius: "100px",
-            "&::placeholder": {
-              color: "#1C1C1C",
-              opacity: 1,
-            },
-            // Override browser autofill styling - only affects the input field box
-            "&:-webkit-autofill": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              caretColor: "#1C1C1C",
-              borderRadius: "100px",
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-            "&:-webkit-autofill:hover": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:focus": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:active": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-          },
-          "& .MuiFormHelperText-root": {
-            marginTop: { xs: "4px", sm: "6px" },
-            marginLeft: 0,
-            fontSize: { xs: "11px", sm: "12px" },
-            lineHeight: { xs: 1.4, sm: 1.5 },
-          },
-        }}
+        sx={inputFieldSx(Boolean(form.formState.errors.email))}
         slotProps={{
           input: {
             startAdornment: (
-              <InputAdornment position="start" sx={{ mr: 0 }}>
-                <img src="/assets/icons/mail.svg" alt="email-icon" style={{ width: "20px", height: "20px" }} />
-              </InputAdornment>
+              <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                <Icon src="/assets/icons/mail.svg" alt="email-icon" size={20} />
+              </Box>
             ),
           },
         }}
@@ -432,32 +318,19 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           })}
           error={Boolean(form.formState.errors.phoneNumber)}
           helperText={form.formState.errors.phoneNumber?.message}
-          sx={{
+          sx={inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
+            mb: 0,
             "& .MuiInputBase-root": {
               height: "48px",
               minHeight: "48px",
             },
-            "& .MuiInputBase-input": {
-              color: "#1C1C1C",
-              height: "48px",
-              "&::placeholder": {
-                color: "#1C1C1C",
-                opacity: 1,
-              },
-            },
-            "& .MuiFormHelperText-root": {
-              marginTop: { xs: "4px", sm: "6px" },
-              marginLeft: 0,
-              fontSize: { xs: "11px", sm: "12px" },
-              lineHeight: { xs: 1.4, sm: 1.5 },
-            },
-          }}
+          })}
           slotProps={{
             input: {
               startAdornment: (
-                <InputAdornment position="start" sx={{ mr: 0 }}>
-                  <img src="/assets/icons/phone.svg" alt="phone-icon" style={{ width: "20px", height: "20px" }} />
-                </InputAdornment>
+                <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
+                  <Icon src="/assets/icons/phone.svg" alt="phone-icon" size={20} />
+                </Box>
               ),
             },
           }}
@@ -468,110 +341,33 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           variant="caption"
           sx={{
             color: "#F97066",
-            fontSize: { xs: "11px", sm: "12px" },
             mt: { xs: 0.5, sm: 0.75 },
             mb: 1.5,
             ml: 1.5,
             display: "block",
-            lineHeight: { xs: 1.4, sm: 1.5 },
+            ...helperTextSx,
           }}
         >
           {form.formState.errors.countryCode.message}
         </Typography>
       )}
 
-      <StyledTextField
+      <PasswordField
         fullWidth
         variant="outlined"
-        type={showPassword ? "text" : "password"}
         placeholder="Create Password"
         margin="none"
+        lockIconSrc="/assets/icons/lock_signup.svg"
         {...form.register("password")}
         error={Boolean(form.formState.errors.password)}
         helperText={form.formState.errors.password?.message}
-        sx={{
-          mb: form.formState.errors.password ? 0 : 1.5,
-          "& .MuiInputBase-root": {
-            height: "48px",
-            minHeight: "48px",
-            overflow: "hidden", // Ensure autofill styling stays within input box
-          },
-          "& .MuiInputBase-input": {
-            color: "#1C1C1C",
-            height: "48px",
-            borderRadius: "100px",
-            "&::placeholder": {
-              color: "#1C1C1C",
-              opacity: 1,
-            },
-            // Override browser autofill styling - only affects the input field box
-            "&:-webkit-autofill": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              caretColor: "#1C1C1C",
-              borderRadius: "100px",
-              transition: "background-color 5000s ease-in-out 0s",
-            },
-            "&:-webkit-autofill:hover": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:focus": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-            "&:-webkit-autofill:active": {
-              WebkitBoxShadow: "0 0 0 1000px #F9FAFB inset !important",
-              WebkitTextFillColor: "#1C1C1C !important",
-              borderRadius: "100px",
-            },
-          },
-          "& .MuiFormHelperText-root": {
-            marginTop: { xs: "4px", sm: "6px" },
-            marginLeft: 0,
-            fontSize: { xs: "11px", sm: "12px" },
-            lineHeight: { xs: 1.4, sm: 1.5 },
-          },
-        }}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ mr: 0 }}>
-                <img src="/assets/icons/lock_signup.svg" alt="lock-icon" style={{ width: "20px", height: "20px" }} />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)}>
-                  <img
-                    src={showPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
-                    alt={showPassword ? "hide-password" : "show-password"}
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
-        }}
+        sx={inputFieldSx(Boolean(form.formState.errors.password))}
       />
       {form.formState.errors.password && (
         <Box sx={{ mb: 1.5, mt: 0.5 }} />
       )}
 
-      <Box
-        sx={{
-          width: "100%",
-          position: { xs: "fixed", sm: "static" },
-          bottom: { xs: 0, sm: "auto" },
-          left: { xs: 0, sm: "auto" },
-          p: { xs: 2, sm: 0 },
-          backgroundColor: { xs: "#fff", sm: "transparent" },
-          zIndex: { xs: 10, sm: "auto" },
-          
-        }}
-      >
+      <Box sx={bottomButtonContainerSx}>
         <Button 
           fullWidth 
           type="submit" 

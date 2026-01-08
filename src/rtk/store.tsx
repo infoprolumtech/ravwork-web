@@ -1,4 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
+import type { TypedUseSelectorHook } from "react-redux";
 import rootReducer from "./rootReducer";
 import { persistStore } from "redux-persist";
 import api from "./services";
@@ -19,3 +21,7 @@ export const persistor = persistStore(store);
 // Define types for global usage
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+// Typed hooks for use throughout the app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

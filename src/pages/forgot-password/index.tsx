@@ -11,8 +11,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import SignupLayout from "../../layouts/SignupLayout";
 import { StyledTextField } from "../../utils/helper";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
+import Icon from "../../components/shared/Icon";
+import PageIcon from "../../components/shared/PageIcon";
+import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import { useNavigate } from "react-router-dom";
 import { forgotPassSchema } from "../../utils/yup-config";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -26,7 +29,7 @@ type FormData = {
 export default function ForgotPassword(): JSX.Element {
   const [forgotPassword, { isSuccess }] = useForgotPasswordMutation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [showCheckMailPopup, setShowCheckMailPopup] = useState(false);
   const [userEmail, setUserEmail] = useState("");
 
