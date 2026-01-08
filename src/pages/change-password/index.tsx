@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Typography,
+    CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import SignupLayout from '../../layouts/SignupLayout';
@@ -177,7 +178,11 @@ export default function ChangePasswordPage() {
                 height: { xs: "44px", sm: "48px" },
               }}
             >
-              {isSubmitting ? "Changing Password..." : "Change Password"}
+              {isSubmitting ? (
+                <CircularProgress size={24} sx={{ color: "#fff" }} />
+              ) : (
+                "Change Password"
+              )}
             </Button>
           </Box>
         </Box>

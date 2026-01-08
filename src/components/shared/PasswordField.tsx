@@ -32,7 +32,7 @@ export default function PasswordField({ iconSize = 20, lockIconSrc = "/assets/ic
           ),
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={togglePasswordVisibility} edge="end">
+              <IconButton onClick={togglePasswordVisibility} edge="end" type="button">
                 <Icon
                   src={showPassword ? "/assets/icons/eye-slash.svg" : "/assets/icons/eye.svg"}
                   alt={showPassword ? "hide-password" : "show-password"}

@@ -18,9 +18,10 @@ interface Step4Props {
   onSkip: () => void;
   initialData?: Step4FormInputs | null;
   onBack?: () => void;
+  isSubmitting?: boolean;
 }
 
-export const Step4 = ({ onNext, onSkip, initialData, onBack }: Step4Props) => {
+export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = false }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const dispatch = useAppDispatch();
@@ -99,9 +100,16 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack }: Step4Props) => {
         throw new Error("Failed to upload image to S3");
       }
 
-      // Step 3: Store file and path in form
+      // Step 3: Extract the full S3 URL from the presigned URL (remove query parameters)
+      // The signedUrl format: https://bucket.s3.region.amazonaws.com/path/file.jpg?X-Amz-Signature=...
+      // We need the clean URL: https://bucket.s3.region.amazonaws.com/path/file.jpg
+      // This URL will be sent to the backend API when user clicks Next
+      const s3Url = new URL(signedUrl);
+      const profilePhotoUrl = `${s3Url.origin}${s3Url.pathname}`;
+
+      // Step 4: Store file (for preview) and full S3 URL (for API submission) in form
       form.setValue("profileImage", file);
-      form.setValue("profilePhoto", `profile-photos/${fileName}`);
+      form.setValue("profilePhoto", profilePhotoUrl);
 
       // Update preview
       const reader = new FileReader();
@@ -503,13 +511,17 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack }: Step4Props) => {
             fullWidth 
             type="submit" 
             variant="secondary" 
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isSubmitting}
             sx={{ 
               textTransform: "none",
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            Next
+            {(form.formState.isSubmitting || isSubmitting) ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Next"
+            )}
           </Button>
         </Stack>
       </Box>

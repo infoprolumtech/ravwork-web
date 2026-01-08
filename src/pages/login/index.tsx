@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
 import { useNavigate } from "react-router-dom";
@@ -31,9 +32,11 @@ export default function LoginPage(): JSX.Element {
     register,
     handleSubmit,
     watch,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInputs>({
     resolver: yupResolver(loginSchema),
+    mode: "onChange", // Validate on change (while typing)
   });
 
   const watchedFields = watch();
@@ -100,7 +103,9 @@ export default function LoginPage(): JSX.Element {
           margin="normal"
           iconSrc="/assets/icons/mail.svg"
           iconAlt="email-icon"
-          {...register("email")}
+          {...register("email", {
+            onChange: () => trigger("email"),
+          })}
           error={Boolean(errors.email)}
           helperText={errors.email?.message}
           sx={{ mb: 1.5 }}
@@ -112,7 +117,9 @@ export default function LoginPage(): JSX.Element {
           placeholder="Enter Password"
           margin="normal"
           lockIconSrc="/assets/icons/lock_signup.svg"
-          {...register("password")}
+          {...register("password", {
+            onChange: () => trigger("password"),
+          })}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
           sx={{ mb: 1 }}
@@ -157,7 +164,11 @@ export default function LoginPage(): JSX.Element {
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            Sign In
+            {isSubmitting ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Sign In"
+            )}
           </Button>
           <Typography 
             variant="body2" 

@@ -16,7 +16,7 @@ export default function SignUpPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [signup] = useSignupMutation();
-  const [updateProfile] = useUpdateProfileMutation();
+  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
   const [skipProfile] = useSkipProfileMutation();
   
   // Store form data for each step to preserve when navigating back
@@ -92,11 +92,12 @@ export default function SignUpPage(): JSX.Element {
       
       // Step 4 is profile completion - call updateProfile API
       // All fields are optional
-      // Use the profilePhoto path from S3 upload (e.g., "profile-photos/<generated-file-name>")
+      // profilePhoto is the full S3 URL extracted from the presigned URL after upload
+      // Format: https://bucket.s3.region.amazonaws.com/profile-photos/file.jpg
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
-        profilePhoto: data.profilePhoto || undefined, // S3 path from presigned URL upload
+        profilePhoto: data.profilePhoto || undefined, // Full S3 URL from presigned URL upload
         instagramUrl: data.instagram || undefined,
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
@@ -163,7 +164,7 @@ export default function SignUpPage(): JSX.Element {
         {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} onBack={handleBackClick} isSignupCompleted={isSignupCompleted} />}
         {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} onBack={handleBackClick} />}
         {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} onBack={handleBackClick} />}
-        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} onBack={handleBackClick} />}
+        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} onBack={handleBackClick} isSubmitting={isUpdatingProfile} />}
       </Box>
     </SignupLayout>
   );

@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
 import { useForm } from "react-hook-form";
@@ -76,9 +77,11 @@ export default function ResetPasswordPage(): JSX.Element {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    trigger,
+    formState: { errors, isSubmitting, touchedFields },
   } = useForm<ResetPasswordFormInputs>({
     resolver: yupResolver(resetPassSchema),
+    mode: "onChange", // Validate on change (while typing)
   });
 
   const watchedFields = watch();
@@ -210,7 +213,12 @@ export default function ResetPasswordPage(): JSX.Element {
           placeholder="Enter new password"
           margin="normal"
           lockIconSrc="/assets/icons/lock_signup.svg"
-          {...register("password")}
+          {...register("password", {
+            onChange: () => {
+              trigger("password");
+              trigger("confirmPassword"); // Also validate confirm password when password changes
+            },
+          })}
           error={Boolean(errors.password)}
           helperText={errors.password?.message}
         />
@@ -221,9 +229,16 @@ export default function ResetPasswordPage(): JSX.Element {
           placeholder="Confirm new password"
           margin="normal"
           lockIconSrc="/assets/icons/lock_signup.svg"
-          {...register("confirmPassword")}
-          error={Boolean(errors.confirmPassword)}
-          helperText={errors.confirmPassword?.message}
+          {...register("confirmPassword", {
+            onChange: () => trigger("confirmPassword"),
+            onBlur: () => trigger("confirmPassword"),
+          })}
+          error={Boolean(errors.confirmPassword && (watchedFields.confirmPassword || touchedFields.confirmPassword))}
+          helperText={
+            errors.confirmPassword && (watchedFields.confirmPassword || touchedFields.confirmPassword)
+              ? errors.confirmPassword.message
+              : ""
+          }
           sx={{ mb: 2 }}
         />
 
@@ -247,7 +262,11 @@ export default function ResetPasswordPage(): JSX.Element {
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            Change Password
+            {isSubmitting ? (
+              <CircularProgress size={24} sx={{ color: "#fff" }} />
+            ) : (
+              "Change Password"
+            )}
           </Button>
         </Box>
       </Box>

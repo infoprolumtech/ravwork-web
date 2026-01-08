@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Button, Typography, MenuItem, Select, FormControl } from "@mui/material";
+import { Box, Button, Typography, MenuItem, Select, FormControl, CircularProgress } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
@@ -253,7 +253,9 @@ export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }
         variant="outlined"
         placeholder="Email"
         margin="none"
-        {...form.register("email")}
+        {...form.register("email", {
+          onChange: () => form.trigger("email"),
+        })}
         error={Boolean(form.formState.errors.email)}
         helperText={form.formState.errors.email?.message}
         sx={inputFieldSx(Boolean(form.formState.errors.email))}
@@ -303,6 +305,10 @@ export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }
             render={({ field }) => (
               <Select
                 {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  form.trigger("countryCode");
+                }}
                 displayEmpty
                 MenuProps={{
                   PaperProps: {
@@ -429,7 +435,9 @@ export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }
         placeholder="Create Password"
         margin="none"
         lockIconSrc="/assets/icons/lock_signup.svg"
-        {...form.register("password")}
+        {...form.register("password", {
+          onChange: () => form.trigger("password"),
+        })}
         error={Boolean(form.formState.errors.password)}
         helperText={form.formState.errors.password?.message}
         sx={inputFieldSx(Boolean(form.formState.errors.password))}
@@ -447,7 +455,11 @@ export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }
           }} 
           disabled={form.formState.isSubmitting}
         >
-          Next
+          {form.formState.isSubmitting ? (
+            <CircularProgress size={24} sx={{ color: "#fff" }} />
+          ) : (
+            "Next"
+          )}
         </Button>
 
         <Box sx={{ mt: { xs: 1, sm: 1 }, width: "100%" }}>
