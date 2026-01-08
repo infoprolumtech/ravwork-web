@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Stack, Chip, IconButton } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step2Schema } from "../validationSchemas";
 import type { Step2FormInputs } from "../types";
@@ -14,10 +13,10 @@ import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } 
 interface Step2Props {
   onNext: (data: Step2FormInputs) => void;
   initialData?: Step2FormInputs | null;
+  onBack?: () => void;
 }
 
-export const Step2 = ({ onNext, initialData }: Step2Props) => {
-  const navigate = useNavigate();
+export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
   const form = useForm<Step2FormInputs>({
     resolver: yupResolver(step2Schema),
     defaultValues: initialData || { plan: "" },
@@ -35,7 +34,10 @@ export const Step2 = ({ onNext, initialData }: Step2Props) => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Use parent's navigation handler to stay within signup flow
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (

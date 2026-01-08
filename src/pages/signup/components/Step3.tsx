@@ -3,23 +3,23 @@ import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from
 import Icon from "../../../components/shared/Icon";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step3Schema } from "../validationSchemas";
 import type { Step3FormInputs } from "../types";
 import PageIcon from "../../../components/shared/PageIcon";
-import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } from "./commonStyles";
+import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx, helperTextSx } from "./commonStyles";
 
 interface Step3Props {
   onNext: (data: Step3FormInputs) => void;
   initialData?: Step3FormInputs | null;
+  onBack?: () => void;
 }
 
-export const Step3 = ({ onNext, initialData }: Step3Props) => {
-  const navigate = useNavigate();
+export const Step3 = ({ onNext, initialData, onBack }: Step3Props) => {
   const form = useForm<Step3FormInputs>({
     resolver: yupResolver(step3Schema) as any,
+    mode: "onChange", // Validate on change (while typing)
     defaultValues: initialData || { paymentMethod: "", cardNumber: "", expiryDate: "", securityCode: "" },
   });
 
@@ -39,7 +39,10 @@ export const Step3 = ({ onNext, initialData }: Step3Props) => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Use parent's navigation handler to stay within signup flow
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -47,16 +50,16 @@ export const Step3 = ({ onNext, initialData }: Step3Props) => {
       {/* Back Icon - Above progress bar for large screens */}
       <Box sx={backIconButtonSx}>
         <IconButton onClick={handleBackClick} sx={iconButtonSx}>
-          <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24}  />
+          <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24} />
         </IconButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
         <ProgressIndicator currentStep={3} />
       </Box>
-      
+
       {/* Icon above title */}
       <PageIcon iconSrc="/assets/icons/paymnet_icon.svg" iconAlt="icon" />
-      
+
       <Typography variant="h5" textAlign="center" mb={{ xs: 2, sm: 3 }} sx={pageTitleSx}>
         Payment Method
       </Typography>
@@ -66,44 +69,66 @@ export const Step3 = ({ onNext, initialData }: Step3Props) => {
           variant="outlined"
           fullWidth
           sx={{
-            border: "1px solid #D1D5DB",
+            border: form.formState.errors.paymentMethod ? "1px solid #F97066" : "1px solid #D1D5DB",
             py: { xs: 1.5, sm: 2 },
             textTransform: "none",
             color: "#111927",
-            backgroundColor: "#F7F9FB",
-            "&:hover": { borderColor: "#9CA3AF", backgroundColor: "white" },
+            backgroundColor: form.watch("paymentMethod") === "apple" ? "#E5ECF6" : "#F7F9FB",
+            "&:hover": {
+              borderColor: form.formState.errors.paymentMethod ? "#F97066" : "#9CA3AF",
+              backgroundColor: form.watch("paymentMethod") === "apple" ? "#D1E7F0" : "white"
+            },
             minHeight: { xs: "48px", sm: "56px" },
           }}
-          onClick={() => form.setValue("paymentMethod", "apple")}
+          onClick={() => {
+            form.setValue("paymentMethod", "apple", { shouldValidate: true });
+            form.clearErrors("paymentMethod");
+          }}
         >
-          <Icon src="/assets/icons/apple-pay 1.svg" alt="apple-pay" size={22} sx={{  width: "53px", height: "21px", maxWidth: "100%" }} />
+          <Icon src="/assets/icons/apple-pay 1.svg" alt="apple-pay" size={22} sx={{ width: "53px", height: "21px", maxWidth: "100%" }} />
         </Button>
         <Button
           variant="outlined"
           fullWidth
           sx={{
-            border: "1px solid #D1D5DB",
-            background: "#F7F9FB",
+            border: form.formState.errors.paymentMethod ? "1px solid #F97066" : "1px solid #D1D5DB",
+            background: form.watch("paymentMethod") === "link" ? "#E5ECF6" : "#F7F9FB",
             py: { xs: 1.5, sm: 2 },
             textTransform: "none",
-            "&:hover": { borderColor: "#9CA3AF", backgroundColor: "white" },
+            "&:hover": {
+              borderColor: form.formState.errors.paymentMethod ? "#F97066" : "#9CA3AF",
+              backgroundColor: form.watch("paymentMethod") === "link" ? "#D1E7F0" : "white"
+            },
             minHeight: { xs: "48px", sm: "56px" },
           }}
-          onClick={() => form.setValue("paymentMethod", "link")}
+          onClick={() => {
+            form.setValue("paymentMethod", "link", { shouldValidate: true });
+            form.clearErrors("paymentMethod");
+          }}
         >
-          <Icon src="/assets/icons/Link_idHNoUBT0y_1 1.svg" alt="link" size={22} sx={{  width: "53px", height: "21px", maxWidth: "100%" }} />
+          <Icon src="/assets/icons/Link_idHNoUBT0y_1 1.svg" alt="link" size={22} sx={{ width: "53px", height: "21px", maxWidth: "100%" }} />
         </Button>
+
       </Stack>
 
-      {form.formState.errors.root && (
-        <Typography variant="caption" color="error" sx={{ mb: 1, display: "block" }}>
-          {form.formState.errors.root.message}
-        </Typography>
-      )}
-      {form.formState.errors.paymentMethod && (
-        <Typography variant="caption" color="error" sx={{ mb: 1, display: "block" }}>
-          {form.formState.errors.paymentMethod.message}
-        </Typography>
+      <Box sx={{ display: "flex", mt: -1 }}>
+        <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
+      </Box>
+
+      {(form.formState.errors.root || form.formState.errors.paymentMethod) && (
+        <Box sx={{ mb: 1.5, mt: -1 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              color: "#FF1100",
+              textAlign: "center",
+              ...helperTextSx,
+            }}
+          >
+            {form.formState.errors.paymentMethod?.message || form.formState.errors.root?.message}
+          </Typography>
+        </Box>
       )}
 
 
@@ -116,8 +141,10 @@ export const Step3 = ({ onNext, initialData }: Step3Props) => {
         {...form.register("cardNumber", {
           onChange: (e) => {
             if (e.target.value && !form.getValues("paymentMethod")) {
-              form.setValue("paymentMethod", "card");
+              form.setValue("paymentMethod", "card", { shouldValidate: true });
+              form.clearErrors("paymentMethod");
             }
+            form.trigger("cardNumber");
           },
         })}
         error={Boolean(form.formState.errors.cardNumber)}
@@ -137,61 +164,65 @@ export const Step3 = ({ onNext, initialData }: Step3Props) => {
         }}
       />
 
-       <Grid container spacing={{ xs: 0, sm: 2 }}>
-         <Grid size={{ xs: 12, sm: 6 }}>
-           <StyledTextField
-             fullWidth
-             variant="outlined"
-             placeholder="Expiry Date"
-             margin="normal"
-             {...form.register("expiryDate", {
-               onChange: (e) => {
-                 if (e.target.value && !form.getValues("paymentMethod")) {
-                   form.setValue("paymentMethod", "card");
-                 }
-               },
-             })}
-             error={Boolean(form.formState.errors.expiryDate)}
-             helperText={form.formState.errors.expiryDate?.message}
-           />
-         </Grid>
-         <Grid size={{ xs: 12, sm: 6 }}>
-           <StyledTextField
-             fullWidth
-             variant="outlined"
-             placeholder="Security Code"
-             margin="normal"
-             {...form.register("securityCode", {
-               onChange: (e) => {
-                 if (e.target.value && !form.getValues("paymentMethod")) {
-                   form.setValue("paymentMethod", "card");
-                 }
-               },
-             })}
-             error={Boolean(form.formState.errors.securityCode)}
-             helperText={form.formState.errors.securityCode?.message}
-             slotProps={{
-               input: {
-                 endAdornment: (
-                   <InputAdornment position="end">
-                     <Icon src="/assets/icons/credit-card.svg" alt="security" size={24} />
-                   </InputAdornment>
-                 ),
-               },
-             }}
-           />
-         </Grid>
-       </Grid>
+      <Grid container spacing={{ xs: 0, sm: 2 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            placeholder="Expiry Date"
+            margin="normal"
+            {...form.register("expiryDate", {
+              onChange: (e) => {
+                if (e.target.value && !form.getValues("paymentMethod")) {
+                  form.setValue("paymentMethod", "card", { shouldValidate: true });
+                  form.clearErrors("paymentMethod");
+                }
+                form.trigger("expiryDate");
+              },
+            })}
+            error={Boolean(form.formState.errors.expiryDate)}
+            helperText={form.formState.errors.expiryDate?.message}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <StyledTextField
+            fullWidth
+            variant="outlined"
+            placeholder="Security Code"
+            margin="normal"
+            {...form.register("securityCode", {
+              onChange: (e) => {
+                if (e.target.value && !form.getValues("paymentMethod")) {
+                  form.setValue("paymentMethod", "card", { shouldValidate: true });
+                  form.clearErrors("paymentMethod");
+                }
+                form.trigger("securityCode");
+              },
+            })}
+            error={Boolean(form.formState.errors.securityCode)}
+            helperText={form.formState.errors.securityCode?.message}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Icon src="/assets/icons/credit-card.svg" alt="security" size={24} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
 
       <Box sx={bottomButtonContainerSx}>
-        <Button 
-          fullWidth 
-          type="submit" 
-          variant="secondary" 
-          sx={{ 
+        <Button
+          fullWidth
+          type="submit"
+          variant="secondary"
+          sx={{
             mt: { xs: 0, sm: 3 },
             height: { xs: "44px", sm: "48px" },
-          }} 
+          }}
           disabled={form.formState.isSubmitting}
         >
           Next

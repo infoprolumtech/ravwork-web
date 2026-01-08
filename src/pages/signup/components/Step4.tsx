@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
 import { StyledTextField } from "../../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step4Schema } from "../validationSchemas";
@@ -15,14 +14,15 @@ interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
   onSkip: () => void;
   initialData?: Step4FormInputs | null;
+  onBack?: () => void;
 }
 
-export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
-  const navigate = useNavigate();
+export const Step4 = ({ onNext, onSkip, initialData, onBack }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
 
   const form = useForm<Step4FormInputs>({
     resolver: yupResolver(step4Schema) as any,
+    mode: "onChange", // Validate on change (while typing)
     defaultValues: initialData || { businessName: "", businessDescription: "", instagram: "", facebook: "", linkedin: "" },
   });
 
@@ -55,12 +55,20 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
     }
   };
 
-  const handleSubmit = (data: Step4FormInputs) => {
+  const handleSubmit = async (data: Step4FormInputs) => {
+    // Validate form before submitting (only when clicking Next)
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return; // Don't submit if validation fails
+    }
     onNext(data);
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Use parent's navigation handler to stay within signup flow
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -118,7 +126,9 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Enter Name or Business Name"
             margin="normal"
-            {...form.register("businessName")}
+            {...form.register("businessName", {
+              onChange: () => form.trigger("businessName"),
+            })}
             error={Boolean(form.formState.errors.businessName)}
             helperText={form.formState.errors.businessName?.message}
             sx={{ 
@@ -147,7 +157,9 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             margin="normal"
             multiline
             rows={1}
-            {...form.register("businessDescription")}
+            {...form.register("businessDescription", {
+              onChange: () => form.trigger("businessDescription"),
+            })}
             error={Boolean(form.formState.errors.businessDescription)}
             helperText={form.formState.errors.businessDescription?.message}
             sx={{ 
@@ -284,7 +296,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("instagram")}
+            {...form.register("instagram", {
+              onChange: () => form.trigger("instagram"),
+            })}
+            error={Boolean(form.formState.errors.instagram)}
+            helperText={form.formState.errors.instagram?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
@@ -313,7 +329,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("facebook")}
+            {...form.register("facebook", {
+              onChange: () => form.trigger("facebook"),
+            })}
+            error={Boolean(form.formState.errors.facebook)}
+            helperText={form.formState.errors.facebook?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {
@@ -342,7 +362,11 @@ export const Step4 = ({ onNext, onSkip, initialData }: Step4Props) => {
             variant="outlined"
             placeholder="Paste Url"
             margin="normal"
-            {...form.register("linkedin")}
+            {...form.register("linkedin", {
+              onChange: () => form.trigger("linkedin"),
+            })}
+            error={Boolean(form.formState.errors.linkedin)}
+            helperText={form.formState.errors.linkedin?.message}
             sx={{ 
               mt: 0,
               "& .MuiInputBase-input": {

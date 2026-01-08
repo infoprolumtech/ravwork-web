@@ -27,15 +27,26 @@ export default function SignUpPage(): JSX.Element {
 
   const handleStep1Submit = async (data: Step1FormInputs) => {
     try {
-      // Store Step 1 data
-      setStep1Data(data);
-      
       // Extract username without prefix
       const PREFIX = "ravwork.link/";
       const username = data.username.startsWith(PREFIX) 
         ? data.username.replace(PREFIX, "") 
         : data.username;
 
+      // Check if signup was already completed (only skip API if we have previous step1Data)
+      // This means we've already successfully submitted Step 1 before
+      const signupToken = localStorage.getItem("signupToken");
+      if (signupToken && step1Data) {
+        // Signup was already successful and we're navigating back, just proceed to next step
+        setStep1Data(data);
+        setCurrentStep(2);
+        return;
+      }
+
+      // Store Step 1 data
+      setStep1Data(data);
+      
+      // Call signup API (always call on first submission)
       const response = await signup({
         username,
         email: data.email,
@@ -81,16 +92,24 @@ export default function SignUpPage(): JSX.Element {
       
       // Step 4 is profile completion - call updateProfile API
       // All fields are optional
-      // Convert uploaded image file to URL string for API
+      // Convert uploaded image file to base64 data URI for API
       let profilePhotoUrl: string | undefined = undefined;
       if (data.profileImage) {
-        profilePhotoUrl = URL.createObjectURL(data.profileImage);
+        // Convert File to base64 data URI (valid URI format)
+        profilePhotoUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(data.profileImage!);
+        });
       }
 
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
-        profilePhoto: profilePhotoUrl, // Send URL string to API
+        profilePhoto: profilePhotoUrl, // Send base64 data URI to API
         instagramUrl: data.instagram || undefined,
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
@@ -141,18 +160,23 @@ export default function SignUpPage(): JSX.Element {
   };
 
   const handleBackClick = () => {
+    // Only allow navigation between steps 1-4, never go back to login
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+    // If on step 1, do nothing (back button won't be shown anyway)
   };
+
+  // Check if signup was already successful (to prevent re-submission)
+  const isSignupCompleted = !!localStorage.getItem("signupToken");
 
   return (
     <SignupLayout showBackIcon={currentStep > 1} onBackClick={handleBackClick}>
       <Box sx={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} />}
-        {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} />}
-        {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} />}
-        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} />}
+        {currentStep === 1 && <Step1 onNext={handleStep1Submit} initialData={step1Data} onBack={handleBackClick} isSignupCompleted={isSignupCompleted} />}
+        {currentStep === 2 && <Step2 onNext={handleStep2Submit} initialData={step2Data} onBack={handleBackClick} />}
+        {currentStep === 3 && <Step3 onNext={handleStep3Submit} initialData={step3Data} onBack={handleBackClick} />}
+        {currentStep === 4 && <Step4 onNext={handleStep4Submit} onSkip={handleSkipProfile} initialData={step4Data} onBack={handleBackClick} />}
       </Box>
     </SignupLayout>
   );

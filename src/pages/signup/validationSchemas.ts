@@ -94,11 +94,58 @@ export const step3Schema = yup.object().shape({
 });
 
 export const step4Schema = yup.object().shape({
-  businessName: yup.string().notRequired(),
-  businessDescription: yup.string().notRequired(),
-  profileImage: yup.mixed().notRequired(),
-  instagram: yup.string().url("Must be a valid URL").notRequired(),
-  facebook: yup.string().url("Must be a valid URL").notRequired(),
-  linkedin: yup.string().url("Must be a valid URL").notRequired(),
+  businessName: yup
+    .string()
+    .max(100, "Business name must be at most 100 characters")
+    .test("businessName-validation", "Business name must be at most 100 characters", function(value) {
+      // Only validate if value is provided
+      if (!value || value.trim() === "") return true;
+      return value.length <= 100;
+    }),
+  businessDescription: yup
+    .string()
+    .max(1000, "Business description must be at most 1000 characters")
+    .test("businessDescription-validation", "Business description must be at most 1000 characters", function(value) {
+      // Only validate if value is provided
+      if (!value || value.trim() === "") return true;
+      return value.length <= 1000;
+    }),
+  profileImage: yup.mixed().notRequired(), // Always optional, no validation
+  instagram: yup
+    .string()
+    .test("instagram-url", "Must be a valid URL", function(value) {
+      // Only validate if value is provided
+      if (!value || value.trim() === "") return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+  facebook: yup
+    .string()
+    .test("facebook-url", "Must be a valid URL", function(value) {
+      // Only validate if value is provided
+      if (!value || value.trim() === "") return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }),
+  linkedin: yup
+    .string()
+    .test("linkedin-url", "Must be a valid URL", function(value) {
+      // Only validate if value is provided
+      if (!value || value.trim() === "") return true;
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }),
 });
 

@@ -44,9 +44,11 @@ const COUNTRY_CODES = [
 interface Step1Props {
   onNext: (data: Step1FormInputs) => void;
   initialData?: Step1FormInputs | null;
+  onBack?: () => void;
+  isSignupCompleted?: boolean;
 }
 
-export const Step1 = ({ onNext, initialData }: Step1Props) => {
+export const Step1 = ({ onNext, initialData, onBack, isSignupCompleted = false }: Step1Props) => {
   const navigate = useNavigate();
   const PREFIX = "ravwork.link/";
 
@@ -60,8 +62,21 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
+      // Clear form errors when navigating back (since signup was already successful)
+      // This prevents showing "email already exists" error when user goes back
+      form.clearErrors();
     }
   }, [initialData, form]);
+
+  // Clear form errors when component mounts if signup was already successful
+  useEffect(() => {
+    // Check if signup was already successful (signupToken exists)
+    const signupToken = localStorage.getItem("signupToken");
+    if (signupToken && initialData) {
+      // Clear all form errors since account was already created
+      form.clearErrors();
+    }
+  }, [form, initialData]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -122,6 +137,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   };
 
   const handleSubmit = (data: Step1FormInputs) => {
+    // Always call onNext - parent component will handle whether to call API or not
     onNext(data);
   };
 
@@ -446,6 +462,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
         </Box>
 
         <Typography 
+          variant="body2" 
           textAlign="center" 
           sx={{ 
             fontSize: { xs: "14px", sm: "16px" }, 
