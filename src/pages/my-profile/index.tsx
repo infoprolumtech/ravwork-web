@@ -7,12 +7,18 @@ import {
   CardContent,
   Stack,
   Typography,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
+import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
+import { getCloudFrontUrl } from "../../utils/helper";
 
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
+  const { data: profile, isLoading, error } = useGetUserProfileQuery();
+  
   const InfoItem = ({
     icon,
     value,
@@ -58,7 +64,54 @@ export default function MyProfilePage(): JSX.Element {
       </Box>
     </Box>
   );
-  const id = "12345"; // Example user ID, replace with actual data as needed
+
+  if (isLoading) {
+    return (
+      <ServiceProviderLayout>
+        <Box
+          sx={{
+            p: { xs: 1.5, md: 3 },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </ServiceProviderLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <ServiceProviderLayout>
+        <Box sx={{ p: { xs: 1.5, md: 3 } }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Failed to load profile. Please try again.
+          </Alert>
+        </Box>
+      </ServiceProviderLayout>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <ServiceProviderLayout>
+        <Box sx={{ p: { xs: 1.5, md: 3 } }}>
+          <Alert severity="info" sx={{ mb: 2 }}>
+            No profile data available.
+          </Alert>
+        </Box>
+      </ServiceProviderLayout>
+    );
+  }
+
+  const profileUrl = `https://ravwork.link/${profile.username}`;
+  const phoneDisplay = profile.countryCode && profile.phoneNumber 
+    ? `${profile.countryCode} ${profile.phoneNumber}` 
+    : "N/A";
+
   return (
     <ServiceProviderLayout>
       <Box
@@ -91,7 +144,7 @@ export default function MyProfilePage(): JSX.Element {
               <Button
                 variant="secondary"
                 sx={{ height: "28px", fontWeight: "500", fontSize: "9px" }}
-                onClick={() => navigate(`/my-profile/${id}`)}
+                onClick={() => navigate(`/my-profile/${profile.id}`)}
               >
                 Edit Profile
               </Button>
@@ -100,17 +153,25 @@ export default function MyProfilePage(): JSX.Element {
             {/* Body */}
             <Box gap={2}>
               <Avatar
-                src="./assets/images/avatar.png"
+                src={profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "./assets/images/avatar.png"}
                 sx={{ width: 74, height: 74 }}
+                imgProps={{
+                  onError: (e) => {
+                    // Fallback to default avatar if image fails to load (e.g., Access Denied)
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== "./assets/images/avatar.png" && !target.src.includes("avatar.png")) {
+                      console.warn("Profile image failed to load, using default avatar. URL:", target.src);
+                      target.src = "./assets/images/avatar.png";
+                    }
+                  },
+                }}
               />
 
               <Box flex={1}>
-                <Typography fontWeight={600} fontSize={18}>
-                  Full Name Goes Here
+                <Typography fontWeight={600} fontSize={18} sx={{ marginTop: "10px" }}>
+                  {profile.username || "N/A"}
                 </Typography>
-                <Typography fontWeight={400} fontSize={16} color="#6C737F">
-                  Company Name Goes Here
-                </Typography>
+                
                 <img src="./assets/icons/line.svg" alt="" />
 
                 <Box
@@ -132,7 +193,7 @@ export default function MyProfilePage(): JSX.Element {
                       wordBreak: "break-all",
                     }}
                   >
-                    https://rawwork.com/p/johndoe
+                    {profileUrl}
                   </Typography>
 
                   <Box display="flex" gap={0.5}>
@@ -166,20 +227,20 @@ export default function MyProfilePage(): JSX.Element {
             >
               <InfoItem
                 icon="./assets/icons/personalcard.svg"
-                value="Sarah Johnson"
+                value={profile.displayName || profile.username || "N/A"}
                 label="Company Name"
                 showImg={false}
               />
 
               <InfoItem
-                icon="./assets/icons/mailwBG.svg"
-                value="sarahjohnson@email.com"
+                icon="./assets/icons/mail.svg"
+                value={profile.email || "N/A"}
                 label="Service Provider email id "
               />
 
               <InfoItem
                 icon="./assets/icons/phone.svg"
-                value="+1 999-999-8989"
+                value={phoneDisplay}
                 label="Client Phone"
               />
               <Box
@@ -203,42 +264,50 @@ export default function MyProfilePage(): JSX.Element {
             <Typography fontWeight={600} fontSize={14} color="#111927" mb={1}>
               Business Details
             </Typography>
-            <Typography fontWeight={600} fontSize={14} color="#111927">
-              Name or Business Name
-            </Typography>
+            
             <img src="./assets/icons/line2.svg" alt="" />
+
+            <Typography fontWeight={600} fontSize={14} color="#111927">
+              {profile.displayName || "N/A"}
+            </Typography>
             <Typography fontWeight={400} fontSize={16} color="#1C1C1C" mt={0.5}>
-              About your Business long description goes here may take upto two
-              lines About your Business long description goes here may take upto
-              two linesAbout your Business long description goes here may take
-              upto two linesAbout your Business long description goes here may
-              take upto two linesAbout your Business long description goes here
-              may take upto two linesAbout your Business long description goes
-              here may take upto two lines
+              {profile.businessDescription || "No business description provided."}
             </Typography>
 
             {/* Social / Benefits */}
             <Box mt={2} display="flex" flexDirection="column" gap={1.2}>
-              <Box display="flex" alignItems="center" gap={1}>
-                <img src="./assets/icons/instagram.svg" alt="" />
-                <Typography fontSize={13} color="#6C737F">
-                  Paste Url goes here of insta
-                </Typography>
-              </Box>
+              {profile.instagramUrl && (
+                <Box display="flex" alignItems="center" gap={1}>
+                  <img src="./assets/icons/instagram.svg" alt="" />
+                  <Typography fontSize={13} color="#6C737F">
+                    {profile.instagramUrl}
+                  </Typography>
+                </Box>
+              )}
 
-              <Box display="flex" alignItems="center" gap={1}>
-                <img src="./assets/icons/Facebook.svg" alt="" />
-                <Typography fontSize={13} color="#6C737F">
-                  Benefits of Premium Plan Goes here
-                </Typography>
-              </Box>
+              {profile.facebookUrl && (
+                <Box display="flex" alignItems="center" gap={1}>
+                  <img src="./assets/icons/Facebook.svg" alt="" />
+                  <Typography fontSize={13} color="#6C737F">
+                    {profile.facebookUrl}
+                  </Typography>
+                </Box>
+              )}
 
-              <Box display="flex" alignItems="center" gap={1}>
-                <img src="./assets/icons/linkedin.svg" alt="" />
+              {profile.linkedinUrl && (
+                <Box display="flex" alignItems="center" gap={1}>
+                  <img src="./assets/icons/linkedin.svg" alt="" />
+                  <Typography fontSize={13} color="#6C737F">
+                    {profile.linkedinUrl}
+                  </Typography>
+                </Box>
+              )}
+
+              {!profile.instagramUrl && !profile.facebookUrl && !profile.linkedinUrl && (
                 <Typography fontSize={13} color="#6C737F">
-                  Benefits of Premium Plan Goes here
+                  No social media links added.
                 </Typography>
-              </Box>
+              )}
             </Box>
           </CardContent>
         </Card>

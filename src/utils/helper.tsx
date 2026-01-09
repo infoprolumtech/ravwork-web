@@ -158,6 +158,42 @@ export function encryptAES(plaintext: string): string {
   }
 }
 
+/**
+ * Converts S3 URL to CloudFront URL
+ * @param s3Url - The S3 URL (e.g., https://ravdev-media.s3.us-west-1.amazonaws.com/profile-photos/image.jpg)
+ * @returns CloudFront URL or original URL if conversion fails
+ */
+export function getCloudFrontUrl(s3Url: string | null | undefined): string {
+  if (!s3Url) return "";
+  
+  const cloudFrontDomain = import.meta.env.VITE_CLOUDFRONT_DOMAIN || "https://dea8d2sq2agcg.cloudfront.net";
+  
+  try {
+    // Check if it's already a CloudFront URL
+    if (s3Url.includes("cloudfront.net")) {
+      return s3Url;
+    }
+    
+    // Check if it's an S3 URL
+    if (s3Url.includes("s3.") || s3Url.includes("amazonaws.com")) {
+      const url = new URL(s3Url);
+      // Extract the path (everything after the domain)
+      const path = url.pathname;
+      // Remove leading slash if present
+      const cleanPath = path.startsWith("/") ? path.substring(1) : path;
+      // Construct CloudFront URL
+      const cloudFrontUrl = `${cloudFrontDomain}/${cleanPath}`;
+      return cloudFrontUrl;
+    }
+    
+    // If it's not an S3 URL, return as is (might be a relative path or other URL)
+    return s3Url;
+  } catch (error) {
+    console.error("Error converting S3 URL to CloudFront URL:", error);
+    return s3Url;
+  }
+}
+
 export function decryptAES(cipherHex: string | null | undefined): string {
   if (!cipherHex || !AES_KEY || !IV_KEY) {
     return "";
