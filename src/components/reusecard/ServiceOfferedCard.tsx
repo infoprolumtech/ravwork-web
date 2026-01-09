@@ -47,121 +47,187 @@ export default function ServiceOfferedCard({
         boxSizing: "border-box",
       }}
     >
-      {/* Mobile Layout - Vertical Stack */}
+      {/* Main Layout */}
       <Stack
         direction="column"
         spacing={{ xs: 1, md: 1.5 }}
         sx={{ width: "100%" }}
       >
-        {/* Icon and Title Row for Desktop, Vertical for Mobile */}
+        {/* Content Row - Horizontal on large screens with buttons on right */}
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={{ xs: 1, md: 2 }}
           alignItems={{ xs: "flex-start", md: "flex-start" }}
+          justifyContent={{ md: "space-between" }}
           sx={{ width: "100%" }}
         >
-          {/* Service Icon */}
-          <Box
+          {/* Left side: Icon + Content */}
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={{ xs: 1, md: 2 }}
+            alignItems={{ xs: "flex-start", md: "flex-start" }}
+            sx={{ flex: 1, minWidth: 0 }}
+          >
+            {/* Service Icon */}
+            <Box
+              sx={{
+                width: { xs: 40, md: 48 },
+                height: { xs: 40, md: 48 },
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              {contactMethod.toLowerCase().includes("quick contact") ? (
+                <Box
+                  component="img"
+                  src="/assets/icons/service_offered_icons/quick_contact.svg"
+                  alt="Quick Contact"
+                  sx={{
+                    width: "39px",
+                    height: "39px",
+                    objectFit: "contain",
+                  }}
+                />
+              ) : contactMethod.toLowerCase().includes("custom form") ? (
+                <Box
+                  component="img"
+                  src="/assets/icons/service_offered_icons/custom_form.svg"
+                  alt="Custom Form"
+                  sx={{
+                    width: "39px",
+                    height: "39px",
+                    objectFit: "contain",
+                  }}
+                />
+              ) : iconType === "lightning" ? (
+                <Box
+                  component="img"
+                  src="/assets/icons/sidebar_menu_icon/flash.svg"
+                  alt="Service"
+                  sx={{
+                    width: { xs: "20px", md: "24px" },
+                    height: { xs: "20px", md: "24px" },
+                    filter: "brightness(0) invert(1)",
+                  }}
+                />
+              ) : (
+                <Box
+                  sx={{
+                    width: { xs: "18px", md: "20px" },
+                    height: { xs: "18px", md: "20px" },
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "2px",
+                  }}
+                />
+              )}
+            </Box>
+
+            {/* Service Details - Title, Description, Price */}
+            <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  color: "#111927",
+                  fontSize: { xs: "16px", md: "18px" },
+                  mb: { xs: 0.5, md: 0.5 },
+                }}
+              >
+                {title}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#6C737F",
+                  fontSize: { xs: "13px", md: "14px" },
+                  mb: { xs: 0.5, md: 1 },
+                }}
+              >
+                {description}
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  color: "#111927",
+                  fontSize: { xs: "18px", md: "20px" },
+                  mb: { xs: 1, md: 0 },
+                }}
+              >
+                {price}
+              </Typography>
+            </Box>
+          </Stack>
+
+          {/* Action Buttons - On right for large screens, separate row for mobile */}
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
             sx={{
-              width: { xs: 40, md: 48 },
-              height: { xs: 40, md: 48 },
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              display: { xs: "none", md: "flex" },
               flexShrink: 0,
             }}
           >
-            {contactMethod.toLowerCase().includes("quick contact") ? (
-              <Box
-                component="img"
-                src="/assets/icons/service_offered_icons/quick_contact.svg"
-                alt="Quick Contact"
-                sx={{
-                  width: "39px",
-                  height: "39px",
-                  objectFit: "contain",
-                }}
-              />
-            ) : contactMethod.toLowerCase().includes("custom form") ? (
-              <Box
-                component="img"
-                src="/assets/icons/service_offered_icons/custom_form.svg"
-                alt="Custom Form"
-                sx={{
-                  width: "39px",
-                  height: "39px",
-                  objectFit: "contain",
-                }}
-              />
-            ) : iconType === "lightning" ? (
-              <Box
-                component="img"
-                src="/assets/icons/sidebar_menu_icon/flash.svg"
-                alt="Service"
-                sx={{
-                  width: { xs: "20px", md: "24px" },
-                  height: { xs: "20px", md: "24px" },
-                  filter: "brightness(0) invert(1)",
-                }}
-              />
-            ) : (
-              <Box
-                sx={{
-                  width: { xs: "18px", md: "20px" },
-                  height: { xs: "18px", md: "20px" },
-                  backgroundColor: "#FFFFFF",
-                  borderRadius: "2px",
-                }}
-              />
-            )}
-          </Box>
-
-          {/* Service Details - Title, Description, Price */}
-          <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
-            <Typography
-              variant="h6"
+            <Button
+              variant="contained"
+              onClick={() => onDelete(id)}
               sx={{
-                fontWeight: 600,
-                color: "#111927",
-                fontSize: { xs: "16px", md: "18px" },
-                mb: { xs: 0.5, md: 0.5 },
+                backgroundColor: "#FFFFFF",
+                color: "#F04438",
+                fontSize: "14px",
+                fontWeight: 500,
+                textTransform: "none",
+                minWidth: "auto",
+                px: 2.5,
+                py: 1,
+                height: 40,
+                borderRadius: "8px",
+                "&:hover": {
+                  backgroundColor: "#D92D20",
+                },
               }}
             >
-              {title}
-            </Typography>
-            <Typography
-              variant="body2"
+              Delete
+            </Button>
+            <IconButton
+              onClick={() => onEdit(id)}
               sx={{
-                color: "#6C737F",
-                fontSize: { xs: "13px", md: "14px" },
-                mb: { xs: 0.5, md: 1 },
+                backgroundColor: "#E3F0F8",
+                color: "#0D4FAB",
+                width: 40,
+                height: 40,
+                borderRadius: "8px",
+                "&:hover": {
+                  backgroundColor: "#D2E7FF",
+                },
               }}
             >
-              {description}
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                color: "#111927",
-                fontSize: { xs: "18px", md: "20px" },
-                mb: { xs: 1, md: 0.5 },
-              }}
-            >
-              {price}
-            </Typography>
-          </Box>
+              <Box
+                component="img"
+                src="/assets/icons/service_offered_icons/service_edit.svg"
+                alt="Edit"
+                sx={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+            </IconButton>
+          </Stack>
         </Stack>
 
-        {/* Action Buttons */}
-        <Stack 
-          direction="row" 
-          spacing={1} 
+        {/* Action Buttons - Mobile only */}
+        <Stack
+          direction="row"
+          spacing={1}
           alignItems="center"
-          sx={{ 
+          sx={{
+            display: { xs: "flex", md: "none" },
             width: "100%",
-            justifyContent: { xs: "flex-start", md: "flex-end" },
+            justifyContent: "flex-start",
           }}
         >
           <Button
@@ -170,13 +236,13 @@ export default function ServiceOfferedCard({
             sx={{
               backgroundColor: "#FFFFFF",
               color: "#F04438",
-              fontSize: { xs: "13px", md: "14px" },
+              fontSize: "13px",
               fontWeight: 500,
               textTransform: "none",
               minWidth: "auto",
-              px: { xs: 2, md: 2.5 },
-              py: { xs: 0.75, md: 1 },
-              height: { xs: 36, md: 40 },
+              px: 2,
+              py: 0.75,
+              height: 36,
               borderRadius: "8px",
               "&:hover": {
                 backgroundColor: "#D92D20",
@@ -190,8 +256,8 @@ export default function ServiceOfferedCard({
             sx={{
               backgroundColor: "#E3F0F8",
               color: "#0D4FAB",
-              width: { xs: 36, md: 40 },
-              height: { xs: 36, md: 40 },
+              width: 36,
+              height: 36,
               borderRadius: "8px",
               "&:hover": {
                 backgroundColor: "#D2E7FF",

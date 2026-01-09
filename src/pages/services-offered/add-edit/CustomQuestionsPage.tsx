@@ -7,7 +7,7 @@ import {
   IconButton,
   MenuItem,
 } from "@mui/material";
-import { DeleteOutline, Edit, People } from "@mui/icons-material";
+import { DeleteOutline, Edit } from "@mui/icons-material";
 import { StyledTextField } from "../../../utils/helper";
 
 interface CustomQuestionsPageProps {
@@ -168,18 +168,15 @@ export default function CustomQuestionsPage({
         <Stack direction="row" alignItems="center" spacing={2}>
           {/* Icon */}
           <Box
+            component="img"
+            src="/assets/icons/service_offered_icons/custom_form_flow.svg"
+            alt="Custom Form"
             sx={{
-              width: 48,
-              height: 48,
-              borderRadius: "8px",
-              backgroundColor: "#12B76A",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: "48px",
+              height: "48px",
+              objectFit: "contain",
             }}
-          >
-            <People sx={{ color: "white", fontSize: "24px" }} />
-          </Box>
+          />
         </Stack>
       </Stack>
 
