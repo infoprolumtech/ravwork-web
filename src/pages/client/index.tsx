@@ -116,23 +116,24 @@ export default function ClientPage(): JSX.Element {
             boxShadow: "none",
           }}
         >
-          <Box display={"flex"} gap={'28px'}>
+          <Box display={"flex"} gap={"28px"}>
             <Avatar
               sx={{
                 width: { xs: "75px", sm: "175px" },
                 height: { xs: "75px", sm: "175px" },
                 border: "2px solid #fff",
-                display:{xs:"none", sm:"block"}
+                display: { xs: "none", sm: "block" },
               }}
               src="/assets/images/avatar.png"
               alt="Profile"
             />
-            <Stack
-              display="flex"
-              justifyContent="space-between"
-              width={"100%"}
-            >
-              <Box display={"flex"} flexDirection={{xs:'column-reverse', sm:'row'}} justifyContent={"space-between"} gap={'4px'}>
+            <Stack display="flex" justifyContent="space-between" width={"100%"}>
+              <Box
+                display={"flex"}
+                flexDirection={{ xs: "column-reverse", sm: "row" }}
+                justifyContent={"space-between"}
+                gap={"4px"}
+              >
                 <Box>
                   <Typography
                     variant="h5"
@@ -191,17 +192,21 @@ export default function ClientPage(): JSX.Element {
                     </IconButton>
                   </Stack>
                 </Box>
-                <Box display="flex" alignItems="flex-start" justifyContent={'space-between'}>
+                <Box
+                  display="flex"
+                  alignItems="flex-start"
+                  justifyContent={"space-between"}
+                >
                   <Avatar
-              sx={{
-                width: { xs: "75px", sm: "175px" },
-                height: { xs: "75px", sm: "175px" },
-                border: "2px solid #fff",
-                display:{xs:"block", sm:"none"}
-              }}
-              src="/assets/images/avatar.png"
-              alt="Profile"
-            />
+                    sx={{
+                      width: { xs: "75px", sm: "175px" },
+                      height: { xs: "75px", sm: "175px" },
+                      border: "2px solid #fff",
+                      display: { xs: "block", sm: "none" },
+                    }}
+                    src="/assets/images/avatar.png"
+                    alt="Profile"
+                  />
                   <Button
                     variant="blackbutton"
                     startIcon={
@@ -257,7 +262,7 @@ export default function ClientPage(): JSX.Element {
             <Card
               key={service.id}
               sx={{
-                backgroundColor: "#fff",
+                backgroundColor: "#F7F9FB",
                 borderRadius: "12px",
                 p: 2.5,
                 boxShadow: "none",
@@ -267,39 +272,18 @@ export default function ClientPage(): JSX.Element {
             >
               <Stack spacing={2}>
                 {/* Icon and Title */}
-                <Stack direction="row" spacing={2} alignItems="flex-start">
+                <Stack>
                   <Box
                     sx={{
-                      width: 48,
-                      height: 48,
+                      width: "39px",
+                      height: "39px",
                       borderRadius: "50%",
-                      backgroundColor: service.iconColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      flexShrink: 0,
                     }}
                   >
-                    {service.iconType === "lightning" ? (
-                      <img
-                        src="/assets/icons/sidebar_menu_icon/flash.svg"
-                        alt="Service"
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          filter: "brightness(0) invert(1)",
-                        }}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          width: "20px",
-                          height: "20px",
-                          backgroundColor: "#FFFFFF",
-                          borderRadius: "2px",
-                        }}
-                      />
-                    )}
+                    <img src="/assets/icons/lightcard.svg" alt="Service" />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography
@@ -313,48 +297,68 @@ export default function ClientPage(): JSX.Element {
                     >
                       {service.title}
                     </Typography>
+
                     <Typography
                       variant="body2"
                       sx={{
                         color: "#6C737F",
-                        fontSize: "14px",
+                        fontWeight: 500,
+                        fontSize: "16px",
                         mb: 1,
                       }}
                     >
                       {service.description}
                     </Typography>
-                    <Typography
-                      variant="h6"
+                    <Box
                       sx={{
-                        fontWeight: 600,
-                        color: "#111927",
-                        fontSize: "20px",
+                        height: 5,
+                        borderTop: "1px solid #ffffff",
+                        mt: "20px",
+                        mb: "20px",
+                      }}
+                    />
+                    <Stack
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
                       }}
                     >
-                      {service.price}
-                    </Typography>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 700,
+                          fontStyle: "bold",
+                          color: "#111927",
+                          fontSize: "30px",
+                        }}
+                      >
+                        {service.price}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "#111927",
+                          color: "#fff",
+                          textTransform: "none",
+                          width: "170px",
+                          height: "36px",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                          borderRadius: "50px",
+                          py: 1.25,
+                          "&:hover": {
+                            backgroundColor: "#384250",
+                          },
+                        }}
+                      >
+                        Book Now
+                      </Button>
+                    </Stack>
                   </Box>
                 </Stack>
 
                 {/* Book Now Button */}
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    backgroundColor: "#111927",
-                    color: "#fff",
-                    textTransform: "none",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    borderRadius: "8px",
-                    py: 1.25,
-                    "&:hover": {
-                      backgroundColor: "#384250",
-                    },
-                  }}
-                >
-                  Book Now
-                </Button>
               </Stack>
             </Card>
           ))}
@@ -371,77 +375,74 @@ export default function ClientPage(): JSX.Element {
             border: "1px solid #E5E7EB",
           }}
         >
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            justifyContent="space-between"
-          >
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  backgroundColor: "#FEF3C7",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "24px",
-                    fontWeight: 600,
-                    color: "#F59E0B",
-                  }}
-                >
-                  ?
-                </Typography>
-              </Box>
+          <Stack spacing={2}>
+            <Box
+              sx={{
+                width: 39,
+                height: 39,
+                borderRadius: "50%",
+                backgroundColor: "#FEF3C7",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <img src="/assets/icons/Questionsicon.svg" alt="Question" />
+            </Box>
+
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              alignItems={{ sm: "center" }}
+            >
               <Box>
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 600,
                     color: "#111927",
-                    fontSize: "16px",
+                    fontSize: 16,
                     mb: 0.5,
                   }}
                 >
                   Have a question?
                 </Typography>
+
                 <Typography
                   variant="body2"
                   sx={{
                     color: "#6C737F",
-                    fontSize: "14px",
+                    fontSize: 14,
                   }}
                 >
                   Provide your contact info.
                 </Typography>
               </Box>
+
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#111927",
+                  color: "#fff",
+                  textTransform: "none",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  maxHeight: 36,
+                  maxWidth: 170,
+                  mt: "9px",
+                  borderRadius: "50px",
+                  px: 3,
+                  py: 1.25,
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": {
+                    backgroundColor: "#384250",
+                  },
+                }}
+              >
+                Request
+              </Button>
             </Stack>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#111927",
-                color: "#fff",
-                textTransform: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-                borderRadius: "8px",
-                px: 3,
-                py: 1.25,
-                width: { xs: "100%", sm: "auto" },
-                "&:hover": {
-                  backgroundColor: "#384250",
-                },
-              }}
-            >
-              Request
-            </Button>
           </Stack>
         </Card>
 
