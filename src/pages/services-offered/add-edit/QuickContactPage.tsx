@@ -87,7 +87,6 @@ export default function QuickContactPage({
               width: 48,
               height: 48,
               borderRadius: "8px",
-              backgroundColor: "#12B76A",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -100,7 +99,6 @@ export default function QuickContactPage({
               sx={{
                 width: "24px",
                 height: "24px",
-                filter: "brightness(0) invert(1)",
               }}
             />
           </Box>

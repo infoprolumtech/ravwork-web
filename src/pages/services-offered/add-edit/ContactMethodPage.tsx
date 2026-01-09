@@ -7,7 +7,6 @@ import {
   RadioGroup,
   FormControlLabel,
 } from "@mui/material";
-import { HeadsetMic } from "@mui/icons-material";
 
 interface ContactMethodPageProps {
   onBack: () => void;
@@ -48,30 +47,22 @@ export default function ContactMethodPage({
         msOverflowStyle: "none",
       }}
     >
-      {/* Header */}
+      {/* Header Icon */}
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="space-between"
-        spacing={2}
         sx={{ width: "100%" }}
       >
-        <Stack direction="row" alignItems="center" spacing={2}>
-          {/* Icon */}
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: "8px",
-              backgroundColor: "#12B76A",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <HeadsetMic sx={{ color: "white", fontSize: "24px" }} />
-          </Box>
-        </Stack>
+        <Box
+          component="img"
+          src="/assets/icons/service_offered_icons/reach.svg"
+          alt="Reach"
+          sx={{
+            width: "48px",
+            height: "48px",
+            objectFit: "contain",
+          }}
+        />
       </Stack>
 
       {/* Form Fields */}
@@ -135,10 +126,10 @@ export default function ContactMethodPage({
                 <Box sx={{ flex: 1 }}>
                   <Typography
                     sx={{
-                      fontSize: "16px",
-                      fontWeight: 500,
+                      fontSize: "18px",
+                      fontWeight: 600,
                       color: "#111927",
-                      mb: 0.5,
+                      mb: 1,
                     }}
                   >
                     Quick Contact
@@ -153,13 +144,12 @@ export default function ContactMethodPage({
                     Collect Basic Information to get booked faster
                   </Typography>
                 </Box>
-                {/* Lightning bolt icon at top right */}
+                {/* Quick Contact icon at top right */}
                 <Box
                   sx={{
                     width: 40,
                     height: 40,
                     borderRadius: "8px",
-                    backgroundColor: "#12B76A",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -168,12 +158,12 @@ export default function ContactMethodPage({
                 >
                   <Box
                     component="img"
-                    src="/assets/icons/sidebar_menu_icon/flash.svg"
-                    alt="Lightning"
+                    src="/assets/icons/service_offered_icons/quick_contact.svg"
+                    alt="Quick Contact"
                     sx={{
-                      width: "20px",
-                      height: "20px",
-                      filter: "brightness(0) invert(1)",
+                      width: "40px",
+                      height: "40px",
+                      objectFit: "contain",
                     }}
                   />
                 </Box>
@@ -198,9 +188,19 @@ export default function ContactMethodPage({
             p: 2,
             width: "100%",
             margin: 0,
-            backgroundColor: "#F9FAFB",
-            "&:hover": { backgroundColor: "#F9FAFB" },
+            backgroundColor: selectedMethod === "quick_contact" 
+              ? "#F0FDF4" 
+              : "#E5ECF6",
+            "&:hover": { 
+              backgroundColor: selectedMethod === "quick_contact" 
+                ? "#F0FDF4" 
+                : "#F3F4F6",
+              borderColor: selectedMethod === "quick_contact" 
+                ? "#12B76A" 
+                : "#D1D5DB",
+            },
             cursor: "pointer",
+            transition: "all 0.2s ease-in-out",
             "& .MuiFormControlLabel-label": {
               marginLeft: 0,
               width: "100%",
@@ -225,10 +225,10 @@ export default function ContactMethodPage({
               <Box sx={{ flex: 1 }}>
                 <Typography
                   sx={{
-                    fontSize: "16px",
-                    fontWeight: 500,
+                    fontSize: "18px",
+                    fontWeight: 600,
                     color: "#111927",
-                    mb: 0.5,
+                    mb: 1,
                   }}
                 >
                   Contact info + Job Questions
@@ -259,7 +259,6 @@ export default function ContactMethodPage({
                   width: 40,
                   height: 40,
                   borderRadius: "8px",
-                  backgroundColor: "#4693DD",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -267,11 +266,13 @@ export default function ContactMethodPage({
                 }}
               >
                 <Box
+                  component="img"
+                  src="/assets/icons/service_offered_icons/custom_form.svg"
+                  alt="Custom Form"
                   sx={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: "white",
-                    borderRadius: "2px",
+                    width: "40px",
+                    height: "40px",
+                    objectFit: "contain",
                   }}
                 />
               </Box>
@@ -283,9 +284,19 @@ export default function ContactMethodPage({
             p: 2,
             width: "100%",
             margin: 0,
-            backgroundColor: "#F9FAFB",
-            "&:hover": { backgroundColor: "#F9FAFB" },
+            backgroundColor: selectedMethod === "contact_info_questions" 
+              ? "#EFF6FF" 
+              : "#E5ECF6",
+            "&:hover": { 
+              backgroundColor: selectedMethod === "contact_info_questions" 
+                ? "#EFF6FF" 
+                : "#F3F4F6",
+              borderColor: selectedMethod === "contact_info_questions" 
+                ? "#4693DD" 
+                : "#D1D5DB",
+            },
             cursor: "pointer",
+            transition: "all 0.2s ease-in-out",
             "& .MuiFormControlLabel-label": {
               marginLeft: 0,
               width: "100%",
