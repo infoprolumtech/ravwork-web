@@ -282,6 +282,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           backgroundColor: theme.palette.background.default,
           overflow: "auto",
           overflowX: "hidden",
+          overscrollBehavior: "contain", // Prevent scroll chaining
           width: "100%",
           maxWidth: "100%",
           boxSizing: "border-box",
@@ -592,15 +593,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     <Box sx={{ 
       display: "flex", 
       width: "100%", 
-      overflowX: "hidden",
-      overflowY: "auto",
+      overflow: "hidden",
       height: "100vh",
-      // Hide scrollbar but keep scroll functionality
-      "&::-webkit-scrollbar": {
-        display: "none",
-      },
-      scrollbarWidth: "none", // Firefox
-      msOverflowStyle: "none", // IE and Edge
     }}>
       {/* App Bar for Mobile */}
       <AppBar
@@ -726,6 +720,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               width: { xs: "100%", md: DRAWER_WIDTH },
               maxWidth: { xs: "100%", md: DRAWER_WIDTH },
               borderRight: "1px solid #E5E7EB",
+              height: "100vh",
+              overflow: "auto",
+              overscrollBehavior: "contain",
               // Hide scrollbar but keep scroll functionality
               "&::-webkit-scrollbar": {
                 display: "none",
@@ -748,6 +745,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               border: "none",
               borderRight: "1px solid #E5E7EB",
               position: "relative",
+              height: "100vh",
+              overflow: "auto",
+              overscrollBehavior: "contain",
               // Hide scrollbar but keep scroll functionality
               "&::-webkit-scrollbar": {
                 display: "none",
@@ -773,9 +773,10 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           },
           maxWidth: "100%",
           backgroundColor: theme.palette.primary.light,
-          minHeight: "100vh",
+          height: "100vh",
           overflowX: "hidden",
           overflowY: "auto",
+          overscrollBehavior: "contain", // Prevent scroll chaining
           boxSizing: "border-box",
           transition: "width 0.3s",
           // Hide scrollbar but keep scroll functionality

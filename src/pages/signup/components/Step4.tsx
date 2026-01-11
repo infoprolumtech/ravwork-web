@@ -278,7 +278,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
               {profileImagePreview ? (
                 <Box
                   component="img"
-                  src={profileImagePreview}
+                  src={profileImagePreview} 
                   alt="Profile"
                   sx={{
                     width: { xs: 120, sm: 150 },
