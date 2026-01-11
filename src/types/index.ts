@@ -18,12 +18,14 @@ export interface User {
   accessToken?: string;
   refreshToken?: string;
   role?: string;
+  profileStep?: number; // Signup progress: 1=Step1 done, 2=Step2 done, 3=complete
 }
 
 // Auth state types
 export interface AuthState {
   isLogin: boolean;
   user: User | null;
+  signupToken: string | null; // Temporary token during signup flow (before login)
 }
 
 // Alert types

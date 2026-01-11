@@ -13,18 +13,16 @@ const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     headers.set("user-agent", "");
-    const state = getState() as { auth: { user: { accessToken?: string } | null } };
+    const state = getState() as { auth: { user: { accessToken?: string } | null; signupToken: string | null } };
     const user = state.auth.user;
+    const signupToken = state.auth.signupToken;
 
-    // Check for token in Redux store first
+    // Check for token in Redux store first (logged in user)
     if (user?.accessToken) {
       headers.set("Authorization", `Bearer ${user.accessToken}`);
-    } else {
-      // Check for temporary signup token in localStorage (for signup flow)
-      const signupToken = localStorage.getItem("signupToken");
-      if (signupToken) {
-        headers.set("Authorization", `Bearer ${signupToken}`);
-      }
+    } else if (signupToken) {
+      // Use signup token for authenticated calls during signup flow
+      headers.set("Authorization", `Bearer ${signupToken}`);
     }
     
     return headers;

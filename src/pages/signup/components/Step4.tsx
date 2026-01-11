@@ -19,9 +19,10 @@ interface Step4Props {
   initialData?: Step4FormInputs | null;
   onBack?: () => void;
   isSubmitting?: boolean;
+  isSkipping?: boolean;
 }
 
-export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = false }: Step4Props) => {
+export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = false, isSkipping = false }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
   const dispatch = useAppDispatch();
@@ -274,21 +275,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
         <Grid size={{ xs: 12, sm: 8 }}>
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <Box sx={{ position: "relative", display: "inline-block" }}>
-              {isUploading ? (
-                <Box
-                  sx={{
-                    width: { xs: 120, sm: 150 },
-                    height: { xs: 120, sm: 150 },
-                    borderRadius: 2,
-                    border: "1px solid #D1D5DB",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <CircularProgress size={40} />
-                </Box>
-              ) : profileImagePreview ? (
+              {profileImagePreview ? (
                 <Box
                   component="img"
                   src={profileImagePreview}
@@ -299,6 +286,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
                     borderRadius: 2,
                     objectFit: "cover",
                     border: "1px solid #D1D5DB",
+                    opacity: isUploading ? 0.5 : 1,
                   }}
                 />
               ) : (
@@ -311,6 +299,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    backgroundColor: isUploading ? "#F3F4F6" : "transparent",
                   }}
                 />
               )}
@@ -322,28 +311,42 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
                 onChange={handleImageUpload}
                 disabled={isUploading}
               />
-              <label htmlFor="profile-image-upload">
-                <Button
-                  component="span"
-                  disabled={isUploading}
+              {isUploading ? (
+                <Box
                   sx={{
                     position: "absolute",
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    minWidth: "auto",
-                    p: 1,
-                    backgroundColor: "rgba(0,0,0,0.5)",
-                    borderRadius: "50%",
-                    width: 40,
-                    height: 40,
-                    "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                    "&:disabled": { backgroundColor: "rgba(0,0,0,0.3)" },
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
-                </Button>
-              </label>
+                  <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
+                </Box>
+              ) : (
+                <label htmlFor="profile-image-upload">
+                  <Button
+                    component="span"
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      minWidth: "auto",
+                      p: 1,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "50%",
+                      width: 40,
+                      height: 40,
+                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                    }}
+                  >
+                    <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
+                  </Button>
+                </label>
+              )}
               {profileImagePreview && (
                 <Typography
                   sx={{
@@ -491,6 +494,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             fullWidth
             variant="outlined"
             onClick={onSkip}
+            disabled={isSkipping || isSubmitting}
             sx={{ 
               borderColor: "#D1D5DB", 
               color: "#1C1C1C", 
@@ -505,19 +509,23 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
               }
             }}
           >
-            Skip
+            {isSkipping ? (
+              <CircularProgress size={24} sx={{ color: "#1C1C1C" }} />
+            ) : (
+              "Skip"
+            )}
           </Button>
           <Button 
             fullWidth 
             type="submit" 
             variant="secondary" 
-            disabled={form.formState.isSubmitting || isSubmitting}
+            disabled={isSubmitting || isSkipping}
             sx={{ 
               textTransform: "none",
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            {(form.formState.isSubmitting || isSubmitting) ? (
+            {isSubmitting ? (
               <CircularProgress size={24} sx={{ color: "#fff" }} />
             ) : (
               "Next"
