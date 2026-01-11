@@ -4,6 +4,7 @@ import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 
 import { Mutex } from "async-mutex";
 import { showAlert } from "../feature/alertSlice";
+import { logoutUser } from "../feature/authSlice";
 
 // Create a mutex to prevent concurrent token refreshes
 const mutex = new Mutex();
@@ -29,6 +30,16 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// Helper function to handle token expiration
+const handleTokenExpiration = (api: any) => {
+  // Clear auth state
+  api.dispatch(logoutUser());
+  // Clear persisted state
+  localStorage.removeItem("persist:persist");
+  // Redirect to login page
+  window.location.href = "/login";
+};
+
 // Enhanced base query with re-authentication logic
 export const baseQueryWithReauth: BaseQueryFn<
   any,
@@ -38,25 +49,42 @@ export const baseQueryWithReauth: BaseQueryFn<
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
+  // Handle token expiration (401 Unauthorized)
+  if (result?.error?.status === 401) {
+    if (!mutex.isLocked()) {
+      const release = await mutex.acquire();
+      try {
+        handleTokenExpiration(api);
+      } finally {
+        release();
+      }
+    }
+    // Don't show error alert for token expiration, just redirect
+    return result;
+  }
+
+  // Extract error message for other errors
   const errorMessage =
     (result?.error?.data as any)?.message ||
     (result?.error?.data as any)?.error ||
     (result?.error?.data as any)?.detail ||
     "Something went wrong.";
 
-  if (result?.error)
+  // Show error alert for non-auth errors
+  if (result?.error && result?.error?.status !== 401) {
     api.dispatch(
       showAlert({
         message: errorMessage,
         severity: "error",
       })
     );
+  }
 
   if (result?.error?.status === 498) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
-
       try {
+        handleTokenExpiration(api);
       } catch (err) {
         localStorage.clear();
       } finally {
@@ -64,8 +92,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       }
     }
   } else if (result?.error?.status === 440) {
-    window.location.href = "/";
-    localStorage.removeItem("persist:persist");
+    handleTokenExpiration(api);
   } else {
     await mutex.waitForUnlock();
   }

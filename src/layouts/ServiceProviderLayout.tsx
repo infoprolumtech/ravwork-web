@@ -27,7 +27,8 @@ import theme from "../theme";
 import GlobalDialog from "../components/dialog";
 import CommonDialog from "../components/dialog/dialog-content/CommonDialog";
 import { useLogoutMutation } from "../rtk/endpoints/authApi";
-import { decryptAES } from "../utils/helper";
+import { useGetUserProfileQuery } from "../rtk/endpoints/userApi";
+import { decryptAES, getCloudFrontUrl } from "../utils/helper";
 import { Menu as MenuIcon, ChevronRight, Close } from "@mui/icons-material";
 
 const DRAWER_WIDTH = 280;
@@ -206,6 +207,11 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.auth.user);
   const [logout] = useLogoutMutation();
+  
+  // Fetch user profile to get complete data including profile photo
+  const { data: userProfile } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const handleDrawerToggle = React.useCallback(() => {
     setMobileOpen((prev: boolean) => !prev);
@@ -259,16 +265,27 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     };
   }, [pathParts]);
 
-  // Memoize user info to avoid recalculating decryptAES on every render
+  // Memoize user info - use username and displayName from API
   const userInfo = React.useMemo(
-    () => ({
-      firstName: user?.firstName ? decryptAES(user?.firstName) : "Name Goes Here",
-      companyName: user?.companyName ? decryptAES(user?.companyName) : "Company Name",
-      avatarInitial: user?.firstName
-        ? decryptAES(user?.firstName).charAt(0).toUpperCase()
-        : "U",
-    }),
-    [user?.firstName, user?.companyName]
+    () => {
+      // Get username from API profile
+      const username = userProfile?.username || "Name Goes Here";
+      
+      // Get displayName from API profile
+      const displayName = userProfile?.displayName || user?.displayName || "Company Name";
+
+      // Get profile photo from API response, convert to CloudFront URL
+      const rawPhotoUrl = userProfile?.profilePhoto || user?.profilePhoto || null;
+      const profilePhoto = rawPhotoUrl ? getCloudFrontUrl(rawPhotoUrl) : null;
+
+      return {
+        firstName: username,
+        companyName: displayName,
+        avatarInitial: username.charAt(0).toUpperCase(),
+        profilePhoto,
+      };
+    },
+    [userProfile, user]
   );
 
   // Memoize drawer content to prevent unnecessary re-renders
@@ -318,10 +335,20 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         <Box sx={{ p: { xs: 2, md: 3 }, pb: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
             <Avatar
+              src={userInfo.profilePhoto || undefined}
               sx={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 bgcolor: theme.palette.primary[500],
+                fontSize: "16px",
+                fontWeight: 600,
+              }}
+              imgProps={{
+                onError: (e) => {
+                  // Fallback to initial if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                },
               }}
             >
               {userInfo.avatarInitial}
@@ -329,7 +356,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             <Stack>
               <Typography
                 variant="body2"
-                sx={{ fontWeight: 500, color: "#111927", fontSize: "14px" }}
+                sx={{ fontWeight: 600, color: "#111927", fontSize: "16px" }}
               >
                 {userInfo.firstName}
               </Typography>
@@ -583,7 +610,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       </Box>
     </Box>
     ),
-    [userInfo, profileComplete, isPathSelected, navigate]
+    [userInfo, profileComplete, isPathSelected, navigate, handleDrawerToggle, handleLogout]
   );
 
   const container =

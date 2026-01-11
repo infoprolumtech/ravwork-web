@@ -18,6 +18,8 @@ import {
 } from "../../rtk/endpoints/serviceApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { useAppDispatch } from "../../rtk/store";
+import GlobalDialog from "../../components/dialog";
+import CommonDialog from "../../components/dialog/dialog-content/CommonDialog";
 
 
 
@@ -49,6 +51,11 @@ export default function ServicesOfferedPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [serviceToDelete, setServiceToDelete] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
   // API hooks
   const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery();
   const [deleteService] = useDeleteServiceMutation();
@@ -69,18 +76,33 @@ export default function ServicesOfferedPage(): JSX.Element {
     navigate(`/services-offered/edit/${id}`);
   };
 
-  const handleDeleteService = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) {
-      return;
-    }
+  // Open delete confirmation dialog
+  const handleDeleteService = (id: string) => {
+    setServiceToDelete(id);
+    setDeleteDialogOpen(true);
+  };
 
+  // Close delete dialog
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setServiceToDelete(null);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = async () => {
+    if (!serviceToDelete) return;
+
+    setIsDeleting(true);
     try {
-      await deleteService(id).unwrap();
+      await deleteService(serviceToDelete).unwrap();
       dispatch(showAlert({ message: "Service deleted successfully", severity: "success" }));
       refetch();
+      handleCloseDeleteDialog();
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete service";
       dispatch(showAlert({ message: errorMessage, severity: "error" }));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -197,6 +219,22 @@ export default function ServicesOfferedPage(): JSX.Element {
           </Stack>
         )}
       </Box>
+
+      {/* Delete Confirmation Dialog */}
+      <GlobalDialog
+        open={deleteDialogOpen}
+        handleClose={handleCloseDeleteDialog}
+        component={
+          <CommonDialog
+            handleCancel={handleCloseDeleteDialog}
+            title="Delete Service"
+            subTitle="Are you sure you want to delete this service? This action cannot be undone."
+            handleConfirm={handleConfirmDelete}
+            confirmText={isDeleting ? "Deleting..." : "Delete"}
+            confirmDisabled={isDeleting}
+          />
+        }
+      />
     </ServiceProviderLayout>
   );
 }

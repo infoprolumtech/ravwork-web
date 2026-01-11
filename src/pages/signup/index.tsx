@@ -127,15 +127,21 @@ export default function SignUpPage(): JSX.Element {
         linkedinUrl: data.linkedin || undefined,
       }).unwrap();
       
-      // Clear signup token from Redux and form data
+      // Clear signup token and log out user to allow fresh login
       dispatch(clearSignupToken());
+      dispatch(logoutUser());
+      
+      // Clear form data
       setStep1Data(null);
       setStep2Data(null);
       setStep3Data(null);
       setStep4Data(null);
+      
+      // Show success message
       dispatch(showAlert({ message: "Profile updated successfully. Please sign in to continue.", severity: "success" }));
-      // Redirect to sign-in page after signup completion
-      navigate("/login");
+      
+      // Redirect to login page immediately
+      navigate("/login", { replace: true });
     } catch (error: any) {
       console.error("Profile update error:", error);
       dispatch(showAlert({ 
@@ -148,26 +154,34 @@ export default function SignUpPage(): JSX.Element {
   const handleSkipProfile = async () => {
     try {
       await skipProfile(undefined).unwrap();
-      // Clear signup token from Redux and form data
+      // Clear signup token and log out user to allow fresh login
       dispatch(clearSignupToken());
+      dispatch(logoutUser());
+      
+      // Clear form data
       setStep1Data(null);
       setStep2Data(null);
       setStep3Data(null);
       setStep4Data(null);
+      
       dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
       // Redirect to sign-in page after skipping profile
-      navigate("/login");
+      navigate("/login", { replace: true });
     } catch (error: any) {
       console.error("Skip profile error:", error);
-      // Clear signup token from Redux and form data even if skip fails
+      // Clear signup token and log out user even if skip fails
       dispatch(clearSignupToken());
+      dispatch(logoutUser());
+      
+      // Clear form data
       setStep1Data(null);
       setStep2Data(null);
       setStep3Data(null);
       setStep4Data(null);
+      
       // Even if skip fails, redirect to sign-in
       dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
-      navigate("/login");
+      navigate("/login", { replace: true });
     }
   };
 
