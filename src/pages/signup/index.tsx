@@ -8,9 +8,9 @@ import { Step2 } from "./components/Step2";
 import { Step3 } from "./components/Step3";
 import { Step4 } from "./components/Step4";
 import type { Step1FormInputs, Step2FormInputs, Step3FormInputs, Step4FormInputs } from "./types";
-import { useSignupMutation, useUpdateProfileMutation, useSkipProfileMutation } from "../../rtk/endpoints/authApi";
+import { useSignupMutation, useUpdateProfileMutation, useSkipProfileMutation, useLazyGetCurrentUserQuery } from "../../rtk/endpoints/authApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import { setSignupToken, clearSignupToken, logoutUser } from "../../rtk/feature/authSlice";
+import { setSignupToken, clearSignupToken, logoutUser, loginUser } from "../../rtk/feature/authSlice";
 
 // Location state type for resume step from login
 interface LocationState {
@@ -24,6 +24,7 @@ export default function SignUpPage(): JSX.Element {
   const [signup, { isLoading: isSigningUp }] = useSignupMutation();
   const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
   const [skipProfile, { isLoading: isSkippingProfile }] = useSkipProfileMutation();
+  const [getCurrentUser] = useLazyGetCurrentUserQuery();
   
   // Get signup token and user from Redux state
   const signupToken = useAppSelector((state) => state.auth.signupToken);
@@ -115,33 +116,49 @@ export default function SignUpPage(): JSX.Element {
       setStep4Data(data);
       
       // Step 4 is profile completion - call updateProfile API
-      // All fields are optional
-      // profilePhoto is the full S3 URL extracted from the presigned URL after upload
-      // Format: https://bucket.s3.region.amazonaws.com/profile-photos/file.jpg
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
-        profilePhoto: data.profilePhoto || undefined, // Full S3 URL from presigned URL upload
+        profilePhoto: data.profilePhoto || undefined,
         instagramUrl: data.instagram || undefined,
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
       }).unwrap();
       
-      // Clear signup token and log out user to allow fresh login
-      dispatch(clearSignupToken());
-      dispatch(logoutUser());
+      // Get current user data to log them in directly
+      const userResponse = await getCurrentUser().unwrap();
       
-      // Clear form data
-      setStep1Data(null);
-      setStep2Data(null);
-      setStep3Data(null);
-      setStep4Data(null);
-      
-      // Show success message
-      dispatch(showAlert({ message: "Profile updated successfully. Please sign in to continue.", severity: "success" }));
-      
-      // Redirect to login page immediately
-      navigate("/login", { replace: true });
+      if (userResponse?.data && signupToken) {
+        // Log the user in with the signup token as access token
+        const userData = {
+          ...userResponse.data,
+          accessToken: signupToken,
+          profileStep: 3, // Signup complete
+        };
+        
+        // Clear signup token first
+        dispatch(clearSignupToken());
+        
+        // Log in the user
+        dispatch(loginUser(userData));
+        
+        // Clear form data
+        setStep1Data(null);
+        setStep2Data(null);
+        setStep3Data(null);
+        setStep4Data(null);
+        
+        // Show success message
+        dispatch(showAlert({ message: "Welcome! Your profile is complete.", severity: "success" }));
+        
+        // Redirect to dashboard
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Fallback: redirect to login if something goes wrong
+        dispatch(clearSignupToken());
+        dispatch(showAlert({ message: "Profile updated. Please sign in.", severity: "success" }));
+        navigate("/login", { replace: true });
+      }
     } catch (error: any) {
       console.error("Profile update error:", error);
       dispatch(showAlert({ 
@@ -154,33 +171,46 @@ export default function SignUpPage(): JSX.Element {
   const handleSkipProfile = async () => {
     try {
       await skipProfile(undefined).unwrap();
-      // Clear signup token and log out user to allow fresh login
-      dispatch(clearSignupToken());
-      dispatch(logoutUser());
       
-      // Clear form data
-      setStep1Data(null);
-      setStep2Data(null);
-      setStep3Data(null);
-      setStep4Data(null);
+      // Get current user data to log them in directly
+      const userResponse = await getCurrentUser().unwrap();
       
-      dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
-      // Redirect to sign-in page after skipping profile
-      navigate("/login", { replace: true });
+      if (userResponse?.data && signupToken) {
+        // Log the user in with the signup token as access token
+        const userData = {
+          ...userResponse.data,
+          accessToken: signupToken,
+          profileStep: 3, // Signup complete
+        };
+        
+        // Clear signup token first
+        dispatch(clearSignupToken());
+        
+        // Log in the user
+        dispatch(loginUser(userData));
+        
+        // Clear form data
+        setStep1Data(null);
+        setStep2Data(null);
+        setStep3Data(null);
+        setStep4Data(null);
+        
+        // Show success message
+        dispatch(showAlert({ message: "Welcome! You can complete your profile later.", severity: "success" }));
+        
+        // Redirect to dashboard
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Fallback: redirect to login if something goes wrong
+        dispatch(clearSignupToken());
+        dispatch(showAlert({ message: "Signup completed. Please sign in.", severity: "success" }));
+        navigate("/login", { replace: true });
+      }
     } catch (error: any) {
       console.error("Skip profile error:", error);
-      // Clear signup token and log out user even if skip fails
+      // Fallback: redirect to login
       dispatch(clearSignupToken());
-      dispatch(logoutUser());
-      
-      // Clear form data
-      setStep1Data(null);
-      setStep2Data(null);
-      setStep3Data(null);
-      setStep4Data(null);
-      
-      // Even if skip fails, redirect to sign-in
-      dispatch(showAlert({ message: "Signup completed. Please sign in to continue.", severity: "success" }));
+      dispatch(showAlert({ message: "Signup completed. Please sign in.", severity: "success" }));
       navigate("/login", { replace: true });
     }
   };
