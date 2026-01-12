@@ -17,6 +17,17 @@ import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
 import { getCloudFrontUrl } from "../../utils/helper";
 import ShareModal from "../client/components/ShareModal";
 
+// Helper function to get base URL dynamically
+const getBaseUrl = () => {
+  const currentOrigin = window.location.origin;
+  // Check if we're on the production domain
+  if (currentOrigin.includes('ravwork.link') || currentOrigin.includes('cloudfront.net')) {
+    return 'https://ravwork.link';
+  }
+  // For dev/localhost, use current origin
+  return currentOrigin;
+};
+
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
   const { data: profile, isLoading, error } = useGetUserProfileQuery();
@@ -24,7 +35,8 @@ export default function MyProfilePage(): JSX.Element {
   const [toastOpen, setToastOpen] = useState(false);
 
   const handleCopyUrl = () => {
-    const profileUrl = `https://ravwork.link/${profile?.username}`;
+    if (!profile?.username) return;
+    const profileUrl = `${getBaseUrl()}/${profile.username}`;
     navigator.clipboard.writeText(profileUrl);
     setToastOpen(true);
   };
@@ -121,7 +133,7 @@ export default function MyProfilePage(): JSX.Element {
     );
   }
 
-  const profileUrl = `https://ravwork.link/${profile.username}`;
+  const profileUrl = `${getBaseUrl()}/${profile.username}`;
   const phoneDisplay = profile.countryCode && profile.phoneNumber 
     ? `${profile.countryCode} ${profile.phoneNumber}` 
     : "N/A";
@@ -346,7 +358,7 @@ export default function MyProfilePage(): JSX.Element {
         <ShareModal
           open={shareModalOpen}
           onClose={() => setShareModalOpen(false)}
-          profileUrl={`https://ravwork.link/${profile.username}`}
+          profileUrl={profileUrl}
           profileName={profile.displayName || profile.username || ""}
         />
       )}
