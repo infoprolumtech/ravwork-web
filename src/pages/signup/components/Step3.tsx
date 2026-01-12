@@ -222,8 +222,9 @@ export const Step3 = ({ onNext, initialData, onBack }: Step3Props) => {
           sx={{
             mt: { xs: 0, sm: 3 },
             height: { xs: "44px", sm: "48px" },
+            cursor: form.formState.isSubmitting || !form.formState.isValid ? "not-allowed" : "pointer",
           }}
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || !form.formState.isValid}
         >
           Next
         </Button>

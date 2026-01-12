@@ -143,6 +143,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
                   ...inputFieldSx(Boolean(form.formState.errors.username)),
                   "& .MuiInputBase-input": {
                     padding: "0px", // keep your existing padding
+                    borderRadius: "0 !important",
                   },
                 }}
               />
@@ -205,7 +206,12 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
         })}
         error={Boolean(form.formState.errors.email)}
         helperText={form.formState.errors.email?.message}
-        sx={inputFieldSx(Boolean(form.formState.errors.email))}
+        sx={{
+          ...inputFieldSx(Boolean(form.formState.errors.email)),
+          "& .MuiInputBase-input": {
+            borderRadius: "0 !important",
+          },
+        }}
         slotProps={{
           input: {
             startAdornment: (
@@ -288,10 +294,11 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
                   },
                 }}
                 sx={{
-                  borderRadius: "100px",
+                  // borderRadius: "100px",
                   fontSize: { xs: "14px", sm: "16px" },
                   color: "#1C1C1C",
                   height: "48px",
+                  cursor: "pointer",
                   "& .MuiSelect-select": {
                     py: 0,
                     px: { xs: 1.5, sm: 2 },
@@ -299,10 +306,12 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
                     display: "flex",
                     alignItems: "center",
                     minHeight: "48px",
+                    cursor: "pointer",
                   },
                   "& .MuiSelect-icon": {
                     color: "#6C737F",
                     right: { xs: 8, sm: 12 },
+                    cursor: "pointer",
                   },
                 }}
                 renderValue={(value) => {
@@ -317,6 +326,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
                     sx={{
                       py: 1.5,
                       px: 2,
+                      cursor: "pointer",
                     }}
                   >
                     {country.flag} {country.iso} ({country.code}) - {country.country}
@@ -342,13 +352,18 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
           })}
           error={Boolean(form.formState.errors.phoneNumber)}
           helperText={form.formState.errors.phoneNumber?.message}
-          sx={inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
-            mb: 0,
-            "& .MuiInputBase-root": {
-              height: "48px",
-              minHeight: "48px",
+          sx={{
+            ...inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
+              mb: 0,
+              "& .MuiInputBase-root": {
+                height: "48px",
+                minHeight: "48px",
+              },
+            }),
+            "& .MuiInputBase-input": {
+              borderRadius: "0 !important",
             },
-          })}
+          }}
           slotProps={{
             input: {
               startAdornment: (
@@ -387,7 +402,12 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
         })}
         error={Boolean(form.formState.errors.password)}
         helperText={form.formState.errors.password?.message}
-        sx={inputFieldSx(Boolean(form.formState.errors.password))}
+        sx={{
+          ...inputFieldSx(Boolean(form.formState.errors.password)),
+          "& .MuiInputBase-input": {
+            borderRadius: "0 !important",
+          },
+        }}
       />
 
       <Box sx={bottomButtonContainerSx}>
@@ -399,6 +419,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
             mt: { xs: 0, sm: 2 },
             mb: { xs: 1, sm: 1 },
             height: { xs: "44px", sm: "48px" },
+            cursor: isLoading ? "not-allowed" : "pointer",
           }}
           disabled={isLoading}
         >

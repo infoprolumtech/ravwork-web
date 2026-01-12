@@ -77,9 +77,104 @@ export const step2Schema = yup.object().shape({
 
 export const step3Schema = yup.object().shape({
   paymentMethod: yup.string(),
-  cardNumber: yup.string(),
-  expiryDate: yup.string(),
-  securityCode: yup.string(),
+  cardNumber: yup
+    .string()
+    .test("card-number-required", "Card number is required when entering card details", function(value) {
+      const { paymentMethod, expiryDate, securityCode } = this.parent;
+      // If payment method is set (apple or link), card number is not required
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // If any card field is filled, all must be filled
+      if (expiryDate || securityCode) {
+        return value && value.trim().length > 0;
+      }
+      return true;
+    })
+    .test("card-number-format", "Card number must be 13-19 digits", function(value) {
+      const { paymentMethod } = this.parent;
+      // Skip validation if payment method is apple or link
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // Skip if card number is not provided (will be caught by required test)
+      if (!value || value.trim().length === 0) return true;
+      // Remove spaces and dashes, then check if it's all digits
+      const cleaned = value.replace(/[\s-]/g, "");
+      return /^\d{13,19}$/.test(cleaned);
+    }),
+  expiryDate: yup
+    .string()
+    .test("expiry-date-required", "Expiry date is required when entering card details", function(value) {
+      const { paymentMethod, cardNumber, securityCode } = this.parent;
+      // If payment method is set (apple or link), expiry date is not required
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // If any card field is filled, all must be filled
+      if (cardNumber || securityCode) {
+        return value && value.trim().length > 0;
+      }
+      return true;
+    })
+    .test("expiry-date-format", "Expiry date must be in MM/YY or MM/YYYY format", function(value) {
+      const { paymentMethod } = this.parent;
+      // Skip validation if payment method is apple or link
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // Skip if expiry date is not provided (will be caught by required test)
+      if (!value || value.trim().length === 0) return true;
+      // Check MM/YY or MM/YYYY format
+      const mmYYPattern = /^(0[1-9]|1[0-2])\/\d{2}$/;
+      const mmYYYYPattern = /^(0[1-9]|1[0-2])\/\d{4}$/;
+      return mmYYPattern.test(value) || mmYYYYPattern.test(value);
+    })
+    .test("expiry-date-valid", "Expiry date must be in the future", function(value) {
+      const { paymentMethod } = this.parent;
+      // Skip validation if payment method is apple or link
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // Skip if expiry date is not provided or format is invalid
+      if (!value || value.trim().length === 0) return true;
+      const mmYYPattern = /^(0[1-9]|1[0-2])\/(\d{2})$/;
+      const mmYYYYPattern = /^(0[1-9]|1[0-2])\/(\d{4})$/;
+      
+      let month: number, year: number;
+      if (mmYYPattern.test(value)) {
+        const match = value.match(mmYYPattern);
+        if (!match) return true;
+        month = parseInt(match[1], 10);
+        year = 2000 + parseInt(match[2], 10);
+      } else if (mmYYYYPattern.test(value)) {
+        const match = value.match(mmYYYYPattern);
+        if (!match) return true;
+        month = parseInt(match[1], 10);
+        year = parseInt(match[2], 10);
+      } else {
+        return true; // Format validation will catch this
+      }
+      
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      
+      if (year > currentYear) return true;
+      if (year === currentYear && month >= currentMonth) return true;
+      return false;
+    }),
+  securityCode: yup
+    .string()
+    .test("security-code-required", "Security code is required when entering card details", function(value) {
+      const { paymentMethod, cardNumber, expiryDate } = this.parent;
+      // If payment method is set (apple or link), security code is not required
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // If any card field is filled, all must be filled
+      if (cardNumber || expiryDate) {
+        return value && value.trim().length > 0;
+      }
+      return true;
+    })
+    .test("security-code-format", "Security code must be 3-4 digits", function(value) {
+      const { paymentMethod } = this.parent;
+      // Skip validation if payment method is apple or link
+      if (paymentMethod === "apple" || paymentMethod === "link") return true;
+      // Skip if security code is not provided (will be caught by required test)
+      if (!value || value.trim().length === 0) return true;
+      // Check if it's 3-4 digits
+      return /^\d{3,4}$/.test(value);
+    }),
 }).test("payment-method-or-card", "Please select a payment method or enter card details", function(value) {
   const { paymentMethod, cardNumber, expiryDate, securityCode } = value;
   // If payment method is set (apple, link, or card), it's valid
