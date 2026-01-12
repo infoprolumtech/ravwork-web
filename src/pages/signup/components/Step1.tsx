@@ -69,65 +69,6 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
     }
   }, [initialData, form]);
 
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // If field is empty or user is typing, ensure prefix is added
-    if (!value.startsWith(PREFIX)) {
-      // If user is typing and field doesn't have prefix, add it
-      if (value.length > 0) {
-        form.setValue("username", PREFIX + value.replace(PREFIX, ""), { shouldValidate: true });
-      } else {
-        form.setValue("username", "", { shouldValidate: true });
-      }
-    } else {
-      form.setValue("username", value, { shouldValidate: true });
-    }
-  };
-
-  const handleUsernameFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    const input = e.target;
-    const value = input.value;
-
-    // If field is empty on focus, set prefix
-    if (!value) {
-      form.setValue("username", PREFIX);
-      setTimeout(() => {
-        input.setSelectionRange(PREFIX.length, PREFIX.length);
-      }, 0);
-    } else if (value.startsWith(PREFIX)) {
-      // Ensure cursor is after prefix
-      const cursorPosition = input.selectionStart || 0;
-      if (cursorPosition < PREFIX.length) {
-        setTimeout(() => {
-          input.setSelectionRange(PREFIX.length, PREFIX.length);
-        }, 0);
-      }
-    }
-  };
-
-  const handleUsernameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const input = e.currentTarget;
-    const cursorPosition = input.selectionStart || 0;
-    const value = input.value;
-
-    // Only prevent deletion if we have the prefix and cursor is at prefix boundary
-    if (value.startsWith(PREFIX)) {
-      if ((e.key === "Backspace" || e.key === "Delete") && cursorPosition <= PREFIX.length) {
-        e.preventDefault();
-        setTimeout(() => {
-          input.setSelectionRange(PREFIX.length, PREFIX.length);
-        }, 0);
-      }
-
-      if (e.key === "ArrowLeft" && cursorPosition <= PREFIX.length) {
-        e.preventDefault();
-        input.setSelectionRange(PREFIX.length, PREFIX.length);
-      }
-    }
-  };
-
   const handleSubmit = (data: Step1FormInputs) => {
     // Always call onNext - parent component will handle whether to call API or not
     onNext(data);
