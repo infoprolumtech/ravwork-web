@@ -454,9 +454,10 @@ export default function ClientPage(): JSX.Element {
                       <Stack
                         sx={{
                           display: "flex",
-                          flexDirection: "row",
+                          flexDirection: { xs: "column", sm: "row" },
                           justifyContent: "space-between",
-                          alignItems: "center",
+                          alignItems: { xs: "flex-start", sm: "center" },
+                          gap: { xs: 1.5, sm: 0 },
                         }}
                       >
                         <Typography
@@ -464,7 +465,7 @@ export default function ClientPage(): JSX.Element {
                           sx={{
                             fontWeight: 700,
                             color: "#111927",
-                            fontSize: "30px",
+                            fontSize: { xs: "24px", sm: "30px" },
                           }}
                         >
                           ${service.price}
@@ -476,7 +477,7 @@ export default function ClientPage(): JSX.Element {
                             backgroundColor: "#111927",
                             color: "#fff",
                             textTransform: "none",
-                            width: "170px",
+                            width: { xs: "100%", sm: "170px" },
                             height: "36px",
                             fontSize: "14px",
                             fontWeight: 500,
@@ -506,21 +507,19 @@ export default function ClientPage(): JSX.Element {
             p: 3,
             mb: 3,
             boxShadow: "none",
-            // border: "1px solid #E5E7EB",
           }}
         >
           <Stack spacing={2}>
             <Box
               sx={{
-                width: 39,
-                height: 39,
+                width: 40,
+                height: 40,
                 borderRadius: "50%",
-                backgroundColor: "#F7F9FB",
+                backgroundColor: "#FEF7C3",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
-
               }}
             >
               <img src="/assets/icons/Questionsicon.svg" alt="Question" />
@@ -529,8 +528,8 @@ export default function ClientPage(): JSX.Element {
             <Stack
               direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
-              alignItems={{ sm: "center" }}
-              
+              alignItems={{ xs: "flex-start", sm: "center" }}
+              spacing={{ xs: 2, sm: 0 }}
             >
               <Box>
                 <Typography
@@ -564,12 +563,10 @@ export default function ClientPage(): JSX.Element {
                   textTransform: "none",
                   fontSize: 14,
                   fontWeight: 500,
-                  maxHeight: 36,
-                  maxWidth: 170,
-                  mt: "9px",
+                  height: 40,
                   borderRadius: "50px",
-                  px: 3,
-                  py: 1.25,
+                  px: 4,
+                  minWidth: "120px",
                   width: { xs: "100%", sm: "auto" },
                   "&:hover": {
                     backgroundColor: "#384250",
@@ -583,14 +580,12 @@ export default function ClientPage(): JSX.Element {
         </Card>
 
         {/* Quick Contact Section */}
-        <Card
+        <Box
           sx={{
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            p: 3,
-            mb: 4,
-            boxShadow: "none",
-            border: "1px solid #E5E7EB",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mb: { xs: "20px", sm: "28px" },
           }}
         >
           <Typography
@@ -598,134 +593,175 @@ export default function ClientPage(): JSX.Element {
             sx={{
               fontWeight: 600,
               color: "#111927",
-              fontSize: "16px",
+              fontSize: { xs: "18px", sm: "24px" },
               mb: 2,
+              textAlign: "center",
             }}
           >
             Quick Contact
           </Typography>
-          <Stack direction="row" spacing={2}>
+          <Stack 
+            direction="row" 
+            spacing={{ xs: 1, sm: 2 }} 
+            justifyContent="center"
+            flexWrap="wrap"
+            sx={{ gap: { xs: 1, sm: 2 } }}
+          >
             <Button
               variant="outlined"
-              fullWidth
               sx={{
                 borderColor: "#E5E7EB",
                 color: "#111927",
                 textTransform: "none",
-                fontSize: "14px",
+                fontSize: { xs: "12px", sm: "14px" },
                 fontWeight: 500,
                 borderRadius: "8px",
-                py: 1.25,
+                px: { xs: 1.5, sm: 2.5 },
+                py: 1,
+                minWidth: "auto",
                 "&:hover": {
                   borderColor: "#D1D5DB",
                   backgroundColor: "#F9FAFB",
                 },
+                height: "36px",
+                width: { xs: "130px", sm: "170px" },
               }}
               startIcon={
                 <img
                   src="/assets/icons/phone.svg"
                   alt="Call"
-                  style={{ width: "20px", height: "20px" }}
+                  style={{ width: "18px", height: "18px" }}
                 />
               }
+              onClick={() => {
+                if (profile?.phoneNumber) {
+                  window.location.href = `tel:${profile.countryCode}${profile.phoneNumber}`;
+                }
+              }}
             >
               Call Now
             </Button>
             <Button
               variant="outlined"
-              fullWidth
               sx={{
                 borderColor: "#E5E7EB",
                 color: "#111927",
                 textTransform: "none",
-                fontSize: "14px",
+                fontSize: { xs: "12px", sm: "14px" },
                 fontWeight: 500,
                 borderRadius: "8px",
-                py: 1.25,
+                px: { xs: 1.5, sm: 2.5 },
+                py: 1,
+                minWidth: "auto",
                 "&:hover": {
                   borderColor: "#D1D5DB",
                   backgroundColor: "#F9FAFB",
                 },
+                height: "36px",
+                width: { xs: "130px", sm: "170px" },
               }}
               startIcon={
                 <img
-                  src="/assets/icons/sms.svg"
+                  src="/assets/icons/message-square.svg"
                   alt="Text"
-                  style={{ width: "20px", height: "20px" }}
+                  style={{ width: "18px", height: "18px" }}
                 />
               }
+              onClick={() => {
+                if (profile?.phoneNumber) {
+                  window.location.href = `sms:${profile.countryCode}${profile.phoneNumber}`;
+                }
+              }}
             >
               Text Us
             </Button>
           </Stack>
-        </Card>
+        </Box>
 
-        {/* Footer */}
+        {/* Footer - Powered by Ravwork */}
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: "space-between",
-            alignItems: { xs: "flex-start", sm: "center" },
-            gap: 2,
-            pt: 3,
-            borderTop: "1px solid #E5E7EB",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: { xs: 2, sm: 3 },
+            py: { xs: 2, sm: 3 },
           }}
         >
           <Stack
             direction="row"
-            spacing={1}
+            spacing={0.5}
             alignItems="center"
-            sx={{ mb: { xs: 1, sm: 0 } }}
+            justifyContent="center"
+            mb={{ xs: "40px", sm: "68px" }}
           >
             <Typography
               variant="body2"
               sx={{
-                color: "#9CA3AF",
-                fontSize: "12px",
+                color: "#111927",
+                fontSize: { xs: "16px", sm: "24px" },
+                fontWeight: 700,
+                whiteSpace: "nowrap",
               }}
             >
               Powered by
             </Typography>
-            <img
+            <Box
+              component="img"
               src="/assets/icons/ravwork_logo_icon.svg"
               alt="Ravwork"
-              style={{ width: "20px", height: "20px" }}
+              sx={{ 
+                width: { xs: "35px", sm: "59px" }, 
+                height: { xs: "28px", sm: "47px" } 
+              }}
             />
             <Typography
               variant="body2"
               sx={{
-                color: "#9CA3AF",
-                fontSize: "12px",
-                fontWeight: 500,
+                color: "#111927",
+                fontSize: { xs: "16px", sm: "24px" },
+                fontWeight: 700,
+                whiteSpace: "nowrap",
               }}
             >
               Ravwork
             </Typography>
           </Stack>
 
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={{ xs: 1, sm: 3 }}
-            alignItems={{ xs: "flex-start", sm: "center" }}
+          {/* Footer Links */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              gap: { xs: 1.5, sm: 0 },
+              px: { xs: 2, sm: "28px" },
+            }}
           >
             <Typography
               variant="body2"
               sx={{
-                color: "#9CA3AF",
-                fontSize: "12px",
+                color: "#1C1C1C",
+                fontSize: { xs: "14px", sm: "18px" },
+                fontWeight: 500,
               }}
             >
               support@ravwork.com
             </Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack 
+              direction="row" 
+              spacing={{ xs: 2, sm: 3 }}
+            >
               <Typography
                 variant="body2"
                 component="a"
                 href="#"
                 sx={{
-                  color: "#9CA3AF",
-                  fontSize: "12px",
+                  color: "#1C1C1C",
+                  fontSize: { xs: "14px", sm: "18px" },
+                  fontWeight: 500,
                   textDecoration: "none",
                   "&:hover": {
                     textDecoration: "underline",
@@ -739,8 +775,9 @@ export default function ClientPage(): JSX.Element {
                 component="a"
                 href="#"
                 sx={{
-                  color: "#9CA3AF",
-                  fontSize: "12px",
+                  color: "#1C1C1C",
+                  fontSize: { xs: "14px", sm: "18px" },
+                  fontWeight: 500,
                   textDecoration: "none",
                   "&:hover": {
                     textDecoration: "underline",
@@ -750,7 +787,7 @@ export default function ClientPage(): JSX.Element {
                 Terms of Service
               </Typography>
             </Stack>
-          </Stack>
+          </Box>
         </Box>
       </Container>
 
@@ -762,7 +799,9 @@ export default function ClientPage(): JSX.Element {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: "16px",
+            borderRadius: { xs: "12px", sm: "16px" },
+            mx: { xs: 2, sm: 3 },
+            width: { xs: "calc(100% - 32px)", sm: "100%" },
           },
         }}
       >
@@ -787,8 +826,10 @@ export default function ClientPage(): JSX.Element {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: "16px",
-            maxHeight: "90vh",
+            borderRadius: { xs: "12px", sm: "16px" },
+            maxHeight: { xs: "85vh", sm: "90vh" },
+            mx: { xs: 2, sm: 3 },
+            width: { xs: "calc(100% - 32px)", sm: "100%" },
           },
         }}
       >
