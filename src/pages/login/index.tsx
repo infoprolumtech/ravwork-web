@@ -55,10 +55,23 @@ export default function LoginPage(): JSX.Element {
           ...response.data.user,
           accessToken: response.data.tokens.accessToken,
           refreshToken: response.data.tokens.refreshToken,
+          profileStep: response.data.user?.profileStep,
         };
         dispatch(loginUser(userData));
         dispatch(showAlert({ message: "Login successful", severity: "success" }));
-        navigate("/dashboard");
+        
+        // Check if signup flow is incomplete (profileStep < 3 means not all steps done)
+        // profileStep 3 = signup complete
+        const profileStep = response.data.user?.profileStep || 0;
+        if (profileStep < 3) {
+          // Redirect to signup with the next step to complete
+          // profileStep 1 = Step 1 done, show Step 2
+          // profileStep 2 = Step 2 done, show Step 3
+          navigate("/signup", { state: { resumeStep: profileStep + 1 } });
+        } else {
+          // Signup complete (profileStep >= 3), go to dashboard
+          navigate("/dashboard");
+        }
       }
     } catch (err: any) {
       console.error("Login error:", err);

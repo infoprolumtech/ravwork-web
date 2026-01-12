@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Typography, CircularProgress } from "@mui/material";
 import Icon from "../../shared/Icon";
 
 interface CommonDialogProps {
@@ -6,6 +6,9 @@ interface CommonDialogProps {
   handleConfirm: (data: unknown) => void;
   title: string;
   subTitle: string;
+  confirmText?: string;
+  cancelText?: string;
+  confirmDisabled?: boolean;
 }
 
 export default function CommonDialog({
@@ -13,6 +16,9 @@ export default function CommonDialog({
   handleConfirm,
   title,
   subTitle,
+  confirmText = "Confirm",
+  cancelText = "No, cancel",
+  confirmDisabled = false,
 }: CommonDialogProps) {
   const submitHandler = () => {
     handleConfirm({});
@@ -34,11 +40,15 @@ export default function CommonDialog({
         {subTitle}
       </Typography>
       <Stack flexDirection="row" justifyContent="flex-end" gap={2}>
-        <Button variant="primary" onClick={handleCancel}>
-          No, cancel
+        <Button variant="primary" onClick={handleCancel} disabled={confirmDisabled}>
+          {cancelText}
         </Button>
-        <Button variant="secondary" onClick={submitHandler}>
-          Confirm
+        <Button variant="secondary" onClick={submitHandler} disabled={confirmDisabled}>
+          {confirmDisabled ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            confirmText
+          )}
         </Button>
       </Stack>
     </Stack>

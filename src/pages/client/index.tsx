@@ -1,4 +1,5 @@
 import { type JSX } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -72,6 +73,11 @@ const mockServices: Service[] = [
 ];
 
 export default function ClientPage(): JSX.Element {
+  const { username } = useParams<{ username: string }>();
+
+  // TODO: Use username to fetch user data from API
+  console.log("Username from URL:", username);
+
   return (
     <Box
       sx={{
@@ -272,34 +278,24 @@ export default function ClientPage(): JSX.Element {
                     sx={{
                       width: 48,
                       height: 48,
-                      borderRadius: "50%",
-                      backgroundColor: service.iconColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0,
                     }}
                   >
-                    {service.iconType === "lightning" ? (
-                      <img
-                        src="/assets/icons/sidebar_menu_icon/flash.svg"
-                        alt="Service"
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          filter: "brightness(0) invert(1)",
-                        }}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          width: "20px",
-                          height: "20px",
-                          backgroundColor: "#FFFFFF",
-                          borderRadius: "2px",
-                        }}
-                      />
-                    )}
+                    <img
+                      src={service.iconType === "lightning" 
+                        ? "/assets/icons/service_offered_icons/quick_contact.svg"
+                        : "/assets/icons/service_offered_icons/custom_form.svg"
+                      }
+                      alt="Service"
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        objectFit: "contain",
+                      }}
+                    />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography

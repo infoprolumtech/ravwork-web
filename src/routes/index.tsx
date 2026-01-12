@@ -35,6 +35,11 @@ export default function AppRoutes() {
         </PublicRoute>
       ),
     },
+    // Signup route - not wrapped in PublicRoute to allow resuming incomplete signup
+    {
+      path: "/signup",
+      element: <SignUpPage />,
+    },
     {
       path: "/login",
       element: (
@@ -82,12 +87,6 @@ export default function AppRoutes() {
           <ResetPasswordPage />
         </PublicRoute>
       ),
-    },
-
-    // Client Page (No Layout)
-    {
-      path: "/ravwork.link/client",
-      element: <ClientPage />,
     },
 
     // Private Routes - Change Password (for logged-in users)
@@ -192,6 +191,13 @@ export default function AppRoutes() {
           <ManageSubscription />
         </PrivateRoute>
       ),
+    },
+
+    // Client Page (Public - accessed by username)
+    // This must be at the end to avoid catching other routes
+    {
+      path: "/:username",
+      element: <ClientPage />,
     },
   ]);
 

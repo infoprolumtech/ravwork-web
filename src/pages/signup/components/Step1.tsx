@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Button, Typography, MenuItem, Select, FormControl, CircularProgress } from "@mui/material";
+import { Box, Button, Typography, MenuItem, Select, FormControl, CircularProgress, InputAdornment } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
@@ -46,16 +46,17 @@ interface Step1Props {
   initialData?: Step1FormInputs | null;
   onBack?: () => void;
   isSignupCompleted?: boolean;
+  isLoading?: boolean;
 }
 
-export const Step1 = ({ onNext, initialData }: Step1Props) => {
+export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
   const navigate = useNavigate();
   const PREFIX = "ravwork.link/";
 
   const form = useForm<Step1FormInputs>({
     resolver: yupResolver(step1Schema) as any,
     mode: "onChange", // Validate on change (while typing)
-    defaultValues: initialData || { username: PREFIX, email: "", countryCode: "+1", phoneNumber: "", password: "" },
+    defaultValues: initialData || { username: "", email: "", countryCode: "+1", phoneNumber: "", password: "" },
   });
 
   // Update form values when initialData changes (when navigating back)
@@ -68,19 +69,10 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
     }
   }, [initialData, form]);
 
-  // Clear form errors when component mounts if signup was already successful
-  useEffect(() => {
-    // Check if signup was already successful (signupToken exists)
-    const signupToken = localStorage.getItem("signupToken");
-    if (signupToken && initialData) {
-      // Clear all form errors since account was already created
-      form.clearErrors();
-    }
-  }, [form, initialData]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     // If field is empty or user is typing, ensure prefix is added
     if (!value.startsWith(PREFIX)) {
       // If user is typing and field doesn't have prefix, add it
@@ -97,7 +89,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   const handleUsernameFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     const input = e.target;
     const value = input.value;
-    
+
     // If field is empty on focus, set prefix
     if (!value) {
       form.setValue("username", PREFIX);
@@ -119,7 +111,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
     const input = e.currentTarget;
     const cursorPosition = input.selectionStart || 0;
     const value = input.value;
-    
+
     // Only prevent deletion if we have the prefix and cursor is at prefix boundary
     if (value.startsWith(PREFIX)) {
       if ((e.key === "Backspace" || e.key === "Delete") && cursorPosition <= PREFIX.length) {
@@ -128,7 +120,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           input.setSelectionRange(PREFIX.length, PREFIX.length);
         }, 0);
       }
-      
+
       if (e.key === "ArrowLeft" && cursorPosition <= PREFIX.length) {
         e.preventDefault();
         input.setSelectionRange(PREFIX.length, PREFIX.length);
@@ -142,10 +134,10 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
   };
 
   return (
-    <Box 
-      width="100%" 
-      maxWidth={{ xs: "100%", sm: "493px" }} 
-      component="form" 
+    <Box
+      width="100%"
+      maxWidth={{ xs: "100%", sm: "493px" }}
+      component="form"
       onSubmit={form.handleSubmit(handleSubmit)}
       sx={{ mx: "auto" }}
     >
@@ -153,10 +145,10 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
       <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
         <ProgressIndicator currentStep={1} />
       </Box>
-      
+
       {/* Icon above title */}
       <PageIcon iconSrc="/assets/icons/sigup_icon.svg" iconAlt="email-icon" />
-      
+
       <Typography variant="h5" textAlign="center" mb={{ xs: 2, sm: 3 }} sx={pageTitleSx}>
         Let's help client book<br />you instantly.
       </Typography>
@@ -168,40 +160,54 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             control={form.control}
             render={({ field }) => (
               <StyledTextField
+                {...field}
                 fullWidth
+
                 variant="outlined"
                 margin="none"
-                value={form.watch("username")}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  handleUsernameChange(e);
-                  form.trigger("username"); // Trigger validation
-                }}
-                onKeyDown={handleUsernameKeyDown}
-                onFocus={handleUsernameFocus}
-                onBlur={() => {
-                  field.onBlur();
-                  form.trigger("username"); // Trigger validation on blur
-                }}
+                placeholder="username"
                 error={Boolean(form.formState.errors.username)}
                 helperText={form.formState.errors.username?.message}
-                sx={inputFieldSx(Boolean(form.formState.errors.username), {
-                  "& .MuiInputBase-input": {
-                    padding: "12px 16px",
-                  },
-                })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  field.onChange(e.target.value);
+                  form.trigger("username");
+                }}
                 slotProps={{
                   input: {
                     startAdornment: (
-                      <Box component="span" sx={{ mr: 0, display: "flex", alignItems: "center" }}>
-                        <Icon src="/assets/icons/at-sign.svg" alt="username-icon" size={20} />
-                      </Box>
+                      <InputAdornment position="start" sx={{
+                        mr: 0,              // ⬅ remove default right margin
+                        pl: 0,
+                        pt: "2px"             // ⬅ remove left padding
+                      }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            color: "#111927",
+                            fontSize: "16px",
+                            fontFamily: "Inter, sans-serif",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          <Icon src="/assets/icons/at-sign.svg" size={20} alt="at sign" />
+                          ravwork.link/
+                        </Box>
+                      </InputAdornment>
                     ),
+                  },
+                }}
+                sx={{
+                  ...inputFieldSx(Boolean(form.formState.errors.username)),
+                  "& .MuiInputBase-input": {
+                    padding: "0px", // keep your existing padding
                   },
                 }}
               />
             )}
           />
-          {!form.watch("username") && (
+          {/* {!form.watch("username") && (
             <Typography
               sx={{
                 position: "absolute",
@@ -222,7 +228,7 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
             >
               ravwork.link/username
             </Typography>
-          )}
+          )} */}
           {form.watch("username") === PREFIX && (
             <Typography
               sx={{
@@ -364,8 +370,8 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
                 }}
               >
                 {COUNTRY_CODES.map((country) => (
-                  <MenuItem 
-                    key={country.code} 
+                  <MenuItem
+                    key={country.code}
                     value={country.code}
                     sx={{
                       py: 1.5,
@@ -444,18 +450,18 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
       />
 
       <Box sx={bottomButtonContainerSx}>
-        <Button 
-          fullWidth 
-          type="submit" 
-          variant="secondary" 
-          sx={{ 
-            mt: { xs: 0, sm: 2 }, 
+        <Button
+          fullWidth
+          type="submit"
+          variant="secondary"
+          sx={{
+            mt: { xs: 0, sm: 2 },
             mb: { xs: 1, sm: 1 },
             height: { xs: "44px", sm: "48px" },
-          }} 
-          disabled={form.formState.isSubmitting}
+          }}
+          disabled={isLoading}
         >
-          {form.formState.isSubmitting ? (
+          {isLoading ? (
             <CircularProgress size={24} sx={{ color: "#fff" }} />
           ) : (
             "Next"
@@ -473,12 +479,12 @@ export const Step1 = ({ onNext, initialData }: Step1Props) => {
           </Box>
         </Box>
 
-        <Typography 
-          variant="body2" 
-          textAlign="center" 
-          sx={{ 
-            fontSize: { xs: "14px", sm: "16px" }, 
-            fontWeight: 400, 
+        <Typography
+          variant="body2"
+          textAlign="center"
+          sx={{
+            fontSize: { xs: "14px", sm: "16px" },
+            fontWeight: 400,
             color: "#1C1C1C",
             fontFamily: "Inter, sans-serif",
             mt: { xs: 1.5, sm: 3 },
