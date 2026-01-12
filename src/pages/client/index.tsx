@@ -311,47 +311,47 @@ export default function ClientPage(): JSX.Element {
                   {((profile.facebookUrl && profile.facebookUrl.trim()) || 
                     (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
                     (profile.instagramUrl && profile.instagramUrl.trim())) && (
-                    <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+                  <Stack direction="row" spacing={1} alignItems="center" mt={1}>
                       {profile.facebookUrl && profile.facebookUrl.trim() && (
-                        <IconButton
-                          size="small"
+                    <IconButton
+                      size="small"
                           sx={{ width: 32, height: 32, p: 0.5 }}
                           onClick={() => window.open(profile.facebookUrl!, "_blank")}
-                        >
-                          <img
-                            src="/assets/icons/Facebook.svg"
-                            alt="Facebook"
-                            style={{ width: "24px", height: "24px" }}
-                          />
-                        </IconButton>
+                    >
+                      <img
+                        src="/assets/icons/Facebook.svg"
+                        alt="Facebook"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </IconButton>
                       )}
                       {profile.linkedinUrl && profile.linkedinUrl.trim() && (
-                        <IconButton
-                          size="small"
+                    <IconButton
+                      size="small"
                           sx={{ width: 32, height: 32, p: 0.5 }}
                           onClick={() => window.open(profile.linkedinUrl!, "_blank")}
-                        >
-                          <img
-                            src="/assets/icons/linkedin.svg"
-                            alt="LinkedIn"
-                            style={{ width: "24px", height: "24px" }}
-                          />
-                        </IconButton>
+                    >
+                      <img
+                        src="/assets/icons/linkedin.svg"
+                        alt="LinkedIn"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </IconButton>
                       )}
                       {profile.instagramUrl && profile.instagramUrl.trim() && (
-                        <IconButton
-                          size="small"
+                    <IconButton
+                      size="small"
                           sx={{ width: 32, height: 32, p: 0.5 }}
                           onClick={() => window.open(profile.instagramUrl!, "_blank")}
-                        >
-                          <img
-                            src="/assets/icons/instagram.svg"
-                            alt="Instagram"
-                            style={{ width: "24px", height: "24px" }}
-                          />
-                        </IconButton>
+                    >
+                      <img
+                        src="/assets/icons/instagram.svg"
+                        alt="Instagram"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </IconButton>
                       )}
-                    </Stack>
+                  </Stack>
                   )}
                 </Box>
                 <Box
@@ -360,15 +360,15 @@ export default function ClientPage(): JSX.Element {
                   justifyContent={"space-between"}
                 >
                   <Avatar
-                    sx={{
-                      width: { xs: "75px", sm: "175px" },
-                      height: { xs: "75px", sm: "175px" },
-                      border: "2px solid #fff",
+              sx={{
+                width: { xs: "75px", sm: "175px" },
+                height: { xs: "75px", sm: "175px" },
+                border: "2px solid #fff",
                       display: { xs: "block", sm: "none" },
-                    }}
+              }}
                     src={profilePhotoUrl}
                     alt={profile.displayName || profile.username}
-                  />
+            />
                   <Button
                     variant="blackbutton"
                     startIcon={
@@ -462,30 +462,30 @@ export default function ClientPage(): JSX.Element {
             </Stack>
           ) : (
             services.map((service) => (
-              <Card
-                key={service.id}
-                sx={{
+            <Card
+              key={service.id}
+              sx={{
                   backgroundColor: "#F7F9FB",
-                  borderRadius: "12px",
-                  p: 2.5,
-                  boxShadow: "none",
-                  border: "1px solid #E5E7EB",
-                  height: "100%",
-                }}
-              >
-                <Stack spacing={2}>
-                  {/* Icon and Title */}
+                borderRadius: "12px",
+                p: 2.5,
+                boxShadow: "none",
+                border: "1px solid #E5E7EB",
+                height: "100%",
+              }}
+            >
+              <Stack spacing={2}>
+                {/* Icon and Title */}
                   <Stack>
-                    <Box
-                      sx={{
+                  <Box
+                    sx={{
                         width: "39px",
                         height: "39px",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                       <img
                         src={
                           service.contactMethod === "quick_contact"
@@ -494,31 +494,31 @@ export default function ClientPage(): JSX.Element {
                         }
                         // alt="Service"
                       />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: 600,
-                          color: "#111927",
-                          fontSize: "18px",
-                          mb: 0.5,
-                        }}
-                      >
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 600,
+                        color: "#111927",
+                        fontSize: "18px",
+                        mb: 0.5,
+                      }}
+                    >
                         {service.name}
-                      </Typography>
+                    </Typography>
 
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "#6C737F",
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#6C737F",
                           fontWeight: 500,
                           fontSize: "16px",
-                          mb: 1,
-                        }}
-                      >
-                        {service.description}
-                      </Typography>
+                        mb: 1,
+                      }}
+                    >
+                      {service.description}
+                    </Typography>
                       <Box
                         sx={{
                           height: 5,
@@ -536,42 +536,42 @@ export default function ClientPage(): JSX.Element {
                           gap: 1,
                         }}
                       >
-                        <Typography
-                          variant="h6"
-                          sx={{
+                    <Typography
+                      variant="h6"
+                      sx={{
                             fontWeight: 700,
-                            color: "#111927",
+                        color: "#111927",
                             fontSize: { xs: "24px", sm: "30px" },
-                          }}
-                        >
+                      }}
+                    >
                           ${service.price}
-                        </Typography>
-                        <Button
-                          variant="contained"
+                    </Typography>
+                <Button
+                  variant="contained"
                           onClick={() => handleBookNow(service)}
-                          sx={{
-                            backgroundColor: "#111927",
-                            color: "#fff",
-                            textTransform: "none",
+                  sx={{
+                    backgroundColor: "#111927",
+                    color: "#fff",
+                    textTransform: "none",
                             width: "170px",
                             height: "36px",
-                            fontSize: "14px",
-                            fontWeight: 500,
+                    fontSize: "14px",
+                    fontWeight: 500,
                             borderRadius: "50px",
-                            py: 1.25,
+                    py: 1.25,
                             flexShrink: 0,
-                            "&:hover": {
-                              backgroundColor: "#384250",
-                            },
-                          }}
-                        >
-                          Book Now
-                        </Button>
+                    "&:hover": {
+                      backgroundColor: "#384250",
+                    },
+                  }}
+                >
+                  Book Now
+                </Button>
                       </Stack>
                     </Box>
                   </Stack>
-                </Stack>
-              </Card>
+              </Stack>
+            </Card>
             ))
           )}
         </Box>
@@ -587,20 +587,20 @@ export default function ClientPage(): JSX.Element {
           }}
         >
           <Stack spacing={2}>
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
                 backgroundColor: "#FEF7C3",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
               <img src="/assets/icons/Questionsicon.svg" alt="Question" />
-            </Box>
+              </Box>
 
             <Stack
               direction={{ xs: "column", sm: "row" }}
@@ -633,26 +633,26 @@ export default function ClientPage(): JSX.Element {
                 </Typography>
               </Box>
 
-              <Button
-                variant="contained"
+            <Button
+              variant="contained"
                 onClick={handleRequestClick}
-                sx={{
-                  backgroundColor: "#111927",
-                  color: "#fff",
-                  textTransform: "none",
-                  fontSize: "14px",
-                  fontWeight: 500,
+              sx={{
+                backgroundColor: "#111927",
+                color: "#fff",
+                textTransform: "none",
+                fontSize: "14px",
+                fontWeight: 500,
                   height: "36px",
                   borderRadius: "50px",
-                  py: 1.25,
+                py: 1.25,
                   width: { xs: "170px", sm: "170px" },
-                  "&:hover": {
-                    backgroundColor: "#384250",
-                  },
-                }}
-              >
-                Request
-              </Button>
+                "&:hover": {
+                  backgroundColor: "#384250",
+                },
+              }}
+            >
+              Request
+            </Button>
             </Stack>
           </Stack>
         </Card>

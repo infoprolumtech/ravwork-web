@@ -26,7 +26,7 @@ const authSlice = createSlice({
     },
     clearSignupToken: (state) => {
       state.signupToken = null;
-    },
+  },
   },
 });
 

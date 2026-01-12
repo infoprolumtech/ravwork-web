@@ -70,11 +70,22 @@ export default function LoginPage(): JSX.Element {
           navigate("/signup", { state: { resumeStep: profileStep + 1 } });
         } else {
           // Signup complete (profileStep >= 3), go to dashboard
-          navigate("/dashboard");
+        navigate("/dashboard");
         }
       }
-    } catch (err: any) {
-      console.error("Login error:", err);
+    } catch (error: any) {
+      console.error("Login error:", error);
+      // Extract error message with multiple fallbacks
+      const errorMessage = 
+        error?.data?.message || 
+        error?.data?.error || 
+        error?.error ||
+        "Invalid email or password. Please try again.";
+      
+      dispatch(showAlert({ 
+        message: errorMessage, 
+        severity: "error" 
+      }));
     }
   };
 

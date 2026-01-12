@@ -143,10 +143,10 @@ export default function SignUpPage(): JSX.Element {
         dispatch(loginUser(userData));
         
         // Clear form data
-        setStep1Data(null);
-        setStep2Data(null);
-        setStep3Data(null);
-        setStep4Data(null);
+      setStep1Data(null);
+      setStep2Data(null);
+      setStep3Data(null);
+      setStep4Data(null);
         
         // Show success message
         dispatch(showAlert({ message: "Welcome! Your profile is complete.", severity: "success" }));
@@ -190,10 +190,10 @@ export default function SignUpPage(): JSX.Element {
         dispatch(loginUser(userData));
         
         // Clear form data
-        setStep1Data(null);
-        setStep2Data(null);
-        setStep3Data(null);
-        setStep4Data(null);
+      setStep1Data(null);
+      setStep2Data(null);
+      setStep3Data(null);
+      setStep4Data(null);
         
         // Show success message
         dispatch(showAlert({ message: "Welcome! You can complete your profile later.", severity: "success" }));
