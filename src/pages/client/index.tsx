@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import { type JSX, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -9,74 +9,182 @@ import {
   Avatar,
   IconButton,
   Container,
+  CircularProgress,
+  Alert,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
+import { useGetPublicProfileQuery, useCreateBookingMutation, type PublicService, type FormFieldResponse } from "../../rtk/endpoints/publicApi";
+import { getCloudFrontUrl } from "../../utils/helper";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import ClientContactInfoPage from "./components/ClientContactInfoPage";
+import ClientQuestionsPage from "./components/ClientQuestionsPage";
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  price: string;
-  iconColor: string;
-  iconType: "lightning" | "document";
+// Contact details form data
+interface ContactDetails {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
 }
 
-// Mock data - replace with API call
-const mockServices: Service[] = [
-  {
-    id: "1",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#12B76A",
-    iconType: "lightning",
-  },
-  {
-    id: "2",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#4693DD",
-    iconType: "document",
-  },
-  {
-    id: "3",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#12B76A",
-    iconType: "lightning",
-  },
-  {
-    id: "4",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#4693DD",
-    iconType: "document",
-  },
-  {
-    id: "5",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#12B76A",
-    iconType: "lightning",
-  },
-  {
-    id: "6",
-    title: "Plumbing Repair",
-    description: "Fix a leaking kitchen faucet",
-    price: "$150",
-    iconColor: "#4693DD",
-    iconType: "document",
-  },
-];
+// Dynamic form field values
+interface FormFieldValues {
+  [key: string]: string | string[];
+}
 
 export default function ClientPage(): JSX.Element {
   const { username } = useParams<{ username: string }>();
+  const dispatch = useAppDispatch();
 
-  // TODO: Use username to fetch user data from API
-  console.log("Username from URL:", username);
+  // Fetch public profile data
+  const { data: profileData, isLoading, error } = useGetPublicProfileQuery(
+    { username: username || "" },
+    { skip: !username }
+  );
+
+  // Booking mutation
+  const [createBooking, { isLoading: isSubmitting }] = useCreateBookingMutation();
+
+  const profile = profileData?.profile;
+  const services = profileData?.services?.data || [];
+
+  // Booking dialog state
+  const [selectedService, setSelectedService] = useState<PublicService | null>(null);
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false);
+  const [contactDetails, setContactDetails] = useState<ContactDetails>({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+  });
+  const [formFieldValues, setFormFieldValues] = useState<FormFieldValues>({});
+
+  // Handle Book Now click
+  const handleBookNow = (service: PublicService) => {
+    setSelectedService(service);
+    setContactDetails({ fullName: "", email: "", phoneNumber: "" });
+    setFormFieldValues({});
+    setContactDialogOpen(true);
+  };
+
+  // Handle contact dialog close
+  const handleContactDialogClose = () => {
+    setContactDialogOpen(false);
+    setSelectedService(null);
+  };
+
+  // Handle questions dialog close
+  const handleQuestionsDialogClose = () => {
+    setQuestionsDialogOpen(false);
+    setSelectedService(null);
+  };
+
+  // Handle Next button (for custom_form)
+  const handleNextToQuestions = () => {
+    setContactDialogOpen(false);
+    setQuestionsDialogOpen(true);
+  };
+
+  // Handle Submit for quick_contact
+  const handleQuickContactSubmit = async () => {
+    if (!selectedService || !username) return;
+    try {
+      await createBooking({
+        username,
+        body: {
+          clientName: contactDetails.fullName,
+          clientEmail: contactDetails.email || undefined,
+          clientCountryCode: profile?.countryCode || "+1",
+          clientPhone: contactDetails.phoneNumber,
+          serviceId: selectedService.id,
+          type: "booking",
+        },
+      }).unwrap();
+      
+      dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
+      handleContactDialogClose();
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      dispatch(showAlert({ 
+        message: error?.data?.message || "Failed to submit booking. Please try again.", 
+        severity: "error" 
+      }));
+    }
+  };
+
+  // Handle Submit for custom_form
+  const handleCustomFormSubmit = async () => {
+    if (!selectedService || !username) return;
+    try {
+      // Convert formFieldValues to responses array
+      const responses: FormFieldResponse[] = Object.entries(formFieldValues).map(([fieldId, value]) => ({
+        fieldId,
+        value,
+      }));
+
+      await createBooking({
+        username,
+        body: {
+          clientName: contactDetails.fullName,
+          clientEmail: contactDetails.email || undefined,
+          clientCountryCode: profile?.countryCode || "+1",
+          clientPhone: contactDetails.phoneNumber,
+          serviceId: selectedService.id,
+          type: "booking",
+          responses: responses.length > 0 ? responses : undefined,
+        },
+      }).unwrap();
+      
+      dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
+      handleQuestionsDialogClose();
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      dispatch(showAlert({ 
+        message: error?.data?.message || "Failed to submit booking. Please try again.", 
+        severity: "error" 
+      }));
+    }
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#FFFFFF",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Error state
+  if (error || !profile) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#FFFFFF",
+          p: 3,
+        }}
+      >
+        <Alert severity="error" sx={{ maxWidth: 400 }}>
+          {(error as any)?.data?.message || "Profile not found or subscription not active."}
+        </Alert>
+      </Box>
+    );
+  }
+
+  const profilePhotoUrl = profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "/assets/images/avatar.png";
 
   return (
     <Box
@@ -122,23 +230,24 @@ export default function ClientPage(): JSX.Element {
             boxShadow: "none",
           }}
         >
-          <Box display={"flex"} gap={'28px'}>
+          <Box display="flex" gap="28px">
             <Avatar
               sx={{
                 width: { xs: "75px", sm: "175px" },
                 height: { xs: "75px", sm: "175px" },
                 border: "2px solid #fff",
-                display:{xs:"none", sm:"block"}
+                display: { xs: "none", sm: "block" },
               }}
-              src="/assets/images/avatar.png"
-              alt="Profile"
+              src={profilePhotoUrl}
+              alt={profile.displayName || profile.username}
             />
-            <Stack
-              display="flex"
-              justifyContent="space-between"
-              width={"100%"}
-            >
-              <Box display={"flex"} flexDirection={{xs:'column-reverse', sm:'row'}} justifyContent={"space-between"} gap={'4px'}>
+            <Stack display="flex" justifyContent="space-between" width={"100%"}>
+              <Box
+                display={"flex"}
+                flexDirection={{ xs: "column-reverse", sm: "row" }}
+                justifyContent={"space-between"}
+                gap={"4px"}
+              >
                 <Box>
                   <Typography
                     variant="h5"
@@ -149,65 +258,66 @@ export default function ClientPage(): JSX.Element {
                       fontSize: { xs: "20px", md: "18px" },
                     }}
                   >
-                    Joe's Plumbing Service
+                    {profile.displayName || profile.username}
                   </Typography>
-                  <img src="/assets/icons/line.svg" />
+                  <img src="/assets/icons/line.svg" alt="" />
                   <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-                    <IconButton
-                      size="small"
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        p: 0.5,
-                      }}
-                    >
-                      <img
-                        src="/assets/icons/Facebook.svg"
-                        alt="Facebook"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        p: 0.5,
-                      }}
-                    >
-                      <img
-                        src="/assets/icons/linkedin.svg"
-                        alt="LinkedIn"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      sx={{
-                        width: 32,
-                        height: 32,
-                        p: 0.5,
-                      }}
-                    >
-                      <img
-                        src="/assets/icons/instagram.svg"
-                        alt="Instagram"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
+                    {profile.facebookUrl && (
+                      <IconButton
+                        size="small"
+                        sx={{ width: 32, height: 32, p: 0.5 }}
+                        onClick={() => window.open(profile.facebookUrl!, "_blank")}
+                      >
+                        <img
+                          src="/assets/icons/Facebook.svg"
+                          alt="Facebook"
+                          style={{ width: "24px", height: "24px" }}
+                        />
+                      </IconButton>
+                    )}
+                    {profile.linkedinUrl && (
+                      <IconButton
+                        size="small"
+                        sx={{ width: 32, height: 32, p: 0.5 }}
+                        onClick={() => window.open(profile.linkedinUrl!, "_blank")}
+                      >
+                        <img
+                          src="/assets/icons/linkedin.svg"
+                          alt="LinkedIn"
+                          style={{ width: "24px", height: "24px" }}
+                        />
+                      </IconButton>
+                    )}
+                    {profile.instagramUrl && (
+                      <IconButton
+                        size="small"
+                        sx={{ width: 32, height: 32, p: 0.5 }}
+                        onClick={() => window.open(profile.instagramUrl!, "_blank")}
+                      >
+                        <img
+                          src="/assets/icons/instagram.svg"
+                          alt="Instagram"
+                          style={{ width: "24px", height: "24px" }}
+                        />
+                      </IconButton>
+                    )}
                   </Stack>
                 </Box>
-                <Box display="flex" alignItems="flex-start" justifyContent={'space-between'}>
+                <Box
+                  display="flex"
+                  alignItems="flex-start"
+                  justifyContent={"space-between"}
+                >
                   <Avatar
-              sx={{
-                width: { xs: "75px", sm: "175px" },
-                height: { xs: "75px", sm: "175px" },
-                border: "2px solid #fff",
-                display:{xs:"block", sm:"none"}
-              }}
-              src="/assets/images/avatar.png"
-              alt="Profile"
-            />
+                    sx={{
+                      width: { xs: "75px", sm: "175px" },
+                      height: { xs: "75px", sm: "175px" },
+                      border: "2px solid #fff",
+                      display: { xs: "block", sm: "none" },
+                    }}
+                    src={profilePhotoUrl}
+                    alt={profile.displayName || profile.username}
+                  />
                   <Button
                     variant="blackbutton"
                     startIcon={
@@ -226,6 +336,12 @@ export default function ClientPage(): JSX.Element {
                         />
                       </>
                     }
+                    onClick={() => {
+                      navigator.share?.({
+                        title: profile.displayName || profile.username,
+                        url: window.location.href,
+                      });
+                    }}
                   >
                     Share
                   </Button>
@@ -236,12 +352,10 @@ export default function ClientPage(): JSX.Element {
                   color: "#6C737F",
                   fontWeight: 400,
                   fontSize: "14px",
-                  listspacing: "12px",
                   lineHeight: "20px",
                 }}
               >
-                Licensed & insured junk removal for homes and businesses.
-                Same-day service available.
+                {profile.businessDescription || "No description available."}
               </Typography>
             </Stack>
           </Box>
@@ -259,185 +373,212 @@ export default function ClientPage(): JSX.Element {
             mb: 4,
           }}
         >
-          {mockServices.map((service) => (
-            <Card
-              key={service.id}
+          {services.length === 0 ? (
+            <Typography
               sx={{
-                backgroundColor: "#fff",
-                borderRadius: "12px",
-                p: 2.5,
-                boxShadow: "none",
-                border: "1px solid #E5E7EB",
-                height: "100%",
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                color: "#6C737F",
+                py: 4,
               }}
             >
-              <Stack spacing={2}>
-                {/* Icon and Title */}
-                <Stack direction="row" spacing={2} alignItems="flex-start">
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <img
-                      src={service.iconType === "lightning" 
-                        ? "/assets/icons/service_offered_icons/quick_contact.svg"
-                        : "/assets/icons/service_offered_icons/custom_form.svg"
-                      }
-                      alt="Service"
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography
-                      variant="h6"
+              No services available yet.
+            </Typography>
+          ) : (
+            services.map((service) => (
+              <Card
+                key={service.id}
+                sx={{
+                  backgroundColor: "#F7F9FB",
+                  borderRadius: "12px",
+                  p: 2.5,
+                  boxShadow: "none",
+                  border: "1px solid #E5E7EB",
+                  height: "100%",
+                }}
+              >
+                <Stack spacing={2}>
+                  {/* Icon and Title */}
+                  <Stack>
+                    <Box
                       sx={{
-                        fontWeight: 600,
-                        color: "#111927",
-                        fontSize: "18px",
-                        mb: 0.5,
+                        width: "39px",
+                        height: "39px",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      {service.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#6C737F",
-                        fontSize: "14px",
-                        mb: 1,
-                      }}
-                    >
-                      {service.description}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 600,
-                        color: "#111927",
-                        fontSize: "20px",
-                      }}
-                    >
-                      {service.price}
-                    </Typography>
-                  </Box>
-                </Stack>
+                      <img
+                        src={
+                          service.contactMethod === "quick_contact"
+                            ? "/assets/icons/service_offered_icons/quick_contact.svg"
+                            : "/assets/icons/service_offered_icons/custom_form.svg"
+                        }
+                        // alt="Service"
+                      />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#111927",
+                          fontSize: "18px",
+                          mb: 0.5,
+                        }}
+                      >
+                        {service.name}
+                      </Typography>
 
-                {/* Book Now Button */}
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    backgroundColor: "#111927",
-                    color: "#fff",
-                    textTransform: "none",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    borderRadius: "8px",
-                    py: 1.25,
-                    "&:hover": {
-                      backgroundColor: "#384250",
-                    },
-                  }}
-                >
-                  Book Now
-                </Button>
-              </Stack>
-            </Card>
-          ))}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#6C737F",
+                          fontWeight: 500,
+                          fontSize: "16px",
+                          mb: 1,
+                        }}
+                      >
+                        {service.description}
+                      </Typography>
+                      <Box
+                        sx={{
+                          height: 5,
+                          borderTop: "1px solid #ffffff",
+                          mt: "20px",
+                          mb: "20px",
+                        }}
+                      />
+                      <Stack
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 700,
+                            color: "#111927",
+                            fontSize: "30px",
+                          }}
+                        >
+                          ${service.price}
+                        </Typography>
+                        <Button
+                          variant="contained"
+                          onClick={() => handleBookNow(service)}
+                          sx={{
+                            backgroundColor: "#111927",
+                            color: "#fff",
+                            textTransform: "none",
+                            width: "170px",
+                            height: "36px",
+                            fontSize: "14px",
+                            fontWeight: 500,
+                            borderRadius: "50px",
+                            py: 1.25,
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                            },
+                          }}
+                        >
+                          Book Now
+                        </Button>
+                      </Stack>
+                    </Box>
+                  </Stack>
+                </Stack>
+              </Card>
+            ))
+          )}
         </Box>
 
         {/* Have a Question Section */}
         <Card
           sx={{
-            backgroundColor: "#fff",
+            backgroundColor: "#F7F9FB",
             borderRadius: "12px",
             p: 3,
             mb: 3,
             boxShadow: "none",
-            border: "1px solid #E5E7EB",
+            // border: "1px solid #E5E7EB",
           }}
         >
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            justifyContent="space-between"
-          >
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  backgroundColor: "#FEF3C7",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "24px",
-                    fontWeight: 600,
-                    color: "#F59E0B",
-                  }}
-                >
-                  ?
-                </Typography>
-              </Box>
+          <Stack spacing={2}>
+            <Box
+              sx={{
+                width: 39,
+                height: 39,
+                borderRadius: "50%",
+                backgroundColor: "#F7F9FB",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+
+              }}
+            >
+              <img src="/assets/icons/Questionsicon.svg" alt="Question" />
+            </Box>
+
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+              alignItems={{ sm: "center" }}
+              
+            >
               <Box>
                 <Typography
                   variant="h6"
                   sx={{
                     fontWeight: 600,
                     color: "#111927",
-                    fontSize: "16px",
+                    fontSize: 16,
                     mb: 0.5,
                   }}
                 >
                   Have a question?
                 </Typography>
+
                 <Typography
                   variant="body2"
                   sx={{
                     color: "#6C737F",
-                    fontSize: "14px",
+                    fontSize: 14,
                   }}
                 >
                   Provide your contact info.
                 </Typography>
               </Box>
+
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#111927",
+                  color: "#fff",
+                  textTransform: "none",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  maxHeight: 36,
+                  maxWidth: 170,
+                  mt: "9px",
+                  borderRadius: "50px",
+                  px: 3,
+                  py: 1.25,
+                  width: { xs: "100%", sm: "auto" },
+                  "&:hover": {
+                    backgroundColor: "#384250",
+                  },
+                }}
+              >
+                Request
+              </Button>
             </Stack>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#111927",
-                color: "#fff",
-                textTransform: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-                borderRadius: "8px",
-                px: 3,
-                py: 1.25,
-                width: { xs: "100%", sm: "auto" },
-                "&:hover": {
-                  backgroundColor: "#384250",
-                },
-              }}
-            >
-              Request
-            </Button>
           </Stack>
         </Card>
 
@@ -612,6 +753,56 @@ export default function ClientPage(): JSX.Element {
           </Stack>
         </Box>
       </Container>
+
+      {/* Contact Details Dialog */}
+      <Dialog
+        open={contactDialogOpen}
+        onClose={handleContactDialogClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+          },
+        }}
+      >
+        <DialogContent sx={{ p: 0 }}>
+          <ClientContactInfoPage
+            onClose={handleContactDialogClose}
+            onNext={handleNextToQuestions}
+            onSubmit={handleQuickContactSubmit}
+            contactDetails={contactDetails}
+            setContactDetails={setContactDetails}
+            isQuickContact={selectedService?.contactMethod === "quick_contact"}
+            isSubmitting={isSubmitting}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Additional Questions Dialog (for custom_form) */}
+      <Dialog
+        open={questionsDialogOpen}
+        onClose={handleQuestionsDialogClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            maxHeight: "90vh",
+          },
+        }}
+      >
+        <DialogContent sx={{ p: 0, overflowY: "auto" }}>
+          <ClientQuestionsPage
+            onClose={handleQuestionsDialogClose}
+            onSubmit={handleCustomFormSubmit}
+            formFields={selectedService?.formFields || []}
+            formFieldValues={formFieldValues}
+            setFormFieldValues={setFormFieldValues}
+            isSubmitting={isSubmitting}
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
