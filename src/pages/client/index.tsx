@@ -20,6 +20,7 @@ import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import ClientContactInfoPage from "./components/ClientContactInfoPage";
 import ClientQuestionsPage from "./components/ClientQuestionsPage";
+import ShareModal from "./components/ShareModal";
 
 // Contact details form data
 interface ContactDetails {
@@ -55,6 +56,7 @@ export default function ClientPage(): JSX.Element {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false);
   const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [contactDetails, setContactDetails] = useState<ContactDetails>({
     fullName: "",
     email: "",
@@ -385,12 +387,7 @@ export default function ClientPage(): JSX.Element {
                         />
                       </>
                     }
-                    onClick={() => {
-                      navigator.share?.({
-                        title: profile.displayName || profile.username,
-                        url: window.location.href,
-                      });
-                    }}
+                    onClick={() => setShareModalOpen(true)}
                   >
                     Share
                   </Button>
@@ -963,6 +960,14 @@ export default function ClientPage(): JSX.Element {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Share Modal */}
+      <ShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        profileUrl={window.location.href}
+        profileName={profile?.displayName || profile?.username || ""}
+      />
     </Box>
   );
 }

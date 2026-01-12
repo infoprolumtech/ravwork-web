@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import { type JSX, useState } from "react";
 import {
   Avatar,
   Box,
@@ -9,15 +9,29 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  Snackbar,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
 import { getCloudFrontUrl } from "../../utils/helper";
+import ShareModal from "../client/components/ShareModal";
 
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
   const { data: profile, isLoading, error } = useGetUserProfileQuery();
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false);
+
+  const handleCopyUrl = () => {
+    const profileUrl = `https://ravwork.link/${profile?.username}`;
+    navigator.clipboard.writeText(profileUrl);
+    setToastOpen(true);
+  };
+
+  const handleShareClick = () => {
+    setShareModalOpen(true);
+  };
   
   const InfoItem = ({
     icon,
@@ -197,24 +211,38 @@ export default function MyProfilePage(): JSX.Element {
                   </Typography>
 
                   <Box display="flex" gap={0.5}>
-                    {["copy", "share-arrow"].map((icon) => (
-                      <Box
-                        key={icon}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          bgcolor: "#fff",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <img src={`./assets/icons/${icon}.svg`} alt={icon} />
-                      </Box>
-                    ))}
+                    <Box
+                      onClick={handleCopyUrl}
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        bgcolor: "#fff",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <img src={`./assets/icons/copy.svg`} alt="copy" />
+                    </Box>
+                    <Box
+                      onClick={handleShareClick}
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        bgcolor: "#fff",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <img src={`./assets/icons/share-arrow.svg`} alt="share" />
+                    </Box>
                   </Box>
                 </Box>
               </Box>
@@ -312,6 +340,32 @@ export default function MyProfilePage(): JSX.Element {
           </CardContent>
         </Card>
       </Box>
+
+      {/* Share Modal */}
+      {profile && (
+        <ShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          profileUrl={`https://ravwork.link/${profile.username}`}
+          profileName={profile.displayName || profile.username || ""}
+        />
+      )}
+
+      {/* Toast Notification */}
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={2000}
+        onClose={() => setToastOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToastOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Copied!
+        </Alert>
+      </Snackbar>
     </ServiceProviderLayout>
   );
 }
