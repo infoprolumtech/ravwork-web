@@ -21,6 +21,11 @@ export interface CustomQuestionData {
   question: string;
   answerType: string;
   options?: string[];
+  label?: string;
+  fieldType?: string;
+  placeholder?: string;
+  isRequired?: boolean;
+  sortOrder?: number;
 }
 
 const answerTypeOptions = [
@@ -43,6 +48,7 @@ export default function CustomQuestionsPage({
   const [options, setOptions] = React.useState<string[]>(["", ""]);
   const [createdQuestions, setCreatedQuestions] = React.useState<CustomQuestionData[]>(initialQuestions || []);
   const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
+  const [editingSortOrder, setEditingSortOrder] = React.useState<number | undefined>(undefined);
 
   // Update state when initialQuestions changes
   React.useEffect(() => {
@@ -71,9 +77,14 @@ export default function CustomQuestionsPage({
   };
 
   const handleEditQuestion = (index: number) => {
-    const questionToEdit = createdQuestions[index];
+    // Sort questions first to get the correct question at index
+    const sortedQuestions = [...createdQuestions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+    const questionToEdit = sortedQuestions[index];
     setQuestion(questionToEdit.question);
     setAnswerType(questionToEdit.answerType);
+    
+    // Store the sortOrder for when we re-add the question
+    setEditingSortOrder(questionToEdit.sortOrder);
     
     // Set options if they exist, otherwise set default empty options
     if (questionToEdit.options && questionToEdit.options.length > 0) {
@@ -84,27 +95,46 @@ export default function CustomQuestionsPage({
     
     setEditingIndex(index);
     // Remove the question from the list (will be re-added when user clicks "Add Questions")
-    const newQuestions = createdQuestions.filter((_, i) => i !== index);
+    const newQuestions = createdQuestions.filter((q) => q !== questionToEdit);
     setCreatedQuestions(newQuestions);
   };
 
   const handleAddQuestion = () => {
     if (!question.trim() || !answerType) return;
 
+    // Map answerType to fieldType
+    const mapAnswerTypeToFieldType = (answerType: string): string => {
+      switch (answerType) {
+        case "short_text": return "text";
+        case "long_text": return "textarea";
+        case "single_choice": return "select";
+        case "multiselect": return "checkbox";
+        case "date": return "date";
+        case "time": return "time";
+        default: return "text";
+      }
+    };
+
     const questionData: CustomQuestionData = {
       question: question.trim(),
       answerType,
       options: showOptions ? options.filter((opt) => opt.trim() !== "") : undefined,
+      label: question.trim(),
+      fieldType: mapAnswerTypeToFieldType(answerType),
+      isRequired: false,
     };
 
-    if (editingIndex !== null) {
-      // If editing, insert at the original position
-      const newQuestions = [...createdQuestions];
-      newQuestions.splice(editingIndex, 0, questionData);
-      setCreatedQuestions(newQuestions);
+    if (editingIndex !== null && editingSortOrder !== undefined) {
+      // If editing, preserve the original sortOrder
+      questionData.sortOrder = editingSortOrder;
+      
+      // Add the question back
+      setCreatedQuestions([...createdQuestions, questionData]);
       setEditingIndex(null);
+      setEditingSortOrder(undefined);
     } else {
-      // If adding new, append to the end
+      // If adding new, assign sortOrder based on current length
+      questionData.sortOrder = createdQuestions.length;
       setCreatedQuestions([...createdQuestions, questionData]);
     }
     
@@ -118,16 +148,38 @@ export default function CustomQuestionsPage({
       return;
     }
 
+    // Map answerType to fieldType
+    const mapAnswerTypeToFieldType = (answerType: string): string => {
+      switch (answerType) {
+        case "short_text": return "text";
+        case "long_text": return "textarea";
+        case "single_choice": return "select";
+        case "multiselect": return "checkbox";
+        case "date": return "date";
+        case "time": return "time";
+        default: return "text";
+      }
+    };
+
     // If there's a current question being filled, add it first
     if (question.trim() && answerType) {
       const questionData: CustomQuestionData = {
         question: question.trim(),
         answerType,
         options: showOptions ? options.filter((opt) => opt.trim() !== "") : undefined,
+        label: question.trim(),
+        fieldType: mapAnswerTypeToFieldType(answerType),
+        isRequired: false,
+        sortOrder: createdQuestions.length,
       };
-      onSubmit([...createdQuestions, questionData]);
+      const allQuestions = [...createdQuestions, questionData];
+      // Sort by sortOrder before submitting
+      const sortedQuestions = allQuestions.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      onSubmit(sortedQuestions);
     } else {
-      onSubmit(createdQuestions);
+      // Sort by sortOrder before submitting
+      const sortedQuestions = [...createdQuestions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      onSubmit(sortedQuestions);
     }
   };
 
@@ -413,7 +465,9 @@ export default function CustomQuestionsPage({
               Added Questions ({createdQuestions.length})
             </Typography>
             <Stack spacing={2}>
-              {createdQuestions.map((q, index) => {
+              {[...createdQuestions]
+                .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+                .map((q, index) => {
                 const answerTypeLabel = answerTypeOptions.find(
                   (opt) => opt.value === q.answerType
                 )?.label || q.answerType;

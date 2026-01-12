@@ -63,6 +63,32 @@ export default function ClientQuestionsPage({
     onSubmit();
   };
 
+  // Watch all form values to check if required fields are filled
+  const watchedValues = form.watch();
+  
+  // Check if all required fields are filled
+  const areAllRequiredFieldsFilled = React.useMemo(() => {
+    const requiredFields = formFields.filter((field) => field.isRequired);
+    
+    if (requiredFields.length === 0) {
+      return true; // No required fields, form is valid
+    }
+
+    return requiredFields.every((field) => {
+      const value = watchedValues[field.id];
+      
+      if (field.fieldType === "checkbox") {
+        return Array.isArray(value) && value.length > 0;
+      }
+      
+      if (field.options && field.options.length > 0) {
+        return value !== "" && value !== null && value !== undefined;
+      }
+      
+      return value !== "" && value !== null && value !== undefined;
+    });
+  }, [formFields, watchedValues]);
+
   // Render form field based on type
   const renderFormField = (field: FormField) => {
     const value = formFieldValues[field.id] || "";
@@ -77,17 +103,18 @@ export default function ClientQuestionsPage({
           control={form.control}
           render={({ field: formField }) => (
             <Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  color: "#111927",
-                  mb: 1,
-                }}
-              >
-                {field.label}
-              </Typography>
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: "20px",
+                    fontWeight: 600,
+                    color: "#111927",
+                  }}
+                >
+                  {field.label}
+                </Typography>
+              </Stack>
               <FormControl error={Boolean(form.formState.errors[field.id])}>
                 <RadioGroup
                   value={formField.value || ""}
@@ -137,21 +164,34 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => (
-              <StyledTextField
-                {...formField}
-                fullWidth
-                variant="outlined"
-                label={field.label}
-                placeholder={field.placeholder || "Type Here"}
-                error={Boolean(form.formState.errors[field.id])}
-                required={field.isRequired}
-                InputLabelProps={{ required: false }}
-                onChange={(e) => {
-                  formField.onChange(e.target.value);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                  form.trigger(field.id);
-                }}
-              />
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
+                <StyledTextField
+                  {...formField}
+                  fullWidth
+                  variant="outlined"
+                  placeholder={field.placeholder || "Type Here"}
+                  error={Boolean(form.formState.errors[field.id])}
+                  required={field.isRequired}
+                  InputLabelProps={{ shrink: false }}
+                  onChange={(e) => {
+                    formField.onChange(e.target.value);
+                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                    form.trigger(field.id);
+                  }}
+                />
+              </Box>
             )}
           />
         );
@@ -163,23 +203,58 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => (
-              <StyledTextField
-                {...formField}
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={3}
-                label={field.label}
-                placeholder={field.placeholder || "Describe here"}
-                error={Boolean(form.formState.errors[field.id])}
-                required={field.isRequired}
-                InputLabelProps={{ required: false }}
-                onChange={(e) => {
-                  formField.onChange(e.target.value);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                  form.trigger(field.id);
-                }}
-              />
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
+                <StyledTextField
+                  {...formField}
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  rows={2}
+                  placeholder={field.placeholder || "Describe here"}
+                  error={Boolean(form.formState.errors[field.id])}
+                  required={field.isRequired}
+                  InputLabelProps={{ shrink: false }}
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      borderRadius: "8px !important",
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "8px !important",
+                    },
+                    "& .MuiInputBase-input": {
+                      borderRadius: "8px !important",
+                      border: "none !important",
+                      outline: "none !important",
+                      scrollbarWidth: "none",
+                      msOverflowStyle: "none",
+                      "&::-webkit-scrollbar": {
+                        display: "none",
+                      },
+                    },
+                    "& .MuiInputBase-input:focus": {
+                      border: "none !important",
+                      outline: "none !important",
+                    },
+                  }}
+                  onChange={(e) => {
+                    formField.onChange(e.target.value);
+                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                    form.trigger(field.id);
+                  }}
+                />
+              </Box>
             )}
           />
         );
@@ -192,17 +267,18 @@ export default function ClientQuestionsPage({
             control={form.control}
             render={({ field: formField }) => (
               <Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    color: "#111927",
-                    mb: 1,
-                  }}
-                >
-                  {field.label}
-                </Typography>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
                 <FormControl fullWidth error={Boolean(form.formState.errors[field.id])}>
                   <Select
                     {...formField}
@@ -214,13 +290,35 @@ export default function ClientQuestionsPage({
                     }}
                     required={field.isRequired}
                     sx={{
-                      backgroundColor: "#FFFFFF",
-                      borderRadius: "8px",
+                      borderRadius: "100px",
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "#F7F9FB",
+                        borderRadius: "100px !important",
+                        fontSize: "16px",
+                        padding: "0",
+                        overflow: "hidden",
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "100px !important",
+                      },
+                      "& .MuiSelect-select": {
+                        padding: "12px 16px",
+                        color: "#1C1C1C",
+                        borderRadius: "100px",
+                      },
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#E5E7EB",
+                        border: "1px solid #D1D5DB",
+                        borderRadius: "100px",
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#D1D5DB",
+                        border: "1px solid #D1D5DB",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        border: "1px solid #9CA3AF",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        color: "#111927",
+                        right: "16px",
                       },
                     }}
                   >
@@ -241,8 +339,8 @@ export default function ClientQuestionsPage({
             <Typography
               variant="body2"
               sx={{
-                fontSize: "14px",
-                fontWeight: 500,
+                fontSize: "20px",
+                fontWeight: 600,
                 color: "#111927",
                 mb: 1,
               }}
@@ -293,17 +391,18 @@ export default function ClientQuestionsPage({
                 : [];
               return (
                 <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      color: "#111927",
-                      mb: 1,
-                    }}
-                  >
-                    {field.label}
-                  </Typography>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                    </Typography>
+                  </Stack>
                   <FormGroup>
                     {field.options?.map((option, idx) => (
                       <FormControlLabel
@@ -331,7 +430,8 @@ export default function ClientQuestionsPage({
                         label={option}
                         sx={{
                           "& .MuiFormControlLabel-label": {
-                            fontSize: "14px",
+                            fontSize: "18px",
+                            fontWeight: 500,
                             color: "#384250",
                           },
                         }}
@@ -351,22 +451,35 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => (
-              <StyledTextField
-                {...formField}
-                fullWidth
-                variant="outlined"
-                type="date"
-                label={field.label}
-                placeholder="Select Date"
-                error={Boolean(form.formState.errors[field.id])}
-                required={field.isRequired}
-                InputLabelProps={{ shrink: true, required: false }}
-                onChange={(e) => {
-                  formField.onChange(e.target.value);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                  form.trigger(field.id);
-                }}
-              />
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
+                <StyledTextField
+                  {...formField}
+                  fullWidth
+                  variant="outlined"
+                  type="date"
+                  placeholder="Select Date"
+                  error={Boolean(form.formState.errors[field.id])}
+                  required={field.isRequired}
+                  InputLabelProps={{ shrink: false }}
+                  onChange={(e) => {
+                    formField.onChange(e.target.value);
+                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                    form.trigger(field.id);
+                  }}
+                />
+              </Box>
             )}
           />
         );
@@ -378,22 +491,35 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => (
-              <StyledTextField
-                {...formField}
-                fullWidth
-                variant="outlined"
-                type="time"
-                label={field.label}
-                placeholder="Type Here"
-                error={Boolean(form.formState.errors[field.id])}
-                required={field.isRequired}
-                InputLabelProps={{ shrink: true, required: false }}
-                onChange={(e) => {
-                  formField.onChange(e.target.value);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                  form.trigger(field.id);
-                }}
-              />
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
+                <StyledTextField
+                  {...formField}
+                  fullWidth
+                  variant="outlined"
+                  type="time"
+                  placeholder="Type Here"
+                  error={Boolean(form.formState.errors[field.id])}
+                  required={field.isRequired}
+                  InputLabelProps={{ shrink: false }}
+                  onChange={(e) => {
+                    formField.onChange(e.target.value);
+                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                    form.trigger(field.id);
+                  }}
+                />
+              </Box>
             )}
           />
         );
@@ -405,21 +531,34 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => (
-              <StyledTextField
-                {...formField}
-                fullWidth
-                variant="outlined"
-                label={field.label}
-                placeholder={field.placeholder || "Type Here"}
-                error={Boolean(form.formState.errors[field.id])}
-                required={field.isRequired}
-                InputLabelProps={{ required: false }}
-                onChange={(e) => {
-                  formField.onChange(e.target.value);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                  form.trigger(field.id);
-                }}
-              />
+              <Box>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                  </Typography>
+                </Stack>
+                <StyledTextField
+                  {...formField}
+                  fullWidth
+                  variant="outlined"
+                  placeholder={field.placeholder || "Type Here"}
+                  error={Boolean(form.formState.errors[field.id])}
+                  required={field.isRequired}
+                  InputLabelProps={{ shrink: false }}
+                  onChange={(e) => {
+                    formField.onChange(e.target.value);
+                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                    form.trigger(field.id);
+                  }}
+                />
+              </Box>
             )}
           />
         );
@@ -452,7 +591,7 @@ export default function ClientQuestionsPage({
         <Typography
           variant="h6"
           sx={{
-            fontSize: "18px",
+            fontSize: "28px",
             fontWeight: 600,
             color: "#111927",
             flex: 1,
@@ -521,7 +660,7 @@ export default function ClientQuestionsPage({
         <Button
           variant="secondary"
           onClick={form.handleSubmit(handleFormSubmit)}
-          disabled={isSubmitting || !form.formState.isValid}
+          disabled={isSubmitting || !form.formState.isValid || !areAllRequiredFieldsFilled}
         >
           {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
         </Button>

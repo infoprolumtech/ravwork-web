@@ -92,7 +92,7 @@ export default function ClientContactInfoPage({
         <Typography
           variant="h6"
           sx={{
-            fontSize: "20px",
+            fontSize: "28px",
             fontWeight: 600,
             color: "#111927",
             flex: 1,

@@ -419,16 +419,46 @@ export default function ClientPage(): JSX.Element {
           }}
         >
           {services.length === 0 ? (
-            <Typography
+            <Stack
               sx={{
                 gridColumn: "1 / -1",
-                textAlign: "center",
-                color: "#6C737F",
-                py: 4,
+                alignItems: "center",
+                justifyContent: "center",
+                py: 6,
+                gap: 2,
               }}
             >
-              No services available yet.
-            </Typography>
+              <Box
+                component="img"
+                src="/assets/icons/service_offered_icons/quick_contact.svg"
+                alt="No services"
+                sx={{
+                  width: 66,
+                  height: 66,
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  fontWeight: 600,
+                  color: "#111927",
+                  textAlign: "center",
+                }}
+              >
+                No service added yet!
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  color: "#6C737F",
+                  textAlign: "center",
+                  maxWidth: "400px",
+                }}
+              >
+                {profile?.displayName || username || "This provider"} hasn't added any service yet visit again to check the services.
+              </Typography>
+            </Stack>
           ) : (
             services.map((service) => (
               <Card
@@ -581,9 +611,10 @@ export default function ClientPage(): JSX.Element {
                 <Typography
                   variant="h6"
                   sx={{
+                   
                     fontWeight: 600,
                     color: "#111927",
-                    fontSize: 16,
+                    fontSize: "18px",
                     mb: 0.5,
                   }}
                 >
@@ -879,7 +910,17 @@ export default function ClientPage(): JSX.Element {
           },
         }}
       >
-        <DialogContent sx={{ p: 0, overflowY: "auto" }}>
+        <DialogContent 
+          sx={{ 
+            p: 0, 
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           <ClientQuestionsPage
             onClose={handleQuestionsDialogClose}
             onSubmit={handleCustomFormSubmit}
