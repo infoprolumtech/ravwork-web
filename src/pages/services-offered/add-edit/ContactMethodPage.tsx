@@ -53,15 +53,15 @@ export default function ContactMethodPage({
         alignItems="center"
         sx={{ width: "100%" }}
       >
-        <Box
+          <Box
           component="img"
           src="/assets/icons/service_offered_icons/reach.svg"
           alt="Reach"
-          sx={{
+            sx={{
             width: "48px",
             height: "48px",
             objectFit: "contain",
-          }}
+            }}
         />
       </Stack>
 

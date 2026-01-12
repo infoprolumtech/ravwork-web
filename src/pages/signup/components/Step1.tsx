@@ -354,11 +354,11 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
           helperText={form.formState.errors.phoneNumber?.message}
           sx={{
             ...inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
-              mb: 0,
-              "& .MuiInputBase-root": {
-                height: "48px",
-                minHeight: "48px",
-              },
+            mb: 0,
+            "& .MuiInputBase-root": {
+              height: "48px",
+              minHeight: "48px",
+            },
             }),
             "& .MuiInputBase-input": {
               borderRadius: "0 !important",

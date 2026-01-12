@@ -233,22 +233,22 @@ export default function MyProfilePage(): JSX.Element {
                     >
                       <img src={`./assets/icons/copy.svg`} alt="copy" />
                     </Box>
-                    <Box
+                      <Box
                       onClick={handleShareClick}
-                      sx={{
-                        width: 24,
-                        height: 24,
-                        bgcolor: "#fff",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        flexShrink: 0,
-                      }}
-                    >
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          bgcolor: "#fff",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
                       <img src={`./assets/icons/share-arrow.svg`} alt="share" />
-                    </Box>
+                      </Box>
                   </Box>
                 </Box>
               </Box>

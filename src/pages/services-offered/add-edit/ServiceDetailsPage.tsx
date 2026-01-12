@@ -220,13 +220,13 @@ export default function ServiceDetailsPage({
 
     // If no errors, submit
     if (Object.values(formErrors).every((error) => error === "")) {
-      const formData: ServiceFormData = {
-        serviceTitle,
-        whatsIncluded,
-        servicePrice,
-        responseTime,
-      };
-      onNext(formData);
+    const formData: ServiceFormData = {
+      serviceTitle,
+      whatsIncluded,
+      servicePrice,
+      responseTime,
+    };
+    onNext(formData);
     }
   };
 

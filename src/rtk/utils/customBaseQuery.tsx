@@ -23,7 +23,7 @@ const baseQuery = fetchBaseQuery({
       headers.set("Authorization", `Bearer ${user.accessToken}`);
     } else if (signupToken) {
       // Use signup token for authenticated calls during signup flow
-      headers.set("Authorization", `Bearer ${signupToken}`);
+        headers.set("Authorization", `Bearer ${signupToken}`);
     }
     
     return headers;
@@ -49,8 +49,14 @@ export const baseQueryWithReauth: BaseQueryFn<
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
+  // Check if this is a login or signup request (these should show errors on 401, not redirect)
+  const isAuthRequest = typeof args === 'object' && args !== null && 'url' in args 
+    ? (args.url === '/auth/login' || args.url === '/auth/signup')
+    : false;
+
   // Handle token expiration (401 Unauthorized)
-  if (result?.error?.status === 401) {
+  // But NOT for login/signup requests - those should show errors
+  if (result?.error?.status === 401 && !isAuthRequest) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
@@ -70,8 +76,9 @@ export const baseQueryWithReauth: BaseQueryFn<
     (result?.error?.data as any)?.detail ||
     "Something went wrong.";
 
-  // Show error alert for non-auth errors
-  if (result?.error && result?.error?.status !== 401) {
+  // Show error alert for non-auth errors OR for login/signup 401 errors
+  // (login/signup 401s should show errors, not redirect)
+  if (result?.error && (result?.error?.status !== 401 || isAuthRequest)) {
     api.dispatch(
       showAlert({
         message: errorMessage,

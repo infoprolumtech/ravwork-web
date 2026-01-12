@@ -46,17 +46,17 @@ const mapResponseTimeToAPI = (formResponseTime: string): "within_1_hour" | "with
 const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
   return formFields
     .map((field) => ({
-      question: field.label,
-      answerType: field.fieldType === "select" ? "single_choice" : 
-                  field.fieldType === "checkbox" ? "multiselect" :
-                  field.fieldType === "textarea" ? "long_text" :
+    question: field.label,
+    answerType: field.fieldType === "select" ? "single_choice" : 
+                field.fieldType === "checkbox" ? "multiselect" :
+                field.fieldType === "textarea" ? "long_text" :
                   field.fieldType === "date" ? "date" :
                   field.fieldType === "time" ? "time" : "short_text",
-      options: field.options || [],
-      label: field.label,
-      fieldType: field.fieldType,
-      placeholder: field.placeholder,
-      isRequired: field.isRequired,
+    options: field.options || [],
+    label: field.label,
+    fieldType: field.fieldType,
+    placeholder: field.placeholder,
+    isRequired: field.isRequired,
       sortOrder: field.sortOrder,
     }))
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)); // Sort by sortOrder
@@ -85,11 +85,11 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
 
   return questions
     .map((q, index) => ({
-      label: q.label || q.question || "",
+    label: q.label || q.question || "",
       fieldType: q.fieldType || mapAnswerTypeToFieldType(q.answerType || "short_text"),
-      placeholder: q.placeholder || "",
-      options: q.options || [],
-      isRequired: q.isRequired || false,
+    placeholder: q.placeholder || "",
+    options: q.options || [],
+    isRequired: q.isRequired || false,
       sortOrder: q.sortOrder !== undefined ? q.sortOrder : index, // Use provided sortOrder or fallback to index
     }))
     .sort((a, b) => a.sortOrder - b.sortOrder); // Sort by sortOrder before returning

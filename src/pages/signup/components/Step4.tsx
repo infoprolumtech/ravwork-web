@@ -279,7 +279,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
               {profileImagePreview ? (
                 <Box
                   component="img"
-                  src={profileImagePreview} 
+                  src={profileImagePreview}
                   alt="Profile"
                   sx={{
                     width: { xs: 120, sm: 150 },
@@ -327,26 +327,26 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
                   <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
                 </Box>
               ) : (
-                <label htmlFor="profile-image-upload">
-                  <Button
-                    component="span"
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      minWidth: "auto",
-                      p: 1,
-                      backgroundColor: "rgba(0,0,0,0.5)",
-                      borderRadius: "50%",
-                      width: 40,
-                      height: 40,
-                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                    }}
-                  >
-                    <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
-                  </Button>
-                </label>
+              <label htmlFor="profile-image-upload">
+                <Button
+                  component="span"
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    minWidth: "auto",
+                    p: 1,
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    borderRadius: "50%",
+                    width: 40,
+                    height: 40,
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                  }}
+                >
+                  <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
+                </Button>
+              </label>
               )}
               {profileImagePreview && (
                 <Typography
