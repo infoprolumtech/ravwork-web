@@ -538,6 +538,7 @@ export default function EditProfile(): JSX.Element {
               rows={4}
               size="small"
               placeholder="About the business"
+              inputProps={{ maxLength: 250 }}
               {...form.register("businessDescription", {
                 onChange: () => form.trigger("businessDescription"),
               })}

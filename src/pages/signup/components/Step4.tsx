@@ -238,6 +238,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             margin="normal"
             multiline
             rows={1}
+            inputProps={{ maxLength: 250 }}
             {...form.register("businessDescription", {
               onChange: () => form.trigger("businessDescription"),
             })}

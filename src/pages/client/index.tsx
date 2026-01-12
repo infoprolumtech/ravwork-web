@@ -306,47 +306,51 @@ export default function ClientPage(): JSX.Element {
                     {profile.displayName || profile.username}
                   </Typography>
                   <img src="/assets/icons/line.svg" alt="" />
-                  <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-                    {profile.facebookUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.facebookUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/Facebook.svg"
-                          alt="Facebook"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                    {profile.linkedinUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.linkedinUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/linkedin.svg"
-                          alt="LinkedIn"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                    {profile.instagramUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.instagramUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/instagram.svg"
-                          alt="Instagram"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                  </Stack>
+                  {((profile.facebookUrl && profile.facebookUrl.trim()) || 
+                    (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
+                    (profile.instagramUrl && profile.instagramUrl.trim())) && (
+                    <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+                      {profile.facebookUrl && profile.facebookUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.facebookUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/Facebook.svg"
+                            alt="Facebook"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                      {profile.linkedinUrl && profile.linkedinUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.linkedinUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/linkedin.svg"
+                            alt="LinkedIn"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                      {profile.instagramUrl && profile.instagramUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.instagramUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/instagram.svg"
+                            alt="Instagram"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                    </Stack>
+                  )}
                 </Box>
                 <Box
                   display="flex"
