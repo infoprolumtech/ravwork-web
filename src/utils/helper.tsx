@@ -100,16 +100,28 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
 
   "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
     border: "1px solid #F97066",
-    color: "#FF1100"
+  },
+  "& .MuiOutlinedInput-root.Mui-error .MuiInputBase-input": {
+    color: "#1C1C1C !important",
+    WebkitTextFillColor: "#1C1C1C !important",
+    "&:-webkit-autofill": {
+      WebkitTextFillColor: "#1C1C1C !important",
+      color: "#1C1C1C !important",
+    },
+    "&:-webkit-autofill:hover": {
+      WebkitTextFillColor: "#1C1C1C !important",
+      color: "#1C1C1C !important",
+    },
+    "&:-webkit-autofill:focus": {
+      WebkitTextFillColor: "#1C1C1C !important",
+      color: "#1C1C1C !important",
+    },
   },
 
   "& .MuiFormLabel-root.Mui-error": {
     color: "#FF1100",
     fontWeight: 500,
     fontSize: "14px",
-    "&.Mui-focused ~ .MuiOutlinedInput-root .MuiInputBase-input, &.Mui-error ~ .MuiOutlinedInput-root .MuiInputBase-input": {
-      color: "#F97066",
-    },
   },
   "& .MuiFormHelperText-root.Mui-error": {
     color: "#FF1100",

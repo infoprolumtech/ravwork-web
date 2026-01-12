@@ -26,6 +26,7 @@ interface ContactDetails {
   fullName: string;
   email: string;
   phoneNumber: string;
+  description?: string; // For inquiry type
 }
 
 // Dynamic form field values
@@ -53,25 +54,39 @@ export default function ClientPage(): JSX.Element {
   const [selectedService, setSelectedService] = useState<PublicService | null>(null);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false);
+  const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
   const [contactDetails, setContactDetails] = useState<ContactDetails>({
     fullName: "",
     email: "",
     phoneNumber: "",
+    description: "",
   });
   const [formFieldValues, setFormFieldValues] = useState<FormFieldValues>({});
 
   // Handle Book Now click
   const handleBookNow = (service: PublicService) => {
     setSelectedService(service);
-    setContactDetails({ fullName: "", email: "", phoneNumber: "" });
+    setContactDetails({ fullName: "", email: "", phoneNumber: "", description: "" });
     setFormFieldValues({});
     setContactDialogOpen(true);
+  };
+
+  // Handle Request button click (for inquiry)
+  const handleRequestClick = () => {
+    setContactDetails({ fullName: "", email: "", phoneNumber: "", description: "" });
+    setInquiryDialogOpen(true);
   };
 
   // Handle contact dialog close
   const handleContactDialogClose = () => {
     setContactDialogOpen(false);
     setSelectedService(null);
+  };
+
+  // Handle inquiry dialog close
+  const handleInquiryDialogClose = () => {
+    setInquiryDialogOpen(false);
+    setContactDetails({ fullName: "", email: "", phoneNumber: "", description: "" });
   };
 
   // Handle questions dialog close
@@ -81,22 +96,24 @@ export default function ClientPage(): JSX.Element {
   };
 
   // Handle Next button (for custom_form)
-  const handleNextToQuestions = () => {
+  const handleNextToQuestions = (data: ContactDetails) => {
+    setContactDetails(data);
     setContactDialogOpen(false);
     setQuestionsDialogOpen(true);
   };
 
   // Handle Submit for quick_contact
-  const handleQuickContactSubmit = async () => {
+  const handleQuickContactSubmit = async (data: ContactDetails) => {
     if (!selectedService || !username) return;
+    setContactDetails(data);
     try {
       await createBooking({
         username,
         body: {
-          clientName: contactDetails.fullName,
-          clientEmail: contactDetails.email || undefined,
+          clientName: data.fullName,
+          clientEmail: data.email,
           clientCountryCode: profile?.countryCode || "+1",
-          clientPhone: contactDetails.phoneNumber,
+          clientPhone: data.phoneNumber,
           serviceId: selectedService.id,
           type: "booking",
         },
@@ -127,7 +144,7 @@ export default function ClientPage(): JSX.Element {
         username,
         body: {
           clientName: contactDetails.fullName,
-          clientEmail: contactDetails.email || undefined,
+          clientEmail: contactDetails.email,
           clientCountryCode: profile?.countryCode || "+1",
           clientPhone: contactDetails.phoneNumber,
           serviceId: selectedService.id,
@@ -142,6 +159,34 @@ export default function ClientPage(): JSX.Element {
       console.error("Submit error:", error);
       dispatch(showAlert({ 
         message: error?.data?.message || "Failed to submit booking. Please try again.", 
+        severity: "error" 
+      }));
+    }
+  };
+
+  // Handle Submit for inquiry
+  const handleInquirySubmit = async (data: ContactDetails) => {
+    if (!username) return;
+    setContactDetails(data);
+    try {
+      await createBooking({
+        username,
+        body: {
+          clientName: data.fullName,
+          clientEmail: data.email,
+          clientCountryCode: profile?.countryCode || "+1",
+          clientPhone: data.phoneNumber,
+          type: "inquiry",
+          description: data.description || "",
+        },
+      }).unwrap();
+      
+      dispatch(showAlert({ message: "Inquiry submitted successfully!", severity: "success" }));
+      handleInquiryDialogClose();
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      dispatch(showAlert({ 
+        message: error?.data?.message || "Failed to submit inquiry. Please try again.", 
         severity: "error" 
       }));
     }
@@ -454,10 +499,10 @@ export default function ClientPage(): JSX.Element {
                       <Stack
                         sx={{
                           display: "flex",
-                          flexDirection: { xs: "column", sm: "row" },
+                          flexDirection: "row",
                           justifyContent: "space-between",
-                          alignItems: { xs: "flex-start", sm: "center" },
-                          gap: { xs: 1.5, sm: 0 },
+                          alignItems: "center",
+                          gap: 1,
                         }}
                       >
                         <Typography
@@ -477,12 +522,13 @@ export default function ClientPage(): JSX.Element {
                             backgroundColor: "#111927",
                             color: "#fff",
                             textTransform: "none",
-                            width: { xs: "100%", sm: "170px" },
+                            width: "170px",
                             height: "36px",
                             fontSize: "14px",
                             fontWeight: 500,
                             borderRadius: "50px",
                             py: 1.25,
+                            flexShrink: 0,
                             "&:hover": {
                               backgroundColor: "#384250",
                             },
@@ -557,17 +603,17 @@ export default function ClientPage(): JSX.Element {
 
               <Button
                 variant="contained"
+                onClick={handleRequestClick}
                 sx={{
                   backgroundColor: "#111927",
                   color: "#fff",
                   textTransform: "none",
-                  fontSize: 14,
+                  fontSize: "14px",
                   fontWeight: 500,
-                  height: 40,
+                  height: "36px",
                   borderRadius: "50px",
-                  px: 4,
-                  minWidth: "120px",
-                  width: { xs: "100%", sm: "auto" },
+                  py: 1.25,
+                  width: { xs: "170px", sm: "170px" },
                   "&:hover": {
                     backgroundColor: "#384250",
                   },
@@ -840,6 +886,34 @@ export default function ClientPage(): JSX.Element {
             formFields={selectedService?.formFields || []}
             formFieldValues={formFieldValues}
             setFormFieldValues={setFormFieldValues}
+            isSubmitting={isSubmitting}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Inquiry Dialog */}
+      <Dialog
+        open={inquiryDialogOpen}
+        onClose={handleInquiryDialogClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: "12px", sm: "16px" },
+            mx: { xs: 2, sm: 3 },
+            width: { xs: "calc(100% - 32px)", sm: "100%" },
+          },
+        }}
+      >
+        <DialogContent sx={{ p: 0 }}>
+          <ClientContactInfoPage
+            onClose={handleInquiryDialogClose}
+            onNext={() => {}}
+            onSubmit={handleInquirySubmit}
+            contactDetails={contactDetails}
+            setContactDetails={setContactDetails}
+            isQuickContact={false}
+            isInquiry={true}
             isSubmitting={isSubmitting}
           />
         </DialogContent>

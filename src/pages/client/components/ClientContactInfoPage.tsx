@@ -1,4 +1,4 @@
-import React, { type JSX } from "react";
+import React, { type JSX, useEffect } from "react";
 import {
   Button,
   Stack,
@@ -7,23 +7,26 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { StyledTextField } from "../../../utils/helper";
+import { contactInfoSchema, inquirySchema } from "../validationSchemas";
+
+interface ContactFormInputs {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  description?: string;
+}
 
 interface ClientContactInfoPageProps {
   onClose: () => void;
-  onNext: () => void;
-  onSubmit: () => void;
-  contactDetails: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-  };
-  setContactDetails: React.Dispatch<React.SetStateAction<{
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-  }>>;
+  onNext: (data: ContactFormInputs) => void;
+  onSubmit: (data: ContactFormInputs) => void;
+  contactDetails: ContactFormInputs;
+  setContactDetails: React.Dispatch<React.SetStateAction<ContactFormInputs>>;
   isQuickContact: boolean;
+  isInquiry?: boolean;
   isSubmitting: boolean;
 }
 
@@ -34,9 +37,34 @@ export default function ClientContactInfoPage({
   contactDetails,
   setContactDetails,
   isQuickContact,
+  isInquiry = false,
   isSubmitting,
 }: ClientContactInfoPageProps): JSX.Element {
-  const isFormValid = contactDetails.fullName && contactDetails.phoneNumber;
+  const schema = isInquiry ? inquirySchema : contactInfoSchema;
+  
+  const form = useForm<ContactFormInputs>({
+    resolver: yupResolver(schema) as any,
+    mode: "onChange",
+    defaultValues: contactDetails,
+  });
+
+  // Sync form with parent state when contactDetails changes
+  useEffect(() => {
+    form.reset(contactDetails);
+  }, [contactDetails, form]);
+
+  // Update parent state when form values change
+  const handleFormChange = (data: ContactFormInputs) => {
+    setContactDetails(data);
+  };
+
+  const handleFormSubmit = (data: ContactFormInputs) => {
+    if (isQuickContact || isInquiry) {
+      onSubmit(data);
+    } else {
+      onNext(data);
+    }
+  };
 
   return (
     <Stack
@@ -71,7 +99,7 @@ export default function ClientContactInfoPage({
             pr: 2,
           }}
         >
-          Enter your details to request this service.
+          {isInquiry ? "Have a question? Provide your contact info." : "Enter your details to request this service."}
         </Typography>
         <IconButton 
           onClick={onClose} 
@@ -86,37 +114,101 @@ export default function ClientContactInfoPage({
       </Stack>
 
       {/* Form Fields */}
-      <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
-        {/* Full Name */}
-        <StyledTextField
-          fullWidth
-          variant="outlined"
-          label="Full name"
-          placeholder="Enter your full name"
-          value={contactDetails.fullName}
-          onChange={(e) => setContactDetails({ ...contactDetails, fullName: e.target.value })}
-        />
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} style={{ width: "100%" }}>
+        <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
+          {/* Full Name */}
+          <Controller
+            name="fullName"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Full name"
+                placeholder="Enter your full name"
+                error={Boolean(form.formState.errors.fullName)}
+                helperText={form.formState.errors.fullName?.message}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleFormChange({ ...form.getValues(), fullName: e.target.value });
+                  form.trigger("fullName");
+                }}
+              />
+            )}
+          />
 
-        {/* Email */}
-        <StyledTextField
-          fullWidth
-          variant="outlined"
-          label="Email (optional)"
-          placeholder="Enter your email"
-          value={contactDetails.email}
-          onChange={(e) => setContactDetails({ ...contactDetails, email: e.target.value })}
-        />
+          {/* Email */}
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Email"
+                placeholder="Enter your email"
+                error={Boolean(form.formState.errors.email)}
+                helperText={form.formState.errors.email?.message}
+                InputLabelProps={{ required: false }}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleFormChange({ ...form.getValues(), email: e.target.value });
+                  form.trigger("email");
+                }}
+              />
+            )}
+          />
 
-        {/* Phone Number */}
-        <StyledTextField
-          fullWidth
-          variant="outlined"
-          label="Phone Number"
-          placeholder="Enter your phone number"
-          value={contactDetails.phoneNumber}
-          onChange={(e) => setContactDetails({ ...contactDetails, phoneNumber: e.target.value })}
-        />
-      </Stack>
+          {/* Phone Number */}
+          <Controller
+            name="phoneNumber"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Phone Number"
+                placeholder="Enter your phone number"
+                error={Boolean(form.formState.errors.phoneNumber)}
+                helperText={form.formState.errors.phoneNumber?.message}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleFormChange({ ...form.getValues(), phoneNumber: e.target.value });
+                  form.trigger("phoneNumber");
+                }}
+              />
+            )}
+          />
+
+          {/* Description (for inquiry) */}
+          {isInquiry && (
+            <Controller
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <StyledTextField
+                  {...field}
+                  fullWidth
+                  variant="outlined"
+                  label="Description"
+                  placeholder="Describe your question or inquiry"
+                  error={Boolean(form.formState.errors.description)}
+                  helperText={form.formState.errors.description?.message}
+                  InputLabelProps={{ required: false }}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    handleFormChange({ ...form.getValues(), description: e.target.value });
+                    form.trigger("description");
+                  }}
+                />
+              )}
+            />
+          )}
+        </Stack>
+      </form>
 
       {/* Action Buttons */}
       <Stack direction="row" justifyContent="flex-end" spacing={2}>
@@ -133,19 +225,19 @@ export default function ClientContactInfoPage({
         >
           Cancel
         </Button>
-        {isQuickContact ? (
+        {isQuickContact || isInquiry ? (
           <Button
             variant="secondary"
-            onClick={onSubmit}
-            disabled={isSubmitting || !isFormValid}
+            onClick={form.handleSubmit(handleFormSubmit)}
+            disabled={isSubmitting || !form.formState.isValid}
           >
             {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
           </Button>
         ) : (
           <Button
             variant="secondary"
-            onClick={onNext}
-            disabled={!isFormValid}
+            onClick={form.handleSubmit(handleFormSubmit)}
+            disabled={!form.formState.isValid}
           >
             Next
           </Button>
