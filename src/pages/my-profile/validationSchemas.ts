@@ -27,11 +27,11 @@ export const profileEditSchema = yup.object().shape({
     }),
   businessDescription: yup
     .string()
-    .max(1000, "Business description must be at most 1000 characters")
-    .test("businessDescription-validation", "Business description must be at most 1000 characters", function(value) {
+    .max(250, "Business description must be at most 250 characters")
+    .test("businessDescription-validation", "Business description must be at most 250 characters", function(value) {
       // Only validate if value is provided
       if (!value || value.trim() === "") return true;
-      return value.length <= 1000;
+      return value.length <= 250;
     }),
   profilePhoto: yup.mixed().notRequired(), // Always optional, no validation
   instagramUrl: yup

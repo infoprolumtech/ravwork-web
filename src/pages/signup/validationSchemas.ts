@@ -85,7 +85,7 @@ export const step3Schema = yup.object().shape({
       if (paymentMethod === "apple" || paymentMethod === "link") return true;
       // If any card field is filled, all must be filled
       if (expiryDate || securityCode) {
-        return value && value.trim().length > 0;
+        return Boolean(value && value.trim().length > 0);
       }
       return true;
     })
@@ -107,7 +107,7 @@ export const step3Schema = yup.object().shape({
       if (paymentMethod === "apple" || paymentMethod === "link") return true;
       // If any card field is filled, all must be filled
       if (cardNumber || securityCode) {
-        return value && value.trim().length > 0;
+        return Boolean(value && value.trim().length > 0);
       }
       return true;
     })
@@ -162,7 +162,7 @@ export const step3Schema = yup.object().shape({
       if (paymentMethod === "apple" || paymentMethod === "link") return true;
       // If any card field is filled, all must be filled
       if (cardNumber || expiryDate) {
-        return value && value.trim().length > 0;
+        return Boolean(value && value.trim().length > 0);
       }
       return true;
     })
@@ -199,11 +199,11 @@ export const step4Schema = yup.object().shape({
     }),
   businessDescription: yup
     .string()
-    .max(1000, "Business description must be at most 1000 characters")
-    .test("businessDescription-validation", "Business description must be at most 1000 characters", function(value) {
+    .max(250, "Business description must be at most 250 characters")
+    .test("businessDescription-validation", "Business description must be at most 250 characters", function(value) {
       // Only validate if value is provided
       if (!value || value.trim() === "") return true;
-      return value.length <= 1000;
+      return value.length <= 250;
     }),
   profileImage: yup.mixed().notRequired(), // Always optional, no validation
   instagram: yup

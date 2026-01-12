@@ -20,6 +20,7 @@ import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import ClientContactInfoPage from "./components/ClientContactInfoPage";
 import ClientQuestionsPage from "./components/ClientQuestionsPage";
+import ShareModal from "./components/ShareModal";
 
 // Contact details form data
 interface ContactDetails {
@@ -55,6 +56,7 @@ export default function ClientPage(): JSX.Element {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false);
   const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [contactDetails, setContactDetails] = useState<ContactDetails>({
     fullName: "",
     email: "",
@@ -306,47 +308,51 @@ export default function ClientPage(): JSX.Element {
                     {profile.displayName || profile.username}
                   </Typography>
                   <img src="/assets/icons/line.svg" alt="" />
-                  <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-                    {profile.facebookUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.facebookUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/Facebook.svg"
-                          alt="Facebook"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                    {profile.linkedinUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.linkedinUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/linkedin.svg"
-                          alt="LinkedIn"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                    {profile.instagramUrl && (
-                      <IconButton
-                        size="small"
-                        sx={{ width: 32, height: 32, p: 0.5 }}
-                        onClick={() => window.open(profile.instagramUrl!, "_blank")}
-                      >
-                        <img
-                          src="/assets/icons/instagram.svg"
-                          alt="Instagram"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </IconButton>
-                    )}
-                  </Stack>
+                  {((profile.facebookUrl && profile.facebookUrl.trim()) || 
+                    (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
+                    (profile.instagramUrl && profile.instagramUrl.trim())) && (
+                    <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+                      {profile.facebookUrl && profile.facebookUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.facebookUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/Facebook.svg"
+                            alt="Facebook"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                      {profile.linkedinUrl && profile.linkedinUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.linkedinUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/linkedin.svg"
+                            alt="LinkedIn"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                      {profile.instagramUrl && profile.instagramUrl.trim() && (
+                        <IconButton
+                          size="small"
+                          sx={{ width: 32, height: 32, p: 0.5 }}
+                          onClick={() => window.open(profile.instagramUrl!, "_blank")}
+                        >
+                          <img
+                            src="/assets/icons/instagram.svg"
+                            alt="Instagram"
+                            style={{ width: "24px", height: "24px" }}
+                          />
+                        </IconButton>
+                      )}
+                    </Stack>
+                  )}
                 </Box>
                 <Box
                   display="flex"
@@ -381,12 +387,7 @@ export default function ClientPage(): JSX.Element {
                         />
                       </>
                     }
-                    onClick={() => {
-                      navigator.share?.({
-                        title: profile.displayName || profile.username,
-                        url: window.location.href,
-                      });
-                    }}
+                    onClick={() => setShareModalOpen(true)}
                   >
                     Share
                   </Button>
@@ -959,6 +960,14 @@ export default function ClientPage(): JSX.Element {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Share Modal */}
+      <ShareModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        profileUrl={window.location.href}
+        profileName={profile?.displayName || profile?.username || ""}
+      />
     </Box>
   );
 }
