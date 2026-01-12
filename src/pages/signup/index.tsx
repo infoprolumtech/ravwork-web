@@ -126,7 +126,7 @@ export default function SignUpPage(): JSX.Element {
       }).unwrap();
       
       // Get current user data to log them in directly
-      const userResponse = await getCurrentUser().unwrap();
+      const userResponse = await getCurrentUser(undefined).unwrap();
       
       if (userResponse?.data && signupToken) {
         // Log the user in with the signup token as access token
@@ -173,7 +173,7 @@ export default function SignUpPage(): JSX.Element {
       await skipProfile(undefined).unwrap();
       
       // Get current user data to log them in directly
-      const userResponse = await getCurrentUser().unwrap();
+      const userResponse = await getCurrentUser(undefined).unwrap();
       
       if (userResponse?.data && signupToken) {
         // Log the user in with the signup token as access token
