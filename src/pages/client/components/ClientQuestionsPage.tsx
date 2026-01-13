@@ -652,7 +652,7 @@ export default function ClientQuestionsPage({
         <Typography
           variant="h6"
           sx={{
-            fontSize: "28px",
+            fontSize: { xs: "20px", sm: "22px", md: "24px" },
             fontWeight: 600,
             color: "#111927",
             flex: 1,
@@ -704,13 +704,23 @@ export default function ClientQuestionsPage({
       </form>
 
       {/* Action Buttons */}
-      <Stack direction="row" justifyContent="flex-end" spacing={2}>
+      <Stack 
+        direction="row" 
+        justifyContent="flex-end" 
+        spacing={{ xs: 1.5, sm: 2 }}
+        sx={{
+          width: "100%",
+          flexWrap: { xs: "wrap", sm: "nowrap" },
+        }}
+      >
         <Button
           variant="primary"
           onClick={onClose}
           sx={{
             backgroundColor: "#FFFFFF",
             color: "#111927",
+            fontSize: { xs: "14px", sm: "16px" },
+            px: { xs: 2, sm: 3 },
             "&:hover": {
               backgroundColor: "#F3F4F6",
             },
@@ -724,6 +734,8 @@ export default function ClientQuestionsPage({
           disabled={isSubmitting || !form.formState.isValid || !areAllFieldsFilled}
           sx={{
             cursor: isSubmitting || !form.formState.isValid || !areAllFieldsFilled ? "not-allowed" : "pointer",
+            fontSize: { xs: "14px", sm: "16px" },
+            px: { xs: 2, sm: 3 },
           }}
         >
           {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}

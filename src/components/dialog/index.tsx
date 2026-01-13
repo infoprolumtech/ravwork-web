@@ -8,8 +8,9 @@ interface GlobalDialogProps{
     component:JSX.Element
     handleClose:()=>void;
     open:boolean;
+    hideWarningLine?: boolean;
 };
-export default function GlobalDialog({open, handleClose, component}:GlobalDialogProps) {
+export default function GlobalDialog({open, handleClose, component, hideWarningLine = false}:GlobalDialogProps) {
   return (
     <Dialog
       open={open}
@@ -38,10 +39,18 @@ export default function GlobalDialog({open, handleClose, component}:GlobalDialog
         height: { xs: "100%", sm: "auto" },
         display: "flex",
         flexDirection: "column",
+        overflowY: "auto",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
       }}>
-        <Box sx={{ display: { xs: "none", sm: "block" } }}>
-          <WarningLine />
-        </Box>
+        {!hideWarningLine && (
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <WarningLine />
+          </Box>
+        )}
         {component}
       </DialogContent>
     </Dialog>

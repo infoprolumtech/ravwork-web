@@ -1,4 +1,4 @@
-import React, { type JSX } from "react";
+import React, { useState, type JSX } from "react";
 import {
   Box,
   Typography,
@@ -20,6 +20,7 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import { useAppDispatch } from "../../rtk/store";
 import GlobalDialog from "../../components/dialog";
 import CommonDialog from "../../components/dialog/dialog-content/CommonDialog";
+import Pagination from "../../components/pagination/Pagination";
 
 
 
@@ -50,21 +51,45 @@ const transformServiceToUI = (service: Service) => {
 export default function ServicesOfferedPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] = React.useState<string | null>(null);
 
   // API hooks
-  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery();
+  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery({
+    page: currentPage,
+    limit: 10,
+  });
   const [deleteService, { isLoading: isDeletingService }] = useDeleteServiceMutation();
 
-  // Transform services data
+  // Transform services data - handle both paginated and non-paginated responses
   const services = React.useMemo(() => {
-    if (!servicesResponse?.data || !Array.isArray(servicesResponse.data)) {
-      return [];
+    if (!servicesResponse) return [];
+    
+    // Check if response is paginated (has data property)
+    if ('data' in servicesResponse && Array.isArray(servicesResponse.data)) {
+      return servicesResponse.data.map(transformServiceToUI);
     }
-    return servicesResponse.data.map(transformServiceToUI);
+    
+    // Non-paginated response (direct array)
+    if (Array.isArray(servicesResponse)) {
+      return servicesResponse.map(transformServiceToUI);
+    }
+    
+    return [];
+  }, [servicesResponse]);
+
+  // Get pagination info if available
+  const paginationData = React.useMemo(() => {
+    if (servicesResponse && 'totalPages' in servicesResponse) {
+      return {
+        totalPages: servicesResponse.totalPages || 1,
+        hasPagination: true,
+      };
+    }
+    return { totalPages: 1, hasPagination: false };
   }, [servicesResponse]);
 
   const handleAddService = () => {
@@ -185,34 +210,43 @@ export default function ServicesOfferedPage(): JSX.Element {
 
         {/* Services List */}
         {!isLoading && !error && (
-          <Stack spacing={{ xs: 1.5, md: 2 }}>
-            {services.length === 0 ? (
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#6C737F",
-                  textAlign: "center",
-                  py: 4,
-                }}
-              >
-                No services yet. Click "Add New Service" to get started.
-              </Typography>
-            ) : (
-              services.map((service) => (
-                <ServiceOfferedCard
-                  key={service.id}
-                  id={service.id}
-                  title={service.title}
-                  description={service.description}
-                  price={service.price}
-                  contactMethod={service.contactMethod}
-                  iconType={service.iconType}
-                  onEdit={handleEditService}
-                  onDelete={handleDeleteService}
-                />
-              ))
-            )}
-          </Stack>
+          <>
+            <Stack spacing={{ xs: 1.5, md: 2 }}>
+              {services.length === 0 ? (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#6C737F",
+                    textAlign: "center",
+                    py: 4,
+                  }}
+                >
+                  No services yet. Click "Add New Service" to get started.
+                </Typography>
+              ) : (
+                services.map((service) => (
+                  <ServiceOfferedCard
+                    key={service.id}
+                    id={service.id}
+                    title={service.title}
+                    description={service.description}
+                    price={service.price}
+                    contactMethod={service.contactMethod}
+                    iconType={service.iconType}
+                    onEdit={handleEditService}
+                    onDelete={handleDeleteService}
+                  />
+                ))
+              )}
+            </Stack>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={paginationData.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
         )}
       </Box>
 

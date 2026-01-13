@@ -69,11 +69,11 @@ export default function ClientContactInfoPage({
   return (
     <Stack
       sx={{
-        padding: "40px",
+        padding: { xs: "20px", sm: "32px", md: "40px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-end",
-        gap: "24px",
+        gap: { xs: "16px", sm: "20px", md: "24px" },
         width: "100%",
         "&::-webkit-scrollbar": {
           display: "none",
@@ -92,7 +92,7 @@ export default function ClientContactInfoPage({
         <Typography
           variant="h6"
           sx={{
-            fontSize: "28px",
+            fontSize: { xs: "20px", sm: "22px", md: "24px" },
             fontWeight: 600,
             color: "#111927",
             flex: 1,
@@ -211,13 +211,23 @@ export default function ClientContactInfoPage({
       </form>
 
       {/* Action Buttons */}
-      <Stack direction="row" justifyContent="flex-end" spacing={2}>
+      <Stack 
+        direction="row" 
+        justifyContent="flex-end" 
+        spacing={{ xs: 1.5, sm: 2 }}
+        sx={{
+          width: "100%",
+          flexWrap: { xs: "wrap", sm: "nowrap" },
+        }}
+      >
         <Button
           variant="primary"
           onClick={onClose}
           sx={{
             backgroundColor: "#FFFFFF",
             color: "#111927",
+            fontSize: { xs: "14px", sm: "16px" },
+            px: { xs: 2, sm: 3 },
             "&:hover": {
               backgroundColor: "#F3F4F6",
             },
@@ -230,6 +240,10 @@ export default function ClientContactInfoPage({
             variant="secondary"
             onClick={form.handleSubmit(handleFormSubmit)}
             disabled={isSubmitting || !form.formState.isValid}
+            sx={{
+              fontSize: { xs: "14px", sm: "16px" },
+              px: { xs: 2, sm: 3 },
+            }}
           >
             {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
           </Button>
@@ -238,6 +252,10 @@ export default function ClientContactInfoPage({
             variant="secondary"
             onClick={form.handleSubmit(handleFormSubmit)}
             disabled={!form.formState.isValid}
+            sx={{
+              fontSize: { xs: "14px", sm: "16px" },
+              px: { xs: 2, sm: 3 },
+            }}
           >
             Next
           </Button>
