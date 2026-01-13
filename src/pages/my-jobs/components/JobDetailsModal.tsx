@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useGetJobByIdQuery } from "../../../rtk/endpoints/userApi";
-import type { JobDetails } from "../../../rtk/endpoints/userApi";
 
 interface JobDetailsModalProps {
   jobId: string | null;
