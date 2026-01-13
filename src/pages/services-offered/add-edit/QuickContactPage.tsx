@@ -80,29 +80,7 @@ export default function QuickContactPage({
         spacing={2}
         sx={{ width: "100%" }}
       >
-        <Stack direction="row" alignItems="center" spacing={2}>
-          {/* Icon */}
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              component="img"
-              src="/assets/icons/sidebar_menu_icon/flash.svg"
-              alt="Service"
-              sx={{
-                width: "24px",
-                height: "24px",
-              }}
-            />
-          </Box>
-        </Stack>
+        
       </Stack>
 
       {/* Form Fields */}
@@ -117,7 +95,7 @@ export default function QuickContactPage({
               color: "#111927",
             }}
           >
-            Enter your details to request this service.
+            Enter your details to request this service.(Optional)
           </Typography>
         </Box>
 

@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import type { TestContext } from "yup";
 
 // Schema for contact info form (used in booking - description not required)
 export const contactInfoSchema = yup.object().shape({
@@ -49,11 +50,51 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
   const schemaShape: Record<string, any> = {};
   
   formFields.forEach((field) => {
-    if (field.isRequired) {
-      schemaShape[field.id] = yup
+    let fieldSchema: any;
+    
+    // Handle textarea fields with string validation for better max length support
+    if (field.fieldType === "textarea") {
+      if (field.isRequired) {
+        fieldSchema = yup
+          .string()
+          .required(`${field.label} is required`)
+          .max(250, "Maximum 250 characters allowed");
+      } else {
+        fieldSchema = yup
+          .string()
+          .notRequired()
+          .test("max-length", "Maximum 250 characters allowed", function(value: any) {
+            if (!value || value === "") {
+              return true; // Empty values are valid for non-required fields
+            }
+            return (value as string).length <= 250;
+          });
+      }
+    } else if (field.fieldType === "text" && !field.options) {
+      // Handle text fields (not radio/select) with string validation for max length support
+      if (field.isRequired) {
+        fieldSchema = yup
+          .string()
+          .required(`${field.label} is required`)
+          .max(100, "Maximum 100 characters allowed");
+      } else {
+        fieldSchema = yup
+          .string()
+          .nullable()
+          .transform((value) => (value === "" ? null : value))
+          .notRequired()
+          .test("max-length", "Maximum 100 characters allowed", function(value: any) {
+            if (!value || value === null || value === "") {
+              return true; // Empty values are valid for non-required fields
+            }
+            return (value as string).length <= 100;
+          });
+      }
+    } else if (field.isRequired) {
+      fieldSchema = yup
         .mixed()
         .required(`${field.label} is required`)
-        .test("not-empty", `${field.label} is required`, function(value) {
+        .test("not-empty", `${field.label} is required`, function(value: any) {
           if (field.fieldType === "checkbox") {
             return Array.isArray(value) && value.length > 0;
           }
@@ -64,8 +105,81 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
           return value !== "" && value !== null && value !== undefined;
         });
     } else {
-      schemaShape[field.id] = yup.mixed().notRequired();
+      fieldSchema = yup.mixed().notRequired();
     }
+    
+    // Add date validation: date must not be in the past
+    if (field.fieldType === "date") {
+      fieldSchema = fieldSchema.test(
+        "not-past-date",
+        "Date cannot be in the past. Please select today or a future date.",
+        function(value: any) {
+          if (!value || value === "") {
+            return !field.isRequired; // If not required and empty, it's valid
+          }
+          
+          const selectedDate = new Date(value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // Reset time to start of day
+          selectedDate.setHours(0, 0, 0, 0);
+          
+          return selectedDate >= today;
+        }
+      );
+    }
+    
+    // Add time validation: time must not be in the past if date is today
+    if (field.fieldType === "time") {
+      fieldSchema = fieldSchema.test(
+        "not-past-time",
+        "Time cannot be in the past. Please select a future time.",
+        function(this: TestContext<any>, value: any) {
+          if (!value || value === "") {
+            return !field.isRequired; // If not required and empty, it's valid
+          }
+          
+          // Check if there's a corresponding date field
+          // Find the date field that appears before this time field (assuming they're related)
+          const currentFieldIndex = formFields.findIndex(f => f.id === field.id);
+          const relatedDateField = formFields
+            .slice(0, currentFieldIndex)
+            .reverse()
+            .find(f => f.fieldType === "date");
+          
+          if (relatedDateField) {
+            const dateValue = this.parent[relatedDateField.id];
+            if (dateValue) {
+              const selectedDate = new Date(dateValue);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              selectedDate.setHours(0, 0, 0, 0);
+              
+              // If date is today, check if time is in the past
+              if (selectedDate.getTime() === today.getTime()) {
+                const [hours, minutes] = (value as string).split(":").map(Number);
+                const selectedTime = new Date();
+                selectedTime.setHours(hours, minutes, 0, 0);
+                const now = new Date();
+                
+                return selectedTime > now;
+              }
+              // If date is in the future, any time is valid
+              return true;
+            }
+          }
+          
+          // If no date field found, validate against current time
+          const [hours, minutes] = (value as string).split(":").map(Number);
+          const selectedTime = new Date();
+          selectedTime.setHours(hours, minutes, 0, 0);
+          const now = new Date();
+          
+          return selectedTime > now;
+        }
+      );
+    }
+    
+    schemaShape[field.id] = fieldSchema;
   });
   
   return yup.object().shape(schemaShape);

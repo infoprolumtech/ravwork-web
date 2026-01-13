@@ -63,7 +63,7 @@ export default function ClientQuestionsPage({
     onSubmit();
   };
 
-  // Watch all form values to check if required fields are filled
+  // Watch all form values to check if all fields are filled
   const watchedValues = form.watch();
   
   // Check if all required fields are filled
@@ -75,6 +75,27 @@ export default function ClientQuestionsPage({
     }
 
     return requiredFields.every((field) => {
+      const value = watchedValues[field.id];
+      
+      if (field.fieldType === "checkbox") {
+        return Array.isArray(value) && value.length > 0;
+      }
+      
+      if (field.options && field.options.length > 0) {
+        return value !== "" && value !== null && value !== undefined;
+      }
+      
+      return value !== "" && value !== null && value !== undefined;
+    });
+  }, [formFields, watchedValues]);
+
+  // Check if ALL fields (required and optional) are filled
+  const areAllFieldsFilled = React.useMemo(() => {
+    if (formFields.length === 0) {
+      return true; // No fields, form is valid
+    }
+
+    return formFields.every((field) => {
       const value = watchedValues[field.id];
       
       if (field.fieldType === "checkbox") {
@@ -183,6 +204,7 @@ export default function ClientQuestionsPage({
                   variant="outlined"
                   placeholder={field.placeholder || "Type Here"}
                   error={Boolean(form.formState.errors[field.id])}
+                  helperText={form.formState.errors[field.id]?.message as string}
                   required={field.isRequired}
                   InputLabelProps={{ shrink: false }}
                   onChange={(e) => {
@@ -224,6 +246,7 @@ export default function ClientQuestionsPage({
                   rows={2}
                   placeholder={field.placeholder || "Describe here"}
                   error={Boolean(form.formState.errors[field.id])}
+                  helperText={form.formState.errors[field.id]?.message as string}
                   required={field.isRequired}
                   InputLabelProps={{ shrink: false }}
                   sx={{
@@ -450,37 +473,53 @@ export default function ClientQuestionsPage({
             key={field.id}
             name={field.id}
             control={form.control}
-            render={({ field: formField }) => (
-              <Box>
-                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      color: "#111927",
+            render={({ field: formField }) => {
+              // Get today's date in YYYY-MM-DD format
+              const today = new Date().toISOString().split('T')[0];
+              
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                    </Typography>
+                  </Stack>
+                  <StyledTextField
+                    {...formField}
+                    fullWidth
+                    variant="outlined"
+                    type="date"
+                    placeholder="Select Date"
+                    error={Boolean(form.formState.errors[field.id])}
+                    helperText={form.formState.errors[field.id]?.message as string}
+                    required={field.isRequired}
+                    InputLabelProps={{ shrink: false }}
+                    inputProps={{
+                      min: today, // Prevent selecting past dates
                     }}
-                  >
-                    {field.label}
-                  </Typography>
-                </Stack>
-                <StyledTextField
-                  {...formField}
-                  fullWidth
-                  variant="outlined"
-                  type="date"
-                  placeholder="Select Date"
-                  error={Boolean(form.formState.errors[field.id])}
-                  required={field.isRequired}
-                  InputLabelProps={{ shrink: false }}
-                  onChange={(e) => {
-                    formField.onChange(e.target.value);
-                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                    form.trigger(field.id);
-                  }}
-                />
-              </Box>
-            )}
+                    onChange={(e) => {
+                      formField.onChange(e.target.value);
+                      setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                      form.trigger(field.id);
+                      
+                      // Re-validate time fields when date changes
+                      formFields.forEach((f) => {
+                        if (f.fieldType === "time") {
+                          form.trigger(f.id);
+                        }
+                      });
+                    }}
+                  />
+                </Box>
+              );
+            }}
           />
         );
       
@@ -490,37 +529,82 @@ export default function ClientQuestionsPage({
             key={field.id}
             name={field.id}
             control={form.control}
-            render={({ field: formField }) => (
-              <Box>
-                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      color: "#111927",
+            render={({ field: formField }) => {
+              // Find related date field (the date field that appears before this time field)
+              const currentFieldIndex = formFields.findIndex(f => f.id === field.id);
+              const relatedDateField = formFields
+                .slice(0, currentFieldIndex)
+                .reverse()
+                .find(f => f.fieldType === "date");
+              
+              // Calculate min time based on whether date is today
+              let minTime: string | undefined;
+              if (relatedDateField) {
+                const dateValue = formFieldValues[relatedDateField.id] as string;
+                if (dateValue) {
+                  const selectedDate = new Date(dateValue);
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  selectedDate.setHours(0, 0, 0, 0);
+                  
+                  // If date is today, set min time to current time + 1 minute
+                  if (selectedDate.getTime() === today.getTime()) {
+                    const now = new Date();
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                    minTime = `${hours}:${minutes}`;
+                  }
+                } else {
+                  // If no date selected, set min to current time
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                  minTime = `${hours}:${minutes}`;
+                }
+              } else {
+                // If no date field found, set min to current time
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                minTime = `${hours}:${minutes}`;
+              }
+              
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                    </Typography>
+                  </Stack>
+                  <StyledTextField
+                    {...formField}
+                    fullWidth
+                    variant="outlined"
+                    type="time"
+                    placeholder="Type Here"
+                    error={Boolean(form.formState.errors[field.id])}
+                    helperText={form.formState.errors[field.id]?.message as string}
+                    required={field.isRequired}
+                    InputLabelProps={{ shrink: false }}
+                    inputProps={{
+                      min: minTime, // Prevent selecting past times
                     }}
-                  >
-                    {field.label}
-                  </Typography>
-                </Stack>
-                <StyledTextField
-                  {...formField}
-                  fullWidth
-                  variant="outlined"
-                  type="time"
-                  placeholder="Type Here"
-                  error={Boolean(form.formState.errors[field.id])}
-                  required={field.isRequired}
-                  InputLabelProps={{ shrink: false }}
-                  onChange={(e) => {
-                    formField.onChange(e.target.value);
-                    setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                    form.trigger(field.id);
-                  }}
-                />
-              </Box>
-            )}
+                    onChange={(e) => {
+                      formField.onChange(e.target.value);
+                      setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
+                      form.trigger(field.id);
+                    }}
+                  />
+                </Box>
+              );
+            }}
           />
         );
       
@@ -660,7 +744,10 @@ export default function ClientQuestionsPage({
         <Button
           variant="secondary"
           onClick={form.handleSubmit(handleFormSubmit)}
-          disabled={isSubmitting || !form.formState.isValid || !areAllRequiredFieldsFilled}
+          disabled={isSubmitting || !form.formState.isValid || !areAllFieldsFilled}
+          sx={{
+            cursor: isSubmitting || !form.formState.isValid || !areAllFieldsFilled ? "not-allowed" : "pointer",
+          }}
         >
           {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
         </Button>

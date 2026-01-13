@@ -71,7 +71,7 @@ export default function LoginPage(): JSX.Element {
         } else {
           // Signup complete (profileStep >= 3), go to dashboard
         navigate("/dashboard");
-        }
+      }
       }
     } catch (error: any) {
       console.error("Login error:", error);
