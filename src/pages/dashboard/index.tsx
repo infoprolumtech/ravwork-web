@@ -25,6 +25,8 @@ import ShareModal from "../client/components/ShareModal";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
+import GlobalDialog from "../../components/dialog";
+import JobDetailsModal from "../my-jobs/components/JobDetailsModal";
 
 // Helper function to get profile URL dynamically
 const getProfileUrl = (username: string) => {
@@ -57,6 +59,8 @@ export default function Dashboard() {
     limit: 10 
   });
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
 
   // Calculate profile completion
   const profileComplete = useMemo(() => {
@@ -88,6 +92,7 @@ export default function Dashboard() {
   const recentJobs = useMemo(() => {
     if (!dashboardRequestsData?.data) return [];
     return dashboardRequestsData.data.map((request) => ({
+      id: request.id,
       name: request.clientName || "N/A",
       jobType: request.serviceName || (request.type === "inquiry" ? "Inquiry" : "Booking"),
       dateTime: request.bookingDate && request.bookingTime
@@ -97,6 +102,16 @@ export default function Dashboard() {
         : "No Date Available",
     }));
   }, [dashboardRequestsData]);
+
+  const handleJobClick = (jobId: string) => {
+    setSelectedJobId(jobId);
+    setJobDetailsModalOpen(true);
+  };
+
+  const handleCloseJobDetailsModal = () => {
+    setJobDetailsModalOpen(false);
+    setSelectedJobId(null);
+  };
 
   // Get profile photo URL
   const profilePhotoUrl = useMemo(() => {
@@ -432,7 +447,11 @@ export default function Dashboard() {
                     recentJobs.map((job, index) => (
                       <TableRow
                         key={index}
-                        sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}
+                        onClick={() => handleJobClick(job.id)}
+                        sx={{
+                          "&:hover": { backgroundColor: "#F9FAFB", cursor: "pointer" },
+                          cursor: "pointer",
+                        }}
                       >
                         <TableCell>{job.name}</TableCell>
                         <TableCell>{job.jobType}</TableCell>
@@ -462,6 +481,14 @@ export default function Dashboard() {
             profileName={profile?.displayName || profile?.username || ""}
           />
         )}
+
+        {/* Job Details Modal */}
+        <GlobalDialog
+          open={jobDetailsModalOpen}
+          handleClose={handleCloseJobDetailsModal}
+          component={<JobDetailsModal jobId={selectedJobId} onClose={handleCloseJobDetailsModal} />}
+          hideWarningLine={true}
+        />
       </Box>
     </ServiceProviderLayout>
   );
