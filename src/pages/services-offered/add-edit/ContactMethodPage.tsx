@@ -183,7 +183,9 @@ export default function ContactMethodPage({
             </Box>
           }
           sx={{
-            border: "1px solid #E5E7EB",
+            border: selectedMethod === "quick_contact" 
+              ? "1px solid #12B76A" 
+              : "1px solid #E5E7EB",
             borderRadius: "8px",
             p: 2,
             width: "100%",
@@ -279,7 +281,9 @@ export default function ContactMethodPage({
             </Box>
           }
           sx={{
-            border: "1px solid #E5E7EB",
+            border: selectedMethod === "contact_info_questions" 
+              ? "1px solid #12B76A" 
+              : "1px solid #E5E7EB",
             borderRadius: "8px",
             p: 2,
             width: "100%",
@@ -292,7 +296,7 @@ export default function ContactMethodPage({
                 ? "#EFF6FF" 
                 : "#F3F4F6",
               borderColor: selectedMethod === "contact_info_questions" 
-                ? "#4693DD" 
+                ? "#12B76A" 
                 : "#D1D5DB",
             },
             cursor: "pointer",

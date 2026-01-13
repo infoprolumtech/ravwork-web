@@ -99,6 +99,7 @@ class ErrorBoundary extends React.Component<Props, State> {
                 onClick={this.handleReset}
                 sx={{
                   backgroundColor: "#111927",
+                  color: "#FFFFFF",
                   "&:hover": {
                     backgroundColor: "#384250",
                   },

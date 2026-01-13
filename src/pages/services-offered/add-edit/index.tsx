@@ -107,8 +107,8 @@ export default function AddEditServicePage(): JSX.Element {
   const [contactInfoData, setContactInfoData] = useState<ContactInfoFormData | null>(null);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
-  const [createService] = useCreateServiceMutation();
-  const [updateService] = useUpdateServiceMutation();
+  const [createService, { isLoading: isCreatingService }] = useCreateServiceMutation();
+  const [updateService, { isLoading: isUpdatingService }] = useUpdateServiceMutation();
   const [getServiceById, { isLoading: isLoadingService }] = useLazyGetServiceByIdQuery();
 
   // Load service data if editing
@@ -298,6 +298,8 @@ export default function AddEditServicePage(): JSX.Element {
     }
   };
 
+  const isSubmittingService = isCreatingService || isUpdatingService;
+
   if (isLoadingService) {
     return (
       <ServiceProviderLayout>
@@ -405,6 +407,7 @@ export default function AddEditServicePage(): JSX.Element {
               onSubmit={handleQuickContactSubmit}
               initialData={contactInfoData}
               initialContactMethod={editingService?.contactMethod}
+              isSubmitting={isSubmittingService}
             />
           )}
 
@@ -414,6 +417,7 @@ export default function AddEditServicePage(): JSX.Element {
               onCancel={handleCancel}
               onSubmit={handleCreateQuestion}
               initialQuestions={editingService?.formFields ? transformFormFieldsToQuestions(editingService.formFields) : null}
+              isSubmitting={isSubmittingService}
             />
           )}
         </Card>

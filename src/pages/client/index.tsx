@@ -475,7 +475,7 @@ export default function ClientPage(): JSX.Element {
             >
               <Stack spacing={2}>
                 {/* Icon and Title */}
-                  <Stack>
+                  <Stack  spacing={1.5} alignItems="flex-start">
                   <Box
                     sx={{
                         width: "39px",
@@ -486,14 +486,14 @@ export default function ClientPage(): JSX.Element {
                       justifyContent: "center",
                     }}
                   >
-                      <img
-                        src={
-                          service.contactMethod === "quick_contact"
-                            ? "/assets/icons/service_offered_icons/quick_contact.svg"
-                            : "/assets/icons/service_offered_icons/custom_form.svg"
-                        }
-                        // alt="Service"
-                      />
+                    <img
+                      src={
+                        service.contactMethod === "quick_contact"
+                          ? "/assets/icons/service_offered_icons/quick_contact.svg"
+                          : "/assets/icons/service_offered_icons/custom_form.svg"
+                      }
+                      // alt="Service"
+                    />
                   </Box>
                   <Box sx={{ flex: 1 }}>
                     <Typography

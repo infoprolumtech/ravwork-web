@@ -26,7 +26,7 @@ interface LoginFormInputs {
 export default function LoginPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [login] = useLoginMutation();
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
 
   const {
     register,
@@ -71,7 +71,7 @@ export default function LoginPage(): JSX.Element {
         } else {
           // Signup complete (profileStep >= 3), go to dashboard
         navigate("/dashboard");
-        }
+      }
       }
     } catch (error: any) {
       console.error("Login error:", error);
@@ -183,12 +183,12 @@ export default function LoginPage(): JSX.Element {
             fullWidth
             type="submit"
             variant="secondary"
-            disabled={isSubmitting || !isFormValid}
+            disabled={isSubmitting || isLoggingIn || !isFormValid}
             sx={{
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            {isSubmitting ? (
+            {(isSubmitting || isLoggingIn) ? (
               <CircularProgress size={24} sx={{ color: "#fff" }} />
             ) : (
               "Sign In"
