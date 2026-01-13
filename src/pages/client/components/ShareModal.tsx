@@ -63,29 +63,16 @@ export default function ShareModal({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      sx={{
-        "& .MuiPaper-root": {
-          width: { xs: "100%", sm: "auto" },
-          maxWidth: { xs: "100%", sm: "600px" },
-          margin: { xs: 0, sm: "auto" },
-          borderRadius: { xs: "0px", sm: "16px" },
-          maxHeight: { xs: "100vh", sm: "90vh" },
-          height: { xs: "100vh", sm: "auto" },
+      PaperProps={{
+        sx: {
+          borderRadius: { xs: "12px", sm: "16px" },
+          mx: { xs: 2, sm: 3 },
+          width: { xs: "calc(100% - 32px)", sm: "100%" },
+          maxWidth: { xs: "calc(100% - 32px)", sm: "600px" },
         },
       }}
     >
-      <DialogContent 
-        sx={{ 
-          p: 0,
-          height: { xs: "100%", sm: "auto" },
-          overflowY: "auto",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-        }}
-      >
+      <DialogContent sx={{ p: 0 }}>
         <Stack
           sx={{
             padding: { xs: "20px", sm: "32px", md: "40px" },
