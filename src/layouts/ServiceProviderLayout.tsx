@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { logoutUser } from "../rtk/feature/authSlice";
+import { showAlert } from "../rtk/feature/alertSlice";
 import { useAppSelector, useAppDispatch } from "../rtk/store";
 import type { RootState } from "../rtk/store";
 import theme from "../theme";
@@ -89,7 +90,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 const UserMenu = React.memo(() => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const user = useAppSelector((state: RootState) => state.auth.user);
-  const [logout] = useLogoutMutation();
+  const [logout, { isLoading: isLoggingOutUserMenu }] = useLogoutMutation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -113,6 +114,7 @@ const UserMenu = React.memo(() => {
   const handleLogoutConfirm = React.useCallback(async () => {
     try {
       await logout(undefined).unwrap();
+      dispatch(showAlert({ message: "Logged out successfully", severity: "success" }));
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
@@ -183,6 +185,7 @@ const UserMenu = React.memo(() => {
             title="Logout"
             subTitle="Are you sure want to log out of your account?"
             handleConfirm={handleLogoutConfirm}
+            confirmDisabled={isLoggingOutUserMenu}
           />
         }
       />
@@ -206,7 +209,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.auth.user);
-  const [logout] = useLogoutMutation();
+  const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
   
   // Fetch user profile to get complete data including profile photo
   const { data: userProfile } = useGetUserProfileQuery(undefined, {
@@ -232,6 +235,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const handleLogoutConfirm = React.useCallback(async () => {
     try {
       await logout(undefined).unwrap();
+      dispatch(showAlert({ message: "Logged out successfully", severity: "success" }));
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
@@ -828,6 +832,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             title="Logout"
             subTitle="Are you sure want to log out of your account?"
             handleConfirm={handleLogoutConfirm}
+            confirmDisabled={isLoggingOut}
           />
         }
       />

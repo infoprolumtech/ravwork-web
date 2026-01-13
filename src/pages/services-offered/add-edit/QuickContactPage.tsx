@@ -1,11 +1,15 @@
-import React, { type JSX } from "react";
+import React, { type JSX, useEffect } from "react";
 import {
   Box,
   Button,
   Stack,
   Typography,
+  CircularProgress,
 } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { StyledTextField } from "../../../utils/helper";
+import { quickContactSchema } from "../validationSchemas";
 
 interface QuickContactPageProps {
   onBack: () => void;
@@ -13,6 +17,7 @@ interface QuickContactPageProps {
   onSubmit: (data: QuickContactFormData) => void;
   initialData?: QuickContactFormData | null;
   initialContactMethod?: string;
+  isSubmitting?: boolean;
 }
 
 export interface QuickContactFormData {
@@ -28,29 +33,37 @@ export default function QuickContactPage({
   onSubmit,
   initialData,
   initialContactMethod,
+  isSubmitting = false,
 }: QuickContactPageProps): JSX.Element {
-  const [fullName, setFullName] = React.useState(initialData?.fullName || "");
-  const [email, setEmail] = React.useState(initialData?.email || "");
-  const [phoneNumber, setPhoneNumber] = React.useState(initialData?.phoneNumber || "");
   const [contactMethod, setContactMethod] = React.useState(initialContactMethod || initialData?.contactMethod || "quick_contact");
 
-  // Update state when initialData changes
-  React.useEffect(() => {
+  const form = useForm<QuickContactFormData>({
+    resolver: yupResolver(quickContactSchema) as any,
+    mode: "onChange",
+    defaultValues: initialData || {
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      contactMethod: contactMethod,
+    },
+  });
+
+  // Update form values when initialData changes
+  useEffect(() => {
     if (initialData) {
-      setFullName(initialData.fullName);
-      setEmail(initialData.email);
-      setPhoneNumber(initialData.phoneNumber);
+      form.reset({
+        ...initialData,
+        contactMethod: initialContactMethod || initialData.contactMethod || "quick_contact",
+      });
     }
     if (initialContactMethod) {
       setContactMethod(initialContactMethod);
     }
-  }, [initialData, initialContactMethod]);
+  }, [initialData, initialContactMethod, form]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (data: QuickContactFormData) => {
     const formData: QuickContactFormData = {
-      fullName,
-      email,
-      phoneNumber,
+      ...data,
       contactMethod,
     };
     onSubmit(formData);
@@ -101,39 +114,72 @@ export default function QuickContactPage({
 
         {/* Full Name */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Full name"
-            placeholder="Enter your full name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            sx={{ mt: 2 }}
+          <Controller
+            name="fullName"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Full name"
+                placeholder="Enter your full name"
+                error={Boolean(form.formState.errors.fullName)}
+                helperText={form.formState.errors.fullName?.message}
+                sx={{ mt: 2 }}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("fullName");
+                }}
+              />
+            )}
           />
         </Box>
 
         {/* Email */}
         <Box>
-            <StyledTextField
-              fullWidth
-              variant="outlined"
-              label="Email (optional)"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Email (optional)"
+                placeholder="Enter your email"
+                error={Boolean(form.formState.errors.email)}
+                helperText={form.formState.errors.email?.message}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("email");
+                }}
+              />
+            )}
+          />
         </Box>
 
         {/* Phone Number */}
         <Box>
-            <StyledTextField
-              fullWidth
-              variant="outlined"
-              label="Phone Number"
-              placeholder="Enter your phone number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
+          <Controller
+            name="phoneNumber"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Phone Number"
+                placeholder="Enter your phone number"
+                error={Boolean(form.formState.errors.phoneNumber)}
+                helperText={form.formState.errors.phoneNumber?.message}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("phoneNumber");
+                }}
+              />
+            )}
+          />
         </Box>
       </Stack>
 
@@ -152,8 +198,12 @@ export default function QuickContactPage({
         >
           Cancel
         </Button>
-        <Button variant="secondary" onClick={handleSubmit}>
-          Submit
+        <Button 
+          variant="secondary" 
+          onClick={form.handleSubmit(handleSubmit)}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
         </Button>
       </Stack>
     </Stack>

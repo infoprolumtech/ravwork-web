@@ -1,11 +1,14 @@
-import React, { type JSX } from "react";
+import { type JSX, useEffect } from "react";
 import {
   Box,
   Button,
   Stack,
   Typography,
 } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { StyledTextField } from "../../../utils/helper";
+import { contactInfoSchema } from "../validationSchemas";
 
 interface ContactInfoPageProps {
   onBack: () => void;
@@ -26,26 +29,25 @@ export default function ContactInfoPage({
   onNext,
   initialData,
 }: ContactInfoPageProps): JSX.Element {
-  const [fullName, setFullName] = React.useState(initialData?.fullName || "");
-  const [email, setEmail] = React.useState(initialData?.email || "");
-  const [phoneNumber, setPhoneNumber] = React.useState(initialData?.phoneNumber || "");
+  const form = useForm<ContactInfoFormData>({
+    resolver: yupResolver(contactInfoSchema) as any,
+    mode: "onChange",
+    defaultValues: initialData || {
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+    },
+  });
 
-  // Update state when initialData changes
-  React.useEffect(() => {
+  // Update form values when initialData changes
+  useEffect(() => {
     if (initialData) {
-      setFullName(initialData.fullName);
-      setEmail(initialData.email);
-      setPhoneNumber(initialData.phoneNumber);
+      form.reset(initialData);
     }
-  }, [initialData]);
+  }, [initialData, form]);
 
-  const handleNext = () => {
-    const formData: ContactInfoFormData = {
-      fullName,
-      email,
-      phoneNumber,
-    };
-    onNext(formData);
+  const handleNext = (data: ContactInfoFormData) => {
+    onNext(data);
   };
 
   return (
@@ -93,39 +95,72 @@ export default function ContactInfoPage({
 
         {/* Full Name */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Full name"
-            placeholder="Enter your full name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            sx={{ mt: 2 }}
+          <Controller
+            name="fullName"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Full name"
+                placeholder="Enter your full name"
+                error={Boolean(form.formState.errors.fullName)}
+                helperText={form.formState.errors.fullName?.message}
+                sx={{ mt: 2 }}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("fullName");
+                }}
+              />
+            )}
           />
         </Box>
 
         {/* Email */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Email (optional)"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Email (optional)"
+                placeholder="Enter your email"
+                error={Boolean(form.formState.errors.email)}
+                helperText={form.formState.errors.email?.message}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("email");
+                }}
+              />
+            )}
           />
         </Box>
 
 
         {/* Phone Number */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Phone Number"
-            placeholder="Enter your phone number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+          <Controller
+            name="phoneNumber"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Phone Number"
+                placeholder="Enter your phone number"
+                error={Boolean(form.formState.errors.phoneNumber)}
+                helperText={form.formState.errors.phoneNumber?.message}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("phoneNumber");
+                }}
+              />
+            )}
           />
         </Box>
       </Stack>
@@ -145,7 +180,7 @@ export default function ContactInfoPage({
         >
           Cancel
         </Button>
-        <Button variant="secondary" onClick={handleNext}>
+        <Button variant="secondary" onClick={form.handleSubmit(handleNext)}>
           Next
         </Button>
       </Stack>

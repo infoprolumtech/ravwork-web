@@ -6,15 +6,20 @@ import {
   Typography,
   IconButton,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import { DeleteOutline, Edit } from "@mui/icons-material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { StyledTextField } from "../../../utils/helper";
+import { customQuestionSchema } from "../validationSchemas";
 
 interface CustomQuestionsPageProps {
   onBack: () => void;
   onCancel: () => void;
   onSubmit: (data: CustomQuestionData[]) => void;
   initialQuestions?: CustomQuestionData[] | null;
+  isSubmitting?: boolean;
 }
 
 export interface CustomQuestionData {
@@ -37,18 +42,36 @@ const answerTypeOptions = [
   { value: "time", label: "Time" },
 ];
 
+interface QuestionFormData {
+  question: string;
+  answerType: string;
+  options: string[];
+}
+
 export default function CustomQuestionsPage({
   onBack: _onBack,
   onCancel,
   onSubmit,
   initialQuestions,
+  isSubmitting = false,
 }: CustomQuestionsPageProps): JSX.Element {
-  const [question, setQuestion] = React.useState("");
-  const [answerType, setAnswerType] = React.useState("");
   const [options, setOptions] = React.useState<string[]>(["", ""]);
   const [createdQuestions, setCreatedQuestions] = React.useState<CustomQuestionData[]>(initialQuestions || []);
   const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
   const [editingSortOrder, setEditingSortOrder] = React.useState<number | undefined>(undefined);
+
+  const form = useForm<QuestionFormData>({
+    resolver: yupResolver(customQuestionSchema) as any,
+    mode: "onChange",
+    defaultValues: {
+      question: "",
+      answerType: "",
+      options: ["", ""],
+    },
+  });
+
+  const question = form.watch("question");
+  const answerType = form.watch("answerType");
 
   // Update state when initialQuestions changes
   React.useEffect(() => {
@@ -60,13 +83,17 @@ export default function CustomQuestionsPage({
   const showOptions = answerType === "single_choice" || answerType === "multiselect";
 
   const handleAddOption = () => {
-    setOptions([...options, ""]);
+    const newOptions = [...options, ""];
+    setOptions(newOptions);
+    form.setValue("options", newOptions);
   };
 
   const handleRemoveOption = (index: number) => {
     if (options.length > 1) {
       const newOptions = options.filter((_, i) => i !== index);
       setOptions(newOptions);
+      form.setValue("options", newOptions);
+      form.trigger("options");
     }
   };
 
@@ -74,23 +101,28 @@ export default function CustomQuestionsPage({
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
+    form.setValue("options", newOptions);
+    form.trigger("options");
   };
 
   const handleEditQuestion = (index: number) => {
     // Sort questions first to get the correct question at index
     const sortedQuestions = [...createdQuestions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
     const questionToEdit = sortedQuestions[index];
-    setQuestion(questionToEdit.question);
-    setAnswerType(questionToEdit.answerType);
+    form.setValue("question", questionToEdit.question);
+    form.setValue("answerType", questionToEdit.answerType);
     
     // Store the sortOrder for when we re-add the question
     setEditingSortOrder(questionToEdit.sortOrder);
     
     // Set options if they exist, otherwise set default empty options
     if (questionToEdit.options && questionToEdit.options.length > 0) {
-      setOptions([...questionToEdit.options, ""]); // Add one empty option for adding more
+      const newOptions = [...questionToEdit.options, ""]; // Add one empty option for adding more
+      setOptions(newOptions);
+      form.setValue("options", newOptions);
     } else {
       setOptions(["", ""]);
+      form.setValue("options", ["", ""]);
     }
     
     setEditingIndex(index);
@@ -99,9 +131,7 @@ export default function CustomQuestionsPage({
     setCreatedQuestions(newQuestions);
   };
 
-  const handleAddQuestion = () => {
-    if (!question.trim() || !answerType) return;
-
+  const handleAddQuestion = (data: QuestionFormData) => {
     // Map answerType to fieldType
     const mapAnswerTypeToFieldType = (answerType: string): string => {
       switch (answerType) {
@@ -116,11 +146,11 @@ export default function CustomQuestionsPage({
     };
 
     const questionData: CustomQuestionData = {
-      question: question.trim(),
-      answerType,
-      options: showOptions ? options.filter((opt) => opt.trim() !== "") : undefined,
-      label: question.trim(),
-      fieldType: mapAnswerTypeToFieldType(answerType),
+      question: data.question.trim(),
+      answerType: data.answerType,
+      options: showOptions ? data.options.filter((opt) => opt.trim() !== "") : undefined,
+      label: data.question.trim(),
+      fieldType: mapAnswerTypeToFieldType(data.answerType),
       isRequired: false,
     };
 
@@ -138,8 +168,11 @@ export default function CustomQuestionsPage({
       setCreatedQuestions([...createdQuestions, questionData]);
     }
     
-    setQuestion("");
-    setAnswerType("");
+    form.reset({
+      question: "",
+      answerType: "",
+      options: ["", ""],
+    });
     setOptions(["", ""]);
   };
 
@@ -187,12 +220,15 @@ export default function CustomQuestionsPage({
   React.useEffect(() => {
     if (showOptions) {
       if (options.length < 2) {
-        setOptions(["", ""]);
+        const newOptions = ["", ""];
+        setOptions(newOptions);
+        form.setValue("options", newOptions);
       }
     } else {
       setOptions([]);
+      form.setValue("options", []);
     }
-  }, [answerType]);
+  }, [answerType, showOptions, form]);
 
   return (
     <Stack
@@ -260,26 +296,42 @@ export default function CustomQuestionsPage({
 
         {/* Question */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Question"
-            placeholder="e.g. What is the event location"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            sx={{ mt: 2 }}
+          <Controller
+            name="question"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Question"
+                placeholder="e.g. What is the event location"
+                error={Boolean(form.formState.errors.question)}
+                helperText={form.formState.errors.question?.message}
+                sx={{ mt: 2 }}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  form.trigger("question");
+                }}
+              />
+            )}
           />
         </Box>
 
         {/* Answer Type */}
         <Box>
-          <StyledTextField
-            fullWidth
-            variant="outlined"
-            label="Answer Type"
-            value={answerType}
-            onChange={(e) => setAnswerType(e.target.value as string)}
-            select
+          <Controller
+            name="answerType"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Answer Type"
+                error={Boolean(form.formState.errors.answerType)}
+                helperText={form.formState.errors.answerType?.message}
+                select
             SelectProps={{
               displayEmpty: true,
               renderValue: (selected) => {
@@ -332,7 +384,9 @@ export default function CustomQuestionsPage({
                 {option.label}
               </MenuItem>
             ))}
-          </StyledTextField>
+              </StyledTextField>
+            )}
+          />
         </Box>
 
         {/* Options Section (shown when Single choice or Multiselect is selected) */}
@@ -422,8 +476,8 @@ export default function CustomQuestionsPage({
               sx={{ width: "20px", height: "20px" }}
             />
           }
-          onClick={handleAddQuestion}
-          disabled={!question.trim() || !answerType || (showOptions && options.filter((opt) => opt.trim() !== "").length < 2)}
+          onClick={form.handleSubmit(handleAddQuestion)}
+          disabled={!form.formState.isValid || (showOptions && options.filter((opt) => opt.trim() !== "").length < 2)}
           sx={{
             backgroundColor: "#E3F0F8",
             color: "#111927",
@@ -600,7 +654,7 @@ export default function CustomQuestionsPage({
         </Button>
         <Button
           onClick={handleCreateQuestion}
-          disabled={createdQuestions.length === 0 && (!question.trim() || !answerType)}
+          disabled={isSubmitting || (createdQuestions.length === 0 && (!question.trim() || !answerType))}
           sx={{
             backgroundColor: "#111927",
             color: "#FFFFFF",
@@ -618,7 +672,14 @@ export default function CustomQuestionsPage({
             },
           }}
         >
-          Create Question
+          {isSubmitting ? (
+            <>
+              <CircularProgress size={16} sx={{ color: "#FFFFFF", mr: 1 }} />
+              Creating...
+            </>
+          ) : (
+            "Create Question"
+          )}
         </Button>
       </Stack>
     </Stack>

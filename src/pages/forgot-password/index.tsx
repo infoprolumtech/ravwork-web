@@ -52,8 +52,17 @@ export default function ForgotPassword(): JSX.Element {
     try {
       await forgotPassword({ email: data.email }).unwrap();
       setUserEmail(data.email);
+      dispatch(showAlert({
+        message: "Password reset link has been sent to your email.",
+        severity: "success",
+      }));
     } catch (error: any) {
       console.error("Forgot Password Error:", error);
+      const errorMessage = error?.data?.message || "Failed to send reset link. Please try again.";
+      dispatch(showAlert({
+        message: errorMessage,
+        severity: "error",
+      }));
     }
   };
 
@@ -70,6 +79,11 @@ export default function ForgotPassword(): JSX.Element {
       }
     } catch (error: any) {
       console.error("Resend Error:", error);
+      const errorMessage = error?.data?.message || "Failed to resend reset link. Please try again.";
+      dispatch(showAlert({
+        message: errorMessage,
+        severity: "error",
+      }));
     }
   };
 

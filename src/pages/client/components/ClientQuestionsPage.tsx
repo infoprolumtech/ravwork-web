@@ -66,29 +66,6 @@ export default function ClientQuestionsPage({
   // Watch all form values to check if all fields are filled
   const watchedValues = form.watch();
   
-  // Check if all required fields are filled
-  const areAllRequiredFieldsFilled = React.useMemo(() => {
-    const requiredFields = formFields.filter((field) => field.isRequired);
-    
-    if (requiredFields.length === 0) {
-      return true; // No required fields, form is valid
-    }
-
-    return requiredFields.every((field) => {
-      const value = watchedValues[field.id];
-      
-      if (field.fieldType === "checkbox") {
-        return Array.isArray(value) && value.length > 0;
-      }
-      
-      if (field.options && field.options.length > 0) {
-        return value !== "" && value !== null && value !== undefined;
-      }
-      
-      return value !== "" && value !== null && value !== undefined;
-    });
-  }, [formFields, watchedValues]);
-
   // Check if ALL fields (required and optional) are filled
   const areAllFieldsFilled = React.useMemo(() => {
     if (formFields.length === 0) {
