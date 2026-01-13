@@ -90,6 +90,9 @@ export default function MyJobsPage(): JSX.Element {
           onChange={(_, v) => setTab(v)}
           sx={{
             mb: 3,
+            "& .MuiTabs-indicator": {
+              display: "none",
+            },
             "& .MuiTab-root": {
               textTransform: "none",
               minHeight: 36,
