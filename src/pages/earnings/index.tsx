@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import { useState, type JSX } from "react";
 import {
   Box,
   Card,
@@ -11,18 +11,21 @@ import {
   TableRow,
   Paper,
   Grid,
-  Button,
   Stack,
   IconButton,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import EarningsCard from "../../components/reusecard/Earnings";
+import Pagination from "../../components/pagination/Pagination";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export default function EarningsPage(): JSX.Element {
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Mock data - replace with actual API call when available
   const jobsData = [
     {
       name: "Sarah Johnson",
@@ -40,6 +43,9 @@ export default function EarningsPage(): JSX.Element {
       dateTime: "Nov 22, 2025 • 10:00 AM",
     },
   ];
+
+  // Mock pagination data - replace with actual API response when available
+  const totalPages = 10; // This should come from API response
   return (
     <ServiceProviderLayout>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -216,28 +222,12 @@ export default function EarningsPage(): JSX.Element {
                 </Table>
               </TableContainer>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  mt: 3,
-                  gap: 1,
-                }}
-              >
-                <Button variant="outlined">← Previous</Button>
-                <Stack direction="row" spacing={0.5}>
-                  {[1, 2, 3, "...", 8, 9, 10].map((page, index) => (
-                    <Button
-                      key={index}
-                      variant={page === 1 ? "contained" : "outlined"}
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </Stack>
-                <Button variant="outlined">Next →</Button>
-              </Box>
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
             </CardContent>
           </Card>
         </Box>

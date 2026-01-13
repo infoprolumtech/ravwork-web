@@ -63,23 +63,36 @@ export default function ShareModal({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: { xs: "12px", sm: "16px" },
-          padding: 0,
-          mx: { xs: 2, sm: 3 },
-          width: { xs: "calc(100% - 32px)", sm: "100%" },
+      sx={{
+        "& .MuiPaper-root": {
+          width: { xs: "100%", sm: "auto" },
+          maxWidth: { xs: "100%", sm: "600px" },
+          margin: { xs: 0, sm: "auto" },
+          borderRadius: { xs: "0px", sm: "16px" },
+          maxHeight: { xs: "100vh", sm: "90vh" },
+          height: { xs: "100vh", sm: "auto" },
         },
       }}
     >
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent 
+        sx={{ 
+          p: 0,
+          height: { xs: "100%", sm: "auto" },
+          overflowY: "auto",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
+      >
         <Stack
           sx={{
-            padding: "40px",
+            padding: { xs: "20px", sm: "32px", md: "40px" },
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-end",
-            gap: "24px",
+            gap: { xs: "16px", sm: "20px", md: "24px" },
             width: "100%",
             "&::-webkit-scrollbar": {
               display: "none",
@@ -98,7 +111,7 @@ export default function ShareModal({
             <Typography
               variant="h6"
               sx={{
-                fontSize: "28px",
+                fontSize: { xs: "20px", sm: "22px", md: "24px" },
                 fontWeight: 600,
                 color: "#111927",
                 flex: 1,
@@ -126,7 +139,7 @@ export default function ShareModal({
               <Typography
                 variant="body2"
                 sx={{
-                  fontSize: "20px",
+                  fontSize: { xs: "16px", sm: "18px", md: "20px" },
                   fontWeight: 600,
                   color: "#111927",
                 }}
@@ -191,7 +204,7 @@ export default function ShareModal({
               <Typography
                 variant="body2"
                 sx={{
-                  fontSize: "20px",
+                  fontSize: { xs: "16px", sm: "18px", md: "20px" },
                   fontWeight: 600,
                   color: "#111927",
                 }}
@@ -199,12 +212,17 @@ export default function ShareModal({
                 Share on
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={2} flexWrap="wrap">
+            <Stack 
+              direction="row" 
+              spacing={{ xs: 1.5, sm: 2 }} 
+              flexWrap="wrap"
+              sx={{ gap: { xs: 1.5, sm: 2 } }}
+            >
               <IconButton
                 onClick={() => handleSocialShare("facebook")}
                 sx={{
-                  width: 56,
-                  height: 56,
+                  width: { xs: 48, sm: 56 },
+                  height: { xs: 48, sm: 56 },
                   backgroundColor: "#F7F9FB",
                   borderRadius: "12px",
                   border: "1px solid #E5E7EB",
@@ -215,17 +233,18 @@ export default function ShareModal({
                   transition: "all 0.2s ease",
                 }}
               >
-                <img
+                <Box
+                  component="img"
                   src="/assets/icons/Facebook.svg"
                   alt="Facebook"
-                  style={{ width: "28px", height: "28px" }}
+                  sx={{ width: { xs: "24px", sm: "28px" }, height: { xs: "24px", sm: "28px" } }}
                 />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("twitter")}
                 sx={{
-                  width: 56,
-                  height: 56,
+                  width: { xs: 48, sm: 56 },
+                  height: { xs: 48, sm: 56 },
                   backgroundColor: "#F7F9FB",
                   borderRadius: "12px",
                   border: "1px solid #E5E7EB",
@@ -236,13 +255,13 @@ export default function ShareModal({
                   transition: "all 0.2s ease",
                 }}
               >
-                <Twitter sx={{ fontSize: 28, color: "#1DA1F2" }} />
+                <Twitter sx={{ fontSize: { xs: 24, sm: 28 }, color: "#1DA1F2" }} />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("linkedin")}
                 sx={{
-                  width: 56,
-                  height: 56,
+                  width: { xs: 48, sm: 56 },
+                  height: { xs: 48, sm: 56 },
                   backgroundColor: "#F7F9FB",
                   borderRadius: "12px",
                   border: "1px solid #E5E7EB",
@@ -253,17 +272,18 @@ export default function ShareModal({
                   transition: "all 0.2s ease",
                 }}
               >
-                <img
+                <Box
+                  component="img"
                   src="/assets/icons/linkedin.svg"
                   alt="LinkedIn"
-                  style={{ width: "28px", height: "28px" }}
+                  sx={{ width: { xs: "24px", sm: "28px" }, height: { xs: "24px", sm: "28px" } }}
                 />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("whatsapp")}
                 sx={{
-                  width: 56,
-                  height: 56,
+                  width: { xs: 48, sm: 56 },
+                  height: { xs: 48, sm: 56 },
                   backgroundColor: "#F7F9FB",
                   borderRadius: "12px",
                   border: "1px solid #E5E7EB",
@@ -274,7 +294,7 @@ export default function ShareModal({
                   transition: "all 0.2s ease",
                 }}
               >
-                <WhatsApp sx={{ fontSize: 28, color: "#25D366" }} />
+                <WhatsApp sx={{ fontSize: { xs: 24, sm: 28 }, color: "#25D366" }} />
               </IconButton>
             </Stack>
           </Box>

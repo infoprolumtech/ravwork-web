@@ -13,29 +13,28 @@ export type JobCardProps = {
 };
 
 const InfoItem = ({ icon, value, label }: any) => (
-  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <Box
-      sx={{
-        width: 24,
-        height: 24,
-        bgcolor: "#E5ECF6",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "50%",
-      }}
-    >
-      <img src={icon} width={15.2} height={15.2} alt="" />
-    </Box>
-
-    <Box>
-      <Typography fontWeight={600} fontSize={14} lineHeight="20px">
+  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 0.5 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box
+        sx={{
+          width: 24,
+          height: 24,
+          bgcolor: "#E5ECF6",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "50%",
+        }}
+      >
+        <img src={icon} width={15.2} height={15.2} alt="" />
+      </Box>
+      <Typography fontWeight={600} fontSize={14} lineHeight="20px" color="#111927">
         {value}
       </Typography>
-      <Typography fontSize={12} fontWeight={500}>
-        {label}
-      </Typography>
     </Box>
+    <Typography fontSize={12} fontWeight={500} color="#6C737F" sx={{ ml: 4 }}>
+      {label}
+    </Typography>
   </Box>
 );
 
@@ -78,10 +77,10 @@ export default function JobCard({
         </Box>
 
         <Box sx={{ flex: 1 }}>
-          <Typography fontWeight={600} fontSize={18}>
+          <Typography fontWeight={600} fontSize={18} color="#111927">
             {title}
           </Typography>
-          <Typography fontSize={14} color="text.secondary">
+          <Typography fontSize={14} color="#6C737F" sx={{ mt: 0.5 }}>
             {description}
           </Typography>
         </Box>
@@ -93,7 +92,12 @@ export default function JobCard({
               sx={{
                 bgcolor: "#fff",
                 color: "#F04438",
-                "&:hover": { bgcolor: "#F04438", color: "#fff" },
+                fontWeight: 500,
+                textTransform: "none",
+                               "&:hover": {
+                  bgcolor: "#FEF2F2",
+                  border: "1px solid #F04438",
+                },
               }}
               onClick={onDecline}
             >
@@ -103,7 +107,15 @@ export default function JobCard({
             <Button
               size="small"
               variant="contained"
-              color="success"
+              sx={{
+                bgcolor: "#BAEDBD",
+                color: "#111927",
+                fontWeight: 500,
+                textTransform: "none",
+                "&:hover": {
+                  bgcolor: "#A8E0AB",
+                },
+              }}
               onClick={onComplete}
             >
               Mark as Complete
@@ -115,7 +127,7 @@ export default function JobCard({
       <Divider sx={{ my: 2 }} />
 
       {/* Client Info */}
-      <Stack direction={{ xs: "column",sm: "row" }} spacing={2} justifyContent={"space-between"}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} justifyContent={"space-between"} alignItems={{ xs: "flex-start", sm: "center" }}>
         <InfoItem
           icon="./assets/icons/personalcard.svg"
           value={clientName}
@@ -138,6 +150,7 @@ export default function JobCard({
         <Box
           sx={{
             display: "flex",
+            alignItems: "center",
             justifyContent: "flex-end",
           }}
         >

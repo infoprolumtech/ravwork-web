@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import {
   Typography,
   Box,
@@ -13,32 +14,113 @@ import {
   Paper,
   Grid,
   Button,
-  Stack,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
+import { useGetUserProfileQuery, useGetDashboardRequestsQuery } from "../../rtk/endpoints/userApi";
+import { getCloudFrontUrl } from "../../utils/helper";
+import ShareModal from "../client/components/ShareModal";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import Pagination from "../../components/pagination/Pagination";
+
+// Helper function to get profile URL dynamically
+const getProfileUrl = (username: string) => {
+  return `${window.location.origin}/${username}`;
+};
+
+// Calculate profile completion percentage
+const calculateProfileComplete = (profile: any): number => {
+  if (!profile) return 0;
+  
+  const fields = [
+    profile.displayName,
+    profile.businessDescription,
+    profile.profilePhoto,
+    profile.instagramUrl,
+    profile.facebookUrl,
+    profile.linkedinUrl,
+  ];
+  
+  const filledFields = fields.filter((field) => field && field.trim() !== "").length;
+  return Math.round((filledFields / fields.length) * 100);
+};
 
 export default function Dashboard() {
-  // Mock data - replace with actual API calls
-  const profileComplete = 100; // percentage
-  const jobsData = [
-    {
-      name: "Sarah Johnson",
-      jobType: "New Request",
-      dateTime: "Nov 22, 2025 • 10:00 AM",
-    },
-    {
-      name: "Sarah Johnson",
-      jobType: "Plumbing Repair",
-      dateTime: "No Date Available",
-    },
-    {
-      name: "Sarah Johnson",
-      jobType: "Plumbing Repair",
-      dateTime: "Nov 22, 2025 • 10:00 AM",
-    },
-  ];
+  const dispatch = useAppDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: profile, isLoading: isLoadingProfile } = useGetUserProfileQuery();
+  const { data: dashboardRequestsData, isLoading: isLoadingRequests } = useGetDashboardRequestsQuery({ 
+    page: currentPage,
+    limit: 10 
+  });
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  // Calculate profile completion
+  const profileComplete = useMemo(() => {
+    return calculateProfileComplete(profile);
+  }, [profile]);
+
+  // Get profile URL
+  const profileUrl = useMemo(() => {
+    if (!profile?.username) return "";
+    return getProfileUrl(profile.username);
+  }, [profile]);
+
+  const handleCopyUrl = () => {
+    if (!profileUrl) return;
+    navigator.clipboard.writeText(profileUrl);
+    dispatch(showAlert({ message: "Copied!", severity: "success" }));
+  };
+
+  const handleShareClick = () => {
+    setShareModalOpen(true);
+  };
+
+  const handleCompleteSetup = () => {
+    // Navigate to profile page
+    window.location.href = "/my-profile";
+  };
+
+  // Transform dashboard requests data for Recent Activity table
+  const recentJobs = useMemo(() => {
+    if (!dashboardRequestsData?.data) return [];
+    return dashboardRequestsData.data.map((request) => ({
+      name: request.clientName || "N/A",
+      jobType: request.serviceName || (request.type === "inquiry" ? "Inquiry" : "Booking"),
+      dateTime: request.bookingDate && request.bookingTime
+        ? `${new Date(request.bookingDate).toLocaleDateString()} • ${request.bookingTime}`
+        : request.createdAt
+        ? new Date(request.createdAt).toLocaleString()
+        : "No Date Available",
+    }));
+  }, [dashboardRequestsData]);
+
+  // Get profile photo URL
+  const profilePhotoUrl = useMemo(() => {
+    if (!profile?.profilePhoto) return undefined;
+    return getCloudFrontUrl(profile.profilePhoto);
+  }, [profile]);
+
+  if (isLoadingProfile) {
+    return (
+      <ServiceProviderLayout>
+        <Box
+          sx={{
+            p: { xs: 1.5, md: 3 },
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "400px",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </ServiceProviderLayout>
+    );
+  }
 
   return (
     <ServiceProviderLayout>
@@ -72,19 +154,23 @@ export default function Dashboard() {
                 <Typography fontWeight={600} fontSize={14} color="#111927">
                   Welcome back!
                 </Typography>
-                <Button variant="dashboardbutton">Complete Setup</Button>
+                <Button variant="dashboardbutton" onClick={handleCompleteSetup}>
+                  Complete Setup
+                </Button>
               </Box>
 
               {/* Body */}
               <Box display="flex" alignItems="center" gap={2}>
                 <Avatar
-                  src="./assets/images/avatar.png"
+                  src={profilePhotoUrl || "./assets/images/avatar.png"}
                   sx={{ width: 74, height: 74 }}
-                />
+                >
+                  {!profilePhotoUrl && profile?.username?.[0]?.toUpperCase()}
+                </Avatar>
 
-                <Box flex={1}gap={4}>
-                  <Typography fontWeight={600} fontSize={18}>
-                    Full Name Goes Here
+                <Box flex={1} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Typography fontWeight={600} fontSize={18} color="#111927">
+                    {profile?.displayName || profile?.username || "Full Name Goes Here"}
                   </Typography>
                   <img src="./assets/icons/line.svg" alt="" height={"2px"} width={"27px"} />
                   <Box
@@ -104,30 +190,45 @@ export default function Dashboard() {
                         textOverflow: { sm: "ellipsis" },
                         whiteSpace: { xs: "normal", sm: "nowrap" },
                         wordBreak: "break-all",
+                        color: "#111927",
                       }}
                     >
-                      https://rawwork.com/p/johndoe
+                      {profileUrl || "https://rawwork.com/p/username"}
                     </Typography>
 
                     <Box display="flex" gap={0.5}>
-                      {["copy", "share-arrow"].map((icon) => (
-                        <Box
-                          key={icon}
-                          sx={{
-                            width: 24,
-                            height: 24,
-                            bgcolor: "#fff",
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            flexShrink: 0,
-                          }}
-                        >
-                          <img src={`./assets/icons/${icon}.svg`} alt={icon} />
-                        </Box>
-                      ))}
+                      <Box
+                        onClick={handleCopyUrl}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          bgcolor: "#fff",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <img src="./assets/icons/copy.svg" alt="copy" />
+                      </Box>
+                      <Box
+                        onClick={handleShareClick}
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          bgcolor: "#fff",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <img src="./assets/icons/share-arrow.svg" alt="share" />
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -193,7 +294,9 @@ export default function Dashboard() {
                       </Box>
                     </Box>
 
-                    <Button variant="dashboardbutton">Complete profile</Button>
+                    <Button variant="dashboardbutton" onClick={handleCompleteSetup}>
+                      Complete profile
+                    </Button>
                   </Box>
                 </Box>
               </Box>
@@ -311,79 +414,54 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {jobsData.map((job, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}
-                    >
-                      <TableCell>{job.name}</TableCell>
-                      <TableCell>{job.jobType}</TableCell>
-                      <TableCell>{job.dateTime}</TableCell>
+                  {isLoadingRequests ? (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        <CircularProgress size={24} />
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  ) : recentJobs.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        <Typography color="text.secondary">
+                          No recent activity
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    recentJobs.map((job, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}
+                      >
+                        <TableCell>{job.name}</TableCell>
+                        <TableCell>{job.jobType}</TableCell>
+                        <TableCell>{job.dateTime}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
 
             {/* Pagination */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mt: 3,
-                gap: 1,
-              }}
-            >
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: "#D1D5DB",
-                  color: "#384250",
-                  textTransform: "none",
-                  minWidth: "auto",
-                  px: 2,
-                }}
-              >
-                ← Previous
-              </Button>
-              <Stack direction="row" spacing={0.5}>
-                {[1, 2, 3, "...", 8, 9, 10].map((page, index) => (
-                  <Button
-                    key={index}
-                    variant={page === 1 ? "contained" : "outlined"}
-                    sx={{
-                      minWidth: "40px",
-                      height: "40px",
-                      borderColor: "#D1D5DB",
-                      color: page === 1 ? "#FFFFFF" : "#384250",
-                      backgroundColor: page === 1 ? "#111927" : "transparent",
-                      textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: page === 1 ? "#384250" : "#F9FAFB",
-                        borderColor: "#D1D5DB",
-                      },
-                    }}
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </Stack>
-              <Button
-                variant="outlined"
-                sx={{
-                  borderColor: "#D1D5DB",
-                  color: "#384250",
-                  textTransform: "none",
-                  minWidth: "auto",
-                  px: 2,
-                }}
-              >
-                Next →
-              </Button>
-            </Box>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={dashboardRequestsData?.totalPages || 1}
+              onPageChange={setCurrentPage}
+            />
           </CardContent>
         </Card>
+
+        {/* Share Modal */}
+        {profile?.username && (
+          <ShareModal
+            open={shareModalOpen}
+            onClose={() => setShareModalOpen(false)}
+            profileUrl={profileUrl}
+            profileName={profile?.displayName || profile?.username || ""}
+          />
+        )}
       </Box>
     </ServiceProviderLayout>
   );

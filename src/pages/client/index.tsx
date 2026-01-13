@@ -473,9 +473,9 @@ export default function ClientPage(): JSX.Element {
                 height: "100%",
               }}
             >
-              <Stack spacing={2}>
+              <Stack spacing={2} sx={{ width: "100%" }}>
                 {/* Icon and Title */}
-                  <Stack  spacing={1.5} alignItems="flex-start">
+                  <Stack spacing={1.5} alignItems="flex-start" sx={{ width: "100%" }}>
                   <Box
                     sx={{
                         width: "39px",
@@ -495,7 +495,7 @@ export default function ClientPage(): JSX.Element {
                       // alt="Service"
                     />
                   </Box>
-                  <Box sx={{ flex: 1 }}>
+                  <Box sx={{ flex: 1, width: "100%" }}>
                     <Typography
                       variant="h6"
                       sx={{
@@ -528,12 +528,11 @@ export default function ClientPage(): JSX.Element {
                         }}
                       />
                       <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
                         sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          gap: 1,
+                          width: "100%",
                         }}
                       >
                     <Typography
@@ -553,7 +552,7 @@ export default function ClientPage(): JSX.Element {
                     backgroundColor: "#111927",
                     color: "#fff",
                     textTransform: "none",
-                            width: "170px",
+                            width: { xs: "170px", sm: "170px" },
                             height: "36px",
                     fontSize: "14px",
                     fontWeight: 500,
@@ -875,15 +874,29 @@ export default function ClientPage(): JSX.Element {
         onClose={handleContactDialogClose}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: { xs: "12px", sm: "16px" },
-            mx: { xs: 2, sm: 3 },
-            width: { xs: "calc(100% - 32px)", sm: "100%" },
+        sx={{
+          "& .MuiPaper-root": {
+            width: { xs: "100%", sm: "auto" },
+            maxWidth: { xs: "100%", sm: "600px" },
+            margin: { xs: 0, sm: "auto" },
+            borderRadius: { xs: "0px", sm: "16px" },
+            maxHeight: { xs: "100vh", sm: "90vh" },
+            height: { xs: "100vh", sm: "auto" },
           },
         }}
       >
-        <DialogContent sx={{ p: 0 }}>
+        <DialogContent 
+          sx={{ 
+            p: 0,
+            height: { xs: "100%", sm: "auto" },
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           <ClientContactInfoPage
             onClose={handleContactDialogClose}
             onNext={handleNextToQuestions}
@@ -902,18 +915,21 @@ export default function ClientPage(): JSX.Element {
         onClose={handleQuestionsDialogClose}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: { xs: "12px", sm: "16px" },
-            maxHeight: { xs: "85vh", sm: "90vh" },
-            mx: { xs: 2, sm: 3 },
-            width: { xs: "calc(100% - 32px)", sm: "100%" },
+        sx={{
+          "& .MuiPaper-root": {
+            width: { xs: "100%", sm: "auto" },
+            maxWidth: { xs: "100%", sm: "600px" },
+            margin: { xs: 0, sm: "auto" },
+            borderRadius: { xs: "0px", sm: "16px" },
+            maxHeight: { xs: "100vh", sm: "90vh" },
+            height: { xs: "100vh", sm: "auto" },
           },
         }}
       >
         <DialogContent 
           sx={{ 
-            p: 0, 
+            p: 0,
+            height: { xs: "100%", sm: "auto" },
             overflowY: "auto",
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -939,15 +955,29 @@ export default function ClientPage(): JSX.Element {
         onClose={handleInquiryDialogClose}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: { xs: "12px", sm: "16px" },
-            mx: { xs: 2, sm: 3 },
-            width: { xs: "calc(100% - 32px)", sm: "100%" },
+        sx={{
+          "& .MuiPaper-root": {
+            width: { xs: "100%", sm: "auto" },
+            maxWidth: { xs: "100%", sm: "600px" },
+            margin: { xs: 0, sm: "auto" },
+            borderRadius: { xs: "0px", sm: "16px" },
+            maxHeight: { xs: "100vh", sm: "90vh" },
+            height: { xs: "100vh", sm: "auto" },
           },
         }}
       >
-        <DialogContent sx={{ p: 0 }}>
+        <DialogContent 
+          sx={{ 
+            p: 0,
+            height: { xs: "100%", sm: "auto" },
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           <ClientContactInfoPage
             onClose={handleInquiryDialogClose}
             onNext={() => {}}

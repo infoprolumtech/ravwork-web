@@ -50,7 +50,27 @@ export interface ServiceApiResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: Service | Service[] | null;
+  data: Service | Service[] | ServicesListResponse | null;
+}
+
+export interface GetServicesParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface ServicesListResponse {
+  data: Service[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ServicesListApiResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: ServicesListResponse;
 }
 
 const serviceApi = api.injectEndpoints({
@@ -66,11 +86,21 @@ const serviceApi = api.injectEndpoints({
     }),
 
     // GET /api/v1/service - List all services
-    getServices: builder.query<ServiceApiResponse, void>({
-      query: () => ({
+    getServices: builder.query<ServicesListResponse | Service[], GetServicesParams | void>({
+      query: (params) => ({
         url: "/service",
         method: "GET",
+        params: params || {},
       }),
+      transformResponse: (response: ServiceApiResponse | ServicesListApiResponse): ServicesListResponse | Service[] => {
+        // Handle both paginated and non-paginated responses
+        if (response.data && Array.isArray(response.data)) {
+          // Non-paginated response (array of services)
+          return response.data;
+        }
+        // Paginated response
+        return (response as ServicesListApiResponse).data;
+      },
       providesTags: ["Services"],
     }),
 
