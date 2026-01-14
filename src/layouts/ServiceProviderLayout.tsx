@@ -210,7 +210,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: RootState) => state.auth.user);
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
-  
+
   // Fetch user profile to get complete data including profile photo
   const { data: userProfile } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true,
@@ -274,7 +274,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     () => {
       // Get username from API profile
       const username = userProfile?.username || "Name Goes Here";
-      
+
       // Get displayName from API profile
       const displayName = userProfile?.displayName || user?.displayName || "Company Name";
 
@@ -336,8 +336,14 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         </Box>
 
         {/* User Profile Section */}
-        <Box sx={{ p: { xs: 2, md: 3 }, pb: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <Box
+          sx={{
+            p: 2,
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
             <Avatar
               src={userInfo.profilePhoto || undefined}
               sx={{
@@ -349,133 +355,134 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               }}
               imgProps={{
                 onError: (e) => {
-                  // Fallback to initial if image fails to load
                   const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
+                  target.style.display = "none";
                 },
               }}
             >
               {userInfo.avatarInitial}
             </Avatar>
-            <Stack>
+
+            <Stack spacing={0}>
               <Typography
-                variant="body2"
-                sx={{ fontWeight: 600, color: "#111927", fontSize: "16px" }}
+                sx={{
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  color: "#111927",
+                  lineHeight: "20px",
+                }}
               >
                 {userInfo.firstName}
               </Typography>
               <Typography
-                variant="body2"
-                sx={{ color: "#6C737F", fontSize: "14px" }}
+                sx={{
+                  fontSize: "13px",
+                  color: "#6C737F",
+                  lineHeight: "18px",
+                }}
               >
                 {userInfo.companyName}
               </Typography>
             </Stack>
           </Stack>
 
-        {/* Progress Bar */}
-        <Box
-          sx={{
-            borderRadius: "12px",
-            background: "#F7F9FB",
-            display: "flex",
-            padding: { xs: "5px 8px 15px 8px", md: "5px 12px 15px 12px" },
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "flex-start",
-            gap: "0px",
-            alignSelf: "stretch",
-            mb: 2,
-            width: "100%",
-            maxWidth: "100%",
-            boxSizing: "border-box",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ fontSize: "10px", fontWeight: 400, color: "#6C737F", mb: 1.5 }}
-          >
-            Get More Clients with a complete Profile
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1.5, width: "100%" }}>
-            <LinearProgress
-              variant="determinate"
-              value={profileComplete}
-              sx={{
-                flex: 1,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: "#E5E7EB",
-                "& .MuiLinearProgress-bar": {
-                  borderRadius: 4,
-                  backgroundColor: "#12B76A",
-                },
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "14px",
-                color: "#384250",
-                fontWeight: 600,
-                minWidth: "40px",
-              }}
-            >
-              {profileComplete}%
-            </Typography>
-          </Box>
-          <Button
-            variant="contained"
+          {/* Progress Card */}
+          <Box
             sx={{
-              display: "flex",
-              height: "18px",
-              padding: "6px 7px",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "8px",
-              borderRadius: "68px",
-              fontSize: "9px",
-              color: "#FFFFFF",
-              backgroundColor: "#000", // Dark purple
-               // Dashed purple border
-             
-              fontWeight: 500,
-              width: "auto",
-              minWidth: "auto",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "gray",
-              },
+              backgroundColor: "#F7F9FB",
+              borderRadius: "14px",
+              px: 2,
+              py: 1.5,
+              width: "100%",
             }}
           >
-            Complete profile
-          </Button>
-        </Box>
-      </Box>
+            <Typography
+              sx={{
+                fontSize: "11px",
+                color: "#6C737F",
+                fontWeight: 500,
 
-      {/* Navigation Menu */}
-      <Box sx={{ py: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-        <List sx={{ px: { xs: 1, md: 2 }, width: "100%", maxWidth: "100%" }}>
-          {NAVIGATION_ITEMS.map((item) => {
-            const selected = isPathSelected(item.segment);
-            const handleNavClick = () => navigate(item.path);
-            return (
-              <ListItem key={item.segment} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  selected={selected}
-                  onClick={handleNavClick}
-                  sx={{
-                    borderRadius: 2,
-                    backgroundColor: selected ? "#F3F4F6" : "#fff",
-                    py: 0.25,
-                    pr: 0.5,
-                    pl: selected ? 1.5 : 0.5,
-                    position: "relative",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    // Vertical line indicator for active page - black bar
-                    "&::before": selected
-                      ? {
+              }}
+            >
+              Get More Clients with a complete Profile
+            </Typography>
+
+            <Stack direction="row" alignItems="center" spacing={1} >
+              <LinearProgress
+                variant="determinate"
+                value={profileComplete}
+                sx={{
+                  flex: 1,
+                  height: 6,
+                  borderRadius: 6,
+                  backgroundColor: "#E5E7EB",
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor: "#12B76A",
+                    borderRadius: 6,
+                  },
+                }}
+              />
+
+              <Typography
+                sx={{
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: "#111927",
+                  minWidth: "36px",
+                  textAlign: "right",
+                }}
+              >
+                {profileComplete}%
+              </Typography>
+            </Stack>
+
+            <Button
+              variant="contained"
+              sx={{
+                height: "26px",
+                px: 1.5,
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: 500,
+                textTransform: "none",
+                backgroundColor: "#000",
+                color: "#fff",
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: "#111",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              Complete profile
+            </Button>
+          </Box>
+        </Box>
+
+
+        {/* Navigation Menu */}
+        <Box sx={{ py: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+          <List sx={{ px: { xs: 1, md: 2 }, width: "100%", maxWidth: "100%" }}>
+            {NAVIGATION_ITEMS.map((item) => {
+              const selected = isPathSelected(item.segment);
+              const handleNavClick = () => navigate(item.path);
+              return (
+                <ListItem key={item.segment} disablePadding sx={{ mb: 0.5 }}>
+                  <ListItemButton
+                    selected={selected}
+                    onClick={handleNavClick}
+                    sx={{
+                      borderRadius: 2,
+                      backgroundColor: selected ? "#F3F4F6" : "#fff",
+                      py: 0.25,
+                      pr: 0.5,
+                      pl: selected ? 1.5 : 0.5,
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      // Vertical line indicator for active page - black bar
+                      "&::before": selected
+                        ? {
                           content: '""',
                           position: "absolute",
                           left: 0,
@@ -486,133 +493,133 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
                           backgroundColor: "#111927",
                           zIndex: 1,
                         }
-                      : {},
-                    "&:hover": {
-                      backgroundColor: selected ? "#F3F4F6" : "#F9FAFB",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: "#F3F4F6",
-                      "& .MuiTypography-root": {
-                        color: "#111927",
-                        fontWeight: 400,
+                        : {},
+                      "&:hover": {
+                        backgroundColor: selected ? "#F3F4F6" : "#F9FAFB",
                       },
-                    },
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    {/* Grey arrow for inactive items */}
-                    {!selected && (
-                      <ChevronRight
+                      "&.Mui-selected": {
+                        backgroundColor: "#F3F4F6",
+                        "& .MuiTypography-root": {
+                          color: "#111927",
+                          fontWeight: 400,
+                        },
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      {/* Grey arrow for inactive items */}
+                      {!selected && (
+                        <ChevronRight
+                          sx={{
+                            fontSize: 14,
+                            color: "#9CA3AF",
+                            width: 16,
+                            height: 16,
+                          }}
+                        />
+                      )}
+                      <ListItemIcon
                         sx={{
-                          fontSize: 14,
-                          color: "#9CA3AF",
-                          width: 16,
-                          height: 16,
+                          minWidth: 28,
+                          "& img": {
+                            width: 24,
+                            height: 24,
+                            // No filter - icons should be outlined in black
+                          },
+                        }}
+                      >
+                        <img src={item.icon} alt={item.title} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.title}
+                        primaryTypographyProps={{
+                          fontSize: "14px",
+                          color: "#111927",
+                          fontWeight: 400,
                         }}
                       />
-                    )}
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 28,
-                        "& img": {
-                          width: 24,
-                          height: 24,
-                          // No filter - icons should be outlined in black
-                        },
-                      }}
-                    >
-                      <img src={item.icon} alt={item.title} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.title}
-                      primaryTypographyProps={{
-                        fontSize: "14px",
-                        color: "#111927",
-                        fontWeight: 400,
-                      }}
-                    />
-                  </Box>
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
+                    </Box>
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
 
-      {/* Footer Links */}
-      <Box sx={{ p: { xs: 1.5, md: 2 }, pt: 1.5, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-        <Stack spacing={1}>
-          <Typography
-            variant="body2"
-            component="a"
-            href="#"
-            sx={{
-              fontSize: "12px",
-              color: "#6C737F",
-              textDecoration: "none",
-              cursor: "pointer",
-              "&:hover": { color: "#384250" },
-            }}
-          >
-            Terms & Conditions
-          </Typography>
-          <Typography
-            variant="body2"
-            component="a"
-            href="#"
-            sx={{
-              fontSize: "12px",
-              color: "#6C737F",
-              textDecoration: "none",
-              cursor: "pointer",
-              "&:hover": { color: "#384250" },
-            }}
-          >
-            About Us
-          </Typography>
-          <Typography
-            variant="body2"
-            component="a"
-            href="#"
-            sx={{
-              fontSize: "12px",
-              color: "#6C737F",
-              textDecoration: "none",
-              cursor: "pointer",
-              "&:hover": { color: "#384250" },
-            }}
-          >
-            Privacy Policy
-          </Typography>
-          <Typography
-            variant="body2"
-            onClick={handleLogout}
-            sx={{
-              fontSize: "12px",
-              color: "#6C737F",
-              textDecoration: "none",
-              cursor: "pointer",
-              "&:hover": { color: "#384250" },
-            }}
-          >
-            Log Out
-          </Typography>
-          
-          {/* Horizontal Divider */}
-          <Divider sx={{ my: 1, borderColor: "#E5E7EB" }} />
-          
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: "12px",
-              color: "#6C737F",
-            }}
-          >
-            Ravwork Inc. © 2023 All Right Reserved
-          </Typography>
-        </Stack>
+        {/* Footer Links */}
+        <Box sx={{ p: { xs: 1.5, md: 2 }, pt: 1.5, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+          <Stack spacing={1}>
+            <Typography
+              variant="body2"
+              component="a"
+              href="#"
+              sx={{
+                fontSize: "12px",
+                color: "#6C737F",
+                textDecoration: "none",
+                cursor: "pointer",
+                "&:hover": { color: "#384250" },
+              }}
+            >
+              Terms & Conditions
+            </Typography>
+            <Typography
+              variant="body2"
+              component="a"
+              href="#"
+              sx={{
+                fontSize: "12px",
+                color: "#6C737F",
+                textDecoration: "none",
+                cursor: "pointer",
+                "&:hover": { color: "#384250" },
+              }}
+            >
+              About Us
+            </Typography>
+            <Typography
+              variant="body2"
+              component="a"
+              href="#"
+              sx={{
+                fontSize: "12px",
+                color: "#6C737F",
+                textDecoration: "none",
+                cursor: "pointer",
+                "&:hover": { color: "#384250" },
+              }}
+            >
+              Privacy Policy
+            </Typography>
+            <Typography
+              variant="body2"
+              onClick={handleLogout}
+              sx={{
+                fontSize: "12px",
+                color: "#6C737F",
+                textDecoration: "none",
+                cursor: "pointer",
+                "&:hover": { color: "#384250" },
+              }}
+            >
+              Log Out
+            </Typography>
+
+            {/* Horizontal Divider */}
+            <Divider sx={{ my: 1, borderColor: "#E5E7EB" }} />
+
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "12px",
+                color: "#6C737F",
+              }}
+            >
+              Ravwork Inc. © 2023 All Right Reserved
+            </Typography>
+          </Stack>
+        </Box>
       </Box>
-    </Box>
     ),
     [userInfo, profileComplete, isPathSelected, navigate, handleDrawerToggle, handleLogout]
   );
@@ -621,9 +628,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ 
-      display: "flex", 
-      width: "100%", 
+    <Box sx={{
+      display: "flex",
+      width: "100%",
       overflow: "hidden",
       height: "100vh",
     }}>
@@ -631,12 +638,12 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       <AppBar
         position="fixed"
         sx={{
-          width: { 
-            xs: "100%", 
+          width: {
+            xs: "100%",
             md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : "100%"
           },
-          ml: { 
-            xs: 0, 
+          ml: {
+            xs: 0,
             md: desktopOpen ? `${DRAWER_WIDTH}px` : 0
           },
           transition: "width 0.3s, margin-left 0.3s",
@@ -677,8 +684,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
                   handleDrawerToggle();
                 }
               }}
-              sx={{ 
-                mr: { xs: 0.5, md: 1 }, 
+              sx={{
+                mr: { xs: 0.5, md: 1 },
                 padding: { xs: "8px" },
                 display: { xs: "flex", md: "none" }
               }}
@@ -694,9 +701,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               />
               <Typography
                 variant="body2"
-                sx={{ 
-                  fontSize: { xs: "12px", md: "14px" }, 
-                  color: "#6C737F", 
+                sx={{
+                  fontSize: { xs: "12px", md: "14px" },
+                  color: "#6C737F",
                   fontWeight: 400,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -709,9 +716,9 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           </Box>
 
           {/* Right side - Logo */}
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
+          <Box sx={{
+            display: "flex",
+            alignItems: "center",
             gap: { xs: 0.5, md: 1 },
             flexShrink: 0,
           }}>
@@ -798,8 +805,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         sx={{
           flexGrow: 1,
           p: { xs: 2, md: 3 },
-          width: { 
-            xs: "100%", 
+          width: {
+            xs: "100%",
             md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : "100%"
           },
           maxWidth: "100%",

@@ -279,7 +279,7 @@ export default function EditProfile(): JSX.Element {
                 <Button
                   type="submit"
                   variant="secondary"
-                  sx={{ height: "28px", fontWeight: "500", fontSize: "9px" }}
+                  sx={{ height: "28px", fontWeight: "500", fontSize: "12px" }}
                   disabled={isUpdating}
                 >
                   {isUpdating ? <CircularProgress size={16} /> : "Save"}
@@ -322,7 +322,7 @@ export default function EditProfile(): JSX.Element {
                       sx={{ 
                         height: "28px", 
                         fontWeight: "500", 
-                        fontSize: "9px",
+                        fontSize: "12px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",

@@ -196,13 +196,13 @@ export default function EarningsPage(): JSX.Element {
                 <Table>
                   <TableHead>
                     <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-                      <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "left" }}>
                         Name
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "center" }}>
                         Job Type
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                      <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "right" }}>
                         Date & Time
                       </TableCell>
                     </TableRow>
@@ -211,11 +211,14 @@ export default function EarningsPage(): JSX.Element {
                     {jobsData.map((job, index) => (
                       <TableRow
                         key={index}
-                        sx={{ "&:hover": { backgroundColor: "#F9FAFB" } }}
+                        sx={{
+                          "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
+                          cursor: "pointer",
+                        }}
                       >
-                        <TableCell>{job.name}</TableCell>
-                        <TableCell>{job.jobType}</TableCell>
-                        <TableCell>{job.dateTime}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

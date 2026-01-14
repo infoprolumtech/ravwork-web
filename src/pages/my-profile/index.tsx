@@ -47,7 +47,7 @@ export default function MyProfilePage(): JSX.Element {
   }: {
     icon: string;
     value: string;
-    label: string;
+    label?: string;
     showImg?: boolean;
   }) => (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -78,9 +78,11 @@ export default function MyProfilePage(): JSX.Element {
         <Typography fontWeight={600} fontSize={14} lineHeight="20px">
           {value}
         </Typography>
-        <Typography fontSize={12} fontWeight={500}>
-          {label}
-        </Typography>
+        {label && (
+          <Typography fontSize={12} fontWeight={500}>
+            {label}
+          </Typography>
+        )}
       </Box>
     </Box>
   );
@@ -163,7 +165,7 @@ export default function MyProfilePage(): JSX.Element {
               </Typography>
               <Button
                 variant="secondary"
-                sx={{ height: "28px", fontWeight: "500", fontSize: "9px" }}
+                sx={{ height: "28px", fontWeight: "500", fontSize: "12px" }}
                 onClick={() => navigate(`/my-profile/${profile.id}`)}
               >
                 Edit Profile
@@ -262,20 +264,20 @@ export default function MyProfilePage(): JSX.Element {
               <InfoItem
                 icon="./assets/icons/personalcard.svg"
                 value={profile.displayName || profile.username || "N/A"}
-                label="Company Name"
+                
                 showImg={false}
               />
 
               <InfoItem
                 icon="./assets/icons/mail.svg"
                 value={profile.email || "N/A"}
-                label="Service Provider email id "
+               
               />
 
               <InfoItem
                 icon="./assets/icons/phone.svg"
-                value={phoneDisplay}
-                label="Client Phone"
+                value={phoneDisplay || "N/A"}
+                
               />
               <Box
                 sx={{
