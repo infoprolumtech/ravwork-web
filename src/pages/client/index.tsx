@@ -525,7 +525,11 @@ export default function ClientPage(): JSX.Element {
                 </Box>
 
                 {/* Mobile Avatar + Share */}
-                <Box display="flex" gap={1} alignItems="flex-start">
+                <Box 
+                  display="flex" 
+                  gap={1} 
+                  alignItems="flex-start"
+                >
                   <Avatar
                     sx={{
                       width: "75px",
@@ -539,6 +543,9 @@ export default function ClientPage(): JSX.Element {
 
                   <Button
                     variant="blackbutton"
+                    sx={{
+                      ml: { xs: "auto", sm: 0 },
+                    }}
                     startIcon={
                       <>
                         <img
