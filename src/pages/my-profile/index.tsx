@@ -165,7 +165,7 @@ export default function MyProfilePage(): JSX.Element {
               </Typography>
               <Button
                 variant="secondary"
-                sx={{ height: "28px", fontWeight: "500", fontSize: "12px" }}
+                sx={{ height: "28px", fontWeight: "500", fontSize: "14px" }}
                 onClick={() => navigate(`/my-profile/${profile.id}`)}
               >
                 Edit Profile
