@@ -95,6 +95,26 @@ export interface JobDetailsApiResponse {
   data: JobDetails;
 }
 
+export interface UpdateJobStatusRequest {
+  status: "completed" | "declined";
+  finalPrice?: number;
+  priceNotes?: string;
+}
+
+export interface UpdateJobStatusResponse {
+  id: string;
+  status: "completed" | "declined";
+  finalPrice?: number;
+  completedAt?: string;
+}
+
+export interface UpdateJobStatusApiResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: UpdateJobStatusResponse;
+}
+
 // Dashboard Request Types
 export interface DashboardRequest {
   id: string;
@@ -198,6 +218,19 @@ const userApi = api.injectEndpoints({
       },
       providesTags: ["DashboardRequests"],
     }),
+
+    // PATCH /api/v1/user/jobs/{id} - Update job status
+    updateJobStatus: builder.mutation<UpdateJobStatusResponse, { id: string; body: UpdateJobStatusRequest }>({
+      query: ({ id, body }) => ({
+        url: `/user/jobs/${id}`,
+        method: "PATCH",
+        body,
+      }),
+      transformResponse: (response: UpdateJobStatusApiResponse): UpdateJobStatusResponse => {
+        return response.data;
+      },
+      invalidatesTags: ["Jobs"],
+    }),
   }),
 });
 
@@ -211,5 +244,6 @@ export const {
   useLazyGetJobByIdQuery,
   useGetDashboardRequestsQuery,
   useLazyGetDashboardRequestsQuery,
+  useUpdateJobStatusMutation,
 } = userApi;
 
