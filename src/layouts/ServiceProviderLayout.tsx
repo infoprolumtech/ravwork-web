@@ -366,7 +366,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             <Stack spacing={0}>
               <Typography
                 sx={{
-                  fontSize: "15px",
+                  fontSize: "16px",
                   fontWeight: 600,
                   color: "#111927",
                   lineHeight: "20px",
@@ -376,7 +376,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               </Typography>
               <Typography
                 sx={{
-                  fontSize: "13px",
+                  fontSize: "14px",
                   color: "#6C737F",
                   lineHeight: "18px",
                 }}

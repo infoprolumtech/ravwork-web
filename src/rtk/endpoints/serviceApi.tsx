@@ -4,7 +4,8 @@ import api from "../services";
 export interface FormField {
   id?: string;
   label: string;
-  fieldType: "text" | "textarea" | "select" | "checkbox" | "radio" | "date" | "time" | "number" | "email" | "phone" | "file";
+  // "images" is the current API fieldType for image upload; "file" kept for backward compatibility
+  fieldType: "text" | "textarea" | "select" | "checkbox" | "radio" | "date" | "time" | "number" | "email" | "phone" | "images" | "file";
   placeholder?: string;
   options?: string[];
   isRequired: boolean;
@@ -30,7 +31,7 @@ export interface Service {
 export interface CreateServiceRequest {
   name: string;
   description: string;
-  price: number;
+  price: number | null;
   responseTime: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible";
   contactMethod: "quick_contact" | "custom_form";
   formFields?: FormField[];

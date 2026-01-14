@@ -52,7 +52,7 @@ const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
                 field.fieldType === "textarea" ? "long_text" :
                   field.fieldType === "date" ? "date_time" :
                   field.fieldType === "time" ? "date_time" :
-                  field.fieldType === "file" ? "image" : "short_text",
+                  (field.fieldType === "images" || field.fieldType === "file") ? "image" : "short_text",
     options: field.options || [],
     label: field.label,
     fieldType: field.fieldType,
@@ -71,7 +71,7 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
   // - "Single choice (dropdown)" (single_choice) → "select"
   // - "Multichoice" (multiselect) → "checkbox"
   // - "Date & Time" (date_time) → "date"
-  // - "Image Upload" (image) → "file"
+  // - "Image Upload" (image) → "images"
   const mapAnswerTypeToFieldType = (answerType: string): string => {
     switch (answerType) {
       case "short_text": return "text";
@@ -81,7 +81,7 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
       case "date_time": return "date";
       case "date": return "date";
       case "time": return "time";
-      case "image": return "file";
+      case "image": return "images";
       default: return "text";
     }
   };
@@ -262,7 +262,7 @@ export default function AddEditServicePage(): JSX.Element {
       const requestBody: CreateServiceRequest = {
         name: serviceData.serviceTitle,
         description: serviceData.whatsIncluded,
-        price: serviceData.servicePrice ? parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) : 0,
+        price: serviceData.servicePrice && serviceData.servicePrice.trim() ? parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) : null,
         responseTime: mapResponseTimeToAPI(serviceData.responseTime),
         contactMethod,
         formFields,
@@ -291,7 +291,7 @@ export default function AddEditServicePage(): JSX.Element {
       const requestBody: CreateServiceRequest = {
         name: serviceData.serviceTitle,
         description: serviceData.whatsIncluded,
-        price: parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) || 0,
+        price: serviceData.servicePrice && serviceData.servicePrice.trim() ? parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) : null,
         responseTime: mapResponseTimeToAPI(serviceData.responseTime),
         contactMethod: "quick_contact",
       };

@@ -34,7 +34,6 @@ interface ClientContactInfoPageProps {
 
 export default function ClientContactInfoPage({
   onClose,
-  onBack,
   onNext,
   onSubmit,
   contactDetails,

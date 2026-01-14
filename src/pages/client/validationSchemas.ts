@@ -76,7 +76,7 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
             return (value as string).length <= 250;
           });
       }
-    } else if (field.fieldType === "file") {
+    } else if (field.fieldType === "file" || field.fieldType === "images") {
       // Handle file/image upload fields
       if (field.isRequired) {
         fieldSchema = yup
@@ -126,22 +126,40 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
       fieldSchema = yup.mixed().notRequired();
     }
     
-    // Add date validation: date must not be in the past
+    // Add date validation: date must not be in the past, and time must be greater than current time if date is today
     if (field.fieldType === "date") {
       fieldSchema = fieldSchema.test(
-        "not-past-date",
-        "Date cannot be in the past. Please select today or a future date.",
+        "not-past-date-time",
+        "Date cannot be in the past. For today's date, time must be greater than the current time.",
         function(value: any) {
-          if (!value || value === "") {
+          if (!value || (!value.date && !value.time)) {
             return !field.isRequired; // If not required and empty, it's valid
           }
           
-          const selectedDate = new Date(value);
+          const { date, time } = value;
+          if (!date || !time) {
+            return !field.isRequired;
+          }
+          
+          const selectedDate = new Date(date);
           const today = new Date();
-          today.setHours(0, 0, 0, 0); // Reset time to start of day
+          today.setHours(0, 0, 0, 0);
           selectedDate.setHours(0, 0, 0, 0);
           
-          return selectedDate >= today;
+          if (selectedDate < today) {
+            return false; // Date is in the past
+          }
+          
+          if (selectedDate.getTime() === today.getTime()) {
+            const [hours, minutes] = (time as string).split(":").map(Number);
+            const selectedTime = new Date();
+            selectedTime.setHours(hours, minutes, 0, 0);
+            const now = new Date();
+            
+            // Time must be strictly greater than current time (not equal to)
+            return selectedTime.getTime() > now.getTime();
+          }
+          return true; // Date is in the future
         }
       );
     }
@@ -193,6 +211,44 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
           const now = new Date();
           
           return selectedTime > now;
+        }
+      );
+    }
+    
+    // Add date_time validation: date must not be in the past, and time must be greater than current time if date is today
+    if (field.fieldType === "date_time") {
+      fieldSchema = fieldSchema.test(
+        "not-past-date-time",
+        "Date cannot be in the past. For today's date, time must be greater than the current time.",
+        function(value: any) {
+          if (!value || (!value.date && !value.time)) {
+            return !field.isRequired; // If not required and empty, it's valid
+          }
+          
+          const { date, time } = value;
+          if (!date || !time) {
+            return !field.isRequired;
+          }
+          
+          const selectedDate = new Date(date);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          selectedDate.setHours(0, 0, 0, 0);
+          
+          if (selectedDate < today) {
+            return false; // Date is in the past
+          }
+          
+          if (selectedDate.getTime() === today.getTime()) {
+            const [hours, minutes] = (time as string).split(":").map(Number);
+            const selectedTime = new Date();
+            selectedTime.setHours(hours, minutes, 0, 0);
+            const now = new Date();
+            
+            // Time must be strictly greater than current time (not equal to)
+            return selectedTime.getTime() > now.getTime();
+          }
+          return true; // Date is in the future
         }
       );
     }

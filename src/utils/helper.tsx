@@ -124,7 +124,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     fontSize: "14px",
   },
   "& .MuiFormHelperText-root.Mui-error": {
-    color: "#FF1100",
+    color: "#DC2626 !important",
   },
   "& .MuiFormHelperText-root": {
     fontSize: 12,

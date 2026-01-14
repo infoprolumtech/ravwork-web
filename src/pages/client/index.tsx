@@ -32,7 +32,7 @@ interface ContactDetails {
 
 // Dynamic form field values
 interface FormFieldValues {
-  [key: string]: string | string[];
+  [key: string]: string | string[] | { date?: string; time?: string };
 }
 
 export default function ClientPage(): JSX.Element {
@@ -137,7 +137,7 @@ export default function ClientPage(): JSX.Element {
           clientPhone: data.phoneNumber,
           serviceId: selectedService.id,
           type: "booking",
-  },
+        },
       }).unwrap();
 
       dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
@@ -164,12 +164,40 @@ export default function ClientPage(): JSX.Element {
           if (value === null || value === undefined) return false;
           if (typeof value === "string" && value.trim() === "") return false;
           if (Array.isArray(value) && value.length === 0) return false;
+          // For date_time fields, check if both date and time are present
+          if (typeof value === "object" && !Array.isArray(value)) {
+            const dateTimeValue = value as { date?: string; time?: string };
+            if (!dateTimeValue.date || !dateTimeValue.time) return false;
+          }
           return true;
         })
-        .map(([fieldId, value]) => ({
-          fieldId,
-          value: value as string | string[],
-        }));
+        .map(([fieldId, value]) => {
+          // Check if this is a date field (which now includes both date and time)
+          const field = selectedService?.formFields?.find(f => f.id === fieldId);
+          if (field?.fieldType === "date" && typeof value === "object" && !Array.isArray(value)) {
+            const dateTimeValue = value as { date: string; time: string };
+            // Combine date and time into ISO format: "YYYY-MM-DDTHH:MM:SS"
+            const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
+            return {
+              fieldId,
+              value: combinedValue,
+            };
+          }
+          // Also handle date_time for backward compatibility
+          if (field?.fieldType === "date_time" && typeof value === "object" && !Array.isArray(value)) {
+            const dateTimeValue = value as { date: string; time: string };
+            // Combine date and time into ISO format: "YYYY-MM-DDTHH:MM:SS"
+            const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
+            return {
+              fieldId,
+              value: combinedValue,
+            };
+          }
+          return {
+            fieldId,
+            value: value as string | string[],
+          };
+        });
 
       await createBooking({
         username,
@@ -181,7 +209,7 @@ export default function ClientPage(): JSX.Element {
           serviceId: selectedService.id,
           type: "booking",
           responses: responses.length > 0 ? responses : undefined,
-  },
+        },
       }).unwrap();
 
       dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
@@ -209,7 +237,7 @@ export default function ClientPage(): JSX.Element {
           clientPhone: data.phoneNumber,
           type: "inquiry",
           description: data.description || "",
-  },
+        },
       }).unwrap();
 
       dispatch(showAlert({ message: "Inquiry submitted successfully!", severity: "success" }));
@@ -498,7 +526,7 @@ export default function ClientPage(): JSX.Element {
                     profile.linkedinUrl?.trim() ||
                     profile.instagramUrl?.trim()) && (
                       <Box mt={1}>
-                        
+
                         <Stack direction="row" spacing={1} alignItems="center" mt={1}>
                           {profile.facebookUrl?.trim() && (
                             <IconButton
@@ -553,9 +581,9 @@ export default function ClientPage(): JSX.Element {
                 </Box>
 
                 {/* Mobile Avatar + Share */}
-                <Box 
-                  display="flex" 
-                  gap={1} 
+                <Box
+                  display="flex"
+                  gap={1}
                   alignItems="flex-start"
                 >
                   <Avatar
@@ -669,30 +697,30 @@ export default function ClientPage(): JSX.Element {
             </Stack>
           ) : (
             services.map((service) => (
-            <Card
-              key={service.id}
-              sx={{
+              <Card
+                key={service.id}
+                sx={{
                   backgroundColor: "#F7F9FB",
-                borderRadius: "12px",
-                p: 2.5,
-                boxShadow: "none",
-                border: "1px solid #E5E7EB",
-                height: "100%",
-              }}
-            >
+                  borderRadius: "12px",
+                  p: 2.5,
+                  boxShadow: "none",
+                  border: "1px solid #E5E7EB",
+                  height: "100%",
+                }}
+              >
                 <Stack spacing={2} sx={{ width: "100%" }}>
-                {/* Icon and Title */}
+                  {/* Icon and Title */}
                   <Stack spacing={1.5} alignItems="flex-start" sx={{ width: "100%" }}>
-                  <Box
-                    sx={{
+                    <Box
+                      sx={{
                         width: "39px",
                         height: "39px",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <img
                         src={
                           service.contactMethod === "quick_contact"
@@ -701,31 +729,31 @@ export default function ClientPage(): JSX.Element {
                         }
                       // alt="Service"
                       />
-                  </Box>
+                    </Box>
                     <Box sx={{ flex: 1, width: "100%" }}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 600,
-                        color: "#111927",
-                        fontSize: "18px",
-                        mb: 0.5,
-                      }}
-                    >
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 600,
+                          color: "#111927",
+                          fontSize: "18px",
+                          mb: 0.5,
+                        }}
+                      >
                         {service.name}
-                    </Typography>
+                      </Typography>
 
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "#6C737F",
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#6C737F",
                           fontWeight: 500,
                           fontSize: "16px",
-                        mb: 1,
-                      }}
-                    >
-                      {service.description}
-                    </Typography>
+                          mb: 1,
+                        }}
+                      >
+                        {service.description}
+                      </Typography>
                       <Box
                         sx={{
                           height: 5,
@@ -742,45 +770,79 @@ export default function ClientPage(): JSX.Element {
                           width: "100%",
                         }}
                       >
-                        {service.price > 0 && (
-                    <Typography
-                      variant="h6"
-                      sx={{
+                        {service.price > 0 ? (
+                          <Typography
+                            variant="h6"
+                            sx={{
                               fontWeight: 700,
-                        color: "#111927",
+                              color: "#111927",
                               fontSize: { xs: "24px", sm: "30px" },
-                      }}
-                    >
+                            }}
+                          >
                             ${service.price}
-                    </Typography>
+                          </Typography>
+                        ) : (
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 500,
+
+                              color: "#111927",
+                              fontSize: { xs: "14px", sm: "20px" },
+                            }}
+                          >
+                            Price on Request
+                          </Typography>
                         )}
-                <Button
-                  variant="contained"
+                        <Button
+                          variant="contained"
                           onClick={() => handleBookNow(service)}
-                  sx={{
-                    backgroundColor: "#111927",
-                    color: "#fff",
-                    textTransform: "none",
+                          sx={{
+                            backgroundColor: "#111927",
+                            color: "#fff",
+                            textTransform: "none",
                             width: { xs: "170px", sm: "170px" },
                             height: "36px",
-                    fontSize: "14px",
-                    fontWeight: 500,
+                            fontSize: "14px",
+                            fontWeight: 500,
                             borderRadius: "50px",
-                    py: 1.25,
+                            py: 1.25,
                             flexShrink: 0,
-                            ml: service.price > 0 ? 0 : "auto",
-                    "&:hover": {
-                      backgroundColor: "#384250",
-                    },
-                  }}
-                >
-                  Book Now
-                </Button>
+                            ml: 0,
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                            },
+                          }}
+                        >
+                          Book Now
+                        </Button>
                       </Stack>
+
                     </Box>
                   </Stack>
-              </Stack>
-            </Card>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#6C737F",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    <Box
+                      component="span"
+                      sx={{ fontWeight: 600, color: "#111927" }}
+                    >
+                      Response Time :
+                    </Box>{" "}
+                    {service.responseTime
+                      ?.split("_")
+                      .join(" ")
+                      .replace(/^\w/, (c) => c.toUpperCase())}
+                  </Typography>
+
+
+                </Stack>
+              </Card>
             ))
           )}
         </Box>
@@ -796,20 +858,20 @@ export default function ClientPage(): JSX.Element {
           }}
         >
           <Stack spacing={2}>
-              <Box
-                sx={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
                 backgroundColor: "#FEF7C3",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
               <img src="/assets/icons/Questionsicon.svg" alt="Question" />
-              </Box>
+            </Box>
 
             <Stack
               direction={{ xs: "column", sm: "row" }}
@@ -842,26 +904,26 @@ export default function ClientPage(): JSX.Element {
                 </Typography>
               </Box>
 
-            <Button
-              variant="contained"
+              <Button
+                variant="contained"
                 onClick={handleRequestClick}
-              sx={{
-                backgroundColor: "#111927",
-                color: "#fff",
-                textTransform: "none",
-                fontSize: "14px",
-                fontWeight: 500,
+                sx={{
+                  backgroundColor: "#111927",
+                  color: "#fff",
+                  textTransform: "none",
+                  fontSize: "14px",
+                  fontWeight: 500,
                   height: "36px",
                   borderRadius: "50px",
-                py: 1.25,
+                  py: 1.25,
                   width: { xs: "170px", sm: "170px" },
-                "&:hover": {
-                  backgroundColor: "#384250",
-                },
-              }}
-            >
-              Request
-            </Button>
+                  "&:hover": {
+                    backgroundColor: "#384250",
+                  },
+                }}
+              >
+                Request
+              </Button>
             </Stack>
           </Stack>
         </Card>
@@ -981,7 +1043,7 @@ export default function ClientPage(): JSX.Element {
             alignItems="center"
             justifyContent="center"
             mb={{ xs: "40px", sm: "68px" }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/landing")}
             sx={{
               cursor: "pointer",
               "&:hover": {
@@ -1080,7 +1142,7 @@ export default function ClientPage(): JSX.Element {
               >
                 Terms of Service
               </Typography>
-          </Stack>
+            </Stack>
           </Box>
         </Box>
       </Container>
@@ -1117,12 +1179,12 @@ export default function ClientPage(): JSX.Element {
         >
           <ClientContactInfoPage
             onClose={handleContactDialogClose}
-            onBack={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0 
-              ? handleBackToQuestions 
+            onBack={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0
+              ? handleBackToQuestions
               : undefined}
             onNext={handleNextToQuestions}
-            onSubmit={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0 
-              ? handleCustomFormSubmit 
+            onSubmit={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0
+              ? handleCustomFormSubmit
               : handleQuickContactSubmit}
             contactDetails={contactDetails}
             setContactDetails={setContactDetails}
@@ -1165,7 +1227,7 @@ export default function ClientPage(): JSX.Element {
         >
           <ClientQuestionsPage
             onClose={handleQuestionsDialogClose}
-            onSubmit={() => {}}
+            onSubmit={() => { }}
             onNext={handleNextToContactInfo}
             formFields={selectedService?.formFields || []}
             formFieldValues={formFieldValues}

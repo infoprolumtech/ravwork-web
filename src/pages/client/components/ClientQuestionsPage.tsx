@@ -26,8 +26,8 @@ import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi"
 import { useAppDispatch } from "../../../rtk/store";
 import { showAlert } from "../../../rtk/feature/alertSlice";
 
-interface FormFieldValues {
-  [key: string]: string | string[];
+export interface FormFieldValues {
+  [key: string]: string | string[] | { date?: string; time?: string };
 }
 
 interface ClientQuestionsPageProps {
@@ -67,7 +67,7 @@ export default function ClientQuestionsPage({
   React.useEffect(() => {
     form.reset(formFieldValues);
     // Initialize image previews from existing values
-    const fileFields = formFields.filter(f => f.fieldType === "file");
+    const fileFields = formFields.filter(f => f.fieldType === "file" || f.fieldType === "images");
     const newPreviews: Record<string, string> = {};
     fileFields.forEach(field => {
       const value = formFieldValues[field.id];
@@ -108,6 +108,15 @@ export default function ClientQuestionsPage({
       
       if (field.fieldType === "checkbox") {
         return Array.isArray(value) && value.length > 0;
+      }
+      
+      // For date fields, check if both date and time are present
+      if (field.fieldType === "date" || field.fieldType === "date_time") {
+        if (typeof value === "object" && !Array.isArray(value)) {
+          const dateTimeValue = value as { date?: string; time?: string };
+          return dateTimeValue.date && dateTimeValue.time && dateTimeValue.date !== "" && dateTimeValue.time !== "";
+        }
+        return false;
       }
       
       if (field.options && field.options.length > 0) {
@@ -181,6 +190,11 @@ export default function ClientQuestionsPage({
                     />
                   ))}
                 </RadioGroup>
+                {form.formState.errors[field.id] && (
+                  <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                    {form.formState.errors[field.id]?.message as string}
+                  </FormHelperText>
+                )}
               </FormControl>
             </Box>
           )}
@@ -221,6 +235,11 @@ export default function ClientQuestionsPage({
                   helperText={form.formState.errors[field.id]?.message as string}
                   required={field.isRequired}
                   InputLabelProps={{ shrink: false }}
+                  sx={{
+                    "& .MuiFormHelperText-root": {
+                      color: "#6C737F",
+                    },
+                  }}
                   onChange={(e) => {
                     formField.onChange(e.target.value);
                     setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
@@ -370,6 +389,11 @@ export default function ClientQuestionsPage({
                       <MenuItem key={idx} value={option}>{option}</MenuItem>
                     ))}
                   </Select>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Box>
             )}
@@ -484,6 +508,11 @@ export default function ClientQuestionsPage({
                       />
                     ))}
                   </FormGroup>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </Box>
               );
             }}
@@ -499,6 +528,42 @@ export default function ClientQuestionsPage({
             render={({ field: formField }) => {
               // Get today's date in YYYY-MM-DD format
               const today = new Date().toISOString().split('T')[0];
+              
+              // Get current value (should be an object with date and time)
+              const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
+              let dateValue = "";
+              let timeValue = "";
+              
+              if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
+                dateValue = currentValue.date || "";
+                timeValue = currentValue.time || "";
+              } else if (typeof currentValue === "string" && currentValue) {
+                // Handle legacy format where it might be just a date string
+                dateValue = currentValue;
+              }
+              
+              // Calculate min time based on whether date is today
+              let minTime: string | undefined;
+              if (dateValue) {
+                const selectedDate = new Date(dateValue);
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+                
+                // If date is today, set min time to current time + 1 minute
+                if (selectedDate.getTime() === todayDate.getTime()) {
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                  minTime = `${hours}:${minutes}`;
+                }
+              } else {
+                // If no date selected, set min to current time
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                minTime = `${hours}:${minutes}`;
+              }
               
               return (
                 <Box>
@@ -517,32 +582,190 @@ export default function ClientQuestionsPage({
                       )}
                     </Typography>
                   </Stack>
-                  <StyledTextField
-                    {...formField}
-                    fullWidth
-                    variant="outlined"
-                    type="date"
-                    placeholder="Select Date"
-                    error={Boolean(form.formState.errors[field.id])}
-                    helperText={form.formState.errors[field.id]?.message as string}
-                    required={field.isRequired}
-                    InputLabelProps={{ shrink: false }}
-                    inputProps={{
-                      min: today, // Prevent selecting past dates
-                    }}
-                    onChange={(e) => {
-                      formField.onChange(e.target.value);
-                      setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                      form.trigger(field.id);
-                      
-                      // Re-validate time fields when date changes
-                      formFields.forEach((f) => {
-                        if (f.fieldType === "time") {
-                          form.trigger(f.id);
-                        }
-                      });
-                    }}
-                  />
+                  <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+                    {/* Date Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="date"
+                      placeholder="Select Date"
+                      value={dateValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: today, // Prevent selecting past dates
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        const newValue = { date: newDate, time: timeValue };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                    {/* Time Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="time"
+                      placeholder="Select Time"
+                      value={timeValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: minTime, // Prevent selecting past times
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newTime = e.target.value;
+                        const newValue = { date: dateValue, time: newTime };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                  </Stack>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
+                </Box>
+              );
+            }}
+          />
+        );
+      
+      case "date_time":
+        return (
+          <Controller
+            key={field.id}
+            name={field.id}
+            control={form.control}
+            render={({ field: formField }) => {
+              // Get today's date in YYYY-MM-DD format
+              const today = new Date().toISOString().split('T')[0];
+              
+              // Get current value (should be an object with date and time)
+              const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
+              let dateValue = "";
+              let timeValue = "";
+              
+              if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
+                dateValue = currentValue.date || "";
+                timeValue = currentValue.time || "";
+              }
+              
+              // Calculate min time based on whether date is today
+              let minTime: string | undefined;
+              if (dateValue) {
+                const selectedDate = new Date(dateValue);
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+                
+                // If date is today, set min time to current time + 1 minute
+                if (selectedDate.getTime() === todayDate.getTime()) {
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                  minTime = `${hours}:${minutes}`;
+                }
+              } else {
+                // If no date selected, set min to current time
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                minTime = `${hours}:${minutes}`;
+              }
+              
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+                    {/* Date Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="date"
+                      placeholder="Select Date"
+                      value={dateValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: today, // Prevent selecting past dates
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        const newValue = { date: newDate, time: timeValue };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                    {/* Time Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="time"
+                      placeholder="Select Time"
+                      value={timeValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: minTime, // Prevent selecting past times
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newTime = e.target.value;
+                        const newValue = { date: dateValue, time: newTime };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                  </Stack>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </Box>
               );
             }}
@@ -638,6 +861,7 @@ export default function ClientQuestionsPage({
         );
       
       case "file":
+      case "images":
         return (
           <Controller
             key={field.id}
@@ -807,7 +1031,7 @@ export default function ClientQuestionsPage({
                     </Box>
                   )}
                   {form.formState.errors[field.id] && (
-                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75 }}>
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
                       {form.formState.errors[field.id]?.message as string}
                     </FormHelperText>
                   )}
@@ -903,18 +1127,11 @@ export default function ClientQuestionsPage({
             {[...formFields]
               .sort((a, b) => a.sortOrder - b.sortOrder)
               .map((field) => {
-                const fieldError = form.formState.errors[field.id];
                 const fieldComponent = renderFormField(field);
                 
-                // Wrap field with error display for fields that don't show errors inline
                 return (
                   <Box key={field.id}>
                     {fieldComponent}
-                    {fieldError && (field.fieldType === "radio" || field.fieldType === "checkbox" || (field.fieldType === "text" && field.options && field.options.length > 0)) && (
-                      <FormHelperText error sx={{ mt: 0.5, ml: 1.75 }}>
-                        {fieldError.message as string}
-                      </FormHelperText>
-                    )}
                   </Box>
                 );
               })}

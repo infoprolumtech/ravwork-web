@@ -156,7 +156,7 @@ export default function CustomQuestionsPage({
         case "date_time": return "date";
         case "date": return "date";
         case "time": return "time";
-        case "image": return "file";
+        case "image": return "images";
         default: return "text";
       }
     };
@@ -208,7 +208,7 @@ export default function CustomQuestionsPage({
         case "date_time": return "date";
         case "date": return "date";
         case "time": return "time";
-        case "image": return "file";
+        case "image": return "images";
         default: return "text";
       }
     };
