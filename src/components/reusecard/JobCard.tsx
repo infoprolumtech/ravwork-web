@@ -34,21 +34,21 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
           width: "100%",
         }}
       >
-        <Box
-          sx={{
+    <Box
+      sx={{
             width: { xs: 24, sm: 28 },
             height: { xs: 24, sm: 28 },
             bgcolor: "#EEF2F6",
             borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
             flexShrink: 0,
             flexGrow: 0,
-          }}
-        >
+      }}
+    >
           <img src={icon} width={14} height={14} alt="" />
-        </Box>
+    </Box>
 
         <Typography
           fontSize={{ xs: 12, sm: 14 }}
@@ -66,7 +66,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
           }}
         >
           {displayValue}
-        </Typography>
+      </Typography>
       </Stack>
 
       <Typography
@@ -81,7 +81,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
         {label}
       </Typography>
     </Stack>
-  );
+);
 };
 
 export default function JobCard({
@@ -115,26 +115,26 @@ export default function JobCard({
           direction={{ xs: "column", sm: "row" }}
           spacing={{ xs: 1, sm: 2 }}
           alignItems={{ xs: "flex-start", sm: "center" }}
-        >
-          <Box
-            sx={{
+      >
+        <Box
+          sx={{
               width: { xs: 36, sm: 40 },
               height: { xs: 36, sm: 40 },
-              bgcolor: "#E3F5FF",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+            bgcolor: "#E3F5FF",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
               flexShrink: 0,
-            }}
-          >
-            <img
-              src="/assets/icons/sidebar_menu_icon/briefcase.svg"
-              width={18}
-              height={18}
-              alt="Job"
-            />
-          </Box>
+          }}
+        >
+          <img
+            src="/assets/icons/sidebar_menu_icon/briefcase.svg"
+            width={18}
+            height={18}
+            alt="Job"
+          />
+        </Box>
 
           <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography
@@ -143,16 +143,16 @@ export default function JobCard({
               color="#111927"
               sx={{ wordBreak: "break-word" }}
             >
-              {title}
-            </Typography>
+            {title}
+          </Typography>
             <Typography
               fontSize={{ xs: 12, sm: 14 }}
               color="#6C737F"
               sx={{ mt: 0.5, wordBreak: "break-word" }}
             >
-              {description}
-            </Typography>
-          </Box>
+            {description}
+          </Typography>
+        </Box>
         </Stack>
 
         {showActions && (
@@ -219,24 +219,24 @@ export default function JobCard({
             width: "100%",
           }}
         >
-          <InfoItem
+        <InfoItem
             icon="/assets/icons/personalcard.svg"
-            value={clientName}
-            label="Client Name"
+          value={clientName}
+          label="Client Name"
             fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
-          />
+        />
 
-          <InfoItem
+        <InfoItem
             icon="/assets/icons/mail.svg"
-            value={clientEmail}
-            label="Client Email"
+          value={clientEmail}
+          label="Client Email"
             fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
-          />
+        />
 
-          <InfoItem
+        <InfoItem
             icon="/assets/icons/phone.svg"
-            value={clientPhone}
-            label="Client Phone"
+          value={clientPhone}
+          label="Client Phone"
             fixedWidth={{ xs: "100%", sm: "160px", md: "180px", lg: "200px" }}
           />
 
@@ -258,7 +258,7 @@ export default function JobCard({
             View Details
           </Typography>
         </Stack>
-      </Box>
+        </Box>
     </Card>
   );
 }
