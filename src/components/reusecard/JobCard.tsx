@@ -19,8 +19,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
     <Stack 
       spacing={0.5} 
       sx={{ 
-        minWidth: 0, 
-        ...(fixedWidth ? { width: fixedWidth, minWidth: { xs: 0, sm: "140px" } } : { width: { xs: "100%", sm: "auto" } }),
+        ...(fixedWidth ? { width: fixedWidth, minWidth: { xs: 0, sm: "140px" } } : { width: { xs: "100%", sm: "auto" }, minWidth: 0 }),
         flex: { xs: "1 1 auto", sm: "0 0 auto" },
         maxWidth: { xs: "100%", sm: "none" },
       }}
