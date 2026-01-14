@@ -629,11 +629,11 @@ export default function ClientQuestionsPage({
   return (
     <Stack
       sx={{
-        padding: "40px",
+        padding: { xs: "20px", sm: "32px", md: "40px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-end",
-        gap: "24px",
+        gap: { xs: "16px", sm: "20px", md: "24px" },
         width: "100%",
         "&::-webkit-scrollbar": {
           display: "none",
@@ -642,25 +642,13 @@ export default function ClientQuestionsPage({
         msOverflowStyle: "none",
       }}
     >
-      {/* Header - Title and Close icon on same row */}
+      {/* Header - Close icon */}
       <Stack
         direction="row"
         alignItems="flex-start"
-        justifyContent="space-between"
+        justifyContent="flex-end"
         sx={{ width: "100%" }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: { xs: "20px", sm: "22px", md: "24px" },
-            fontWeight: 600,
-            color: "#111927",
-            flex: 1,
-            pr: 2,
-          }}
-        >
-          Answer some additional questions to understand your requirement
-        </Typography>
         <IconButton 
           onClick={onClose} 
           size="small"

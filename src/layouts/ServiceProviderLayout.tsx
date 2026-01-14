@@ -56,7 +56,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   },
   {
     segment: "services-offered",
-    title: "Services Offered",
+    title: "My Services",
     icon: "/assets/icons/sidebar_menu_icon/flash.svg",
     path: "/services-offered",
   },

@@ -99,15 +99,15 @@ export default function ContactInfoPage({
             name="fullName"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Full name"
-                placeholder="Enter your full name"
+            fullWidth
+            variant="outlined"
+            label="Full name"
+            placeholder="Enter your full name"
                 error={Boolean(form.formState.errors.fullName)}
                 helperText={form.formState.errors.fullName?.message}
-                sx={{ mt: 2 }}
+            sx={{ mt: 2 }}
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("fullName");
@@ -123,12 +123,12 @@ export default function ContactInfoPage({
             name="email"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Email (optional)"
-                placeholder="Enter your email"
+            fullWidth
+            variant="outlined"
+            label="Email (optional)"
+            placeholder="Enter your email"
                 error={Boolean(form.formState.errors.email)}
                 helperText={form.formState.errors.email?.message}
                 onChange={(e) => {
@@ -147,12 +147,12 @@ export default function ContactInfoPage({
             name="phoneNumber"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Phone Number"
-                placeholder="Enter your phone number"
+            fullWidth
+            variant="outlined"
+            label="Phone Number"
+            placeholder="Enter your phone number"
                 error={Boolean(form.formState.errors.phoneNumber)}
                 helperText={form.formState.errors.phoneNumber?.message}
                 onChange={(e) => {

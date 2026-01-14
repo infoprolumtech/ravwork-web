@@ -300,15 +300,15 @@ export default function CustomQuestionsPage({
             name="question"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Question"
-                placeholder="e.g. What is the event location"
+            fullWidth
+            variant="outlined"
+            label="Question"
+            placeholder="e.g. What is the event location"
                 error={Boolean(form.formState.errors.question)}
                 helperText={form.formState.errors.question?.message}
-                sx={{ mt: 2 }}
+            sx={{ mt: 2 }}
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("question");
@@ -324,14 +324,14 @@ export default function CustomQuestionsPage({
             name="answerType"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Answer Type"
+            fullWidth
+            variant="outlined"
+            label="Answer Type"
                 error={Boolean(form.formState.errors.answerType)}
                 helperText={form.formState.errors.answerType?.message}
-                select
+            select
             SelectProps={{
               displayEmpty: true,
               renderValue: (selected) => {
@@ -384,7 +384,7 @@ export default function CustomQuestionsPage({
                 {option.label}
               </MenuItem>
             ))}
-              </StyledTextField>
+          </StyledTextField>
             )}
           />
         </Box>

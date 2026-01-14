@@ -119,7 +119,7 @@ export default function AppRoutes() {
       ),
     },
 
-    // Services Offered
+    // My Services
     {
       path: "/services-offered",
       element: (

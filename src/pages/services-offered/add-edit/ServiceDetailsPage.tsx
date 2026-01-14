@@ -130,15 +130,15 @@ export default function ServiceDetailsPage({
             name="serviceTitle"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Service title"
-                placeholder="e.g. TV Mounting, House Cleaning"
+            fullWidth
+            variant="outlined"
+            label="Service title"
+            placeholder="e.g. TV Mounting, House Cleaning"
                 error={Boolean(form.formState.errors.serviceTitle)}
                 helperText={form.formState.errors.serviceTitle?.message}
-                sx={{ mt: 2 }}
+            sx={{ mt: 2 }}
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("serviceTitle");
@@ -154,11 +154,11 @@ export default function ServiceDetailsPage({
             name="whatsIncluded"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="What's included?"
+            fullWidth
+            variant="outlined"
+            label="What's included?"
                 placeholder="Describe what's included in this service"
                 error={Boolean(form.formState.errors.whatsIncluded)}
                 helperText={form.formState.errors.whatsIncluded?.message}
@@ -177,11 +177,11 @@ export default function ServiceDetailsPage({
             name="servicePrice"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Service price"
+            fullWidth
+            variant="outlined"
+            label="Service price"
                 placeholder="e.g. 120 or $99.99"
                 error={Boolean(form.formState.errors.servicePrice)}
                 helperText={form.formState.errors.servicePrice?.message}
@@ -200,71 +200,71 @@ export default function ServiceDetailsPage({
             name="responseTime"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Response time"
+            fullWidth
+            variant="outlined"
+            label="Response time"
                 error={Boolean(form.formState.errors.responseTime)}
                 helperText={form.formState.errors.responseTime?.message}
-                select
-                SelectProps={{
-                  displayEmpty: true,
-                  renderValue: (selected) => {
-                    if (!selected) {
-                      return "";
-                    }
-                    const selectedOption = responseTimeOptions.find(
-                      (o) => o.value === selected
-                    );
-                    return selectedOption ? selectedOption.label : "";
+            select
+            SelectProps={{
+              displayEmpty: true,
+              renderValue: (selected) => {
+                if (!selected) {
+                  return "";
+                }
+                const selectedOption = responseTimeOptions.find(
+                  (o) => o.value === selected
+                );
+                return selectedOption ? selectedOption.label : "";
+              },
+              MenuProps: {
+                disablePortal: false,
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                    overflowY: "auto",
+                    borderRadius: "8px",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
                   },
-                  MenuProps: {
-                    disablePortal: false,
-                    PaperProps: {
-                      style: {
-                        maxHeight: 250,
-                        overflowY: "auto",
-                        borderRadius: "8px",
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      },
-                      sx: {
-                        "&::-webkit-scrollbar": {
-                          display: "none",
-                        },
-                      },
-                    },
-                    sx: {
-                      zIndex: 3000,
-                      "& .MuiPaper-root": {
-                        "&::-webkit-scrollbar": {
-                          display: "none",
-                        },
-                        scrollbarWidth: "none",
-                        msOverflowStyle: "none",
-                      },
+                  sx: {
+                    "&::-webkit-scrollbar": {
+                      display: "none",
                     },
                   },
-                }}
+                },
+                sx: {
+                  zIndex: 3000,
+                  "& .MuiPaper-root": {
+                    "&::-webkit-scrollbar": {
+                      display: "none",
+                    },
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  },
+                },
+              },
+            }}
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("responseTime");
                 }}
+          >
+            <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
+              Select
+            </MenuItem>
+            {responseTimeOptions.map((option) => (
+              <MenuItem
+                key={option.value}
+                value={option.value}
+                sx={{ fontSize: "16px", color: "#111927" }}
               >
-                <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
-                  Select
-                </MenuItem>
-                {responseTimeOptions.map((option) => (
-                  <MenuItem
-                    key={option.value}
-                    value={option.value}
-                    sx={{ fontSize: "16px", color: "#111927" }}
-                  >
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </StyledTextField>
+                {option.label}
+              </MenuItem>
+            ))}
+          </StyledTextField>
             )}
           />
         </Box>

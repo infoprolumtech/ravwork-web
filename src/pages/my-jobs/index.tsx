@@ -128,22 +128,22 @@ export default function MyJobsPage(): JSX.Element {
           </Box>
         ) : (
           <>
-            <Stack spacing={2}>
+        <Stack spacing={2}>
               {transformedJobs.map((job) => (
-                <JobCard
-                  key={job.id}
+            <JobCard
+              key={job.id}
                   title={job.title}
                   description={job.description}
                   clientName={job.clientName}
                   clientEmail={job.clientEmail}
                   clientPhone={job.clientPhone}
-                  showActions={tab === 0}
+              showActions={tab === 0}
                   onComplete={() => handleComplete(job.id)}
                   onDecline={() => handleDecline(job.id)}
                   onViewDetails={() => handleViewDetails(job.id)}
-                />
-              ))}
-            </Stack>
+            />
+          ))}
+        </Stack>
 
             {/* Pagination */}
             <Pagination
