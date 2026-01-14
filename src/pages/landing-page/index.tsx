@@ -23,7 +23,7 @@ export default function LandingPage(): JSX.Element {
           sx={{
             fontWeight: 700,
             color: "#111927",
-            fontSize: { xs: "32px", sm: "48px", md: "64px" },
+            fontSize: { xs: "32px", sm: "38px", md: "38px" },
             mb: 2,
           }}
         >
