@@ -12,44 +12,77 @@ export type JobCardProps = {
   onViewDetails?: () => void;
 };
 
-const InfoItem = ({ icon, value, label }: any) => (
-  <Stack spacing={0.5} sx={{ minWidth: 0, flex: { xs: "1 1 auto", sm: "0 1 auto" } }}>
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Box
-        sx={{
-          width: { xs: 24, sm: 28 },
-          height: { xs: 24, sm: 28 },
-          bgcolor: "#EEF2F6",
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
+const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
+  const displayValue = value && value.trim() !== "" ? value : "N/A";
+  
+  return (
+    <Stack 
+      spacing={0.5} 
+      sx={{ 
+        minWidth: 0, 
+        ...(fixedWidth ? { width: fixedWidth, minWidth: { xs: 0, sm: "140px" } } : { width: { xs: "100%", sm: "auto" } }),
+        flex: { xs: "1 1 auto", sm: "0 0 auto" },
+        maxWidth: { xs: "100%", sm: "none" },
+      }}
+    >
+      <Stack 
+        direction="row" 
+        spacing={1} 
+        alignItems="center"
+        sx={{ 
+          minWidth: 0,
+          width: "100%",
         }}
       >
-        <img src={icon} width={14} height={14} alt="" />
-      </Box>
+    <Box
+      sx={{
+            width: { xs: 24, sm: 28 },
+            height: { xs: 24, sm: 28 },
+            bgcolor: "#EEF2F6",
+            borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+            flexShrink: 0,
+            flexGrow: 0,
+      }}
+    >
+          <img src={icon} width={14} height={14} alt="" />
+    </Box>
+
+        <Typography
+          fontSize={{ xs: 12, sm: 14 }}
+          fontWeight={600}
+          color="#111927"
+          sx={{ 
+            wordBreak: "break-word", 
+            overflow: "hidden", 
+            textOverflow: "ellipsis",
+            minWidth: 0,
+            flex: 1,
+            lineHeight: 1.2,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {displayValue}
+      </Typography>
+      </Stack>
 
       <Typography
-        fontSize={{ xs: 12, sm: 14 }}
-        fontWeight={600}
-        color="#111927"
-        sx={{ wordBreak: "break-word", overflow: "hidden", textOverflow: "ellipsis" }}
+        fontSize={{ xs: 11, sm: 12 }}
+        fontWeight={500}
+        color="#6C737F"
+        sx={{ 
+          pl: { xs: 3.5, sm: 4 },
+          lineHeight: 1.2,
+        }}
       >
-        {value}
+        {label}
       </Typography>
     </Stack>
-
-    <Typography
-      fontSize={{ xs: 11, sm: 12 }}
-      fontWeight={500}
-      color="#6C737F"
-      sx={{ pl: { xs: 3.5, sm: 4  } }}
-    >
-      {label}
-    </Typography>
-  </Stack>
 );
+};
 
 export default function JobCard({
   title,
@@ -82,26 +115,26 @@ export default function JobCard({
           direction={{ xs: "column", sm: "row" }}
           spacing={{ xs: 1, sm: 2 }}
           alignItems={{ xs: "flex-start", sm: "center" }}
-        >
-          <Box
-            sx={{
+      >
+        <Box
+          sx={{
               width: { xs: 36, sm: 40 },
               height: { xs: 36, sm: 40 },
-              bgcolor: "#E3F5FF",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+            bgcolor: "#E3F5FF",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
               flexShrink: 0,
-            }}
-          >
-            <img
-              src="/assets/icons/sidebar_menu_icon/briefcase.svg"
-              width={18}
-              height={18}
-              alt="Job"
-            />
-          </Box>
+          }}
+        >
+          <img
+            src="/assets/icons/sidebar_menu_icon/briefcase.svg"
+            width={18}
+            height={18}
+            alt="Job"
+          />
+        </Box>
 
           <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography
@@ -110,16 +143,16 @@ export default function JobCard({
               color="#111927"
               sx={{ wordBreak: "break-word" }}
             >
-              {title}
-            </Typography>
+            {title}
+          </Typography>
             <Typography
               fontSize={{ xs: 12, sm: 14 }}
               color="#6C737F"
               sx={{ mt: 0.5, wordBreak: "break-word" }}
             >
-              {description}
-            </Typography>
-          </Box>
+            {description}
+          </Typography>
+        </Box>
         </Stack>
 
         {showActions && (
@@ -178,28 +211,36 @@ export default function JobCard({
       >
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          alignItems={{ xs: "flex-start", sm: "center" }}
-          justifyContent="space-between"
-          spacing={{ xs: 2, sm: 1 }}
-          
+          alignItems={{ xs: "flex-start", sm: "flex-start" }}
+          justifyContent={{ xs: "flex-start", sm: "space-between" }}
+          spacing={{ xs: 2, sm: 1.5, md: 2 }}
+          sx={{
+            flexWrap: { xs: "nowrap", sm: "wrap", md: "nowrap" },
+            width: "100%",
+          }}
         >
-          <InfoItem
+        <InfoItem
             icon="/assets/icons/personalcard.svg"
-            value={clientName}
-            label="Client Name"
-          />
+          value={clientName}
+          label="Client Name"
+            fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
+        />
 
-          <InfoItem
+        <InfoItem
             icon="/assets/icons/mail.svg"
-            value={clientEmail}
-            label="Client Email"
+          value={clientEmail}
+          label="Client Email"
+            fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
+        />
+
+        <InfoItem
+            icon="/assets/icons/phone.svg"
+          value={clientPhone}
+          label="Client Phone"
+            fixedWidth={{ xs: "100%", sm: "160px", md: "180px", lg: "200px" }}
           />
 
-          <InfoItem
-            icon="/assets/icons/phone.svg"
-            value={clientPhone}
-            label="Client Phone"
-          />
+          <Box sx={{ display: { xs: "none", sm: "block" }, flex: 1, minWidth: { sm: "20px", md: "40px" } }} />
 
           <Typography
             fontSize={{ xs: 12, sm: 14 }}
@@ -208,14 +249,16 @@ export default function JobCard({
             sx={{
               cursor: "pointer",
               whiteSpace: "nowrap",
-              alignSelf: { xs: "flex-start", sm: "center" },
+              alignSelf: { xs: "flex-start", sm: "flex-start" },
+              mt: { xs: 0, sm: 0 },
+              width: { xs: "100%", sm: "auto" },
             }}
             onClick={onViewDetails}
           >
             View Details
           </Typography>
         </Stack>
-      </Box>
+        </Box>
     </Card>
   );
 }

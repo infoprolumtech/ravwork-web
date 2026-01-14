@@ -121,6 +121,13 @@ export default function AddEditServicePage(): JSX.Element {
       const loadService = async () => {
         try {
           const response = await getServiceById(id).unwrap();
+          
+          if (!response || !response.data) {
+            dispatch(showAlert({ message: "Service not found", severity: "error" }));
+            navigate("/services-offered");
+            return;
+          }
+          
           const service = response.data as Service;
           
           if (!service) {
@@ -135,7 +142,7 @@ export default function AddEditServicePage(): JSX.Element {
           const formData: ServiceFormData = {
             serviceTitle: service.name,
             whatsIncluded: service.description,
-            servicePrice: service.price.toString(),
+            servicePrice: service.price != null ? service.price.toString() : "",
             responseTime: service.responseTime,
           };
           setServiceData(formData);
@@ -161,7 +168,8 @@ export default function AddEditServicePage(): JSX.Element {
             setCurrentStep("service_details");
           }
         } catch (error: any) {
-          const errorMessage = error?.data?.message || "Failed to load service";
+          console.error("Error loading service:", error);
+          const errorMessage = error?.data?.message || error?.message || "Failed to load service";
           dispatch(showAlert({ message: errorMessage, severity: "error" }));
           navigate("/services-offered");
         }

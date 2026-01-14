@@ -345,23 +345,21 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         >
           <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
             <Avatar
-              src={userInfo.profilePhoto || undefined}
+              src={userInfo.profilePhoto || "./assets/images/avatar.png"}
               sx={{
                 width: 44,
                 height: 44,
-                bgcolor: theme.palette.primary[500],
-                fontSize: "16px",
-                fontWeight: 600,
               }}
               imgProps={{
                 onError: (e) => {
+                  // Fallback to default avatar if image fails to load (e.g., Access Denied)
                   const target = e.target as HTMLImageElement;
-                  target.style.display = "none";
+                  if (target.src !== "./assets/images/avatar.png" && !target.src.includes("avatar.png")) {
+                    target.src = "./assets/images/avatar.png";
+                  }
                 },
               }}
-            >
-              {userInfo.avatarInitial}
-            </Avatar>
+            />
 
             <Stack spacing={0}>
               <Typography
@@ -846,4 +844,3 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     </Box>
   );
 }
-

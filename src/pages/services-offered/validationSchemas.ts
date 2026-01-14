@@ -20,12 +20,15 @@ export const serviceDetailsSchema = yup.object().shape({
     }),
   servicePrice: yup
     .string()
+    .nullable()
     .notRequired()
+    .transform((value) => (value === "" || value === null || value === undefined ? null : value))
     .test("price-format", "Price must be a valid number (e.g., 120 or $99.99)", function(value) {
-      if (!value || !value.trim()) return true; // Allow empty values
+      if (!value || value === null || value === undefined || value.trim() === "") return true; // Allow empty values
       // Allow numbers with optional decimal and optional $ symbol at start
+      const trimmedValue = value.trim();
       const priceRegex = /^\$?\d+(\.\d{0,2})?$/;
-      return priceRegex.test(value.trim());
+      return priceRegex.test(trimmedValue);
     }),
   responseTime: yup
     .string()

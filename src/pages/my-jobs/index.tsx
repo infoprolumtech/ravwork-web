@@ -1,10 +1,12 @@
 import { useState, useMemo, useEffect, type JSX } from "react";
-import { Box, Tabs, Tab, Stack, CircularProgress, Typography } from "@mui/material";
+import { Box, Tabs, Tab, Stack, CircularProgress, Typography, Dialog, DialogContent } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import JobCard from "../../components/reusecard/JobCard";
 import GlobalDialog from "../../components/dialog";
 import JobDetailsModal from "./components/JobDetailsModal";
-import { useGetJobsQuery } from "../../rtk/endpoints/userApi";
+import CompleteJobModal from "./components/CompleteJobModal";
+import DeclineJobModal from "./components/DeclineJobModal";
+import { useGetJobsQuery, useUpdateJobStatusMutation } from "../../rtk/endpoints/userApi";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
@@ -14,7 +16,12 @@ export default function MyJobsPage(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [jobToUpdate, setJobToUpdate] = useState<string | null>(null);
   const dispatch = useAppDispatch();
+  
+  const [updateJobStatus, { isLoading: isUpdatingJobStatus }] = useUpdateJobStatusMutation();
 
   // Map tab index to status
   const statusMap: Array<"pending" | "completed" | "declined" | undefined> = [
@@ -57,18 +64,80 @@ export default function MyJobsPage(): JSX.Element {
     }));
   }, [jobs]);
 
-  const handleComplete = async (jobId: string) => {
-    // TODO: Implement complete job API call
-    console.log("Complete", jobId);
-    dispatch(showAlert({ message: "Job marked as complete", severity: "success" }));
-    refetch();
+  const handleComplete = (jobId: string) => {
+    setJobToUpdate(jobId);
+    setCompleteDialogOpen(true);
   };
 
-  const handleDecline = async (jobId: string) => {
-    // TODO: Implement decline job API call
-    console.log("Decline", jobId);
-    dispatch(showAlert({ message: "Job declined", severity: "success" }));
-    refetch();
+  const handleDecline = (jobId: string) => {
+    setJobToUpdate(jobId);
+    setDeclineDialogOpen(true);
+  };
+
+  const handleCompleteSubmit = async (data: { finalPrice?: number; priceNotes?: string }) => {
+    if (!jobToUpdate) return;
+
+    try {
+      await updateJobStatus({
+        id: jobToUpdate,
+        body: {
+          status: "completed",
+          finalPrice: data.finalPrice,
+          priceNotes: data.priceNotes,
+        },
+      }).unwrap();
+
+      dispatch(showAlert({ message: "Job marked as complete", severity: "success" }));
+      setCompleteDialogOpen(false);
+      setJobToUpdate(null);
+      refetch();
+    } catch (error: any) {
+      dispatch(
+        showAlert({
+          message: error?.data?.message || "Failed to update job status",
+          severity: "error",
+        })
+      );
+    }
+  };
+
+  const handleDeclineConfirm = async () => {
+    if (!jobToUpdate) return;
+
+    try {
+      await updateJobStatus({
+        id: jobToUpdate,
+        body: {
+          status: "declined",
+        },
+      }).unwrap();
+
+      dispatch(showAlert({ message: "Job declined", severity: "success" }));
+      setDeclineDialogOpen(false);
+      setJobToUpdate(null);
+      refetch();
+    } catch (error: any) {
+      dispatch(
+        showAlert({
+          message: error?.data?.message || "Failed to decline job",
+          severity: "error",
+        })
+      );
+    }
+  };
+
+  const handleCloseCompleteDialog = () => {
+    if (!isUpdatingJobStatus) {
+      setCompleteDialogOpen(false);
+      setJobToUpdate(null);
+    }
+  };
+
+  const handleCloseDeclineDialog = () => {
+    if (!isUpdatingJobStatus) {
+      setDeclineDialogOpen(false);
+      setJobToUpdate(null);
+    }
   };
 
   const handleViewDetails = (jobId: string) => {
@@ -161,6 +230,82 @@ export default function MyJobsPage(): JSX.Element {
           component={<JobDetailsModal jobId={selectedJobId} onClose={handleCloseDetailsDialog} />}
           hideWarningLine={true}
         />
+
+        {/* Complete Job Dialog */}
+        <Dialog
+          open={completeDialogOpen}
+          onClose={handleCloseCompleteDialog}
+          maxWidth="sm"
+          fullWidth
+          sx={{
+            "& .MuiPaper-root": {
+              width: { xs: "100%", sm: "600px" },
+              maxWidth: { xs: "100%", sm: "600px" },
+              minWidth: { xs: "100%", sm: "600px" },
+              margin: { xs: 0, sm: "auto" },
+              borderRadius: { xs: "0px", sm: "16px" },
+              maxHeight: { xs: "100vh", sm: "90vh" },
+              height: { xs: "100vh", sm: "auto" },
+            },
+          }}
+        >
+          <DialogContent
+            sx={{
+              p: 0,
+              height: { xs: "100%", sm: "auto" },
+              overflowY: "auto",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+          >
+            <CompleteJobModal
+              onClose={handleCloseCompleteDialog}
+              onSubmit={handleCompleteSubmit}
+              isSubmitting={isUpdatingJobStatus}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* Decline Job Dialog */}
+        <Dialog
+          open={declineDialogOpen}
+          onClose={handleCloseDeclineDialog}
+          maxWidth="sm"
+          fullWidth
+          sx={{
+            "& .MuiPaper-root": {
+              width: { xs: "100%", sm: "600px" },
+              maxWidth: { xs: "100%", sm: "600px" },
+              minWidth: { xs: "100%", sm: "600px" },
+              margin: { xs: 0, sm: "auto" },
+              borderRadius: { xs: "0px", sm: "16px" },
+              maxHeight: { xs: "100vh", sm: "90vh" },
+              height: { xs: "100vh", sm: "auto" },
+            },
+          }}
+        >
+          <DialogContent
+            sx={{
+              p: 0,
+              height: { xs: "100%", sm: "auto" },
+              overflowY: "auto",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+          >
+            <DeclineJobModal
+              onClose={handleCloseDeclineDialog}
+              onConfirm={handleDeclineConfirm}
+              isSubmitting={isUpdatingJobStatus}
+            />
+          </DialogContent>
+        </Dialog>
       </Box>
     </ServiceProviderLayout>
   );

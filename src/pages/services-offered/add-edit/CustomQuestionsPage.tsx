@@ -610,15 +610,15 @@ export default function CustomQuestionsPage({
                           {q.question}
                         </Typography>
                         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: q.options && q.options.length > 0 ? 1 : 0 }}>
-                          <Typography
-                            sx={{
-                              fontSize: "12px",
-                              fontWeight: 400,
-                              color: "#6C737F",
-                            }}
-                          >
-                            Answer Type: {answerTypeLabel}
-                          </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: "12px",
+                            fontWeight: 400,
+                            color: "#6C737F",
+                          }}
+                        >
+                          Answer Type: {answerTypeLabel}
+                        </Typography>
                           {q.isRequired && (
                             <Typography
                               sx={{
