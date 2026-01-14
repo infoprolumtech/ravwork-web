@@ -40,7 +40,7 @@ export interface CreateServiceRequest {
 export interface UpdateServiceRequest {
   name?: string;
   description?: string;
-  price?: number;
+  price?: number | null;
   responseTime?: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible";
   contactMethod?: "quick_contact" | "custom_form";
   isActive?: boolean;

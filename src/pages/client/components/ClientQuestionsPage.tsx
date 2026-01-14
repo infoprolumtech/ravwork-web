@@ -25,6 +25,7 @@ import { createCustomFormSchema } from "../validationSchemas";
 import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
 import { useAppDispatch } from "../../../rtk/store";
 import { showAlert } from "../../../rtk/feature/alertSlice";
+import Icon from "../../../components/shared/Icon";
 
 export interface FormFieldValues {
   [key: string]: string | string[] | { date?: string; time?: string };
@@ -52,7 +53,7 @@ export default function ClientQuestionsPage({
   const dispatch = useAppDispatch();
   const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
   const [uploadingFields, setUploadingFields] = useState<Record<string, boolean>>({});
-  const [imagePreviews, setImagePreviews] = useState<Record<string, string>>({});
+  const [imagePreviews, setImagePreviews] = useState<Record<string, string[]>>({});
 
   // Create dynamic schema based on formFields
   const schema = useMemo(() => createCustomFormSchema(formFields), [formFields]);
@@ -68,12 +69,17 @@ export default function ClientQuestionsPage({
     form.reset(formFieldValues);
     // Initialize image previews from existing values
     const fileFields = formFields.filter(f => f.fieldType === "file" || f.fieldType === "images");
-    const newPreviews: Record<string, string> = {};
+    const newPreviews: Record<string, string[]> = {};
     fileFields.forEach(field => {
       const value = formFieldValues[field.id];
-      if (value && typeof value === "string" && value.startsWith("http")) {
-        // If it's already a URL, use it as preview
-        newPreviews[field.id] = value;
+      if (Array.isArray(value) && value.length > 0) {
+        // If it's an array of URLs, use them as previews
+        newPreviews[field.id] = value.filter((url: any) => url && url !== "");
+      } else if (value && typeof value === "string" && value.startsWith("http")) {
+        // Backward compatibility: single URL string
+        newPreviews[field.id] = [value];
+      } else {
+        newPreviews[field.id] = [];
       }
     });
     setImagePreviews(newPreviews);
@@ -115,6 +121,18 @@ export default function ClientQuestionsPage({
         if (typeof value === "object" && !Array.isArray(value)) {
           const dateTimeValue = value as { date?: string; time?: string };
           return dateTimeValue.date && dateTimeValue.time && dateTimeValue.date !== "" && dateTimeValue.time !== "";
+        }
+        return false;
+      }
+      
+      // For image upload fields, check if array has at least 1 image
+      if (field.fieldType === "file" || field.fieldType === "images") {
+        if (Array.isArray(value)) {
+          return value.length > 0 && value.every((url: any) => url && url !== "");
+        }
+        // Backward compatibility: single string URL
+        if (typeof value === "string") {
+          return value !== "" && value !== null && value !== undefined;
         }
         return false;
       }
@@ -868,83 +886,136 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => {
-              const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
+              const currentImages = Array.isArray(formFieldValues[field.id]) 
+                ? (formFieldValues[field.id] as string[]).filter((url: string) => url && url !== "")
+                : (formFieldValues[field.id] && typeof formFieldValues[field.id] === "string" && formFieldValues[field.id] !== "")
+                  ? [formFieldValues[field.id] as string]
+                  : [];
+              
+              const previewUrls = imagePreviews[field.id] || [];
+              const isUploading = uploadingFields[field.id] || false;
+              const maxImages = 10;
+              const canAddMore = currentImages.length < maxImages;
 
-                // Validate file type
-                if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+              const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+                const files = event.target.files;
+                if (!files || files.length === 0) return;
+
+                // Check if adding these files would exceed the limit
+                const filesToAdd = Array.from(files);
+                if (currentImages.length + filesToAdd.length > maxImages) {
                   dispatch(showAlert({ 
-                    message: "Invalid file type. Please upload a PNG or JPG image.", 
+                    message: `Maximum ${maxImages} images allowed. You can add ${maxImages - currentImages.length} more.`, 
                     severity: "error" 
                   }));
+                  event.target.value = "";
+                  return;
+                }
+
+                // Validate file types
+                const invalidFiles = filesToAdd.filter(file => !file.type.match(/^image\/(png|jpeg|jpg)$/));
+                if (invalidFiles.length > 0) {
+                  dispatch(showAlert({ 
+                    message: "Invalid file type. Please upload PNG or JPG images only.", 
+                    severity: "error" 
+                  }));
+                  event.target.value = "";
                   return;
                 }
 
                 setUploadingFields({ ...uploadingFields, [field.id]: true });
                 
                 try {
-                  // Generate unique filename
-                  const timestamp = Date.now();
-                  const randomString = Math.random().toString(36).substring(2, 15);
-                  const fileExtension = file.name.split('.').pop() || 'jpg';
-                  const fileName = `service-upload-${timestamp}-${randomString}.${fileExtension}`;
+                  const uploadedUrls: string[] = [];
+                  const previewPromises: Promise<string>[] = [];
 
-                  // Step 1: Generate presigned URL
-                  const presignedResponse = await generatePresignedUrl({
-                    type: "PUT",
-                    files: [
-                      {
-                        folderName: "service-uploads",
-                        fileName: fileName,
-                      },
-                    ],
-                  }).unwrap();
+                  // Upload each file
+                  for (const file of filesToAdd) {
+                    // Generate unique filename
+                    const timestamp = Date.now();
+                    const randomString = Math.random().toString(36).substring(2, 15);
+                    const fileExtension = file.name.split('.').pop() || 'jpg';
+                    const fileName = `service-upload-${timestamp}-${randomString}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
 
-                  if (!presignedResponse?.data?.[0]?.signedUrl) {
-                    throw new Error("Failed to generate presigned URL");
+                    // Step 1: Generate presigned URL
+                    const presignedResponse = await generatePresignedUrl({
+                      type: "PUT",
+                      files: [
+                        {
+                          folderName: "service-uploads",
+                          fileName: fileName,
+                        },
+                      ],
+                    }).unwrap();
+
+                    if (!presignedResponse?.data?.[0]?.signedUrl) {
+                      throw new Error("Failed to generate presigned URL");
+                    }
+
+                    const signedUrl = presignedResponse.data[0].signedUrl;
+
+                    // Step 2: Upload file to S3 using presigned URL
+                    const uploadResponse = await fetch(signedUrl, {
+                      method: "PUT",
+                      body: file,
+                    });
+
+                    if (!uploadResponse.ok) {
+                      throw new Error("Failed to upload image to S3");
+                    }
+
+                    // Step 3: Extract the full S3 URL from the presigned URL
+                    const s3Url = new URL(signedUrl);
+                    const imageUrl = `${s3Url.origin}${s3Url.pathname}`;
+                    uploadedUrls.push(imageUrl);
+
+                    // Create preview promise
+                    const previewPromise = new Promise<string>((resolve) => {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        resolve(reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    });
+                    previewPromises.push(previewPromise);
                   }
 
-                  const signedUrl = presignedResponse.data[0].signedUrl;
+                  // Wait for all previews to be ready
+                  const newPreviews = await Promise.all(previewPromises);
 
-                  // Step 2: Upload file to S3 using presigned URL
-                  const uploadResponse = await fetch(signedUrl, {
-                    method: "PUT",
-                    body: file,
-                  });
-
-                  if (!uploadResponse.ok) {
-                    throw new Error("Failed to upload image to S3");
-                  }
-
-                  // Step 3: Extract the full S3 URL from the presigned URL
-                  const s3Url = new URL(signedUrl);
-                  const imageUrl = `${s3Url.origin}${s3Url.pathname}`;
-
-                  // Step 4: Store S3 URL in form
-                  formField.onChange(imageUrl);
-                  setFormFieldValues({ ...formFieldValues, [field.id]: imageUrl });
-
-                  // Update preview
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setImagePreviews({ ...imagePreviews, [field.id]: reader.result as string });
-                  };
-                  reader.readAsDataURL(file);
+                  // Update form values with all uploaded URLs
+                  const updatedImages = [...currentImages, ...uploadedUrls];
+                  formField.onChange(updatedImages);
+                  setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
+                  
+                  // Update previews
+                  const updatedPreviews = [...previewUrls, ...newPreviews];
+                  setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
 
                   dispatch(showAlert({ 
-                    message: "Image uploaded successfully!", 
+                    message: `${filesToAdd.length} image(s) uploaded successfully!`, 
                     severity: "success" 
                   }));
                 } catch (error: any) {
                   console.error("Upload error:", error);
                   dispatch(showAlert({
-                    message: error?.message || "Failed to upload image. Please try again.",
+                    message: error?.message || "Failed to upload image(s). Please try again.",
                     severity: "error"
                   }));
                 } finally {
                   setUploadingFields({ ...uploadingFields, [field.id]: false });
+                  event.target.value = "";
                 }
+              };
+
+              const handleRemoveImage = (indexToRemove: number) => {
+                const updatedImages = currentImages.filter((_, index) => index !== indexToRemove);
+                const updatedPreviews = previewUrls.filter((_, index) => index !== indexToRemove);
+                
+                formField.onChange(updatedImages);
+                setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
+                setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
+                form.trigger(field.id);
               };
 
               return (
@@ -964,72 +1035,171 @@ export default function ClientQuestionsPage({
                       )}
                     </Typography>
                   </Stack>
-                  <input
-                    accept="image/png,image/jpeg,image/jpg"
-                    style={{ display: "none" }}
-                    id={`file-upload-${field.id}`}
-                    type="file"
-                    onChange={handleImageUpload}
-                    disabled={uploadingFields[field.id] || isSubmitting}
-                  />
-                  <label htmlFor={`file-upload-${field.id}`}>
-                    <Button
-                      variant="outlined"
-                      component="span"
-                      disabled={uploadingFields[field.id] || isSubmitting}
-                      sx={{
-                        width: "100%",
-                        borderColor: "#D1D5DB",
-                        color: "#111927",
-                        textTransform: "none",
-                        py: 1.5,
-                        borderRadius: "8px",
-                        "&:hover": {
-                          borderColor: "#9CA3AF",
-                          backgroundColor: "#F9FAFB",
-                        },
-                        "&:disabled": {
-                          borderColor: "#E5E7EB",
-                          color: "#9CA3AF",
-                        },
-                      }}
-                      startIcon={
-                        uploadingFields[field.id] ? (
-                          <CircularProgress size={16} />
-                        ) : (
-                          <Box
-                            component="span"
-                            sx={{
-                              width: 20,
-                              height: 20,
-                              display: "inline-flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "20px",
-                            }}
-                          >
-                            📷
-                          </Box>
-                        )
-                      }
-                    >
-                      {uploadingFields[field.id] ? "Uploading..." : formFieldValues[field.id] ? "Change Image" : "Upload Image"}
-                    </Button>
-                  </label>
-                  {imagePreviews[field.id] && (
-                    <Box sx={{ mt: 2 }}>
-                      <img
-                        src={imagePreviews[field.id].startsWith("http") ? getCloudFrontUrl(imagePreviews[field.id]) : imagePreviews[field.id]}
-                        alt="Preview"
-                        style={{
-                          maxWidth: "100%",
-                          maxHeight: "200px",
-                          borderRadius: "8px",
-                          objectFit: "contain",
+                  
+                  {/* Upload Button */}
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <Box sx={{ position: "relative", display: "inline-block" }}>
+                      <Box
+                        sx={{
+                          width: { xs: 120, sm: 150 },
+                          height: { xs: 120, sm: 150 },
+                          borderRadius: 2,
+                          border: "1px solid #D1D5DB",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: isUploading ? "#F3F4F6" : "transparent",
                         }}
                       />
+                      <input
+                        accept="image/png,image/jpeg,image/jpg"
+                        style={{ display: "none" }}
+                        id={`file-upload-${field.id}`}
+                        type="file"
+                        multiple
+                        onChange={handleImageUpload}
+                        disabled={isUploading || isSubmitting || !canAddMore}
+                      />
+                      {isUploading ? (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
+                        </Box>
+                      ) : canAddMore ? (
+                        <label htmlFor={`file-upload-${field.id}`}>
+                          <Button
+                            component="span"
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              minWidth: "auto",
+                              p: 1,
+                              backgroundColor: "rgba(0,0,0,0.5)",
+                              borderRadius: "50%",
+                              width: 40,
+                              height: 40,
+                              "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                            }}
+                          >
+                            <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
+                          </Button>
+                        </label>
+                      ) : (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            textAlign: "center",
+                            px: 1,
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: "#6C737F",
+                              fontSize: "12px",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Max {maxImages} images
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                    {canAddMore && (
+                      <Typography
+                        sx={{
+                          mt: 1,
+                          color: "#6C737F",
+                          fontSize: "12px",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {currentImages.length === 0 
+                          ? (field.isRequired ? "Upload at least 1 image (max 10)" : "Upload up to 10 images")
+                          : `${currentImages.length}/${maxImages} images. You can add ${maxImages - currentImages.length} more.`
+                        }
+                      </Typography>
+                    )}
+                  </Box>
+                  
+                  {/* Image Grid - Show after upload box */}
+                  {currentImages.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "repeat(2, 1fr)",
+                            sm: "repeat(3, 1fr)",
+                            md: "repeat(4, 1fr)",
+                          },
+                          gap: { xs: 1.5, sm: 2 },
+                        }}
+                      >
+                        {currentImages.map((imageUrl, index) => {
+                          const previewUrl = previewUrls[index] 
+                            ? (previewUrls[index].startsWith("http") ? getCloudFrontUrl(previewUrls[index]) : previewUrls[index])
+                            : (imageUrl.startsWith("http") ? getCloudFrontUrl(imageUrl) : imageUrl);
+                          
+                          return (
+                            <Box
+                              key={index}
+                              sx={{
+                                position: "relative",
+                                width: "100%",
+                                aspectRatio: "1",
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                border: "1px solid #D1D5DB",
+                              }}
+                            >
+                              <Box
+                                component="img"
+                                src={previewUrl}
+                                alt={`Preview ${index + 1}`}
+                                sx={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <IconButton
+                                onClick={() => handleRemoveImage(index)}
+                                sx={{
+                                  position: "absolute",
+                                  top: 4,
+                                  right: 4,
+                                  backgroundColor: "rgba(0,0,0,0.6)",
+                                  color: "white",
+                                  width: 28,
+                                  height: 28,
+                                  "&:hover": {
+                                    backgroundColor: "rgba(0,0,0,0.8)",
+                                  },
+                                }}
+                              >
+                                <Close sx={{ fontSize: 16 }} />
+                              </IconButton>
+                            </Box>
+                          );
+                        })}
+                      </Box>
                     </Box>
                   )}
+                  
                   {form.formState.errors[field.id] && (
                     <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
                       {form.formState.errors[field.id]?.message as string}

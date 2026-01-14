@@ -19,12 +19,17 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     // If signup is incomplete (profileStep < 3), allow access to these pages
     // to continue the signup flow or allow login page to navigate
     // profileStep 3 = signup complete
-    const allowedPaths = ["/", "/signup", "/login"];
+    const allowedPaths = ["/", "/signup", "/login", "/landing"];
     if (profileStep < 3 && allowedPaths.includes(location.pathname)) {
       // For login page, redirect to signup to continue the flow
       if (location.pathname === "/login") {
         return <Navigate to="/signup" state={{ resumeStep: profileStep + 1 }} replace />;
       }
+      return children;
+    }
+    
+    // Allow landing page for all logged-in users
+    if (location.pathname === "/landing") {
       return children;
     }
     

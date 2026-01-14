@@ -77,16 +77,29 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
           });
       }
     } else if (field.fieldType === "file" || field.fieldType === "images") {
-      // Handle file/image upload fields
+      // Handle file/image upload fields - support multiple images (array)
       if (field.isRequired) {
         fieldSchema = yup
-          .string()
+          .array()
+          .of(yup.string())
           .required(`${field.label} is required`)
-          .test("file-url", `${field.label} is required`, function(value: any) {
-            return value !== "" && value !== null && value !== undefined;
+          .min(1, `${field.label} requires at least 1 image`)
+          .max(10, `${field.label} allows maximum 10 images`)
+          .test("not-empty-array", `${field.label} requires at least 1 image`, function(value: any) {
+            return Array.isArray(value) && value.length > 0 && value.every((url: any) => url && url !== "");
           });
       } else {
-        fieldSchema = yup.string().notRequired();
+        fieldSchema = yup
+          .array()
+          .of(yup.string())
+          .notRequired()
+          .max(10, `${field.label} allows maximum 10 images`)
+          .test("valid-urls", "All image URLs must be valid", function(value: any) {
+            if (!value || !Array.isArray(value) || value.length === 0) {
+              return true; // Empty is valid for non-required fields
+            }
+            return value.every((url: any) => url && url !== "");
+          });
       }
     } else if (field.fieldType === "text" && !field.options) {
       // Handle text fields (not radio/select) with string validation for max length support

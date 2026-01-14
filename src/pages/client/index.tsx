@@ -1043,7 +1043,11 @@ export default function ClientPage(): JSX.Element {
             alignItems="center"
             justifyContent="center"
             mb={{ xs: "40px", sm: "68px" }}
-            onClick={() => navigate("/landing")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate("/landing-page");
+            }}
             sx={{
               cursor: "pointer",
               "&:hover": {

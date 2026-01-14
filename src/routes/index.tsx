@@ -196,11 +196,9 @@ export default function AppRoutes() {
 
     // Landing Page
     {
-      path: "/landing",
+      path: "/landing-page",
       element: (
-        <PublicRoute>
-          <LandingPage />
-        </PublicRoute>
+        <LandingPage />
       ),
     },
 
