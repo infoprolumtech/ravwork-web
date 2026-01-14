@@ -661,7 +661,7 @@ export default function ClientPage(): JSX.Element {
                       <img
                         src={
                           service.contactMethod === "quick_contact"
-                            ? "/assets/icons/service_offered_icons/quick_contact.svg"
+                            ? "/assets/icons/service_offered_icons/quick_contact_client.svg"
                             : "/assets/icons/service_offered_icons/custom_form.svg"
                         }
                       // alt="Service"
