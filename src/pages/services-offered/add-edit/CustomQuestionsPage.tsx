@@ -7,6 +7,8 @@ import {
   IconButton,
   MenuItem,
   CircularProgress,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { DeleteOutline, Edit } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
@@ -38,14 +40,15 @@ const answerTypeOptions = [
   { value: "long_text", label: "Long Text" },
   { value: "single_choice", label: "Single choice (dropdown)" },
   { value: "multiselect", label: "Multichoice" },
-  { value: "date", label: "Date" },
-  { value: "time", label: "Time" },
+  { value: "date_time", label: "Date & Time" },
+  { value: "image", label: "Image Upload" },
 ];
 
 interface QuestionFormData {
   question: string;
   answerType: string;
   options: string[];
+  isRequired: boolean;
 }
 
 export default function CustomQuestionsPage({
@@ -67,6 +70,7 @@ export default function CustomQuestionsPage({
       question: "",
       answerType: "",
       options: ["", ""],
+      isRequired: false,
     },
   });
 
@@ -76,7 +80,12 @@ export default function CustomQuestionsPage({
   // Update state when initialQuestions changes
   React.useEffect(() => {
     if (initialQuestions) {
-      setCreatedQuestions(initialQuestions);
+      // Convert legacy "date" or "time" answerTypes to "date_time"
+      const normalizedQuestions = initialQuestions.map(q => ({
+        ...q,
+        answerType: (q.answerType === "date" || q.answerType === "time") ? "date_time" : q.answerType
+      }));
+      setCreatedQuestions(normalizedQuestions);
     }
   }, [initialQuestions]);
 
@@ -110,7 +119,12 @@ export default function CustomQuestionsPage({
     const sortedQuestions = [...createdQuestions].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
     const questionToEdit = sortedQuestions[index];
     form.setValue("question", questionToEdit.question);
-    form.setValue("answerType", questionToEdit.answerType);
+    // Convert legacy "date" or "time" to "date_time" for display
+    const answerTypeToSet = (questionToEdit.answerType === "date" || questionToEdit.answerType === "time") 
+      ? "date_time" 
+      : questionToEdit.answerType;
+    form.setValue("answerType", answerTypeToSet);
+    form.setValue("isRequired", questionToEdit.isRequired || false);
     
     // Store the sortOrder for when we re-add the question
     setEditingSortOrder(questionToEdit.sortOrder);
@@ -139,8 +153,10 @@ export default function CustomQuestionsPage({
         case "long_text": return "textarea";
         case "single_choice": return "select";
         case "multiselect": return "checkbox";
+        case "date_time": return "date";
         case "date": return "date";
         case "time": return "time";
+        case "image": return "images";
         default: return "text";
       }
     };
@@ -151,7 +167,7 @@ export default function CustomQuestionsPage({
       options: showOptions ? data.options.filter((opt) => opt.trim() !== "") : undefined,
       label: data.question.trim(),
       fieldType: mapAnswerTypeToFieldType(data.answerType),
-      isRequired: false,
+      isRequired: data.isRequired || false,
     };
 
     if (editingIndex !== null && editingSortOrder !== undefined) {
@@ -172,6 +188,7 @@ export default function CustomQuestionsPage({
       question: "",
       answerType: "",
       options: ["", ""],
+      isRequired: false,
     });
     setOptions(["", ""]);
   };
@@ -188,21 +205,24 @@ export default function CustomQuestionsPage({
         case "long_text": return "textarea";
         case "single_choice": return "select";
         case "multiselect": return "checkbox";
+        case "date_time": return "date";
         case "date": return "date";
         case "time": return "time";
+        case "image": return "images";
         default: return "text";
       }
     };
 
     // If there's a current question being filled, add it first
     if (question.trim() && answerType) {
+      const isRequiredValue = form.getValues("isRequired") || false;
       const questionData: CustomQuestionData = {
         question: question.trim(),
         answerType,
         options: showOptions ? options.filter((opt) => opt.trim() !== "") : undefined,
         label: question.trim(),
         fieldType: mapAnswerTypeToFieldType(answerType),
-        isRequired: false,
+        isRequired: isRequiredValue,
         sortOrder: createdQuestions.length,
       };
       const allQuestions = [...createdQuestions, questionData];
@@ -300,15 +320,15 @@ export default function CustomQuestionsPage({
             name="question"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Question"
-                placeholder="e.g. What is the event location"
+            fullWidth
+            variant="outlined"
+            label="Question"
+            placeholder="e.g. What is the event location"
                 error={Boolean(form.formState.errors.question)}
                 helperText={form.formState.errors.question?.message}
-                sx={{ mt: 2 }}
+            sx={{ mt: 2 }}
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("question");
@@ -324,14 +344,14 @@ export default function CustomQuestionsPage({
             name="answerType"
             control={form.control}
             render={({ field }) => (
-              <StyledTextField
+          <StyledTextField
                 {...field}
-                fullWidth
-                variant="outlined"
-                label="Answer Type"
+            fullWidth
+            variant="outlined"
+            label="Answer Type"
                 error={Boolean(form.formState.errors.answerType)}
                 helperText={form.formState.errors.answerType?.message}
-                select
+            select
             SelectProps={{
               displayEmpty: true,
               renderValue: (selected) => {
@@ -384,7 +404,44 @@ export default function CustomQuestionsPage({
                 {option.label}
               </MenuItem>
             ))}
-              </StyledTextField>
+          </StyledTextField>
+            )}
+          />
+        </Box>
+
+        {/* Required Toggle */}
+        <Box>
+          <Controller
+            name="isRequired"
+            control={form.control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={field.value || false}
+                    sx={{
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "#111927",
+                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "#111927",
+                      },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      color: "#111927",
+                    }}
+                  >
+                    Required
+                  </Typography>
+                }
+              />
             )}
           />
         </Box>
@@ -522,8 +579,13 @@ export default function CustomQuestionsPage({
               {[...createdQuestions]
                 .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
                 .map((q, index) => {
+                // Handle both new "date_time" and legacy "date"/"time" answerTypes
+                let answerTypeToLookup = q.answerType;
+                if (q.answerType === "date" || q.answerType === "time") {
+                  answerTypeToLookup = "date_time";
+                }
                 const answerTypeLabel = answerTypeOptions.find(
-                  (opt) => opt.value === q.answerType
+                  (opt) => opt.value === answerTypeToLookup
                 )?.label || q.answerType;
                 return (
                   <Box
@@ -547,16 +609,32 @@ export default function CustomQuestionsPage({
                         >
                           {q.question}
                         </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: "12px",
-                            fontWeight: 400,
-                            color: "#6C737F",
-                            mb: q.options && q.options.length > 0 ? 1 : 0,
-                          }}
-                        >
-                          Answer Type: {answerTypeLabel}
-                        </Typography>
+                        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: q.options && q.options.length > 0 ? 1 : 0 }}>
+                          <Typography
+                            sx={{
+                              fontSize: "12px",
+                              fontWeight: 400,
+                              color: "#6C737F",
+                            }}
+                          >
+                            Answer Type: {answerTypeLabel}
+                          </Typography>
+                          {q.isRequired && (
+                            <Typography
+                              sx={{
+                                fontSize: "12px",
+                                fontWeight: 500,
+                                color: "#F04438",
+                                
+                                px: 1,
+                                py: 0.25,
+                                borderRadius: "4px",
+                              }}
+                            >
+                              Required
+                            </Typography>
+                          )}
+                        </Stack>
                         {q.options && q.options.length > 0 && (
                           <Box sx={{ mt: 1 }}>
                             <Typography
@@ -678,7 +756,7 @@ export default function CustomQuestionsPage({
               Creating...
             </>
           ) : (
-            "Create Question"
+            "Next"
           )}
         </Button>
       </Stack>

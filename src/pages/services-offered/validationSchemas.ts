@@ -5,16 +5,24 @@ export const serviceDetailsSchema = yup.object().shape({
   serviceTitle: yup
     .string()
     .required("Service title is required")
-    .max(50, "Service title must be at most 50 characters"),
+    .max(50, "Service title must be at most 50 characters")
+    .test("serviceTitle-validation", "Service title must be at most 50 characters", function(value) {
+      if (!value || value.trim() === "") return false;
+      return value.length <= 50;
+    }),
   whatsIncluded: yup
     .string()
     .required("Description is required")
-    .max(150, "Description must be at most 150 characters"),
+    .max(150, "Description must be at most 150 characters")
+    .test("whatsIncluded-validation", "Description must be at most 150 characters", function(value) {
+      if (!value || value.trim() === "") return false;
+      return value.length <= 150;
+    }),
   servicePrice: yup
     .string()
-    .required("Service price is required")
+    .notRequired()
     .test("price-format", "Price must be a valid number (e.g., 120 or $99.99)", function(value) {
-      if (!value || !value.trim()) return false;
+      if (!value || !value.trim()) return true; // Allow empty values
       // Allow numbers with optional decimal and optional $ symbol at start
       const priceRegex = /^\$?\d+(\.\d{0,2})?$/;
       return priceRegex.test(value.trim());

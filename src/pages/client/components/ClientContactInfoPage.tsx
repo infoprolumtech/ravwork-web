@@ -21,6 +21,7 @@ interface ContactFormInputs {
 
 interface ClientContactInfoPageProps {
   onClose: () => void;
+  onBack?: () => void;
   onNext: (data: ContactFormInputs) => void;
   onSubmit: (data: ContactFormInputs) => void;
   contactDetails: ContactFormInputs;
@@ -28,6 +29,7 @@ interface ClientContactInfoPageProps {
   isQuickContact: boolean;
   isInquiry?: boolean;
   isSubmitting: boolean;
+  isFromCustomQuestions?: boolean;
 }
 
 export default function ClientContactInfoPage({
@@ -39,6 +41,7 @@ export default function ClientContactInfoPage({
   isQuickContact,
   isInquiry = false,
   isSubmitting,
+  isFromCustomQuestions = false,
 }: ClientContactInfoPageProps): JSX.Element {
   const schema = isInquiry ? inquirySchema : contactInfoSchema;
   
@@ -59,7 +62,7 @@ export default function ClientContactInfoPage({
   };
 
   const handleFormSubmit = (data: ContactFormInputs) => {
-    if (isQuickContact || isInquiry) {
+    if (isQuickContact || isInquiry || isFromCustomQuestions) {
       onSubmit(data);
     } else {
       onNext(data);
@@ -116,7 +119,7 @@ export default function ClientContactInfoPage({
       {/* Form Fields */}
       <form onSubmit={form.handleSubmit(handleFormSubmit)} style={{ width: "100%" }}>
         <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
-          {/* Full Name */}
+          {/* Name */}
           <Controller
             name="fullName"
             control={form.control}
@@ -125,37 +128,14 @@ export default function ClientContactInfoPage({
                 {...field}
                 fullWidth
                 variant="outlined"
-                label="Full name"
-                placeholder="Enter your full name"
+                label="Name"
+                placeholder="Enter your name"
                 error={Boolean(form.formState.errors.fullName)}
                 helperText={form.formState.errors.fullName?.message}
                 onChange={(e) => {
                   field.onChange(e);
                   handleFormChange({ ...form.getValues(), fullName: e.target.value });
                   form.trigger("fullName");
-                }}
-              />
-            )}
-          />
-
-          {/* Email */}
-          <Controller
-            name="email"
-            control={form.control}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                fullWidth
-                variant="outlined"
-                label="Email"
-                placeholder="Enter your email"
-                error={Boolean(form.formState.errors.email)}
-                helperText={form.formState.errors.email?.message}
-                InputLabelProps={{ required: false }}
-                onChange={(e) => {
-                  field.onChange(e);
-                  handleFormChange({ ...form.getValues(), email: e.target.value });
-                  form.trigger("email");
                 }}
               />
             )}
@@ -178,6 +158,29 @@ export default function ClientContactInfoPage({
                   field.onChange(e);
                   handleFormChange({ ...form.getValues(), phoneNumber: e.target.value });
                   form.trigger("phoneNumber");
+                }}
+              />
+            )}
+          />
+
+          {/* Email */}
+          <Controller
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Email (optional)"
+                placeholder="Enter your email"
+                error={Boolean(form.formState.errors.email)}
+                helperText={form.formState.errors.email?.message}
+                InputLabelProps={{ required: false }}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleFormChange({ ...form.getValues(), email: e.target.value });
+                  form.trigger("email");
                 }}
               />
             )}
@@ -235,7 +238,7 @@ export default function ClientContactInfoPage({
         >
           Cancel
         </Button>
-        {isQuickContact || isInquiry ? (
+        {isQuickContact || isInquiry || isFromCustomQuestions ? (
           <Button
             variant="secondary"
             onClick={form.handleSubmit(handleFormSubmit)}

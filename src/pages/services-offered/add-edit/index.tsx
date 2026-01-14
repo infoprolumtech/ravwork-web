@@ -50,8 +50,9 @@ const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
     answerType: field.fieldType === "select" ? "single_choice" : 
                 field.fieldType === "checkbox" ? "multiselect" :
                 field.fieldType === "textarea" ? "long_text" :
-                  field.fieldType === "date" ? "date" :
-                  field.fieldType === "time" ? "time" : "short_text",
+                  field.fieldType === "date" ? "date_time" :
+                  field.fieldType === "time" ? "date_time" :
+                  (field.fieldType === "images" || field.fieldType === "file") ? "image" : "short_text",
     options: field.options || [],
     label: field.label,
     fieldType: field.fieldType,
@@ -69,16 +70,18 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
   // - "Long Text" (long_text) → "textarea"
   // - "Single choice (dropdown)" (single_choice) → "select"
   // - "Multichoice" (multiselect) → "checkbox"
-  // - "Date" (date) → "date"
-  // - "Time" (time) → "time"
+  // - "Date & Time" (date_time) → "date"
+  // - "Image Upload" (image) → "images"
   const mapAnswerTypeToFieldType = (answerType: string): string => {
     switch (answerType) {
       case "short_text": return "text";
       case "long_text": return "textarea";
       case "single_choice": return "select";
       case "multiselect": return "checkbox";
+      case "date_time": return "date";
       case "date": return "date";
       case "time": return "time";
+      case "image": return "images";
       default: return "text";
     }
   };
@@ -105,6 +108,7 @@ export default function AddEditServicePage(): JSX.Element {
   const [currentStep, setCurrentStep] = useState<StepType>("service_details");
   const [serviceData, setServiceData] = useState<ServiceFormData | null>(null);
   const [contactInfoData, setContactInfoData] = useState<ContactInfoFormData | null>(null);
+  const [questionsData, setQuestionsData] = useState<any[]>([]);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
   const [createService, { isLoading: isCreatingService }] = useCreateServiceMutation();
@@ -144,6 +148,12 @@ export default function AddEditServicePage(): JSX.Element {
           };
           setContactInfoData(userContactInfo);
 
+          // Load questions data if editing
+          if (service.formFields && service.formFields.length > 0) {
+            const questions = transformFormFieldsToQuestions(service.formFields);
+            setQuestionsData(questions);
+          }
+
           // Determine initial step based on service type
           if (service.contactMethod === "custom_form" || (service.formFields && service.formFields.length > 0)) {
             setCurrentStep("service_details");
@@ -181,12 +191,8 @@ export default function AddEditServicePage(): JSX.Element {
         setCurrentStep("service_details");
         break;
       case "contact_info":
-        // Go back to contact method (if new) or service details (if editing)
-        if (editingService) {
-          setCurrentStep("service_details");
-        } else {
-          setCurrentStep("contact_method");
-        }
+        // Go back to custom questions (since contact_info comes after custom questions in the flow)
+        setCurrentStep("contact_info_questions");
         break;
       case "quick_contact":
         // Go back to contact method (if new) or service details (if editing)
@@ -197,8 +203,12 @@ export default function AddEditServicePage(): JSX.Element {
         }
         break;
       case "contact_info_questions":
-        // Go back to contact info
-        setCurrentStep("contact_info");
+        // Go back to contact method (if new) or service details (if editing)
+        if (editingService) {
+          setCurrentStep("service_details");
+        } else {
+          setCurrentStep("contact_method");
+        }
         break;
       default:
         navigate("/services-offered");
@@ -215,11 +225,11 @@ export default function AddEditServicePage(): JSX.Element {
     // If editing a service, skip contact method and go directly to the appropriate step
     if (editingService) {
       if (editingService.contactMethod === "custom_form" || (editingService.formFields && editingService.formFields.length > 0)) {
-        setCurrentStep("contact_info");
+        setCurrentStep("contact_info_questions");
       } else if (editingService.contactMethod === "quick_contact") {
         setCurrentStep("quick_contact");
       } else {
-        setCurrentStep("contact_info");
+        setCurrentStep("contact_info_questions");
       }
     } else {
       // For new services, show contact method selection
@@ -231,26 +241,28 @@ export default function AddEditServicePage(): JSX.Element {
     if (method === "quick_contact") {
       setCurrentStep("quick_contact");
     } else {
-      setCurrentStep("contact_info");
+      setCurrentStep("contact_info_questions");
     }
   };
 
-  const handleContactInfoNext = (data: ContactInfoFormData) => {
-    setContactInfoData(data);
-    setCurrentStep("contact_info_questions");
+  const handleQuestionsNext = (questions: any[]) => {
+    setQuestionsData(questions);
+      setCurrentStep("contact_info");
   };
 
-  const handleCreateQuestion = async (questions: any[]) => {
+  const handleContactInfoNext = async (data: ContactInfoFormData) => {
+    setContactInfoData(data);
+    // Submit with both questions and contact info
     if (!serviceData) return;
 
     try {
-      const formFields = transformQuestionsToFormFields(questions);
+      const formFields = transformQuestionsToFormFields(questionsData);
       const contactMethod: "quick_contact" | "custom_form" = "custom_form";
       
       const requestBody: CreateServiceRequest = {
         name: serviceData.serviceTitle,
         description: serviceData.whatsIncluded,
-        price: parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) || 0,
+        price: serviceData.servicePrice && serviceData.servicePrice.trim() ? parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) : null,
         responseTime: mapResponseTimeToAPI(serviceData.responseTime),
         contactMethod,
         formFields,
@@ -271,6 +283,7 @@ export default function AddEditServicePage(): JSX.Element {
     }
   };
 
+
   const handleQuickContactSubmit = async (_data: QuickContactFormData) => {
     if (!serviceData) return;
 
@@ -278,7 +291,7 @@ export default function AddEditServicePage(): JSX.Element {
       const requestBody: CreateServiceRequest = {
         name: serviceData.serviceTitle,
         description: serviceData.whatsIncluded,
-        price: parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) || 0,
+        price: serviceData.servicePrice && serviceData.servicePrice.trim() ? parseFloat(serviceData.servicePrice.replace(/[^0-9.]/g, "")) : null,
         responseTime: mapResponseTimeToAPI(serviceData.responseTime),
         contactMethod: "quick_contact",
       };
@@ -391,15 +404,6 @@ export default function AddEditServicePage(): JSX.Element {
             />
           )}
 
-          {currentStep === "contact_info" && (
-            <ContactInfoPage
-              onBack={handleBack}
-              onCancel={handleCancel}
-              onNext={handleContactInfoNext}
-              initialData={contactInfoData}
-            />
-          )}
-
           {currentStep === "quick_contact" && (
             <QuickContactPage
               onBack={handleBack}
@@ -415,9 +419,20 @@ export default function AddEditServicePage(): JSX.Element {
             <CustomQuestionsPage
               onBack={handleBack}
               onCancel={handleCancel}
-              onSubmit={handleCreateQuestion}
-              initialQuestions={editingService?.formFields ? transformFormFieldsToQuestions(editingService.formFields) : null}
+              onSubmit={handleQuestionsNext}
+              initialQuestions={editingService?.formFields ? transformFormFieldsToQuestions(editingService.formFields) : questionsData.length > 0 ? questionsData : null}
+              isSubmitting={false}
+            />
+          )}
+
+          {currentStep === "contact_info" && (
+            <ContactInfoPage
+              onBack={handleBack}
+              onCancel={handleCancel}
+              onNext={handleContactInfoNext}
+              initialData={contactInfoData}
               isSubmitting={isSubmittingService}
+              isEditMode={isEditMode}
             />
           )}
         </Card>

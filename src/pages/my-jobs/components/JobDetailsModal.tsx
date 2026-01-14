@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useGetJobByIdQuery } from "../../../rtk/endpoints/userApi";
+import { getCloudFrontUrl } from "../../../utils/helper";
 
 interface JobDetailsModalProps {
   jobId: string | null;
@@ -341,66 +342,179 @@ export default function JobDetailsModal({
                   Form Responses
                 </Typography>
                 <Stack spacing={{ xs: 1.5, sm: 2 }}>
-                  {jobDetails.formResponses.map((response, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        p: { xs: 1.5, sm: 2 },
-                        backgroundColor: "#F7F9FB",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <Typography
+                  {jobDetails.formResponses.map((response, index) => {
+                    let answer = response.answer;
+                    let imageUrls: string[] = [];
+                    
+                    // Check if answer is an array of image URLs
+                    if (Array.isArray(answer)) {
+                      imageUrls = answer
+                        .filter((item) => item && String(item).trim() !== "")
+                        .map((item) => String(item).trim())
+                        .filter((item) => item.startsWith("http"));
+                    } else if (typeof answer === "string" && answer.trim().startsWith("[")) {
+                      // If it's a string that looks like a JSON array, try to parse it
+                      try {
+                        const parsed = JSON.parse(answer);
+                        if (Array.isArray(parsed)) {
+                          imageUrls = parsed
+                            .filter((item) => item && String(item).trim() !== "")
+                            .map((item) => String(item).trim())
+                            .filter((item) => item.startsWith("http"));
+                        }
+                      } catch (e) {
+                        // If parsing fails, check if it's a single URL
+                        if (answer.startsWith("http")) {
+                          imageUrls = [answer];
+                        }
+                      }
+                    } else if (typeof answer === "string" && answer.startsWith("http")) {
+                      // Single image URL
+                      imageUrls = [answer];
+                    }
+                    
+                    const isImageField = imageUrls.length > 0;
+                    
+                    return (
+                      <Box
+                        key={index}
                         sx={{
-                          fontSize: { xs: "13px", sm: "14px" },
-                          fontWeight: 600,
-                          color: "#111927",
-                          mb: { xs: 0.75, sm: 1 },
+                          p: { xs: 1.5, sm: 2 },
+                          backgroundColor: "#F7F9FB",
+                          borderRadius: "8px",
                         }}
                       >
-                        {response.question}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: { xs: "15px", sm: "16px" },
-                          fontWeight: 400,
-                          color: "#384250",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {(() => {
-                          let answer = response.answer;
-                          
-                          // If it's already an array, use it
-                          if (Array.isArray(answer)) {
-                            return answer
-                              .filter((item) => item && String(item).trim() !== "")
-                              .map((item) => String(item).trim())
-                              .join(" , ");
-                          }
-                          
-                          // If it's a string that looks like a JSON array, try to parse it
-                          if (typeof answer === "string" && answer.trim().startsWith("[")) {
-                            try {
-                              const parsed = JSON.parse(answer);
-                              if (Array.isArray(parsed)) {
-                                return parsed
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "13px", sm: "14px" },
+                            fontWeight: 600,
+                            color: "#111927",
+                            mb: { xs: 0.75, sm: 1 },
+                          }}
+                        >
+                          {response.question}
+                        </Typography>
+                        {isImageField ? (
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: {
+                                xs: "repeat(2, 1fr)",
+                                sm: "repeat(3, 1fr)",
+                                md: "repeat(4, 1fr)",
+                              },
+                              gap: { xs: 1.5, sm: 2 },
+                              mt: 1,
+                            }}
+                          >
+                            {imageUrls.map((imageUrl, imgIndex) => (
+                              <Box
+                                key={imgIndex}
+                                sx={{
+                                  position: "relative",
+                                  width: "100%",
+                                  aspectRatio: "1",
+                                  borderRadius: 2,
+                                  overflow: "hidden",
+                                  border: "1px solid #D1D5DB",
+                                  cursor: "pointer",
+                                  "&:hover": {
+                                    opacity: 0.9,
+                                  },
+                                }}
+                                onClick={() => {
+                                  // Open image in new tab
+                                  window.open(getCloudFrontUrl(imageUrl), "_blank");
+                                }}
+                              >
+                                <Box
+                                  component="img"
+                                  src={getCloudFrontUrl(imageUrl)}
+                                  alt={`${response.question} - Image ${imgIndex + 1}`}
+                                  sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </Box>
+                            ))}
+                          </Box>
+                        ) : (
+                          <Typography
+                            sx={{
+                              fontSize: { xs: "15px", sm: "16px" },
+                              fontWeight: 400,
+                              color: "#384250",
+                              whiteSpace: "pre-wrap",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {(() => {
+                              // Helper function to format ISO datetime strings
+                              const formatDateTime = (value: any): string => {
+                                const str = String(value).trim();
+                                if (!str) return "";
+                                
+                                // Check if it's an ISO datetime string (format: YYYY-MM-DDTHH:MM:SS or YYYY-MM-DDTHH:MM:SSZ)
+                                const isoDateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+                                if (isoDateTimeRegex.test(str)) {
+                                  try {
+                                    const date = new Date(str);
+                                    if (!isNaN(date.getTime())) {
+                                      // Format as: "January 14, 2026 at 9:25 PM"
+                                      const dateStr = date.toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                      });
+                                      const timeStr = date.toLocaleTimeString("en-US", {
+                                        hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      });
+                                      return `${dateStr} at ${timeStr}`;
+                                    }
+                                  } catch (e) {
+                                    // If parsing fails, return as is
+                                  }
+                                }
+                                
+                                return str;
+                              };
+                              
+                              // If it's already an array, use it
+                              if (Array.isArray(answer)) {
+                                return answer
                                   .filter((item) => item && String(item).trim() !== "")
-                                  .map((item) => String(item).trim())
+                                  .map((item) => formatDateTime(item))
                                   .join(" , ");
                               }
-                            } catch (e) {
-                              // If parsing fails, just return the string as is
-                            }
-                          }
-                          
-                          // Otherwise, return as string
-                          return String(answer || "");
-                        })()}
-                      </Typography>
-                    </Box>
-                  ))}
+                              
+                              // If it's a string that looks like a JSON array, try to parse it
+                              if (typeof answer === "string" && answer.trim().startsWith("[")) {
+                                try {
+                                  const parsed = JSON.parse(answer);
+                                  if (Array.isArray(parsed)) {
+                                    return parsed
+                                      .filter((item) => item && String(item).trim() !== "")
+                                      .map((item) => formatDateTime(item))
+                                      .join(" , ");
+                                  }
+                                } catch (e) {
+                                  // If parsing fails, try to format as single datetime
+                                  return formatDateTime(answer);
+                                }
+                              }
+                              
+                              // Otherwise, format as string (checking for datetime)
+                              return formatDateTime(answer);
+                            })()}
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })}
                 </Stack>
               </Box>
             </>

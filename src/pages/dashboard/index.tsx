@@ -228,22 +228,22 @@ export default function Dashboard() {
                       >
                         <img src="./assets/icons/copy.svg" alt="copy" />
                       </Box>
-                      <Box
+                        <Box
                         onClick={handleShareClick}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          bgcolor: "#fff",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          flexShrink: 0,
-                        }}
-                      >
+                          sx={{
+                            width: 24,
+                            height: 24,
+                            bgcolor: "#fff",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            flexShrink: 0,
+                          }}
+                        >
                         <img src="./assets/icons/share-arrow.svg" alt="share" />
-                      </Box>
+                        </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -417,13 +417,13 @@ export default function Dashboard() {
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "left" }}>
                       Name
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "center" }}>
                       Job Type
                     </TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: "#384250" }}>
+                    <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "right" }}>
                       Date & Time
                     </TableCell>
                   </TableRow>
@@ -445,18 +445,18 @@ export default function Dashboard() {
                     </TableRow>
                   ) : (
                     recentJobs.map((job, index) => (
-                      <TableRow
-                        key={index}
+                    <TableRow
+                      key={index}
                         onClick={() => handleJobClick(job.id)}
                         sx={{
-                          "&:hover": { backgroundColor: "#F9FAFB", cursor: "pointer" },
+                          "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
                           cursor: "pointer",
                         }}
-                      >
-                        <TableCell>{job.name}</TableCell>
-                        <TableCell>{job.jobType}</TableCell>
-                        <TableCell>{job.dateTime}</TableCell>
-                      </TableRow>
+                    >
+                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
+                    </TableRow>
                     ))
                   )}
                 </TableBody>

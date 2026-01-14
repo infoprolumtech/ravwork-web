@@ -1,4 +1,4 @@
-import React, { type JSX, useMemo } from "react";
+import React, { type JSX, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -20,16 +20,21 @@ import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { type FormField } from "../../../rtk/endpoints/publicApi";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField, getCloudFrontUrl } from "../../../utils/helper";
 import { createCustomFormSchema } from "../validationSchemas";
+import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
+import { useAppDispatch } from "../../../rtk/store";
+import { showAlert } from "../../../rtk/feature/alertSlice";
+import Icon from "../../../components/shared/Icon";
 
-interface FormFieldValues {
-  [key: string]: string | string[];
+export interface FormFieldValues {
+  [key: string]: string | string[] | { date?: string; time?: string };
 }
 
 interface ClientQuestionsPageProps {
   onClose: () => void;
   onSubmit: () => void;
+  onNext?: () => void;
   formFields: FormField[];
   formFieldValues: FormFieldValues;
   setFormFieldValues: React.Dispatch<React.SetStateAction<FormFieldValues>>;
@@ -39,11 +44,17 @@ interface ClientQuestionsPageProps {
 export default function ClientQuestionsPage({
   onClose,
   onSubmit,
+  onNext,
   formFields,
   formFieldValues,
   setFormFieldValues,
   isSubmitting,
 }: ClientQuestionsPageProps): JSX.Element {
+  const dispatch = useAppDispatch();
+  const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
+  const [uploadingFields, setUploadingFields] = useState<Record<string, boolean>>({});
+  const [imagePreviews, setImagePreviews] = useState<Record<string, string[]>>({});
+
   // Create dynamic schema based on formFields
   const schema = useMemo(() => createCustomFormSchema(formFields), [formFields]);
 
@@ -56,27 +67,74 @@ export default function ClientQuestionsPage({
   // Sync form with parent state
   React.useEffect(() => {
     form.reset(formFieldValues);
-  }, [formFieldValues, form]);
+    // Initialize image previews from existing values
+    const fileFields = formFields.filter(f => f.fieldType === "file" || f.fieldType === "images");
+    const newPreviews: Record<string, string[]> = {};
+    fileFields.forEach(field => {
+      const value = formFieldValues[field.id];
+      if (Array.isArray(value) && value.length > 0) {
+        // If it's an array of URLs, use them as previews
+        newPreviews[field.id] = value.filter((url: any) => url && url !== "");
+      } else if (value && typeof value === "string" && value.startsWith("http")) {
+        // Backward compatibility: single URL string
+        newPreviews[field.id] = [value];
+      } else {
+        newPreviews[field.id] = [];
+      }
+    });
+    setImagePreviews(newPreviews);
+  }, [formFieldValues, form, formFields]);
 
   const handleFormSubmit = (data: FormFieldValues) => {
     setFormFieldValues(data);
-    onSubmit();
+    if (onNext) {
+      onNext();
+    } else {
+      onSubmit();
+    }
   };
 
-  // Watch all form values to check if all fields are filled
+  // Watch all form values to check if required fields are filled
   const watchedValues = form.watch();
   
-  // Check if ALL fields (required and optional) are filled
-  const areAllFieldsFilled = React.useMemo(() => {
+  // Check if all REQUIRED fields are filled (optional fields can be empty)
+  const areRequiredFieldsFilled = React.useMemo(() => {
     if (formFields.length === 0) {
       return true; // No fields, form is valid
     }
 
-    return formFields.every((field) => {
+    // Only check required fields
+    const requiredFields = formFields.filter(field => field.isRequired);
+    if (requiredFields.length === 0) {
+      return true; // No required fields, form is valid
+    }
+
+    return requiredFields.every((field) => {
       const value = watchedValues[field.id];
       
       if (field.fieldType === "checkbox") {
         return Array.isArray(value) && value.length > 0;
+      }
+      
+      // For date fields, check if both date and time are present
+      if (field.fieldType === "date" || field.fieldType === "date_time") {
+        if (typeof value === "object" && !Array.isArray(value)) {
+          const dateTimeValue = value as { date?: string; time?: string };
+          return dateTimeValue.date && dateTimeValue.time && dateTimeValue.date !== "" && dateTimeValue.time !== "";
+        }
+        return false;
+      }
+      
+      // For image upload fields, check if array has at least 1 image
+      if (field.fieldType === "file" || field.fieldType === "images") {
+        if (Array.isArray(value)) {
+          return value.length > 0 && value.every((url: any) => url && url !== "");
+        }
+        // Backward compatibility: single string URL
+        if (typeof value === "string") {
+          return value !== "" && value !== null && value !== undefined;
+        }
+        return false;
       }
       
       if (field.options && field.options.length > 0) {
@@ -111,6 +169,9 @@ export default function ClientQuestionsPage({
                   }}
                 >
                   {field.label}
+                  {field.isRequired && (
+                    <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                  )}
                 </Typography>
               </Stack>
               <FormControl error={Boolean(form.formState.errors[field.id])}>
@@ -147,6 +208,11 @@ export default function ClientQuestionsPage({
                     />
                   ))}
                 </RadioGroup>
+                {form.formState.errors[field.id] && (
+                  <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                    {form.formState.errors[field.id]?.message as string}
+                  </FormHelperText>
+                )}
               </FormControl>
             </Box>
           )}
@@ -173,6 +239,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <StyledTextField
@@ -184,6 +253,11 @@ export default function ClientQuestionsPage({
                   helperText={form.formState.errors[field.id]?.message as string}
                   required={field.isRequired}
                   InputLabelProps={{ shrink: false }}
+                  sx={{
+                    "& .MuiFormHelperText-root": {
+                      color: "#6C737F",
+                    },
+                  }}
                   onChange={(e) => {
                     formField.onChange(e.target.value);
                     setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
@@ -213,6 +287,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <StyledTextField
@@ -277,6 +354,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <FormControl fullWidth error={Boolean(form.formState.errors[field.id])}>
@@ -327,6 +407,11 @@ export default function ClientQuestionsPage({
                       <MenuItem key={idx} value={option}>{option}</MenuItem>
                     ))}
                   </Select>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </Box>
             )}
@@ -401,6 +486,9 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
                   <FormGroup>
@@ -438,6 +526,11 @@ export default function ClientQuestionsPage({
                       />
                     ))}
                   </FormGroup>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </Box>
               );
             }}
@@ -454,6 +547,42 @@ export default function ClientQuestionsPage({
               // Get today's date in YYYY-MM-DD format
               const today = new Date().toISOString().split('T')[0];
               
+              // Get current value (should be an object with date and time)
+              const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
+              let dateValue = "";
+              let timeValue = "";
+              
+              if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
+                dateValue = currentValue.date || "";
+                timeValue = currentValue.time || "";
+              } else if (typeof currentValue === "string" && currentValue) {
+                // Handle legacy format where it might be just a date string
+                dateValue = currentValue;
+              }
+              
+              // Calculate min time based on whether date is today
+              let minTime: string | undefined;
+              if (dateValue) {
+                const selectedDate = new Date(dateValue);
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+                
+                // If date is today, set min time to current time + 1 minute
+                if (selectedDate.getTime() === todayDate.getTime()) {
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                  minTime = `${hours}:${minutes}`;
+                }
+              } else {
+                // If no date selected, set min to current time
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                minTime = `${hours}:${minutes}`;
+              }
+              
               return (
                 <Box>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
@@ -466,34 +595,195 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
-                  <StyledTextField
-                    {...formField}
-                    fullWidth
-                    variant="outlined"
-                    type="date"
-                    placeholder="Select Date"
-                    error={Boolean(form.formState.errors[field.id])}
-                    helperText={form.formState.errors[field.id]?.message as string}
-                    required={field.isRequired}
-                    InputLabelProps={{ shrink: false }}
-                    inputProps={{
-                      min: today, // Prevent selecting past dates
-                    }}
-                    onChange={(e) => {
-                      formField.onChange(e.target.value);
-                      setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value });
-                      form.trigger(field.id);
-                      
-                      // Re-validate time fields when date changes
-                      formFields.forEach((f) => {
-                        if (f.fieldType === "time") {
-                          form.trigger(f.id);
-                        }
-                      });
-                    }}
-                  />
+                  <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+                    {/* Date Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="date"
+                      placeholder="Select Date"
+                      value={dateValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: today, // Prevent selecting past dates
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        const newValue = { date: newDate, time: timeValue };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                    {/* Time Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="time"
+                      placeholder="Select Time"
+                      value={timeValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: minTime, // Prevent selecting past times
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newTime = e.target.value;
+                        const newValue = { date: dateValue, time: newTime };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                  </Stack>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
+                </Box>
+              );
+            }}
+          />
+        );
+      
+      case "date_time":
+        return (
+          <Controller
+            key={field.id}
+            name={field.id}
+            control={form.control}
+            render={({ field: formField }) => {
+              // Get today's date in YYYY-MM-DD format
+              const today = new Date().toISOString().split('T')[0];
+              
+              // Get current value (should be an object with date and time)
+              const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
+              let dateValue = "";
+              let timeValue = "";
+              
+              if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
+                dateValue = currentValue.date || "";
+                timeValue = currentValue.time || "";
+              }
+              
+              // Calculate min time based on whether date is today
+              let minTime: string | undefined;
+              if (dateValue) {
+                const selectedDate = new Date(dateValue);
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
+                selectedDate.setHours(0, 0, 0, 0);
+                
+                // If date is today, set min time to current time + 1 minute
+                if (selectedDate.getTime() === todayDate.getTime()) {
+                  const now = new Date();
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                  minTime = `${hours}:${minutes}`;
+                }
+              } else {
+                // If no date selected, set min to current time
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes() + 1).padStart(2, '0');
+                minTime = `${hours}:${minutes}`;
+              }
+              
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+                    {/* Date Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="date"
+                      placeholder="Select Date"
+                      value={dateValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: today, // Prevent selecting past dates
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newDate = e.target.value;
+                        const newValue = { date: newDate, time: timeValue };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                    {/* Time Field */}
+                    <StyledTextField
+                      fullWidth
+                      variant="outlined"
+                      type="time"
+                      placeholder="Select Time"
+                      value={timeValue}
+                      error={Boolean(form.formState.errors[field.id])}
+                      required={field.isRequired}
+                      InputLabelProps={{ shrink: false }}
+                      inputProps={{
+                        min: minTime, // Prevent selecting past times
+                      }}
+                      sx={{
+                        "& .MuiFormHelperText-root.Mui-error": {
+                          color: "#DC2626 !important",
+                        },
+                      }}
+                      onChange={(e) => {
+                        const newTime = e.target.value;
+                        const newValue = { date: dateValue, time: newTime };
+                        formField.onChange(newValue);
+                        setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                        form.trigger(field.id);
+                      }}
+                    />
+                  </Stack>
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
                 </Box>
               );
             }}
@@ -558,6 +848,9 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
                   <StyledTextField
@@ -585,6 +878,339 @@ export default function ClientQuestionsPage({
           />
         );
       
+      case "file":
+      case "images":
+        return (
+          <Controller
+            key={field.id}
+            name={field.id}
+            control={form.control}
+            render={({ field: formField }) => {
+              const currentImages = Array.isArray(formFieldValues[field.id]) 
+                ? (formFieldValues[field.id] as string[]).filter((url: string) => url && url !== "")
+                : (formFieldValues[field.id] && typeof formFieldValues[field.id] === "string" && formFieldValues[field.id] !== "")
+                  ? [formFieldValues[field.id] as string]
+                  : [];
+              
+              const previewUrls = imagePreviews[field.id] || [];
+              const isUploading = uploadingFields[field.id] || false;
+              const maxImages = 10;
+              const canAddMore = currentImages.length < maxImages;
+
+              const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+                const files = event.target.files;
+                if (!files || files.length === 0) return;
+
+                // Check if adding these files would exceed the limit
+                const filesToAdd = Array.from(files);
+                if (currentImages.length + filesToAdd.length > maxImages) {
+                  dispatch(showAlert({ 
+                    message: `Maximum ${maxImages} images allowed. You can add ${maxImages - currentImages.length} more.`, 
+                    severity: "error" 
+                  }));
+                  event.target.value = "";
+                  return;
+                }
+
+                // Validate file types
+                const invalidFiles = filesToAdd.filter(file => !file.type.match(/^image\/(png|jpeg|jpg)$/));
+                if (invalidFiles.length > 0) {
+                  dispatch(showAlert({ 
+                    message: "Invalid file type. Please upload PNG or JPG images only.", 
+                    severity: "error" 
+                  }));
+                  event.target.value = "";
+                  return;
+                }
+
+                setUploadingFields({ ...uploadingFields, [field.id]: true });
+                
+                try {
+                  const uploadedUrls: string[] = [];
+                  const previewPromises: Promise<string>[] = [];
+
+                  // Upload each file
+                  for (const file of filesToAdd) {
+                    // Generate unique filename
+                    const timestamp = Date.now();
+                    const randomString = Math.random().toString(36).substring(2, 15);
+                    const fileExtension = file.name.split('.').pop() || 'jpg';
+                    const fileName = `service-upload-${timestamp}-${randomString}-${Math.random().toString(36).substring(2, 9)}.${fileExtension}`;
+
+                    // Step 1: Generate presigned URL
+                    const presignedResponse = await generatePresignedUrl({
+                      type: "PUT",
+                      files: [
+                        {
+                          folderName: "service-uploads",
+                          fileName: fileName,
+                        },
+                      ],
+                    }).unwrap();
+
+                    if (!presignedResponse?.data?.[0]?.signedUrl) {
+                      throw new Error("Failed to generate presigned URL");
+                    }
+
+                    const signedUrl = presignedResponse.data[0].signedUrl;
+
+                    // Step 2: Upload file to S3 using presigned URL
+                    const uploadResponse = await fetch(signedUrl, {
+                      method: "PUT",
+                      body: file,
+                    });
+
+                    if (!uploadResponse.ok) {
+                      throw new Error("Failed to upload image to S3");
+                    }
+
+                    // Step 3: Extract the full S3 URL from the presigned URL
+                    const s3Url = new URL(signedUrl);
+                    const imageUrl = `${s3Url.origin}${s3Url.pathname}`;
+                    uploadedUrls.push(imageUrl);
+
+                    // Create preview promise
+                    const previewPromise = new Promise<string>((resolve) => {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        resolve(reader.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    });
+                    previewPromises.push(previewPromise);
+                  }
+
+                  // Wait for all previews to be ready
+                  const newPreviews = await Promise.all(previewPromises);
+
+                  // Update form values with all uploaded URLs
+                  const updatedImages = [...currentImages, ...uploadedUrls];
+                  formField.onChange(updatedImages);
+                  setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
+                  
+                  // Update previews
+                  const updatedPreviews = [...previewUrls, ...newPreviews];
+                  setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
+
+                  dispatch(showAlert({ 
+                    message: `${filesToAdd.length} image(s) uploaded successfully!`, 
+                    severity: "success" 
+                  }));
+                } catch (error: any) {
+                  console.error("Upload error:", error);
+                  dispatch(showAlert({
+                    message: error?.message || "Failed to upload image(s). Please try again.",
+                    severity: "error"
+                  }));
+                } finally {
+                  setUploadingFields({ ...uploadingFields, [field.id]: false });
+                  event.target.value = "";
+                }
+              };
+
+              const handleRemoveImage = (indexToRemove: number) => {
+                const updatedImages = currentImages.filter((_, index) => index !== indexToRemove);
+                const updatedPreviews = previewUrls.filter((_, index) => index !== indexToRemove);
+                
+                formField.onChange(updatedImages);
+                setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
+                setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
+                form.trigger(field.id);
+              };
+
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
+                  </Stack>
+                  
+                  {/* Upload Button */}
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <Box sx={{ position: "relative", display: "inline-block" }}>
+                      <Box
+                        sx={{
+                          width: { xs: 120, sm: 150 },
+                          height: { xs: 120, sm: 150 },
+                          borderRadius: 2,
+                          border: "1px solid #D1D5DB",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: isUploading ? "#F3F4F6" : "transparent",
+                        }}
+                      />
+                      <input
+                        accept="image/png,image/jpeg,image/jpg"
+                        style={{ display: "none" }}
+                        id={`file-upload-${field.id}`}
+                        type="file"
+                        multiple
+                        onChange={handleImageUpload}
+                        disabled={isUploading || isSubmitting || !canAddMore}
+                      />
+                      {isUploading ? (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
+                        </Box>
+                      ) : canAddMore ? (
+                        <label htmlFor={`file-upload-${field.id}`}>
+                          <Button
+                            component="span"
+                            sx={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
+                              minWidth: "auto",
+                              p: 1,
+                              backgroundColor: "rgba(0,0,0,0.5)",
+                              borderRadius: "50%",
+                              width: 40,
+                              height: 40,
+                              "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                            }}
+                          >
+                            <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
+                          </Button>
+                        </label>
+                      ) : (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            textAlign: "center",
+                            px: 1,
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              color: "#6C737F",
+                              fontSize: "12px",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Max {maxImages} images
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                    {canAddMore && (
+                      <Typography
+                        sx={{
+                          mt: 1,
+                          color: "#6C737F",
+                          fontSize: "12px",
+                          fontWeight: 400,
+                        }}
+                      >
+                        {currentImages.length === 0 
+                          ? (field.isRequired ? "Upload at least 1 image (max 10)" : "Upload up to 10 images")
+                          : `${currentImages.length}/${maxImages} images. You can add ${maxImages - currentImages.length} more.`
+                        }
+                      </Typography>
+                    )}
+                  </Box>
+                  
+                  {/* Image Grid - Show after upload box */}
+                  {currentImages.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "repeat(2, 1fr)",
+                            sm: "repeat(3, 1fr)",
+                            md: "repeat(4, 1fr)",
+                          },
+                          gap: { xs: 1.5, sm: 2 },
+                        }}
+                      >
+                        {currentImages.map((imageUrl, index) => {
+                          const previewUrl = previewUrls[index] 
+                            ? (previewUrls[index].startsWith("http") ? getCloudFrontUrl(previewUrls[index]) : previewUrls[index])
+                            : (imageUrl.startsWith("http") ? getCloudFrontUrl(imageUrl) : imageUrl);
+                          
+                          return (
+                            <Box
+                              key={index}
+                              sx={{
+                                position: "relative",
+                                width: "100%",
+                                aspectRatio: "1",
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                border: "1px solid #D1D5DB",
+                              }}
+                            >
+                              <Box
+                                component="img"
+                                src={previewUrl}
+                                alt={`Preview ${index + 1}`}
+                                sx={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <IconButton
+                                onClick={() => handleRemoveImage(index)}
+                                sx={{
+                                  position: "absolute",
+                                  top: 4,
+                                  right: 4,
+                                  backgroundColor: "rgba(0,0,0,0.6)",
+                                  color: "white",
+                                  width: 28,
+                                  height: 28,
+                                  "&:hover": {
+                                    backgroundColor: "rgba(0,0,0,0.8)",
+                                  },
+                                }}
+                              >
+                                <Close sx={{ fontSize: 16 }} />
+                              </IconButton>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+                  )}
+                  
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
+                </Box>
+              );
+            }}
+          />
+        );
+      
       default:
         return (
           <Controller
@@ -594,16 +1220,19 @@ export default function ClientQuestionsPage({
             render={({ field: formField }) => (
               <Box>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      color: "#111927",
-                    }}
-                  >
-                    {field.label}
-                  </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
                 </Stack>
                 <StyledTextField
                   {...formField}
@@ -629,11 +1258,11 @@ export default function ClientQuestionsPage({
   return (
     <Stack
       sx={{
-        padding: "40px",
+        padding: { xs: "20px", sm: "32px", md: "40px" },
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-end",
-        gap: "24px",
+        gap: { xs: "16px", sm: "20px", md: "24px" },
         width: "100%",
         "&::-webkit-scrollbar": {
           display: "none",
@@ -642,25 +1271,13 @@ export default function ClientQuestionsPage({
         msOverflowStyle: "none",
       }}
     >
-      {/* Header - Title and Close icon on same row */}
+      {/* Header - Close icon */}
       <Stack
         direction="row"
         alignItems="flex-start"
-        justifyContent="space-between"
+        justifyContent="flex-end"
         sx={{ width: "100%" }}
       >
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: { xs: "20px", sm: "22px", md: "24px" },
-            fontWeight: 600,
-            color: "#111927",
-            flex: 1,
-            pr: 2,
-          }}
-        >
-          Answer some additional questions to understand your requirement
-        </Typography>
         <IconButton 
           onClick={onClose} 
           size="small"
@@ -680,18 +1297,11 @@ export default function ClientQuestionsPage({
             {[...formFields]
               .sort((a, b) => a.sortOrder - b.sortOrder)
               .map((field) => {
-                const fieldError = form.formState.errors[field.id];
                 const fieldComponent = renderFormField(field);
                 
-                // Wrap field with error display for fields that don't show errors inline
                 return (
                   <Box key={field.id}>
                     {fieldComponent}
-                    {fieldError && (field.fieldType === "radio" || field.fieldType === "checkbox" || (field.fieldType === "text" && field.options && field.options.length > 0)) && (
-                      <FormHelperText error sx={{ mt: 0.5, ml: 1.75 }}>
-                        {fieldError.message as string}
-                      </FormHelperText>
-                    )}
                   </Box>
                 );
               })}
@@ -731,14 +1341,14 @@ export default function ClientQuestionsPage({
         <Button
           variant="secondary"
           onClick={form.handleSubmit(handleFormSubmit)}
-          disabled={isSubmitting || !form.formState.isValid || !areAllFieldsFilled}
+          disabled={isSubmitting || !form.formState.isValid || !areRequiredFieldsFilled}
           sx={{
-            cursor: isSubmitting || !form.formState.isValid || !areAllFieldsFilled ? "not-allowed" : "pointer",
+            cursor: isSubmitting || !form.formState.isValid || !areRequiredFieldsFilled ? "not-allowed" : "pointer",
             fontSize: { xs: "14px", sm: "16px" },
             px: { xs: 2, sm: 3 },
           }}
         >
-          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
+          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : (onNext ? "Next" : "Submit")}
         </Button>
       </Stack>
     </Stack>

@@ -20,6 +20,7 @@ import Notifications from "../pages/notifications";
 import ManageSubscription from "../pages/manage-subscription";
 import EditProfile from "../pages/my-profile/[id]";
 import ClientPage from "../pages/client";
+import LandingPage from "../pages/landing-page";
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -119,7 +120,7 @@ export default function AppRoutes() {
       ),
     },
 
-    // Services Offered
+    // My Services
     {
       path: "/services-offered",
       element: (
@@ -190,6 +191,14 @@ export default function AppRoutes() {
         <PrivateRoute>
           <ManageSubscription />
         </PrivateRoute>
+      ),
+    },
+
+    // Landing Page
+    {
+      path: "/landing-page",
+      element: (
+        <LandingPage />
       ),
     },
 

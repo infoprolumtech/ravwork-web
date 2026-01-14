@@ -47,9 +47,9 @@ export default function GlobalDialog({open, handleClose, component, hideWarningL
         },
       }}>
         {!hideWarningLine && (
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <WarningLine />
-          </Box>
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <WarningLine />
+        </Box>
         )}
         {component}
       </DialogContent>
