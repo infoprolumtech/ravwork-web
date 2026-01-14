@@ -7,7 +7,7 @@ import {
   IconButton,
   MenuItem,
   CircularProgress,
-  Checkbox,
+  Switch,
   FormControlLabel,
 } from "@mui/material";
 import { DeleteOutline, Edit } from "@mui/icons-material";
@@ -417,13 +417,15 @@ export default function CustomQuestionsPage({
             render={({ field }) => (
               <FormControlLabel
                 control={
-                  <Checkbox
+                  <Switch
                     {...field}
                     checked={field.value || false}
                     sx={{
-                      color: "#D1D5DB",
-                      "&.Mui-checked": {
+                      "& .MuiSwitch-switchBase.Mui-checked": {
                         color: "#111927",
+                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "#111927",
                       },
                     }}
                   />
