@@ -34,8 +34,8 @@ export default function DashboardCard({
         p: 2,
         borderRadius: 3,
         backgroundColor: THEME_COLORS[theme].cardBg,
-        width: { xs: "125px", sm: "200px", md: "260px" },
-        maxWidth: "376px",
+        width: { xs: "125px", sm: "200px", md: "calc((100% - 32px) / 3)", lg: "calc((100% - 32px) / 3)", xl: "calc((100% - 32px) / 3)" },
+        maxWidth: { xs: "376px", md: "none", lg: "none", xl: "none" },
         flexGrow: 1,
       }}
     >
