@@ -71,7 +71,12 @@ export default function ClientPage(): JSX.Element {
     setSelectedService(service);
     setContactDetails({ fullName: "", email: "", phoneNumber: "", description: "" });
     setFormFieldValues({});
-    setContactDialogOpen(true);
+    // If service has custom questions, show questions first, otherwise show contact info
+    if (service.contactMethod === "custom_form" && service.formFields && service.formFields.length > 0) {
+      setQuestionsDialogOpen(true);
+    } else {
+      setContactDialogOpen(true);
+    }
   };
 
   // Handle Request button click (for inquiry)
@@ -96,9 +101,16 @@ export default function ClientPage(): JSX.Element {
   const handleQuestionsDialogClose = () => {
     setQuestionsDialogOpen(false);
     setSelectedService(null);
+    setFormFieldValues({});
   };
 
-  // Handle Next button (for custom_form)
+  // Handle Next button from questions to contact info (for custom_form)
+  const handleNextToContactInfo = () => {
+    setQuestionsDialogOpen(false);
+    setContactDialogOpen(true);
+  };
+
+  // Handle Next button from contact info to questions (for custom_form) - not used anymore but kept for compatibility
   const handleNextToQuestions = (data: ContactDetails) => {
     setContactDetails(data);
     setContactDialogOpen(false);
@@ -133,9 +145,10 @@ export default function ClientPage(): JSX.Element {
     }
   };
 
-  // Handle Submit for custom_form
-  const handleCustomFormSubmit = async () => {
+  // Handle Submit for custom_form (from contact info page)
+  const handleCustomFormSubmit = async (data: ContactDetails) => {
     if (!selectedService || !username) return;
+    setContactDetails(data);
     try {
       // Convert formFieldValues to responses array
       const responses: FormFieldResponse[] = Object.entries(formFieldValues).map(([fieldId, value]) => ({
@@ -146,10 +159,10 @@ export default function ClientPage(): JSX.Element {
       await createBooking({
         username,
         body: {
-          clientName: contactDetails.fullName,
-          clientEmail: contactDetails.email,
+          clientName: data.fullName,
+          clientEmail: data.email,
           clientCountryCode: profile?.countryCode || "+1",
-          clientPhone: contactDetails.phoneNumber,
+          clientPhone: data.phoneNumber,
           serviceId: selectedService.id,
           type: "booking",
           responses: responses.length > 0 ? responses : undefined,
@@ -157,7 +170,7 @@ export default function ClientPage(): JSX.Element {
       }).unwrap();
 
       dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
-      handleQuestionsDialogClose();
+      handleContactDialogClose();
     } catch (error: any) {
       console.error("Submit error:", error);
       dispatch(showAlert({
@@ -714,16 +727,18 @@ export default function ClientPage(): JSX.Element {
                           width: "100%",
                         }}
                       >
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 700,
-                            color: "#111927",
-                            fontSize: { xs: "24px", sm: "30px" },
-                          }}
-                        >
-                          ${service.price}
-                        </Typography>
+                        {service.price > 0 && (
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              color: "#111927",
+                              fontSize: { xs: "24px", sm: "30px" },
+                            }}
+                          >
+                            ${service.price}
+                          </Typography>
+                        )}
                         <Button
                           variant="contained"
                           onClick={() => handleBookNow(service)}
@@ -738,6 +753,7 @@ export default function ClientPage(): JSX.Element {
                             borderRadius: "50px",
                             py: 1.25,
                             flexShrink: 0,
+                            ml: service.price > 0 ? 0 : "auto",
                             "&:hover": {
                               backgroundColor: "#384250",
                             },
@@ -1087,11 +1103,14 @@ export default function ClientPage(): JSX.Element {
           <ClientContactInfoPage
             onClose={handleContactDialogClose}
             onNext={handleNextToQuestions}
-            onSubmit={handleQuickContactSubmit}
+            onSubmit={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0 
+              ? handleCustomFormSubmit 
+              : handleQuickContactSubmit}
             contactDetails={contactDetails}
             setContactDetails={setContactDetails}
             isQuickContact={selectedService?.contactMethod === "quick_contact"}
             isSubmitting={isSubmitting}
+            isFromCustomQuestions={selectedService?.contactMethod === "custom_form" && selectedService?.formFields && selectedService.formFields.length > 0}
           />
         </DialogContent>
       </Dialog>
@@ -1128,7 +1147,8 @@ export default function ClientPage(): JSX.Element {
         >
           <ClientQuestionsPage
             onClose={handleQuestionsDialogClose}
-            onSubmit={handleCustomFormSubmit}
+            onSubmit={() => {}}
+            onNext={handleNextToContactInfo}
             formFields={selectedService?.formFields || []}
             formFieldValues={formFieldValues}
             setFormFieldValues={setFormFieldValues}

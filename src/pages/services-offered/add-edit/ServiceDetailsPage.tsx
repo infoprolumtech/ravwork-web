@@ -57,6 +57,7 @@ export default function ServiceDetailsPage({
     }
   }, [initialData, form]);
 
+
   const handleSubmit = (data: ServiceFormData) => {
     onNext(data);
   };
@@ -181,7 +182,7 @@ export default function ServiceDetailsPage({
                 {...field}
             fullWidth
             variant="outlined"
-            label="Service price"
+            label="Service price (optional)"
                 placeholder="e.g. 120 or $99.99"
                 error={Boolean(form.formState.errors.servicePrice)}
                 helperText={form.formState.errors.servicePrice?.message}

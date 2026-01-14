@@ -10,8 +10,11 @@ export const contactInfoSchema = yup.object().shape({
     .max(100, "Full name must be at most 100 characters"),
   email: yup
     .string()
-    .required("Email is required")
-    .email("Must be a valid email format"),
+    .notRequired()
+    .test("email-format", "Must be a valid email format", function(value) {
+      if (!value || value.trim() === "") return true;
+      return yup.string().email().isValidSync(value);
+    }),
   phoneNumber: yup
     .string()
     .required("Phone number is required")
@@ -30,8 +33,11 @@ export const inquirySchema = yup.object().shape({
     .max(100, "Full name must be at most 100 characters"),
   email: yup
     .string()
-    .required("Email is required")
-    .email("Must be a valid email format"),
+    .notRequired()
+    .test("email-format", "Must be a valid email format", function(value) {
+      if (!value || value.trim() === "") return true;
+      return yup.string().email().isValidSync(value);
+    }),
   phoneNumber: yup
     .string()
     .required("Phone number is required")

@@ -28,6 +28,7 @@ interface ClientContactInfoPageProps {
   isQuickContact: boolean;
   isInquiry?: boolean;
   isSubmitting: boolean;
+  isFromCustomQuestions?: boolean;
 }
 
 export default function ClientContactInfoPage({
@@ -39,6 +40,7 @@ export default function ClientContactInfoPage({
   isQuickContact,
   isInquiry = false,
   isSubmitting,
+  isFromCustomQuestions = false,
 }: ClientContactInfoPageProps): JSX.Element {
   const schema = isInquiry ? inquirySchema : contactInfoSchema;
   
@@ -59,7 +61,7 @@ export default function ClientContactInfoPage({
   };
 
   const handleFormSubmit = (data: ContactFormInputs) => {
-    if (isQuickContact || isInquiry) {
+    if (isQuickContact || isInquiry || isFromCustomQuestions) {
       onSubmit(data);
     } else {
       onNext(data);
@@ -147,7 +149,7 @@ export default function ClientContactInfoPage({
                 {...field}
                 fullWidth
                 variant="outlined"
-                label="Email"
+                label="Email (optional)"
                 placeholder="Enter your email"
                 error={Boolean(form.formState.errors.email)}
                 helperText={form.formState.errors.email?.message}
@@ -235,7 +237,7 @@ export default function ClientContactInfoPage({
         >
           Cancel
         </Button>
-        {isQuickContact || isInquiry ? (
+        {isQuickContact || isInquiry || isFromCustomQuestions ? (
           <Button
             variant="secondary"
             onClick={form.handleSubmit(handleFormSubmit)}

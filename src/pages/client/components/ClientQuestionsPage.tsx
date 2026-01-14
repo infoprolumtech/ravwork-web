@@ -30,6 +30,7 @@ interface FormFieldValues {
 interface ClientQuestionsPageProps {
   onClose: () => void;
   onSubmit: () => void;
+  onNext?: () => void;
   formFields: FormField[];
   formFieldValues: FormFieldValues;
   setFormFieldValues: React.Dispatch<React.SetStateAction<FormFieldValues>>;
@@ -39,6 +40,7 @@ interface ClientQuestionsPageProps {
 export default function ClientQuestionsPage({
   onClose,
   onSubmit,
+  onNext,
   formFields,
   formFieldValues,
   setFormFieldValues,
@@ -60,7 +62,11 @@ export default function ClientQuestionsPage({
 
   const handleFormSubmit = (data: FormFieldValues) => {
     setFormFieldValues(data);
-    onSubmit();
+    if (onNext) {
+      onNext();
+    } else {
+      onSubmit();
+    }
   };
 
   // Watch all form values to check if all fields are filled
@@ -726,7 +732,7 @@ export default function ClientQuestionsPage({
             px: { xs: 2, sm: 3 },
           }}
         >
-          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : "Submit"}
+          {isSubmitting ? <CircularProgress size={20} color="inherit" /> : (onNext ? "Next" : "Submit")}
         </Button>
       </Stack>
     </Stack>

@@ -4,6 +4,7 @@ import {
   Button,
   Stack,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,6 +16,8 @@ interface ContactInfoPageProps {
   onCancel: () => void;
   onNext: (data: ContactInfoFormData) => void;
   initialData?: ContactInfoFormData | null;
+  isSubmitting?: boolean;
+  isEditMode?: boolean;
 }
 
 export interface ContactInfoFormData {
@@ -28,6 +31,8 @@ export default function ContactInfoPage({
   onCancel,
   onNext,
   initialData,
+  isSubmitting = false,
+  isEditMode = false,
 }: ContactInfoPageProps): JSX.Element {
   const form = useForm<ContactInfoFormData>({
     resolver: yupResolver(contactInfoSchema) as any,
@@ -180,8 +185,25 @@ export default function ContactInfoPage({
         >
           Cancel
         </Button>
-        <Button variant="secondary" onClick={form.handleSubmit(handleNext)}>
-          Next
+        <Button 
+          variant="secondary" 
+          onClick={form.handleSubmit(handleNext)}
+          disabled={isSubmitting}
+          sx={{
+            "&.Mui-disabled": {
+              backgroundColor: "#D1D5DB",
+              color: "#9CA3AF",
+            },
+          }}
+        >
+          {isSubmitting ? (
+            <>
+              <CircularProgress size={16} sx={{ color: "#FFFFFF", mr: 1 }} />
+              {isEditMode ? "Updating..." : "Creating..."}
+            </>
+          ) : (
+            isEditMode ? "Update Service" : "Create Service"
+          )}
         </Button>
       </Stack>
     </Stack>

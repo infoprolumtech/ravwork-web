@@ -678,7 +678,7 @@ export default function CustomQuestionsPage({
               Creating...
             </>
           ) : (
-            "Create Question"
+            "Next"
           )}
         </Button>
       </Stack>
