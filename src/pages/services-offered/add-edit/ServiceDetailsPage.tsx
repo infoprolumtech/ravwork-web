@@ -251,7 +251,7 @@ export default function ServiceDetailsPage({
                 onChange={(e) => {
                   field.onChange(e.target.value);
                   form.trigger("responseTime");
-                }}
+            }}
           >
             <MenuItem value="" sx={{ fontSize: "16px", color: "#6C737F" }}>
               Select

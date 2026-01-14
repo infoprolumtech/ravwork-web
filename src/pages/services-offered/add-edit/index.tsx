@@ -50,8 +50,9 @@ const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
     answerType: field.fieldType === "select" ? "single_choice" : 
                 field.fieldType === "checkbox" ? "multiselect" :
                 field.fieldType === "textarea" ? "long_text" :
-                  field.fieldType === "date" ? "date" :
-                  field.fieldType === "time" ? "time" : "short_text",
+                  field.fieldType === "date" ? "date_time" :
+                  field.fieldType === "time" ? "date_time" :
+                  field.fieldType === "file" ? "image" : "short_text",
     options: field.options || [],
     label: field.label,
     fieldType: field.fieldType,
@@ -69,16 +70,18 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
   // - "Long Text" (long_text) → "textarea"
   // - "Single choice (dropdown)" (single_choice) → "select"
   // - "Multichoice" (multiselect) → "checkbox"
-  // - "Date" (date) → "date"
-  // - "Time" (time) → "time"
+  // - "Date & Time" (date_time) → "date"
+  // - "Image Upload" (image) → "file"
   const mapAnswerTypeToFieldType = (answerType: string): string => {
     switch (answerType) {
       case "short_text": return "text";
       case "long_text": return "textarea";
       case "single_choice": return "select";
       case "multiselect": return "checkbox";
+      case "date_time": return "date";
       case "date": return "date";
       case "time": return "time";
+      case "image": return "file";
       default: return "text";
     }
   };
@@ -188,12 +191,8 @@ export default function AddEditServicePage(): JSX.Element {
         setCurrentStep("service_details");
         break;
       case "contact_info":
-        // Go back to contact method (if new) or service details (if editing)
-        if (editingService) {
-          setCurrentStep("service_details");
-        } else {
-          setCurrentStep("contact_method");
-        }
+        // Go back to custom questions (since contact_info comes after custom questions in the flow)
+        setCurrentStep("contact_info_questions");
         break;
       case "quick_contact":
         // Go back to contact method (if new) or service details (if editing)
@@ -210,10 +209,6 @@ export default function AddEditServicePage(): JSX.Element {
         } else {
           setCurrentStep("contact_method");
         }
-        break;
-      case "contact_info":
-        // Go back to custom questions
-        setCurrentStep("contact_info_questions");
         break;
       default:
         navigate("/services-offered");
@@ -252,7 +247,7 @@ export default function AddEditServicePage(): JSX.Element {
 
   const handleQuestionsNext = (questions: any[]) => {
     setQuestionsData(questions);
-    setCurrentStep("contact_info");
+      setCurrentStep("contact_info");
   };
 
   const handleContactInfoNext = async (data: ContactInfoFormData) => {

@@ -21,6 +21,7 @@ interface ContactFormInputs {
 
 interface ClientContactInfoPageProps {
   onClose: () => void;
+  onBack?: () => void;
   onNext: (data: ContactFormInputs) => void;
   onSubmit: (data: ContactFormInputs) => void;
   contactDetails: ContactFormInputs;
@@ -33,6 +34,7 @@ interface ClientContactInfoPageProps {
 
 export default function ClientContactInfoPage({
   onClose,
+  onBack,
   onNext,
   onSubmit,
   contactDetails,
@@ -118,7 +120,7 @@ export default function ClientContactInfoPage({
       {/* Form Fields */}
       <form onSubmit={form.handleSubmit(handleFormSubmit)} style={{ width: "100%" }}>
         <Stack sx={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
-          {/* Full Name */}
+          {/* Name */}
           <Controller
             name="fullName"
             control={form.control}
@@ -127,14 +129,36 @@ export default function ClientContactInfoPage({
                 {...field}
                 fullWidth
                 variant="outlined"
-                label="Full name"
-                placeholder="Enter your full name"
+                label="Name"
+                placeholder="Enter your name"
                 error={Boolean(form.formState.errors.fullName)}
                 helperText={form.formState.errors.fullName?.message}
                 onChange={(e) => {
                   field.onChange(e);
                   handleFormChange({ ...form.getValues(), fullName: e.target.value });
                   form.trigger("fullName");
+                }}
+              />
+            )}
+          />
+
+          {/* Phone Number */}
+          <Controller
+            name="phoneNumber"
+            control={form.control}
+            render={({ field }) => (
+              <StyledTextField
+                {...field}
+                fullWidth
+                variant="outlined"
+                label="Phone Number"
+                placeholder="Enter your phone number"
+                error={Boolean(form.formState.errors.phoneNumber)}
+                helperText={form.formState.errors.phoneNumber?.message}
+                onChange={(e) => {
+                  field.onChange(e);
+                  handleFormChange({ ...form.getValues(), phoneNumber: e.target.value });
+                  form.trigger("phoneNumber");
                 }}
               />
             )}
@@ -158,28 +182,6 @@ export default function ClientContactInfoPage({
                   field.onChange(e);
                   handleFormChange({ ...form.getValues(), email: e.target.value });
                   form.trigger("email");
-                }}
-              />
-            )}
-          />
-
-          {/* Phone Number */}
-          <Controller
-            name="phoneNumber"
-            control={form.control}
-            render={({ field }) => (
-              <StyledTextField
-                {...field}
-                fullWidth
-                variant="outlined"
-                label="Phone Number"
-                placeholder="Enter your phone number"
-                error={Boolean(form.formState.errors.phoneNumber)}
-                helperText={form.formState.errors.phoneNumber?.message}
-                onChange={(e) => {
-                  field.onChange(e);
-                  handleFormChange({ ...form.getValues(), phoneNumber: e.target.value });
-                  form.trigger("phoneNumber");
                 }}
               />
             )}

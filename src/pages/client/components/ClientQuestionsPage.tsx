@@ -1,4 +1,4 @@
-import React, { type JSX, useMemo } from "react";
+import React, { type JSX, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -20,8 +20,11 @@ import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { type FormField } from "../../../rtk/endpoints/publicApi";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField, getCloudFrontUrl } from "../../../utils/helper";
 import { createCustomFormSchema } from "../validationSchemas";
+import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
+import { useAppDispatch } from "../../../rtk/store";
+import { showAlert } from "../../../rtk/feature/alertSlice";
 
 interface FormFieldValues {
   [key: string]: string | string[];
@@ -46,6 +49,11 @@ export default function ClientQuestionsPage({
   setFormFieldValues,
   isSubmitting,
 }: ClientQuestionsPageProps): JSX.Element {
+  const dispatch = useAppDispatch();
+  const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
+  const [uploadingFields, setUploadingFields] = useState<Record<string, boolean>>({});
+  const [imagePreviews, setImagePreviews] = useState<Record<string, string>>({});
+
   // Create dynamic schema based on formFields
   const schema = useMemo(() => createCustomFormSchema(formFields), [formFields]);
 
@@ -58,7 +66,18 @@ export default function ClientQuestionsPage({
   // Sync form with parent state
   React.useEffect(() => {
     form.reset(formFieldValues);
-  }, [formFieldValues, form]);
+    // Initialize image previews from existing values
+    const fileFields = formFields.filter(f => f.fieldType === "file");
+    const newPreviews: Record<string, string> = {};
+    fileFields.forEach(field => {
+      const value = formFieldValues[field.id];
+      if (value && typeof value === "string" && value.startsWith("http")) {
+        // If it's already a URL, use it as preview
+        newPreviews[field.id] = value;
+      }
+    });
+    setImagePreviews(newPreviews);
+  }, [formFieldValues, form, formFields]);
 
   const handleFormSubmit = (data: FormFieldValues) => {
     setFormFieldValues(data);
@@ -69,16 +88,22 @@ export default function ClientQuestionsPage({
     }
   };
 
-  // Watch all form values to check if all fields are filled
+  // Watch all form values to check if required fields are filled
   const watchedValues = form.watch();
   
-  // Check if ALL fields (required and optional) are filled
-  const areAllFieldsFilled = React.useMemo(() => {
+  // Check if all REQUIRED fields are filled (optional fields can be empty)
+  const areRequiredFieldsFilled = React.useMemo(() => {
     if (formFields.length === 0) {
       return true; // No fields, form is valid
     }
 
-    return formFields.every((field) => {
+    // Only check required fields
+    const requiredFields = formFields.filter(field => field.isRequired);
+    if (requiredFields.length === 0) {
+      return true; // No required fields, form is valid
+    }
+
+    return requiredFields.every((field) => {
       const value = watchedValues[field.id];
       
       if (field.fieldType === "checkbox") {
@@ -117,6 +142,9 @@ export default function ClientQuestionsPage({
                   }}
                 >
                   {field.label}
+                  {field.isRequired && (
+                    <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                  )}
                 </Typography>
               </Stack>
               <FormControl error={Boolean(form.formState.errors[field.id])}>
@@ -179,6 +207,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <StyledTextField
@@ -219,6 +250,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <StyledTextField
@@ -283,6 +317,9 @@ export default function ClientQuestionsPage({
                     }}
                   >
                     {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
                   </Typography>
                 </Stack>
                 <FormControl fullWidth error={Boolean(form.formState.errors[field.id])}>
@@ -407,6 +444,9 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
                   <FormGroup>
@@ -472,6 +512,9 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
                   <StyledTextField
@@ -564,6 +607,9 @@ export default function ClientQuestionsPage({
                       }}
                     >
                       {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
                     </Typography>
                   </Stack>
                   <StyledTextField
@@ -591,6 +637,186 @@ export default function ClientQuestionsPage({
           />
         );
       
+      case "file":
+        return (
+          <Controller
+            key={field.id}
+            name={field.id}
+            control={form.control}
+            render={({ field: formField }) => {
+              const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+
+                // Validate file type
+                if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
+                  dispatch(showAlert({ 
+                    message: "Invalid file type. Please upload a PNG or JPG image.", 
+                    severity: "error" 
+                  }));
+                  return;
+                }
+
+                setUploadingFields({ ...uploadingFields, [field.id]: true });
+                
+                try {
+                  // Generate unique filename
+                  const timestamp = Date.now();
+                  const randomString = Math.random().toString(36).substring(2, 15);
+                  const fileExtension = file.name.split('.').pop() || 'jpg';
+                  const fileName = `service-upload-${timestamp}-${randomString}.${fileExtension}`;
+
+                  // Step 1: Generate presigned URL
+                  const presignedResponse = await generatePresignedUrl({
+                    type: "PUT",
+                    files: [
+                      {
+                        folderName: "service-uploads",
+                        fileName: fileName,
+                      },
+                    ],
+                  }).unwrap();
+
+                  if (!presignedResponse?.data?.[0]?.signedUrl) {
+                    throw new Error("Failed to generate presigned URL");
+                  }
+
+                  const signedUrl = presignedResponse.data[0].signedUrl;
+
+                  // Step 2: Upload file to S3 using presigned URL
+                  const uploadResponse = await fetch(signedUrl, {
+                    method: "PUT",
+                    body: file,
+                  });
+
+                  if (!uploadResponse.ok) {
+                    throw new Error("Failed to upload image to S3");
+                  }
+
+                  // Step 3: Extract the full S3 URL from the presigned URL
+                  const s3Url = new URL(signedUrl);
+                  const imageUrl = `${s3Url.origin}${s3Url.pathname}`;
+
+                  // Step 4: Store S3 URL in form
+                  formField.onChange(imageUrl);
+                  setFormFieldValues({ ...formFieldValues, [field.id]: imageUrl });
+
+                  // Update preview
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setImagePreviews({ ...imagePreviews, [field.id]: reader.result as string });
+                  };
+                  reader.readAsDataURL(file);
+
+                  dispatch(showAlert({ 
+                    message: "Image uploaded successfully!", 
+                    severity: "success" 
+                  }));
+                } catch (error: any) {
+                  console.error("Upload error:", error);
+                  dispatch(showAlert({
+                    message: error?.message || "Failed to upload image. Please try again.",
+                    severity: "error"
+                  }));
+                } finally {
+                  setUploadingFields({ ...uploadingFields, [field.id]: false });
+                }
+              };
+
+              return (
+                <Box>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
+                  </Stack>
+                  <input
+                    accept="image/png,image/jpeg,image/jpg"
+                    style={{ display: "none" }}
+                    id={`file-upload-${field.id}`}
+                    type="file"
+                    onChange={handleImageUpload}
+                    disabled={uploadingFields[field.id] || isSubmitting}
+                  />
+                  <label htmlFor={`file-upload-${field.id}`}>
+                    <Button
+                      variant="outlined"
+                      component="span"
+                      disabled={uploadingFields[field.id] || isSubmitting}
+                      sx={{
+                        width: "100%",
+                        borderColor: "#D1D5DB",
+                        color: "#111927",
+                        textTransform: "none",
+                        py: 1.5,
+                        borderRadius: "8px",
+                        "&:hover": {
+                          borderColor: "#9CA3AF",
+                          backgroundColor: "#F9FAFB",
+                        },
+                        "&:disabled": {
+                          borderColor: "#E5E7EB",
+                          color: "#9CA3AF",
+                        },
+                      }}
+                      startIcon={
+                        uploadingFields[field.id] ? (
+                          <CircularProgress size={16} />
+                        ) : (
+                          <Box
+                            component="span"
+                            sx={{
+                              width: 20,
+                              height: 20,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "20px",
+                            }}
+                          >
+                            📷
+                          </Box>
+                        )
+                      }
+                    >
+                      {uploadingFields[field.id] ? "Uploading..." : formFieldValues[field.id] ? "Change Image" : "Upload Image"}
+                    </Button>
+                  </label>
+                  {imagePreviews[field.id] && (
+                    <Box sx={{ mt: 2 }}>
+                      <img
+                        src={imagePreviews[field.id].startsWith("http") ? getCloudFrontUrl(imagePreviews[field.id]) : imagePreviews[field.id]}
+                        alt="Preview"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "200px",
+                          borderRadius: "8px",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </Box>
+                  )}
+                  {form.formState.errors[field.id] && (
+                    <FormHelperText error sx={{ mt: 0.5, ml: 1.75 }}>
+                      {form.formState.errors[field.id]?.message as string}
+                    </FormHelperText>
+                  )}
+                </Box>
+              );
+            }}
+          />
+        );
+      
       default:
         return (
           <Controller
@@ -600,16 +826,19 @@ export default function ClientQuestionsPage({
             render={({ field: formField }) => (
               <Box>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      color: "#111927",
-                    }}
-                  >
-                    {field.label}
-                  </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "#111927",
+                      }}
+                    >
+                      {field.label}
+                      {field.isRequired && (
+                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                      )}
+                    </Typography>
                 </Stack>
                 <StyledTextField
                   {...formField}
@@ -725,9 +954,9 @@ export default function ClientQuestionsPage({
         <Button
           variant="secondary"
           onClick={form.handleSubmit(handleFormSubmit)}
-          disabled={isSubmitting || !form.formState.isValid || !areAllFieldsFilled}
+          disabled={isSubmitting || !form.formState.isValid || !areRequiredFieldsFilled}
           sx={{
-            cursor: isSubmitting || !form.formState.isValid || !areAllFieldsFilled ? "not-allowed" : "pointer",
+            cursor: isSubmitting || !form.formState.isValid || !areRequiredFieldsFilled ? "not-allowed" : "pointer",
             fontSize: { xs: "14px", sm: "16px" },
             px: { xs: 2, sm: 3 },
           }}

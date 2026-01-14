@@ -4,7 +4,7 @@ import api from "../services";
 export interface FormField {
   id?: string;
   label: string;
-  fieldType: "text" | "textarea" | "select" | "checkbox" | "radio" | "date" | "time" | "number" | "email" | "phone";
+  fieldType: "text" | "textarea" | "select" | "checkbox" | "radio" | "date" | "time" | "number" | "email" | "phone" | "file";
   placeholder?: string;
   options?: string[];
   isRequired: boolean;

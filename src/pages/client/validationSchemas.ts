@@ -76,6 +76,18 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
             return (value as string).length <= 250;
           });
       }
+    } else if (field.fieldType === "file") {
+      // Handle file/image upload fields
+      if (field.isRequired) {
+        fieldSchema = yup
+          .string()
+          .required(`${field.label} is required`)
+          .test("file-url", `${field.label} is required`, function(value: any) {
+            return value !== "" && value !== null && value !== undefined;
+          });
+      } else {
+        fieldSchema = yup.string().notRequired();
+      }
     } else if (field.fieldType === "text" && !field.options) {
       // Handle text fields (not radio/select) with string validation for max length support
       if (field.isRequired) {
