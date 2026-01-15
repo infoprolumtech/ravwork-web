@@ -189,7 +189,12 @@ export default function ServiceDetailsPage({
                 {...field}
             fullWidth
             variant="outlined"
-            label="Service price (optional)"
+            label={
+              <span>
+                Service price {" "}
+                <span style={{ color: "#FF6B35" }}>(Optional)</span>
+              </span>
+            }
                 placeholder="e.g. 120 or $99.99"
                 error={Boolean(form.formState.errors.servicePrice)}
                 helperText={form.formState.errors.servicePrice?.message}
