@@ -159,15 +159,22 @@ export default function ClientPage(): JSX.Element {
       // Convert formFieldValues to responses array
       // Filter out empty values and ensure value is not null/undefined
       const responses: FormFieldResponse[] = Object.entries(formFieldValues)
-        .filter(([_, value]) => {
+        .filter(([fieldId, value]) => {
           // Filter out empty strings, null, undefined, and empty arrays
           if (value === null || value === undefined) return false;
           if (typeof value === "string" && value.trim() === "") return false;
           if (Array.isArray(value) && value.length === 0) return false;
-          // For date_time fields, check if both date and time are present
+          // For date_time fields, check if at least one value is present (for non-required fields)
+          // or both are present (for required fields)
           if (typeof value === "object" && !Array.isArray(value)) {
             const dateTimeValue = value as { date?: string; time?: string };
-            if (!dateTimeValue.date || !dateTimeValue.time) return false;
+            const field = selectedService?.formFields?.find(f => f.id === fieldId);
+            // If field is required, both date and time must be present
+            if (field?.isRequired) {
+              return dateTimeValue.date && dateTimeValue.time && dateTimeValue.date !== "" && dateTimeValue.time !== "";
+            }
+            // If field is not required, allow if at least one is present
+            return (dateTimeValue.date && dateTimeValue.date !== "") || (dateTimeValue.time && dateTimeValue.time !== "");
           }
           return true;
         })
@@ -175,23 +182,55 @@ export default function ClientPage(): JSX.Element {
           // Check if this is a date field (which now includes both date and time)
           const field = selectedService?.formFields?.find(f => f.id === fieldId);
           if (field?.fieldType === "date" && typeof value === "object" && !Array.isArray(value)) {
-            const dateTimeValue = value as { date: string; time: string };
-            // Combine date and time into ISO format: "YYYY-MM-DDTHH:MM:SS"
-            const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
-            return {
-              fieldId,
-              value: combinedValue,
-            };
+            const dateTimeValue = value as { date?: string; time?: string };
+            // If both date and time are present, combine them
+            if (dateTimeValue.date && dateTimeValue.time) {
+              const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
+              return {
+                fieldId,
+                value: combinedValue,
+              };
+            }
+            // If only date is present, return date only
+            if (dateTimeValue.date) {
+              return {
+                fieldId,
+                value: dateTimeValue.date,
+              };
+            }
+            // If only time is present, return time only
+            if (dateTimeValue.time) {
+              return {
+                fieldId,
+                value: dateTimeValue.time,
+              };
+            }
           }
           // Also handle date_time for backward compatibility
           if (field?.fieldType === "date_time" && typeof value === "object" && !Array.isArray(value)) {
-            const dateTimeValue = value as { date: string; time: string };
-            // Combine date and time into ISO format: "YYYY-MM-DDTHH:MM:SS"
-            const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
-            return {
-              fieldId,
-              value: combinedValue,
-            };
+            const dateTimeValue = value as { date?: string; time?: string };
+            // If both date and time are present, combine them
+            if (dateTimeValue.date && dateTimeValue.time) {
+              const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
+              return {
+                fieldId,
+                value: combinedValue,
+              };
+            }
+            // If only date is present, return date only
+            if (dateTimeValue.date) {
+              return {
+                fieldId,
+                value: dateTimeValue.date,
+              };
+            }
+            // If only time is present, return time only
+            if (dateTimeValue.time) {
+              return {
+                fieldId,
+                value: dateTimeValue.time,
+              };
+            }
           }
           return {
             fieldId,
@@ -750,9 +789,10 @@ export default function ClientPage(): JSX.Element {
                           fontWeight: 500,
                           fontSize: "16px",
                           mb: 1,
+                          minHeight: "24px",
                         }}
                       >
-                        {service.description}
+                        {service.description || ""}
                       </Typography>
                       <Box
                         sx={{
@@ -820,25 +860,27 @@ export default function ClientPage(): JSX.Element {
 
                     </Box>
                   </Stack>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "#6C737F",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                    }}
-                  >
-                    <Box
-                      component="span"
-                      sx={{ fontWeight: 600, color: "#111927" }}
+                  {service.responseTime && (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#6C737F",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                      }}
                     >
-                      Response Time :
-                    </Box>{" "}
-                    {service.responseTime
-                      ?.split("_")
-                      .join(" ")
-                      .replace(/^\w/, (c) => c.toUpperCase())}
-                  </Typography>
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: 600, color: "#111927" }}
+                      >
+                        Response Time :
+                      </Box>{" "}
+                      {service.responseTime
+                        .split("_")
+                        .join(" ")
+                        .replace(/^\w/, (c) => c.toUpperCase())}
+                    </Typography>
+                  )}
 
 
                 </Stack>

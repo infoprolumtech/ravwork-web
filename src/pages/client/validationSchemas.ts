@@ -145,13 +145,37 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
         "not-past-date-time",
         "Date cannot be in the past. For today's date, time must be greater than the current time.",
         function(value: any) {
+          // If not required, allow empty, partial (date only or time only), or both
+          if (!field.isRequired) {
+            if (!value || (!value.date && !value.time)) {
+              return true; // Empty is valid for non-required
+            }
+            // If only date is provided (no time), validate date only
+            if (value.date && !value.time) {
+              const selectedDate = new Date(value.date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              selectedDate.setHours(0, 0, 0, 0);
+              return selectedDate >= today; // Date must not be in the past
+            }
+            // If only time is provided (no date), validate time only (must be future)
+            if (value.time && !value.date) {
+              const [hours, minutes] = (value.time as string).split(":").map(Number);
+              const selectedTime = new Date();
+              selectedTime.setHours(hours, minutes, 0, 0);
+              const now = new Date();
+              return selectedTime.getTime() > now.getTime();
+            }
+          }
+          
+          // For required fields, both date and time must be present
           if (!value || (!value.date && !value.time)) {
-            return !field.isRequired; // If not required and empty, it's valid
+            return false;
           }
           
           const { date, time } = value;
           if (!date || !time) {
-            return !field.isRequired;
+            return false; // Both required for required fields
           }
           
           const selectedDate = new Date(date);
@@ -234,13 +258,37 @@ export const createCustomFormSchema = (formFields: Array<{ id: string; label: st
         "not-past-date-time",
         "Date cannot be in the past. For today's date, time must be greater than the current time.",
         function(value: any) {
+          // If not required, allow empty, partial (date only or time only), or both
+          if (!field.isRequired) {
+            if (!value || (!value.date && !value.time)) {
+              return true; // Empty is valid for non-required
+            }
+            // If only date is provided (no time), validate date only
+            if (value.date && !value.time) {
+              const selectedDate = new Date(value.date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              selectedDate.setHours(0, 0, 0, 0);
+              return selectedDate >= today; // Date must not be in the past
+            }
+            // If only time is provided (no date), validate time only (must be future)
+            if (value.time && !value.date) {
+              const [hours, minutes] = (value.time as string).split(":").map(Number);
+              const selectedTime = new Date();
+              selectedTime.setHours(hours, minutes, 0, 0);
+              const now = new Date();
+              return selectedTime.getTime() > now.getTime();
+            }
+          }
+          
+          // For required fields, both date and time must be present
           if (!value || (!value.date && !value.time)) {
-            return !field.isRequired; // If not required and empty, it's valid
+            return false;
           }
           
           const { date, time } = value;
           if (!date || !time) {
-            return !field.isRequired;
+            return false; // Both required for required fields
           }
           
           const selectedDate = new Date(date);

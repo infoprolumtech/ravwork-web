@@ -99,7 +99,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 
   "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
-    border: "1px solid #F97066",
+    border: "1px solid #DC2626",
   },
   "& .MuiOutlinedInput-root.Mui-error .MuiInputBase-input": {
     color: "#1C1C1C !important",

@@ -16,10 +16,10 @@ export interface Service {
   id: string;
   userId: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
   currency: string;
-  responseTime: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible";
+  responseTime: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" | null;
   contactMethod: "quick_contact" | "custom_form";
   isActive: boolean;
   sortOrder: number;
@@ -30,18 +30,18 @@ export interface Service {
 
 export interface CreateServiceRequest {
   name: string;
-  description: string;
+  description: string | null;
   price: number | null;
-  responseTime: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible";
+  responseTime: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" | null;
   contactMethod: "quick_contact" | "custom_form";
   formFields?: FormField[];
 }
 
 export interface UpdateServiceRequest {
   name?: string;
-  description?: string;
+  description?: string | null;
   price?: number | null;
-  responseTime?: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible";
+  responseTime?: "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" | null;
   contactMethod?: "quick_contact" | "custom_form";
   isActive?: boolean;
   formFields?: FormField[];
