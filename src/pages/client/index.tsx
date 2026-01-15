@@ -327,7 +327,7 @@ export default function ClientPage(): JSX.Element {
     );
   }
 
-  const profilePhotoUrl = profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "/assets/images/avatar.png";
+  const profilePhotoUrl = profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "./assets/images/avatar.png";
 
   return (
     <Box
@@ -527,15 +527,17 @@ export default function ClientPage(): JSX.Element {
         >
           <Box display="flex" gap="28px">
             {/* Desktop Avatar */}
+           
             <Avatar
               sx={{
                 width: { xs: "75px", sm: "175px" },
                 height: { xs: "75px", sm: "175px" },
                 border: "2px solid #fff",
-                display: { xs: "none", sm: "block" },
+                display: { xs: "none", sm: "flex" },
               }}
               src={profilePhotoUrl}
-              alt={profile.displayName || profile.username}
+              // alt={profile.displayName || profile.username}
+              
             />
 
             <Stack width="100%">
@@ -630,10 +632,10 @@ export default function ClientPage(): JSX.Element {
                       width: "75px",
                       height: "75px",
                       border: "2px solid #fff",
-                      display: { xs: "block", sm: "none" },
+                      display: { xs: "flex", sm: "none" },
                     }}
                     src={profilePhotoUrl}
-                    alt={profile.displayName || profile.username}
+                    // alt={profile.displayName || profile.username}
                   />
 
                   <Button
