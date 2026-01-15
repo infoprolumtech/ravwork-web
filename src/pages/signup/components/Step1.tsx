@@ -238,16 +238,16 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
               minHeight: "48px",
               padding: 0,
               "& fieldset": {
-                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #D1D5DB",
+                border: form.formState.errors.countryCode ? "1px solid #DC2626" : "1px solid #D1D5DB",
               },
               "&:hover fieldset": {
-                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #D1D5DB",
+                border: form.formState.errors.countryCode ? "1px solid #DC2626" : "1px solid #D1D5DB",
               },
               "&.Mui-focused fieldset": {
-                border: form.formState.errors.countryCode ? "1px solid #F97066" : "1px solid #9CA3AF",
+                border: form.formState.errors.countryCode ? "1px solid #DC2626" : "1px solid #9CA3AF",
               },
               "&.Mui-error fieldset": {
-                border: "1px solid #F97066",
+                border: "1px solid #DC2626",
               },
             },
           }}

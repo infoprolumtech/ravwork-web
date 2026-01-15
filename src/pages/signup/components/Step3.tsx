@@ -69,13 +69,13 @@ export const Step3 = ({ onNext, initialData, onBack }: Step3Props) => {
           variant="outlined"
           fullWidth
           sx={{
-            border: form.formState.errors.paymentMethod ? "1px solid #F97066" : "1px solid #D1D5DB",
+            border: form.formState.errors.paymentMethod ? "1px solid #DC2626" : "1px solid #D1D5DB",
             py: { xs: 1.5, sm: 2 },
             textTransform: "none",
             color: "#111927",
             backgroundColor: form.watch("paymentMethod") === "apple" ? "#E5ECF6" : "#F7F9FB",
             "&:hover": {
-              borderColor: form.formState.errors.paymentMethod ? "#F97066" : "#9CA3AF",
+              borderColor: form.formState.errors.paymentMethod ? "#DC2626" : "#9CA3AF",
               backgroundColor: form.watch("paymentMethod") === "apple" ? "#D1E7F0" : "white"
             },
             minHeight: { xs: "48px", sm: "56px" },
@@ -91,12 +91,12 @@ export const Step3 = ({ onNext, initialData, onBack }: Step3Props) => {
           variant="outlined"
           fullWidth
           sx={{
-            border: form.formState.errors.paymentMethod ? "1px solid #F97066" : "1px solid #D1D5DB",
+            border: form.formState.errors.paymentMethod ? "1px solid #DC2626" : "1px solid #D1D5DB",
             background: form.watch("paymentMethod") === "link" ? "#E5ECF6" : "#F7F9FB",
             py: { xs: 1.5, sm: 2 },
             textTransform: "none",
             "&:hover": {
-              borderColor: form.formState.errors.paymentMethod ? "#F97066" : "#9CA3AF",
+              borderColor: form.formState.errors.paymentMethod ? "#DC2626" : "#9CA3AF",
               backgroundColor: form.watch("paymentMethod") === "link" ? "#D1E7F0" : "white"
             },
             minHeight: { xs: "48px", sm: "56px" },
