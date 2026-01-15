@@ -163,7 +163,7 @@ export default function ServiceDetailsPage({
             label={
               <span>
                 What's included?{" "}
-                <span style={{ color: "#FF6B35" }}>Optional</span>
+                <span style={{ color: "#FF6B35" }}>(Optional)</span>
               </span>
             }
                 placeholder="Describe what's included in this service"
