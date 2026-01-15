@@ -187,6 +187,7 @@ export default function ServiceDetailsPage({
             render={({ field }) => (
           <StyledTextField
                 {...field}
+                value={field.value || ""}
             fullWidth
             variant="outlined"
             label={
@@ -198,8 +199,12 @@ export default function ServiceDetailsPage({
                 placeholder="e.g. 120 or $99.99"
                 error={Boolean(form.formState.errors.servicePrice)}
                 helperText={form.formState.errors.servicePrice?.message}
+                InputLabelProps={{
+                  shrink: field.value ? true : undefined,
+                }}
                 onChange={(e) => {
-                  field.onChange(e.target.value);
+                  const value = e.target.value === "" ? null : e.target.value;
+                  field.onChange(value);
                   form.trigger("servicePrice");
                 }}
               />
