@@ -20,9 +20,9 @@ interface ServiceDetailsPageProps {
 
 export interface ServiceFormData {
   serviceTitle: string;
-  whatsIncluded: string;
-  servicePrice: string;
-  responseTime: string;
+  whatsIncluded: string | null;
+  servicePrice: string | null;
+  responseTime: string | null;
 }
 
 const responseTimeOptions = [
@@ -44,9 +44,9 @@ export default function ServiceDetailsPage({
     mode: "onChange",
     defaultValues: initialData || {
       serviceTitle: "",
-      whatsIncluded: "",
-      servicePrice: "",
-      responseTime: "",
+      whatsIncluded: null,
+      servicePrice: null,
+      responseTime: null,
     },
   });
 
@@ -157,14 +157,21 @@ export default function ServiceDetailsPage({
             render={({ field }) => (
           <StyledTextField
                 {...field}
+                value={field.value || ""}
             fullWidth
             variant="outlined"
-            label="What's included?"
+            label={
+              <span>
+                What's included?{" "}
+                <span style={{ color: "#FF6B35" }}>Optional</span>
+              </span>
+            }
                 placeholder="Describe what's included in this service"
                 error={Boolean(form.formState.errors.whatsIncluded)}
                 helperText={form.formState.errors.whatsIncluded?.message}
                 onChange={(e) => {
-                  field.onChange(e.target.value);
+                  const value = e.target.value === "" ? null : e.target.value;
+                  field.onChange(value);
                   form.trigger("whatsIncluded");
                 }}
               />
@@ -203,6 +210,7 @@ export default function ServiceDetailsPage({
             render={({ field }) => (
           <StyledTextField
                 {...field}
+                value={field.value || ""}
             fullWidth
             variant="outlined"
             label="Response time"
@@ -249,7 +257,8 @@ export default function ServiceDetailsPage({
               },
             }}
                 onChange={(e) => {
-                  field.onChange(e.target.value);
+                  const value = e.target.value === "" ? null : e.target.value;
+                  field.onChange(value);
                   form.trigger("responseTime");
             }}
           >

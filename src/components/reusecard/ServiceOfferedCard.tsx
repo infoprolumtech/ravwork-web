@@ -144,9 +144,10 @@ export default function ServiceOfferedCard({
                 color: "#6C737F",
                 fontSize: { xs: "13px", md: "14px" },
                 mb: { xs: 0.5, md: 1 },
+                minHeight: "20px",
               }}
             >
-              {description}
+              {description || ""}
             </Typography>
             <Typography
               variant="h6"
@@ -154,10 +155,11 @@ export default function ServiceOfferedCard({
                 fontWeight: 600,
                 color: "#111927",
                 fontSize: { xs: "18px", md: "20px" },
-                  mb: { xs: 1, md: 0 },
+                mb: { xs: 1, md: 0 },
+                minHeight: "28px",
               }}
             >
-              {price}
+              {price || ""}
             </Typography>
           </Box>
         </Stack>

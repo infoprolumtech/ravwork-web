@@ -12,10 +12,12 @@ export const serviceDetailsSchema = yup.object().shape({
     }),
   whatsIncluded: yup
     .string()
-    .required("Description is required")
+    .nullable()
+    .notRequired()
+    .transform((value) => (value === "" || value === null || value === undefined ? null : value))
     .max(150, "Description must be at most 150 characters")
     .test("whatsIncluded-validation", "Description must be at most 150 characters", function(value) {
-      if (!value || value.trim() === "") return false;
+      if (!value || value === null || value === undefined || value.trim() === "") return true;
       return value.length <= 150;
     }),
   servicePrice: yup
@@ -32,7 +34,9 @@ export const serviceDetailsSchema = yup.object().shape({
     }),
   responseTime: yup
     .string()
-    .required("Response time is required"),
+    .nullable()
+    .notRequired()
+    .transform((value) => (value === "" || value === null || value === undefined ? null : value)),
 });
 
 // Quick Contact Schema (all fields optional)

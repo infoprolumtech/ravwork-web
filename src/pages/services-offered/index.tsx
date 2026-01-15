@@ -40,8 +40,8 @@ const transformServiceToUI = (service: Service) => {
   return {
     id: service.id,
     title: service.name,
-    description: service.description,
-    price: service.price && service.price > 0 ? `$${service.price}` : "$ Price not set",
+    description: service.description || "",
+    price: service.price && service.price > 0 ? `$${service.price}` : "",
     contactMethod: finalContactMethod,
     iconColor: hasFormFields ? "#4693DD" : "#12B76A",
     iconType: (hasFormFields ? "document" : "lightning") as "lightning" | "document",

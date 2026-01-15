@@ -31,7 +31,10 @@ import { decryptAES } from "../../../utils/helper";
 type StepType = "service_details" | "contact_method" | "quick_contact" | "contact_info" | "contact_info_questions";
 
 // Map form responseTime to API responseTime
-const mapResponseTimeToAPI = (formResponseTime: string): "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" => {
+const mapResponseTimeToAPI = (formResponseTime: string | null): "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" | null => {
+  if (!formResponseTime || formResponseTime === "") {
+    return null;
+  }
   const mapping: Record<string, "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible"> = {
     "within_1_hour": "within_1_hour",
     "within_few_hours": "within_24_hours",
@@ -39,7 +42,7 @@ const mapResponseTimeToAPI = (formResponseTime: string): "within_1_hour" | "with
     "within_24_hours": "within_24_hours",
     "no_response_time": "flexible",
   };
-  return mapping[formResponseTime] || "flexible";
+  return mapping[formResponseTime] || null;
 };
 
 // Transform API FormFields to CustomQuestionData format
@@ -141,9 +144,9 @@ export default function AddEditServicePage(): JSX.Element {
           // Transform API service data to form data
           const formData: ServiceFormData = {
             serviceTitle: service.name,
-            whatsIncluded: service.description,
-            servicePrice: service.price != null ? service.price.toString() : "",
-            responseTime: service.responseTime,
+            whatsIncluded: service.description || null,
+            servicePrice: service.price != null ? service.price.toString() : null,
+            responseTime: service.responseTime || null,
           };
           setServiceData(formData);
 
