@@ -174,6 +174,7 @@ export default function MyProfilePage(): JSX.Element {
 
             {/* Body */}
             <Box gap={2}>
+            
               <Avatar
                 src={profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "./assets/images/avatar.png"}
                 sx={{ width: 74, height: 74 }}
