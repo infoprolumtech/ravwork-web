@@ -1,4 +1,4 @@
-import { type JSX, useState } from "react";
+import { type JSX, useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -40,11 +40,30 @@ export default function ClientPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Fetch public profile data
-  const { data: profileData, isLoading, error } = useGetPublicProfileQuery(
-    { username: username || "" },
-    { skip: !username }
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const queryParams = useMemo(
+    () => ({
+      username: username || "",
+    }),
+    [username]
   );
+
+  // Fetch public profile data
+  const { data: profileData, isLoading, error, refetch } = useGetPublicProfileQuery(
+    queryParams,
+    { 
+      skip: !username,
+      refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
+    }
+  );
+
+  // Ensure query runs when component first mounts and username is available
+  useEffect(() => {
+    if (username) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
 
   // Booking mutation
   const [createBooking, { isLoading: isSubmitting }] = useCreateBookingMutation();
@@ -792,6 +811,9 @@ export default function ClientPage(): JSX.Element {
                           fontSize: "16px",
                           mb: 1,
                           minHeight: "24px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
                         }}
                       >
                         {service.description || ""}

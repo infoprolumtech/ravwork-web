@@ -36,7 +36,14 @@ export const serviceDetailsSchema = yup.object().shape({
     .string()
     .nullable()
     .notRequired()
-    .transform((value) => (value === "" || value === null || value === undefined ? null : value)),
+    .oneOf(["within_1_hour", "within_few_hours", "same_day", "within_24_hours", "within_48_hours", "flexible", "no_response_time", null, ""], "Invalid response time value")
+    .transform((value) => {
+      // Convert "no_response_time" or empty values to null
+      if (value === "no_response_time" || value === "" || value === null || value === undefined) {
+        return null;
+      }
+      return value;
+    }),
 });
 
 // Quick Contact Schema (all fields optional)

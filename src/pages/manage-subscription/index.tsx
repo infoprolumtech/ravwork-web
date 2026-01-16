@@ -55,14 +55,24 @@ export default function ManageSubscriptionPage(): JSX.Element {
             </Typography>
 
             <Box mt={2}>
-              <Box display="flex" alignItems="center" mb={1}>
+              <Box display="flex" alignItems="center" >
                 <Box
                   component="img"
                   src="/assets/icons/check_icon_box.svg"
                   sx={{ width: 20, height: 20, mr: 1.5 }}
                 />
                 <Typography fontSize={14} color="#595959">
-                  Create a clean Professional Booking Page
+                  Personalized booking link​
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
+                Full access to features​
                 </Typography>
               </Box>
 
@@ -73,9 +83,30 @@ export default function ManageSubscriptionPage(): JSX.Element {
                   sx={{ width: 20, height: 20, mr: 1.5 }}
                 />
                 <Typography fontSize={14} color="#595959">
-                  Streamline client requests & info
+                Unlimited leads​
                 </Typography>
               </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
+                Unlimited custom questions​
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
+                Lead management dashboard​​
+                </Typography>
+              </Box>
+
             </Box>
           </CardContent>
 

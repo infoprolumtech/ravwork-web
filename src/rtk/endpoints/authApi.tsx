@@ -4,11 +4,30 @@ const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // POST /api/v1/auth/login - Login user
     login: builder.mutation({
-      query: (body: { email: string; password: string }) => ({
-        url: "/auth/login",
-        method: "POST",
-        body,
-      }),
+      query: (body: { 
+        email: string; 
+        password: string;
+        deviceType?: string;
+        deviceToken?: string;
+      }) => {
+        const requestBody: {
+          email: string;
+          password: string;
+          deviceType: string;
+          deviceToken?: string;
+        } = {
+          email: body.email,
+          password: body.password,
+          deviceType: body.deviceType || "web",
+          ...(body.deviceToken && body.deviceToken.trim() !== "" && { deviceToken: body.deviceToken }),
+        };
+        
+        return {
+          url: "/auth/login",
+          method: "POST",
+          body: requestBody,
+        };
+      },
     }),
     // POST /api/v1/auth/signup - Register a new user
     signup: builder.mutation({
@@ -18,11 +37,33 @@ const authApi = api.injectEndpoints({
         countryCode: string;
         phoneNumber: string;
         password: string;
-      }) => ({
-        url: "/auth/signup",
-        method: "POST",
-        body,
-      }),
+        deviceType?: string;
+        deviceToken?: string;
+      }) => {
+        const requestBody: {
+          username: string;
+          email: string;
+          countryCode: string;
+          phoneNumber: string;
+          password: string;
+          deviceType: string;
+          deviceToken?: string;
+        } = {
+          username: body.username,
+          email: body.email,
+          countryCode: body.countryCode,
+          phoneNumber: body.phoneNumber,
+          password: body.password,
+          deviceType: body.deviceType || "web",
+          ...(body.deviceToken && body.deviceToken.trim() !== "" && { deviceToken: body.deviceToken }),
+        };
+        
+        return {
+          url: "/auth/signup",
+          method: "POST",
+          body: requestBody,
+        };
+      },
     }),
     // GET /api/v1/auth/me - Get current user
     getCurrentUser: builder.query({

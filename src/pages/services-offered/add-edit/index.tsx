@@ -12,8 +12,6 @@ import ServiceProviderLayout from "../../../layouts/ServiceProviderLayout";
 import { ArrowBack } from "@mui/icons-material";
 import ServiceDetailsPage, { type ServiceFormData } from "./ServiceDetailsPage";
 import ContactMethodPage from "./ContactMethodPage";
-import QuickContactPage, { type QuickContactFormData } from "./QuickContactPage";
-import ContactInfoPage, { type ContactInfoFormData } from "./ContactInfoPage";
 import CustomQuestionsPage from "./CustomQuestionsPage";
 import {
   useCreateServiceMutation,
@@ -26,13 +24,14 @@ import {
 import { showAlert } from "../../../rtk/feature/alertSlice";
 import { useAppSelector, useAppDispatch } from "../../../rtk/store";
 import type { RootState } from "../../../rtk/store";
-import { decryptAES } from "../../../utils/helper";
+// decryptAES removed - contact info screen no longer used
 
 type StepType = "service_details" | "contact_method" | "quick_contact" | "contact_info" | "contact_info_questions";
 
 // Map form responseTime to API responseTime
+// Maps "no_response_time" to null as per API requirements
 const mapResponseTimeToAPI = (formResponseTime: string | null): "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible" | null => {
-  if (!formResponseTime || formResponseTime === "") {
+  if (!formResponseTime || formResponseTime === "" || formResponseTime === "no_response_time") {
     return null;
   }
   const mapping: Record<string, "within_1_hour" | "within_24_hours" | "within_48_hours" | "flexible"> = {
@@ -40,10 +39,19 @@ const mapResponseTimeToAPI = (formResponseTime: string | null): "within_1_hour" 
     "within_few_hours": "within_24_hours",
     "same_day": "within_24_hours",
     "within_24_hours": "within_24_hours",
-    "no_response_time": "flexible",
   };
   return mapping[formResponseTime] || null;
 };
+
+// Map API responseTime to form responseTime
+// Maps null from API to "no_response_time" for display in form
+const mapResponseTimeFromAPI = (apiResponseTime: string | null): string | null => {
+  if (!apiResponseTime || apiResponseTime === null) {
+    return "no_response_time";
+  }
+  // Return as-is for valid values
+  return apiResponseTime;
+}; 
 
 // Transform API FormFields to CustomQuestionData format
 const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
@@ -110,7 +118,7 @@ export default function AddEditServicePage(): JSX.Element {
 
   const [currentStep, setCurrentStep] = useState<StepType>("service_details");
   const [serviceData, setServiceData] = useState<ServiceFormData | null>(null);
-  const [contactInfoData, setContactInfoData] = useState<ContactInfoFormData | null>(null);
+  // Removed contactInfoData - no longer needed since contact info screen is skipped
   const [questionsData, setQuestionsData] = useState<any[]>([]);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
@@ -146,17 +154,11 @@ export default function AddEditServicePage(): JSX.Element {
             serviceTitle: service.name,
             whatsIncluded: service.description || null,
             servicePrice: service.price != null ? service.price.toString() : null,
-            responseTime: service.responseTime || null,
+            responseTime: mapResponseTimeFromAPI(service.responseTime),
           };
           setServiceData(formData);
 
-          // Pre-fill contact info from current user's profile data
-          const userContactInfo: ContactInfoFormData = {
-            fullName: user?.firstName ? decryptAES(user.firstName) : "",
-            email: user?.email ? decryptAES(user.email) : "",
-            phoneNumber: "", // Phone number should be empty by default
-          };
-          setContactInfoData(userContactInfo);
+          // Contact info screen removed - no longer needed
 
           // Load questions data if editing
           if (service.formFields && service.formFields.length > 0) {
@@ -180,13 +182,7 @@ export default function AddEditServicePage(): JSX.Element {
 
       loadService();
     } else {
-      // For new service, pre-fill contact info from user profile
-      const userContactInfo: ContactInfoFormData = {
-        fullName: user?.firstName ? decryptAES(user.firstName) : "",
-        email: user?.email ? decryptAES(user.email) : "",
-        phoneNumber: "", // Phone number should be empty by default
-      };
-      setContactInfoData(userContactInfo);
+      // Contact info screen removed - no longer needed
     }
   }, [id, isEditMode, getServiceById, dispatch, navigate, user]);
 
@@ -202,11 +198,11 @@ export default function AddEditServicePage(): JSX.Element {
         setCurrentStep("service_details");
         break;
       case "contact_info":
-        // Go back to custom questions (since contact_info comes after custom questions in the flow)
+        // ContactInfoPage removed - go back to questions
         setCurrentStep("contact_info_questions");
         break;
       case "quick_contact":
-        // Go back to contact method (if new) or service details (if editing)
+        // QuickContactPage removed - go back appropriately
         if (editingService) {
           setCurrentStep("service_details");
         } else {
@@ -238,7 +234,8 @@ export default function AddEditServicePage(): JSX.Element {
       if (editingService.contactMethod === "custom_form" || (editingService.formFields && editingService.formFields.length > 0)) {
         setCurrentStep("contact_info_questions");
       } else if (editingService.contactMethod === "quick_contact") {
-        setCurrentStep("quick_contact");
+        // For quick_contact editing, we'll handle submit directly in ServiceDetailsPage
+        // So we don't need to change step here
       } else {
         setCurrentStep("contact_info_questions");
       }
@@ -248,26 +245,48 @@ export default function AddEditServicePage(): JSX.Element {
     }
   };
 
+  const handleQuickContactUpdateDirectly = async (data: ServiceFormData) => {
+    // Handle quick_contact service update directly from ServiceDetailsPage
+    if (!id) return;
+    
+    try {
+      const requestBody: CreateServiceRequest = {
+        name: data.serviceTitle,
+        description: data.whatsIncluded,
+        price: data.servicePrice && data.servicePrice.trim() ? parseFloat(data.servicePrice.replace(/[^0-9.]/g, "")) : null,
+        responseTime: mapResponseTimeToAPI(data.responseTime),
+        contactMethod: "quick_contact",
+      };
+
+      await updateService({ id, body: requestBody }).unwrap();
+      dispatch(showAlert({ message: "Service updated successfully", severity: "success" }));
+      navigate("/services-offered");
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to update service";
+      dispatch(showAlert({ message: errorMessage, severity: "error" }));
+    }
+  };
+
   const handleContactMethodSelect = (method: "quick_contact" | "contact_info_questions") => {
-    if (method === "quick_contact") {
-      setCurrentStep("quick_contact");
-    } else {
+    // This is only called for custom_form now (quick_contact is handled by onCreate in ContactMethodPage)
+    if (method === "contact_info_questions") {
       setCurrentStep("contact_info_questions");
     }
   };
 
-  const handleQuestionsNext = (questions: any[]) => {
+  const handleQuestionsNext = async (questions: any[]) => {
     setQuestionsData(questions);
-      setCurrentStep("contact_info");
+    // Skip ContactInfoPage and directly submit
+    if (!serviceData) return;
+    await handleCustomFormSubmitDirectly(questions);
   };
 
-  const handleContactInfoNext = async (data: ContactInfoFormData) => {
-    setContactInfoData(data);
-    // Submit with both questions and contact info
+  const handleCustomFormSubmitDirectly = async (questions: any[]) => {
+    // Submit with questions, skipping contact info
     if (!serviceData) return;
 
     try {
-      const formFields = transformQuestionsToFormFields(questionsData);
+      const formFields = transformQuestionsToFormFields(questions);
       const contactMethod: "quick_contact" | "custom_form" = "custom_form";
       
       const requestBody: CreateServiceRequest = {
@@ -294,8 +313,7 @@ export default function AddEditServicePage(): JSX.Element {
     }
   };
 
-
-  const handleQuickContactSubmit = async (_data: QuickContactFormData) => {
+  const handleQuickContactSubmitDirectly = async () => {
     if (!serviceData) return;
 
     try {
@@ -404,6 +422,10 @@ export default function AddEditServicePage(): JSX.Element {
               onCancel={handleCancel}
               onNext={handleServiceDetailsNext}
               initialData={serviceData}
+              isEditMode={isEditMode}
+              isQuickContact={editingService?.contactMethod === "quick_contact"}
+              onSubmit={handleQuickContactUpdateDirectly}
+              isSubmitting={isSubmittingService}
             />
           )}
 
@@ -412,19 +434,13 @@ export default function AddEditServicePage(): JSX.Element {
               onBack={handleBack}
               onCancel={handleCancel}
               onSelect={handleContactMethodSelect}
+              onCreate={handleQuickContactSubmitDirectly}
+              isEditMode={isEditMode}
             />
           )}
 
-          {currentStep === "quick_contact" && (
-            <QuickContactPage
-              onBack={handleBack}
-              onCancel={handleCancel}
-              onSubmit={handleQuickContactSubmit}
-              initialData={contactInfoData}
-              initialContactMethod={editingService?.contactMethod}
-              isSubmitting={isSubmittingService}
-            />
-          )}
+          {/* QuickContactPage removed - directly submit after selecting quick_contact method */}
+          {currentStep === "quick_contact" && null}
 
           {currentStep === "contact_info_questions" && (
             <CustomQuestionsPage
@@ -432,20 +448,13 @@ export default function AddEditServicePage(): JSX.Element {
               onCancel={handleCancel}
               onSubmit={handleQuestionsNext}
               initialQuestions={editingService?.formFields ? transformFormFieldsToQuestions(editingService.formFields) : questionsData.length > 0 ? questionsData : null}
-              isSubmitting={false}
-            />
-          )}
-
-          {currentStep === "contact_info" && (
-            <ContactInfoPage
-              onBack={handleBack}
-              onCancel={handleCancel}
-              onNext={handleContactInfoNext}
-              initialData={contactInfoData}
               isSubmitting={isSubmittingService}
               isEditMode={isEditMode}
             />
           )}
+
+          {/* ContactInfoPage removed - directly submit after questions for custom_form */}
+          {currentStep === "contact_info" && null}
         </Card>
       </Box>
     </ServiceProviderLayout>

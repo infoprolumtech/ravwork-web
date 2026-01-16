@@ -6,9 +6,10 @@ import {
   Typography,
   IconButton,
   Stack,
-  InputAdornment,
+  Button,
+  Divider,
 } from "@mui/material";
-import { Close, ContentCopy, Check, Twitter, WhatsApp } from "@mui/icons-material";
+import { Close, Twitter, WhatsApp } from "@mui/icons-material";
 import { StyledTextField } from "../../../utils/helper";
 
 interface ShareModalProps {
@@ -44,9 +45,12 @@ export default function ShareModal({
       case "twitter":
         shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
         break;
-      case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
-        break;
+      case "instagram":
+        // Instagram doesn't support direct URL sharing, so copy to clipboard
+        navigator.clipboard.writeText(profileUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
         break;
@@ -78,7 +82,6 @@ export default function ShareModal({
             padding: { xs: "20px", sm: "32px", md: "40px" },
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end",
             gap: { xs: "16px", sm: "20px", md: "24px" },
             width: "100%",
             "&::-webkit-scrollbar": {
@@ -88,10 +91,10 @@ export default function ShareModal({
             msOverflowStyle: "none",
           }}
         >
-          {/* Header - Title and Close icon on same row */}
+          {/* Header - Title and Close icon */}
           <Stack
             direction="row"
-            alignItems="flex-start"
+            alignItems="center"
             justifyContent="space-between"
             sx={{ width: "100%" }}
           >
@@ -101,8 +104,7 @@ export default function ShareModal({
                 fontSize: { xs: "20px", sm: "22px", md: "24px" },
                 fontWeight: 600,
                 color: "#111927",
-                flex: 1,
-                pr: 2,
+                textAlign: "left",
               }}
             >
               Share Profile
@@ -119,172 +121,129 @@ export default function ShareModal({
             </IconButton>
           </Stack>
 
-          {/* Link URL Section */}
-          <Box sx={{ width: "100%" }}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-              
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: { xs: "16px", sm: "18px", md: "20px" },
-                  fontWeight: 600,
-                  color: "#111927",
-                }}
-              >
-                Profile Link
-              </Typography>
-            </Stack>
-            <StyledTextField
-              fullWidth
-              value={profileUrl}
-              variant="outlined"
-              margin="none"
-              inputProps={{ readOnly: true }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleCopyLink}
-                      size="small"
-                      sx={{
-                        color: copied ? "#12B76A" : "#6C737F",
-                        mr: 1,
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                      {copied ? (
-                        <Check sx={{ fontSize: 20 }} />
-                      ) : (
-                        <ContentCopy sx={{ fontSize: 20 }} />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+          {/* Top Section: Logo, Business Name, Social Icons */}
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={2}
+            sx={{ width: "100%" }}
+          >
+            {/* Ravwork Logo */}
+            <Box
+              component="img"
+              src="/assets/icons/ravwork_logo_icon.svg"
+              alt="Ravwork"
               sx={{
-                "& .MuiInputBase-input": {
-                  borderRadius: "0 !important",
-                },
+                width: { xs: 40, sm: 48 },
+                height: { xs: 40, sm: 48 },
+                objectFit: "contain",
               }}
             />
-            {copied && (
-              <Typography
-                variant="caption"
-                sx={{
-                  color: "#12B76A",
-                  fontSize: "12px",
-                  mt: 0.5,
-                  ml: 1,
-                }}
-              >
-                Link copied!
-              </Typography>
-            )}
-          </Box>
 
-          {/* Social Share Icons */}
-          <Box sx={{ width: "100%" }}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: { xs: "16px", sm: "18px", md: "20px" },
-                  fontWeight: 600,
-                  color: "#111927",
-                }}
-              >
-                Share on
-              </Typography>
-            </Stack>
-            <Stack 
-              direction="row" 
-              spacing={{ xs: 1.5, sm: 2 }} 
-              flexWrap="wrap"
-              sx={{ gap: { xs: 1.5, sm: 2 } }}
+            {/* Business Name */}
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: { xs: "16px", sm: "18px" },
+                fontWeight: 500,
+                color: "#111927",
+                flex: 1,
+              }}
             >
+              {profileName || "Business Name"}
+            </Typography>
+
+            {/* Social Share Icons */}
+            <Stack direction="row" spacing={1}>
               <IconButton
                 onClick={() => handleSocialShare("facebook")}
                 sx={{
-                  width: { xs: 48, sm: 56 },
-                  height: { xs: 48, sm: 56 },
-                  backgroundColor: "#F7F9FB",
-                  borderRadius: "12px",
-                  border: "1px solid #E5E7EB",
-                  "&:hover": {
-                    backgroundColor: "#E5ECF6",
-                    borderColor: "#9CA3AF",
-                  },
-                  transition: "all 0.2s ease",
+                  width: 40,
+                  height: 40,
+                  p: 0,
+                  minWidth: 40,
                 }}
               >
                 <Box
                   component="img"
                   src="/assets/icons/Facebook.svg"
                   alt="Facebook"
-                  sx={{ width: { xs: "24px", sm: "28px" }, height: { xs: "24px", sm: "28px" } }}
+                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
                 />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("twitter")}
                 sx={{
-                  width: { xs: 48, sm: 56 },
-                  height: { xs: 48, sm: 56 },
-                  backgroundColor: "#F7F9FB",
-                  borderRadius: "12px",
-                  border: "1px solid #E5E7EB",
-                  "&:hover": {
-                    backgroundColor: "#E5ECF6",
-                    borderColor: "#9CA3AF",
-                  },
-                  transition: "all 0.2s ease",
+                  width: 40,
+                  height: 40,
+                  p: 0,
+                  minWidth: 40,
                 }}
               >
-                <Twitter sx={{ fontSize: { xs: 24, sm: 28 }, color: "#1DA1F2" }} />
+                <Twitter sx={{ fontSize: 24, color: "#1DA1F2", width: "100%", height: "100%" }} />
               </IconButton>
               <IconButton
-                onClick={() => handleSocialShare("linkedin")}
+                onClick={() => handleSocialShare("instagram")}
                 sx={{
-                  width: { xs: 48, sm: 56 },
-                  height: { xs: 48, sm: 56 },
-                  backgroundColor: "#F7F9FB",
-                  borderRadius: "12px",
-                  border: "1px solid #E5E7EB",
-                  "&:hover": {
-                    backgroundColor: "#E5ECF6",
-                    borderColor: "#9CA3AF",
-                  },
-                  transition: "all 0.2s ease",
+                  width: 40,
+                  height: 40,
+                  p: 0,
+                  minWidth: 40,
                 }}
               >
                 <Box
                   component="img"
-                  src="/assets/icons/linkedin.svg"
-                  alt="LinkedIn"
-                  sx={{ width: { xs: "24px", sm: "28px" }, height: { xs: "24px", sm: "28px" } }}
+                  src="/assets/icons/instagram.svg"
+                  alt="Instagram"
+                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
                 />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("whatsapp")}
                 sx={{
-                  width: { xs: 48, sm: 56 },
-                  height: { xs: 48, sm: 56 },
-                  backgroundColor: "#F7F9FB",
-                  borderRadius: "12px",
-                  border: "1px solid #E5E7EB",
-                  "&:hover": {
-                    backgroundColor: "#E5ECF6",
-                    borderColor: "#9CA3AF",
-                  },
-                  transition: "all 0.2s ease",
+                  width: 40,
+                  height: 40,
+                  p: 0,
+                  minWidth: 40,
                 }}
               >
-                <WhatsApp sx={{ fontSize: { xs: 24, sm: 28 }, color: "#25D366" }} />
+                <WhatsApp sx={{ fontSize: 24, color: "#25D366", width: "100%", height: "100%" }} />
               </IconButton>
             </Stack>
-          </Box>
+          </Stack>
+
+          {/* Divider */}
+          <Divider sx={{ my: 1 }} />
+
+          {/* Bottom Section: URL and Copy Button */}
+          <Stack direction="row" spacing={2} alignItems="stretch" sx={{ width: "100%" }}>
+            <StyledTextField
+              value={profileUrl}
+              variant="outlined"
+              margin="none"
+              inputProps={{ readOnly: true }}
+              sx={{
+                flex: 1,
+                "& .MuiInputBase-root": {
+                  borderRadius: "100px",
+                },
+                "& .MuiInputBase-input": {
+                  padding: "12px 16px",
+                },
+              }}
+            />
+            <Button
+              variant="secondary"
+              onClick={handleCopyLink}
+              sx={{
+                minWidth: { xs: "80px", sm: "100px" },
+                whiteSpace: "nowrap",
+                alignSelf: "stretch",
+              }}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </Button>
+          </Stack>
         </Stack>
       </DialogContent>
     </Dialog>

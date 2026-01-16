@@ -65,7 +65,15 @@ export default function EditProfile(): JSX.Element {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const { data: profile, isLoading: isLoadingProfile, error: profileError } = useGetUserProfileQuery();
+  const { data: profile, isLoading: isLoadingProfile, error: profileError, refetch: refetchProfile } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
+  });
+  
+  // Ensure query runs when component first mounts
+  useEffect(() => {
+    refetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
   const [updateProfile, { isLoading: isUpdating }] = useUpdateUserProfileMutation();
   const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
 

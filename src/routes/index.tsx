@@ -21,6 +21,8 @@ import ManageSubscription from "../pages/manage-subscription";
 import EditProfile from "../pages/my-profile/[id]";
 import ClientPage from "../pages/client";
 import LandingPage from "../pages/landing-page";
+import PrivacyPolicy from "../pages/privacy-policy";
+import TermsAndConditions from "../pages/terms-and-conditions";
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -190,6 +192,26 @@ export default function AppRoutes() {
       element: (
         <PrivateRoute>
           <ManageSubscription />
+        </PrivateRoute>
+      ),
+    },
+
+    // Privacy Policy
+    {
+      path: "/privacy-policy",
+      element: (
+        <PrivateRoute>
+          <PrivacyPolicy />
+        </PrivateRoute>
+      ),
+    },
+
+    // Terms & Conditions
+    {
+      path: "/terms-and-conditions",
+      element: (
+        <PrivateRoute>
+          <TermsAndConditions />
         </PrivateRoute>
       ),
     },

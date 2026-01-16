@@ -57,11 +57,25 @@ export default function ServicesOfferedPage(): JSX.Element {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] = React.useState<string | null>(null);
 
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const queryParams = React.useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentPage]
+  );
+
   // API hooks
-  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery({
-    page: currentPage,
-    limit: 10,
+  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery(queryParams, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+  
+  // Ensure query runs when component first mounts
+  React.useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
   const [deleteService, { isLoading: isDeletingService }] = useDeleteServiceMutation();
 
   // Transform services data - handle both paginated and non-paginated responses
@@ -83,13 +97,37 @@ export default function ServicesOfferedPage(): JSX.Element {
 
   // Get pagination info if available
   const paginationData = React.useMemo(() => {
-    if (servicesResponse && 'totalPages' in servicesResponse) {
+    if (!servicesResponse) {
+      return { totalPages: 1 };
+    }
+    
+    // Check if response is paginated (has data property with array and totalPages)
+    if ('data' in servicesResponse && Array.isArray(servicesResponse.data) && 'totalPages' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
       return {
-        totalPages: servicesResponse.totalPages || 1,
-        hasPagination: true,
+        totalPages: paginatedResponse.totalPages || 1,
       };
     }
-    return { totalPages: 1, hasPagination: false };
+    
+    // Check if response has totalPages directly (paginated structure)
+    if ('totalPages' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
+      return {
+        totalPages: paginatedResponse.totalPages || 1,
+      };
+    }
+    
+    // If we have total and limit, calculate totalPages
+    if ('total' in servicesResponse && 'limit' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { total: number; limit: number };
+      return {
+        totalPages: Math.ceil(paginatedResponse.total / paginatedResponse.limit) || 1,
+      };
+    }
+    
+    // Non-paginated response (direct array) - default to 1 page
+    // Since we're sending page/limit params, assume at least 1 page
+    return { totalPages: 1 };
   }, [servicesResponse]);
 
   const handleAddService = () => {
@@ -240,12 +278,14 @@ export default function ServicesOfferedPage(): JSX.Element {
               )}
             </Stack>
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={paginationData.totalPages}
-              onPageChange={setCurrentPage}
-            />
+            {/* Pagination - Show when there are services */}
+            {services.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={paginationData.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </>
         )}
       </Box>

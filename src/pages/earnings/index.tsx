@@ -28,19 +28,19 @@ export default function EarningsPage(): JSX.Element {
   // Mock data - replace with actual API call when available
   const jobsData = [
     {
-      name: "Sarah Johnson",
-      jobType: "New Request",
-      dateTime: "Nov 22, 2025 • 10:00 AM",
+      jobTitle: "New Request",
+      date: "2nd June, 2026",
+      earnings: "$248",
     },
     {
-      name: "Sarah Johnson",
-      jobType: "Plumbing Repair",
-      dateTime: "No Date Available",
+      jobTitle: "Painter",
+      date: "NDA (No date available)",
+      earnings: "$848",
     },
     {
-      name: "Sarah Johnson",
-      jobType: "Plumbing Repair",
-      dateTime: "Nov 22, 2025 • 10:00 AM",
+      jobTitle: "Plumbing",
+      date: "2nd June, 2026",
+      earnings: "$248",
     },
   ];
 
@@ -64,10 +64,11 @@ export default function EarningsPage(): JSX.Element {
           >
             <EarningsCard
               icon="/assets/icons/IconText.svg"
-              label="Today’s Clicks"
+              label="Today's Clicks"
               value="1,721k"
               percentage="+2.4%"
               theme="theme1"
+              backgroundColor="#E3F5FF"
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
@@ -75,6 +76,7 @@ export default function EarningsPage(): JSX.Element {
               value="367k"
               percentage="-5.2%"
               theme="theme2"
+              backgroundColor="#E3F5FF"
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
@@ -82,6 +84,7 @@ export default function EarningsPage(): JSX.Element {
               value="1,156"
               percentage="-11.2%"
               theme="theme1"
+              backgroundColor="#E3F5FF"
             />
           </Grid>
 
@@ -197,13 +200,13 @@ export default function EarningsPage(): JSX.Element {
                   <TableHead>
                     <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
                       <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "left" }}>
-                        Name
+                        Job Title
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "center" }}>
-                        Job Type
+                        Date
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600, color: "#384250", textAlign: "right" }}>
-                        Date & Time
+                        Earnings
                       </TableCell>
                     </TableRow>
                   </TableHead>
@@ -216,9 +219,9 @@ export default function EarningsPage(): JSX.Element {
                           cursor: "pointer",
                         }}
                       >
-                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.jobTitle}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.date}</TableCell>
+                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.earnings}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

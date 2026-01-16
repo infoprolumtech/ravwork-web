@@ -7,7 +7,7 @@ import JobDetailsModal from "./components/JobDetailsModal";
 import CompleteJobModal from "./components/CompleteJobModal";
 import DeclineJobModal from "./components/DeclineJobModal";
 import { useGetJobsQuery, useUpdateJobStatusMutation } from "../../rtk/endpoints/userApi";
-import { useAppDispatch } from "../../rtk/store";
+import { useAppDispatch, useAppSelector } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
 
@@ -21,6 +21,10 @@ export default function MyJobsPage(): JSX.Element {
   const [jobToUpdate, setJobToUpdate] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   
+  // Get auth state to verify token is available
+  const authState = useAppSelector((state) => state.auth);
+  const hasToken = Boolean(authState.user?.accessToken || authState.signupToken);
+  
   const [updateJobStatus, { isLoading: isUpdatingJobStatus }] = useUpdateJobStatusMutation();
 
   // Map tab index to status
@@ -32,17 +36,45 @@ export default function MyJobsPage(): JSX.Element {
 
   const currentStatus = statusMap[tab];
 
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const queryParams = useMemo(
+    () => ({
+      status: currentStatus,
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentStatus, currentPage]
+  );
+
   // Reset to page 1 when tab changes
   useEffect(() => {
     setCurrentPage(1);
   }, [tab]);
 
   // Fetch jobs based on selected tab
-  const { data: jobsData, isLoading, error, refetch } = useGetJobsQuery({
-    status: currentStatus,
-    page: currentPage,
-    limit: 10,
+  // The query will automatically run when queryParams change or component mounts
+  const { data: jobsData, isLoading, error, refetch } = useGetJobsQuery(queryParams, {
+    // Don't skip - let RTK Query handle the request and errors
+    // If no token, it will return 401 and handle it appropriately
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+
+  // Ensure query runs when component first mounts
+  useEffect(() => {
+    // Trigger refetch on mount to ensure data is fresh
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    refetch();
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
+
+  // Log for debugging (can be removed in production)
+  useEffect(() => {
+    if (hasToken) {
+      console.log("MyJobs: Token available, fetching jobs with params:", queryParams);
+      console.log("MyJobs: Token:", authState.user?.accessToken ? "User token" : authState.signupToken ? "Signup token" : "No token");
+    } else {
+      console.warn("MyJobs: No token available");
+    }
+  }, [hasToken, queryParams, authState]);
 
   const jobs = jobsData?.data || [];
 
@@ -152,76 +184,118 @@ export default function MyJobsPage(): JSX.Element {
 
   return (
     <ServiceProviderLayout>
-      <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-        {/* Pills */}
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{
-            mb: 3,
-            "& .MuiTabs-indicator": {
-              display: "none",
-            },
-            "& .MuiTab-root": {
-              textTransform: "none",
-              minHeight: 36,
-              borderRadius: 20,
-              color: "#6C737F",
-            },
-            "& .Mui-selected": {
-              backgroundColor: "#D2E7FF",
-              color: "#111927 !important",
-            },
+      <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        {/* Pills - Fixed Position */}
+        <Box 
+          sx={{ 
+            position: "sticky",
+            top: 30,
+            zIndex: 100,
+            backgroundColor: "#FFFFFF",
+            width: "100%",
+            px: { xs: 1.5, md: 3 },
+            pt: { xs: 1.5, md: 3 },
+            pb: 2,
+            mb: 2,
+            boxSizing: "border-box",
           }}
         >
-          <Tab label="Leads" />
-          <Tab label="Completed" />
-          <Tab label="Declined" />
-        </Tabs>
+          <Tabs
+            value={tab}
+            onChange={(_, v) => setTab(v)}
+            sx={{
+              width: "100%",
+              minHeight: "36px",
+              height: "36px",
+              maxHeight: "36px",
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+              "& .MuiTabs-flexContainer": {
+                gap: 0,
+                alignItems: "center",
+                height: "36px",
+              },
+              "& .MuiTab-root": {
+                textTransform: "none",
+                minHeight: "36px",
+                height: "36px",
+                maxHeight: "36px",
+                borderRadius: "20px",
+                color: "#6C737F",
+                minWidth: "auto",
+                width: "auto",
+                px: 2,
+                py: 0,
+                fontSize: "14px",
+                fontWeight: 500,
+                transition: "background-color 0.2s ease, color 0.2s ease",
+                flexShrink: 0,
+                marginRight: "8px",
+                "&:hover": {
+                  backgroundColor: "#F3F4F6",
+                },
+              },
+              "& .Mui-selected": {
+                backgroundColor: "#D2E7FF !important",
+                color: "#111927 !important",
+                fontWeight: 600,
+              },
+            }}
+          >
+            <Tab label="Leads" />
+            <Tab label="Completed" />
+            <Tab label="Declined" />
+          </Tabs>
+        </Box>
 
-        {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <Typography color="error">
-              Failed to load jobs. Please try again.
-            </Typography>
-          </Box>
-        ) : transformedJobs.length === 0 ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <Typography color="text.secondary">
-              No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
-            </Typography>
-          </Box>
-        ) : (
-          <>
-        <Stack spacing={2}>
-              {transformedJobs.map((job) => (
-            <JobCard
-              key={job.id}
-                  title={job.title}
-                  description={job.description}
-                  clientName={job.clientName}
-                  clientEmail={job.clientEmail}
-                  clientPhone={job.clientPhone}
-              showActions={tab === 0}
-                  onComplete={() => handleComplete(job.id)}
-                  onDecline={() => handleDecline(job.id)}
-                  onViewDetails={() => handleViewDetails(job.id)}
-            />
-          ))}
-        </Stack>
+        <Box sx={{ px: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+          <Box sx={{ minHeight: "200px" }}>
+          {isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <Typography color="error">
+                Failed to load jobs. Please try again.
+              </Typography>
+            </Box>
+          ) : transformedJobs.length === 0 ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <Typography color="text.secondary">
+                No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <Stack spacing={2}>
+                {transformedJobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    title={job.title}
+                    description={job.description}
+                    clientName={job.clientName}
+                    clientEmail={job.clientEmail}
+                    clientPhone={job.clientPhone}
+                    showActions={tab === 0}
+                    onComplete={() => handleComplete(job.id)}
+                    onDecline={() => handleDecline(job.id)}
+                    onViewDetails={() => handleViewDetails(job.id)}
+                  />
+                ))}
+              </Stack>
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={jobsData?.totalPages || 1}
-              onPageChange={setCurrentPage}
-            />
-          </>
-        )}
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={jobsData?.totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
+            </>
+          )}
+          </Box>
+        </Box>
 
         {/* Job Details Dialog */}
         <GlobalDialog

@@ -5,6 +5,7 @@ import {
   Stack,
   Typography,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,6 +17,10 @@ interface ServiceDetailsPageProps {
   onCancel: () => void;
   onNext: (data: ServiceFormData) => void;
   initialData?: ServiceFormData | null;
+  isEditMode?: boolean;
+  isQuickContact?: boolean;
+  onSubmit?: (data: ServiceFormData) => void;
+  isSubmitting?: boolean;
 }
 
 export interface ServiceFormData {
@@ -38,6 +43,10 @@ export default function ServiceDetailsPage({
   onCancel,
   onNext,
   initialData,
+  isEditMode = false,
+  isQuickContact = false,
+  onSubmit,
+  isSubmitting = false,
 }: ServiceDetailsPageProps): JSX.Element {
   const form = useForm<ServiceFormData>({
     resolver: yupResolver(serviceDetailsSchema) as any,
@@ -59,7 +68,12 @@ export default function ServiceDetailsPage({
 
 
   const handleSubmit = (data: ServiceFormData) => {
-    onNext(data);
+    // If editing quick_contact service, submit directly, otherwise go to next step
+    if (isEditMode && isQuickContact && onSubmit) {
+      onSubmit(data);
+    } else {
+      onNext(data);
+    }
   };
 
   return (
@@ -230,7 +244,7 @@ export default function ServiceDetailsPage({
             SelectProps={{
               displayEmpty: true,
               renderValue: (selected) => {
-                if (!selected) {
+                if (!selected || selected === "") {
                   return "";
                 }
                 const selectedOption = responseTimeOptions.find(
@@ -312,7 +326,7 @@ export default function ServiceDetailsPage({
         <Button 
           variant="secondary" 
           onClick={form.handleSubmit(handleSubmit)}
-          disabled={!form.formState.isValid}
+          disabled={!form.formState.isValid || isSubmitting}
           sx={{
             "&.Mui-disabled": {
               backgroundColor: "#D1D5DB",
@@ -320,7 +334,14 @@ export default function ServiceDetailsPage({
             },
           }}
         >
-          Next
+          {isSubmitting ? (
+            <>
+              <CircularProgress size={16} sx={{ color: "#FFFFFF", mr: 1 }} />
+              {isEditMode ? "Updating..." : "Creating..."}
+            </>
+          ) : (
+            isEditMode && isQuickContact ? "Update" : "Next"
+          )}
         </Button>
       </Stack>
     </Stack>

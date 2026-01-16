@@ -8,6 +8,9 @@ interface DashboardCardProps {
   value: string | number;
   label: string;
   theme?: Theme;
+  backgroundColor?: string;
+  mobileLeftColor?: string;
+  mobileRightColor?: string;
 }
 
 const THEME_COLORS: Record<Theme, { cardBg: string; iconBg: string }> = {
@@ -26,14 +29,28 @@ export default function DashboardCard({
   value,
   label,
   theme = "theme1",
+  backgroundColor,
+  mobileLeftColor,
+  mobileRightColor,
 }: DashboardCardProps) {
+  // Determine mobile background color based on position
+  const getMobileBgColor = () => {
+    if (mobileLeftColor || mobileRightColor) {
+      return {
+        xs: mobileLeftColor || mobileRightColor || "inherit",
+        md: backgroundColor || THEME_COLORS[theme].cardBg,
+      };
+    }
+    return backgroundColor || THEME_COLORS[theme].cardBg;
+  };
+
   return (
     <Paper
       elevation={0}
       sx={{
         p: 2,
         borderRadius: 3,
-        backgroundColor: THEME_COLORS[theme].cardBg,
+        backgroundColor: getMobileBgColor(),
         width: { xs: "125px", sm: "200px", md: "calc((100% - 32px) / 3)", lg: "calc((100% - 32px) / 3)", xl: "calc((100% - 32px) / 3)" },
         maxWidth: { xs: "376px", md: "none", lg: "none", xl: "none" },
         flexGrow: 1,

@@ -12,12 +12,16 @@ interface ContactMethodPageProps {
   onBack: () => void;
   onCancel: () => void;
   onSelect: (method: "quick_contact" | "contact_info_questions") => void;
+  onCreate?: () => void; // For quick_contact direct create
+  isEditMode?: boolean;
 }
 
 export default function ContactMethodPage({
   onBack: _onBack,
   onCancel,
   onSelect,
+  onCreate,
+  isEditMode = false,
 }: ContactMethodPageProps): JSX.Element {
   const [selectedMethod, setSelectedMethod] = React.useState<
     "quick_contact" | "contact_info_questions" | ""
@@ -26,7 +30,11 @@ export default function ContactMethodPage({
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (selectedMethod) {
+    if (selectedMethod === "quick_contact" && onCreate) {
+      // For quick_contact, directly create
+      onCreate();
+    } else if (selectedMethod) {
+      // For custom_form, go to next step
       onSelect(selectedMethod as "quick_contact" | "contact_info_questions");
     }
   };
@@ -329,7 +337,9 @@ export default function ContactMethodPage({
             onClick={handleSubmit}
             disabled={!selectedMethod}
           >
-            Select
+            {selectedMethod === "quick_contact" 
+              ? (isEditMode ? "Update" : "Create")
+              : "Next"}
           </Button>
         </Stack>
       </Stack>

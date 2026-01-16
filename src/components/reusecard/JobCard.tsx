@@ -241,21 +241,29 @@ export default function JobCard({
 
           <Box sx={{ display: { xs: "none", sm: "block" }, flex: 1, minWidth: { sm: "20px", md: "40px" } }} />
 
-          <Typography
-            fontSize={{ xs: 12, sm: 14 }}
-            fontWeight={500}
-            color="#6C737F"
+          <Button
+            size="small"
+            onClick={onViewDetails}
             sx={{
-              cursor: "pointer",
+              bgcolor: "#FFFFFF",
+              color: "#6C737F",
+              border: "1px solid #D1D5DB",
+              px: { xs: 2, sm: 2.5 },
+              textTransform: "none",
+              fontWeight: 500,
+              fontSize: { xs: 12, sm: 14 },
               whiteSpace: "nowrap",
               alignSelf: { xs: "flex-start", sm: "flex-start" },
               mt: { xs: 0, sm: 0 },
               width: { xs: "100%", sm: "auto" },
+              "&:hover": {
+                bgcolor: "#F9FAFB",
+                borderColor: "#9CA3AF",
+              },
             }}
-            onClick={onViewDetails}
           >
             View Details
-          </Typography>
+          </Button>
         </Stack>
         </Box>
     </Card>

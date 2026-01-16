@@ -22,6 +22,7 @@ interface CustomQuestionsPageProps {
   onSubmit: (data: CustomQuestionData[]) => void;
   initialQuestions?: CustomQuestionData[] | null;
   isSubmitting?: boolean;
+  isEditMode?: boolean;
 }
 
 export interface CustomQuestionData {
@@ -57,6 +58,7 @@ export default function CustomQuestionsPage({
   onSubmit,
   initialQuestions,
   isSubmitting = false,
+  isEditMode = false,
 }: CustomQuestionsPageProps): JSX.Element {
   const [options, setOptions] = React.useState<string[]>(["", ""]);
   const [createdQuestions, setCreatedQuestions] = React.useState<CustomQuestionData[]>(initialQuestions || []);
@@ -753,10 +755,10 @@ export default function CustomQuestionsPage({
           {isSubmitting ? (
             <>
               <CircularProgress size={16} sx={{ color: "#FFFFFF", mr: 1 }} />
-              Creating...
+              {isEditMode ? "Updating..." : "Creating..."}
             </>
           ) : (
-            "Next"
+            isEditMode ? "Update" : "Create"
           )}
         </Button>
       </Stack>
