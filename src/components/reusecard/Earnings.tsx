@@ -9,6 +9,7 @@ interface EarningsCardProps {
   label: string;
   percentage?: string | number; // new prop
   theme?: Theme;
+  backgroundColor?: string;
 }
 
 const THEME_COLORS: Record<Theme, { cardBg: string; iconBg: string }> = {
@@ -28,6 +29,7 @@ export default function EarningsCard({
   label,
   percentage,
   theme = "theme1",
+  backgroundColor,
 }: EarningsCardProps) {
   return (
     <Paper
@@ -35,7 +37,7 @@ export default function EarningsCard({
       sx={{
         p: 2,
         borderRadius: 3,
-        backgroundColor: THEME_COLORS[theme].cardBg,
+        backgroundColor: backgroundColor || THEME_COLORS[theme].cardBg,
         width: { xs: "140px", sm: 150, md: 260 },
         maxWidth: 376,
         flexGrow: 1,

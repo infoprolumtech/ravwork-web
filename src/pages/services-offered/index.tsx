@@ -97,13 +97,37 @@ export default function ServicesOfferedPage(): JSX.Element {
 
   // Get pagination info if available
   const paginationData = React.useMemo(() => {
-    if (servicesResponse && 'totalPages' in servicesResponse) {
+    if (!servicesResponse) {
+      return { totalPages: 1 };
+    }
+    
+    // Check if response is paginated (has data property with array and totalPages)
+    if ('data' in servicesResponse && Array.isArray(servicesResponse.data) && 'totalPages' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
       return {
-        totalPages: servicesResponse.totalPages || 1,
-        hasPagination: true,
+        totalPages: paginatedResponse.totalPages || 1,
       };
     }
-    return { totalPages: 1, hasPagination: false };
+    
+    // Check if response has totalPages directly (paginated structure)
+    if ('totalPages' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
+      return {
+        totalPages: paginatedResponse.totalPages || 1,
+      };
+    }
+    
+    // If we have total and limit, calculate totalPages
+    if ('total' in servicesResponse && 'limit' in servicesResponse) {
+      const paginatedResponse = servicesResponse as { total: number; limit: number };
+      return {
+        totalPages: Math.ceil(paginatedResponse.total / paginatedResponse.limit) || 1,
+      };
+    }
+    
+    // Non-paginated response (direct array) - default to 1 page
+    // Since we're sending page/limit params, assume at least 1 page
+    return { totalPages: 1 };
   }, [servicesResponse]);
 
   const handleAddService = () => {
@@ -254,8 +278,8 @@ export default function ServicesOfferedPage(): JSX.Element {
               )}
             </Stack>
 
-            {/* Pagination - Only show if there are services */}
-            {services.length > 0 && paginationData.hasPagination && paginationData.totalPages > 1 && (
+            {/* Pagination - Show when there are services */}
+            {services.length > 0 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={paginationData.totalPages}

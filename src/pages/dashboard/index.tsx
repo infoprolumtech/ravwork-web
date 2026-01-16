@@ -387,39 +387,51 @@ export default function Dashboard() {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
-            label="Today’s Clicks"
+            label="Today's Clicks"
             value="1,721k"
             theme="theme1"
+            backgroundColor="#E3F5FF"
+            mobileLeftColor="#E3F5FF"
           />
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Clicks This Week"
             value="367k"
             theme="theme2"
+            backgroundColor="#E3F5FF"
+            mobileRightColor="#E5ECF6"
           />
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Clicks This Month"
             value="1,156"
             theme="theme1"
+            backgroundColor="#E3F5FF"
+            mobileLeftColor="#E3F5FF"
           />
           <DashboardCard
             icon="/assets/icons/user-check.svg"
-            label="Today’s Bookings"
+            label="Today's Bookings"
             value="721k"
             theme="theme2"
+            backgroundColor="#E5ECF6"
+            mobileRightColor="#E5ECF6"
           />
           <DashboardCard
             icon="/assets/icons/user-check.svg"
-            label="This Week’s Bookings"
+            label="This Week's Bookings"
             value="367k"
             theme="theme1"
+            backgroundColor="#E5ECF6"
+            mobileLeftColor="#E3F5FF"
           />
           <DashboardCard
             icon="/assets/icons/user-check.svg"
             label="Bookings This Month"
             value="1,156"
             theme="theme2"
+            backgroundColor="#E5ECF6"
+            mobileRightColor="#E5ECF6"
           />
         </Grid>
 
