@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -53,11 +53,30 @@ const calculateProfileComplete = (profile: any): number => {
 export default function Dashboard() {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: profile, isLoading: isLoadingProfile } = useGetUserProfileQuery();
-  const { data: dashboardRequestsData, isLoading: isLoadingRequests } = useGetDashboardRequestsQuery({ 
-    page: currentPage,
-    limit: 10 
+  
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const dashboardRequestsParams = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentPage]
+  );
+
+  const { data: profile, isLoading: isLoadingProfile, refetch: refetchProfile } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+  
+  const { data: dashboardRequestsData, isLoading: isLoadingRequests, refetch: refetchRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
+  });
+  
+  // Ensure queries run when component first mounts
+  useEffect(() => {
+    refetchProfile();
+    refetchRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch functions are stable)
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);

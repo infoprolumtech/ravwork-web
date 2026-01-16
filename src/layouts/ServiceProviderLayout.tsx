@@ -549,8 +549,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
           <Stack spacing={1}>
             <Typography
               variant="body2"
-              component="a"
-              href="#"
+              onClick={() => navigate("/terms-and-conditions")}
               sx={{
                 fontSize: "12px",
                 color: "#6C737F",
@@ -563,22 +562,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             </Typography>
             <Typography
               variant="body2"
-              component="a"
-              href="#"
-              sx={{
-                fontSize: "12px",
-                color: "#6C737F",
-                textDecoration: "none",
-                cursor: "pointer",
-                "&:hover": { color: "#384250" },
-              }}
-            >
-              About Us
-            </Typography>
-            <Typography
-              variant="body2"
-              component="a"
-              href="#"
+              onClick={() => navigate("/privacy-policy")}
               sx={{
                 fontSize: "12px",
                 color: "#6C737F",

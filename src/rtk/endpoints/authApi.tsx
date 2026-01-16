@@ -4,10 +4,20 @@ const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // POST /api/v1/auth/login - Login user
     login: builder.mutation({
-      query: (body: { email: string; password: string }) => ({
+      query: (body: { 
+        email: string; 
+        password: string;
+        deviceType?: string;
+        deviceToken?: string;
+      }) => ({
         url: "/auth/login",
         method: "POST",
-        body,
+        body: {
+          email: body.email,
+          password: body.password,
+          deviceType: body.deviceType || "web",
+          deviceToken: body.deviceToken || "",
+        },
       }),
     }),
     // POST /api/v1/auth/signup - Register a new user
@@ -18,10 +28,20 @@ const authApi = api.injectEndpoints({
         countryCode: string;
         phoneNumber: string;
         password: string;
+        deviceType?: string;
+        deviceToken?: string;
       }) => ({
         url: "/auth/signup",
         method: "POST",
-        body,
+        body: {
+          username: body.username,
+          email: body.email,
+          countryCode: body.countryCode,
+          phoneNumber: body.phoneNumber,
+          password: body.password,
+          deviceType: body.deviceType || "web",
+          deviceToken: body.deviceToken || "",
+        },
       }),
     }),
     // GET /api/v1/auth/me - Get current user

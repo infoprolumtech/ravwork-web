@@ -1,4 +1,4 @@
-import { type JSX, useState } from "react";
+import { type JSX, useState, useEffect } from "react";
 import {
   Avatar,
   Box,
@@ -24,7 +24,15 @@ const getProfileUrl = (username: string) => {
 
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
-  const { data: profile, isLoading, error } = useGetUserProfileQuery();
+  const { data: profile, isLoading, error, refetch } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
+  });
+  
+  // Ensure query runs when component first mounts
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
 

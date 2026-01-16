@@ -7,7 +7,7 @@ import JobDetailsModal from "./components/JobDetailsModal";
 import CompleteJobModal from "./components/CompleteJobModal";
 import DeclineJobModal from "./components/DeclineJobModal";
 import { useGetJobsQuery, useUpdateJobStatusMutation } from "../../rtk/endpoints/userApi";
-import { useAppDispatch } from "../../rtk/store";
+import { useAppDispatch, useAppSelector } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
 
@@ -21,6 +21,10 @@ export default function MyJobsPage(): JSX.Element {
   const [jobToUpdate, setJobToUpdate] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   
+  // Get auth state to verify token is available
+  const authState = useAppSelector((state) => state.auth);
+  const hasToken = Boolean(authState.user?.accessToken || authState.signupToken);
+  
   const [updateJobStatus, { isLoading: isUpdatingJobStatus }] = useUpdateJobStatusMutation();
 
   // Map tab index to status
@@ -32,17 +36,45 @@ export default function MyJobsPage(): JSX.Element {
 
   const currentStatus = statusMap[tab];
 
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const queryParams = useMemo(
+    () => ({
+      status: currentStatus,
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentStatus, currentPage]
+  );
+
   // Reset to page 1 when tab changes
   useEffect(() => {
     setCurrentPage(1);
   }, [tab]);
 
   // Fetch jobs based on selected tab
-  const { data: jobsData, isLoading, error, refetch } = useGetJobsQuery({
-    status: currentStatus,
-    page: currentPage,
-    limit: 10,
+  // The query will automatically run when queryParams change or component mounts
+  const { data: jobsData, isLoading, error, refetch } = useGetJobsQuery(queryParams, {
+    // Don't skip - let RTK Query handle the request and errors
+    // If no token, it will return 401 and handle it appropriately
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+
+  // Ensure query runs when component first mounts
+  useEffect(() => {
+    // Trigger refetch on mount to ensure data is fresh
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    refetch();
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
+
+  // Log for debugging (can be removed in production)
+  useEffect(() => {
+    if (hasToken) {
+      console.log("MyJobs: Token available, fetching jobs with params:", queryParams);
+      console.log("MyJobs: Token:", authState.user?.accessToken ? "User token" : authState.signupToken ? "Signup token" : "No token");
+    } else {
+      console.warn("MyJobs: No token available");
+    }
+  }, [hasToken, queryParams, authState]);
 
   const jobs = jobsData?.data || [];
 

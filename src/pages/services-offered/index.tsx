@@ -57,11 +57,25 @@ export default function ServicesOfferedPage(): JSX.Element {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] = React.useState<string | null>(null);
 
+  // Memoize query parameters to ensure RTK Query properly tracks changes
+  const queryParams = React.useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+    }),
+    [currentPage]
+  );
+
   // API hooks
-  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery({
-    page: currentPage,
-    limit: 10,
+  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery(queryParams, {
+    refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+  
+  // Ensure query runs when component first mounts
+  React.useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run on mount (refetch is stable)
   const [deleteService, { isLoading: isDeletingService }] = useDeleteServiceMutation();
 
   // Transform services data - handle both paginated and non-paginated responses
