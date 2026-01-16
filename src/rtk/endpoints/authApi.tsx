@@ -9,16 +9,25 @@ const authApi = api.injectEndpoints({
         password: string;
         deviceType?: string;
         deviceToken?: string;
-      }) => ({
-        url: "/auth/login",
-        method: "POST",
-        body: {
+      }) => {
+        const requestBody: {
+          email: string;
+          password: string;
+          deviceType: string;
+          deviceToken?: string;
+        } = {
           email: body.email,
           password: body.password,
           deviceType: body.deviceType || "web",
-          deviceToken: body.deviceToken || "",
-        },
-      }),
+          ...(body.deviceToken && body.deviceToken.trim() !== "" && { deviceToken: body.deviceToken }),
+        };
+        
+        return {
+          url: "/auth/login",
+          method: "POST",
+          body: requestBody,
+        };
+      },
     }),
     // POST /api/v1/auth/signup - Register a new user
     signup: builder.mutation({
@@ -30,19 +39,31 @@ const authApi = api.injectEndpoints({
         password: string;
         deviceType?: string;
         deviceToken?: string;
-      }) => ({
-        url: "/auth/signup",
-        method: "POST",
-        body: {
+      }) => {
+        const requestBody: {
+          username: string;
+          email: string;
+          countryCode: string;
+          phoneNumber: string;
+          password: string;
+          deviceType: string;
+          deviceToken?: string;
+        } = {
           username: body.username,
           email: body.email,
           countryCode: body.countryCode,
           phoneNumber: body.phoneNumber,
           password: body.password,
           deviceType: body.deviceType || "web",
-          deviceToken: body.deviceToken || "",
-        },
-      }),
+          ...(body.deviceToken && body.deviceToken.trim() !== "" && { deviceToken: body.deviceToken }),
+        };
+        
+        return {
+          url: "/auth/signup",
+          method: "POST",
+          body: requestBody,
+        };
+      },
     }),
     // GET /api/v1/auth/me - Get current user
     getCurrentUser: builder.query({

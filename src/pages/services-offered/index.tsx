@@ -254,12 +254,14 @@ export default function ServicesOfferedPage(): JSX.Element {
               )}
             </Stack>
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={paginationData.totalPages}
-              onPageChange={setCurrentPage}
-            />
+            {/* Pagination - Only show if there are services */}
+            {services.length > 0 && paginationData.hasPagination && paginationData.totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={paginationData.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </>
         )}
       </Box>
