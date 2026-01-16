@@ -184,76 +184,118 @@ export default function MyJobsPage(): JSX.Element {
 
   return (
     <ServiceProviderLayout>
-      <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-        {/* Pills */}
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{
-            mb: 3,
-            "& .MuiTabs-indicator": {
-              display: "none",
-            },
-            "& .MuiTab-root": {
-              textTransform: "none",
-              minHeight: 36,
-              borderRadius: 20,
-              color: "#6C737F",
-            },
-            "& .Mui-selected": {
-              backgroundColor: "#D2E7FF",
-              color: "#111927 !important",
-            },
+      <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+        {/* Pills - Fixed Position */}
+        <Box 
+          sx={{ 
+            position: "sticky",
+            top: 30,
+            zIndex: 100,
+            backgroundColor: "#FFFFFF",
+            width: "100%",
+            px: { xs: 1.5, md: 3 },
+            pt: { xs: 1.5, md: 3 },
+            pb: 2,
+            mb: 2,
+            boxSizing: "border-box",
           }}
         >
-          <Tab label="Leads" />
-          <Tab label="Completed" />
-          <Tab label="Declined" />
-        </Tabs>
+          <Tabs
+            value={tab}
+            onChange={(_, v) => setTab(v)}
+            sx={{
+              width: "100%",
+              minHeight: "36px",
+              height: "36px",
+              maxHeight: "36px",
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+              "& .MuiTabs-flexContainer": {
+                gap: 0,
+                alignItems: "center",
+                height: "36px",
+              },
+              "& .MuiTab-root": {
+                textTransform: "none",
+                minHeight: "36px",
+                height: "36px",
+                maxHeight: "36px",
+                borderRadius: "20px",
+                color: "#6C737F",
+                minWidth: "auto",
+                width: "auto",
+                px: 2,
+                py: 0,
+                fontSize: "14px",
+                fontWeight: 500,
+                transition: "background-color 0.2s ease, color 0.2s ease",
+                flexShrink: 0,
+                marginRight: "8px",
+                "&:hover": {
+                  backgroundColor: "#F3F4F6",
+                },
+              },
+              "& .Mui-selected": {
+                backgroundColor: "#D2E7FF !important",
+                color: "#111927 !important",
+                fontWeight: 600,
+              },
+            }}
+          >
+            <Tab label="Leads" />
+            <Tab label="Completed" />
+            <Tab label="Declined" />
+          </Tabs>
+        </Box>
 
-        {isLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <Typography color="error">
-              Failed to load jobs. Please try again.
-            </Typography>
-          </Box>
-        ) : transformedJobs.length === 0 ? (
-          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-            <Typography color="text.secondary">
-              No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
-            </Typography>
-          </Box>
-        ) : (
-          <>
-        <Stack spacing={2}>
-              {transformedJobs.map((job) => (
-            <JobCard
-              key={job.id}
-                  title={job.title}
-                  description={job.description}
-                  clientName={job.clientName}
-                  clientEmail={job.clientEmail}
-                  clientPhone={job.clientPhone}
-              showActions={tab === 0}
-                  onComplete={() => handleComplete(job.id)}
-                  onDecline={() => handleDecline(job.id)}
-                  onViewDetails={() => handleViewDetails(job.id)}
-            />
-          ))}
-        </Stack>
+        <Box sx={{ px: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+          <Box sx={{ minHeight: "200px" }}>
+          {isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <Typography color="error">
+                Failed to load jobs. Please try again.
+              </Typography>
+            </Box>
+          ) : transformedJobs.length === 0 ? (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+              <Typography color="text.secondary">
+                No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <Stack spacing={2}>
+                {transformedJobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    title={job.title}
+                    description={job.description}
+                    clientName={job.clientName}
+                    clientEmail={job.clientEmail}
+                    clientPhone={job.clientPhone}
+                    showActions={tab === 0}
+                    onComplete={() => handleComplete(job.id)}
+                    onDecline={() => handleDecline(job.id)}
+                    onViewDetails={() => handleViewDetails(job.id)}
+                  />
+                ))}
+              </Stack>
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={jobsData?.totalPages || 1}
-              onPageChange={setCurrentPage}
-            />
-          </>
-        )}
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={jobsData?.totalPages || 1}
+                onPageChange={setCurrentPage}
+              />
+            </>
+          )}
+          </Box>
+        </Box>
 
         {/* Job Details Dialog */}
         <GlobalDialog
