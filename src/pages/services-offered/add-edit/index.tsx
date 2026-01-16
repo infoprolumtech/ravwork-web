@@ -12,8 +12,6 @@ import ServiceProviderLayout from "../../../layouts/ServiceProviderLayout";
 import { ArrowBack } from "@mui/icons-material";
 import ServiceDetailsPage, { type ServiceFormData } from "./ServiceDetailsPage";
 import ContactMethodPage from "./ContactMethodPage";
-import { type QuickContactFormData } from "./QuickContactPage";
-import { type ContactInfoFormData } from "./ContactInfoPage";
 import CustomQuestionsPage from "./CustomQuestionsPage";
 import {
   useCreateServiceMutation,
@@ -315,13 +313,6 @@ export default function AddEditServicePage(): JSX.Element {
     }
   };
 
-  const handleContactInfoNext = async (_data: ContactInfoFormData) => {
-    // This function is kept for backward compatibility but now directly submits
-    // Contact info screen is skipped, so we just submit with questions
-    await handleCustomFormSubmitDirectly(questionsData);
-  };
-
-
   const handleQuickContactSubmitDirectly = async () => {
     if (!serviceData) return;
 
@@ -347,11 +338,6 @@ export default function AddEditServicePage(): JSX.Element {
       const errorMessage = error?.data?.message || "Failed to save service";
       dispatch(showAlert({ message: errorMessage, severity: "error" }));
     }
-  };
-
-  const handleQuickContactSubmit = async (_data: QuickContactFormData) => {
-    // This function is kept for backward compatibility but now directly submits
-    await handleQuickContactSubmitDirectly();
   };
 
   const isSubmittingService = isCreatingService || isUpdatingService;
