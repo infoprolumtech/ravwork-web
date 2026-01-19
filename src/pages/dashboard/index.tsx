@@ -326,19 +326,17 @@ export default function Dashboard() {
             <CardContent sx={{ py: 2 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 {/* Icon */}
-                <Box
+                <Avatar
+                  src={profilePhotoUrl || "./assets/images/avatar.png"}
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     bgcolor: "#F9FAFB",
-                    borderRadius: "50%",
                     display: { xs: "none", sm: "flex" },
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                 >
-                  <img src="./assets/icons/User.svg" alt="" />
-                </Box>
+                  {!profilePhotoUrl && profile?.username?.[0]?.toUpperCase()}
+                </Avatar>
 
                 {/* Content */}
                 <Box sx={{ flex: 1 }}>
