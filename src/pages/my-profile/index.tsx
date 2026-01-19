@@ -1,4 +1,4 @@
-import { type JSX, useState, useEffect } from "react";
+import { type JSX, useState, useEffect, useMemo } from "react";
 import {
   Avatar,
   Box,
@@ -14,7 +14,8 @@ import {
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
-import { getCloudFrontUrl } from "../../utils/helper";
+import { useGetServicesQuery } from "../../rtk/endpoints/serviceApi";
+import { getCloudFrontUrl, calculateProfileComplete } from "../../utils/helper";
 import { colors } from "../../utils/constants";
 import ShareModal from "../../components/client/ShareModal";
 
@@ -28,6 +29,28 @@ export default function MyProfilePage(): JSX.Element {
   const { data: profile, isLoading, error, refetch } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
+  const { data: servicesData } = useGetServicesQuery();
+
+  const hasServices = useMemo(() => {
+    if (!servicesData) return false;
+    if (Array.isArray(servicesData)) return servicesData.length > 0;
+    return (servicesData.data && servicesData.data.length > 0) || false;
+  }, [servicesData]);
+
+  const profileComplete = useMemo(() => {
+    return calculateProfileComplete(profile || null, hasServices);
+  }, [profile, hasServices]);
+
+  const handleCompleteSetup = () => {
+    const profileOnlyCompletion = calculateProfileComplete(profile || null, false);
+    if (profileOnlyCompletion >= 50 && !hasServices) {
+      navigate("/services-offered");
+    } else {
+      if (profile?.id) {
+        navigate(`/my-profile/${profile.id}`);
+      }
+    }
+  };
 
   // Ensure query runs when component first mounts
   useEffect(() => {
@@ -161,7 +184,7 @@ export default function MyProfilePage(): JSX.Element {
             bgcolor: "#D2E7FF",
           }}
         >
-          <CardContent sx={{ py: 2 }}>
+          <CardContent sx={{ py: 2, position: "relative" }}>
             {/* Header */}
             <Box
               display="flex"
@@ -181,12 +204,48 @@ export default function MyProfilePage(): JSX.Element {
               </Button>
             </Box>
 
+            {/* Profile Completion Button */}
+            <Button
+              onClick={handleCompleteSetup}
+              sx={{
+                display: "flex",
+                padding: "3px 4px",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+                position: "absolute",
+                left: "80px",
+                top: "55px",
+                borderRadius: "68px",
+                background: "#BAEDBD",
+                boxShadow: "0 4px 26px 0 rgba(0, 0, 0, 0.04)",
+                textTransform: "none",
+                color: "#111927",
+                fontSize: "12px",
+                fontWeight: 600,
+                minWidth: "unset",
+                border: "none",
+                cursor: "pointer",
+                zIndex: 10,
+                "&:hover": {
+                  background: "#A9DCA9",
+                },
+              }}
+            >
+              {profileComplete}%
+            </Button>
+
             {/* Body */}
             <Box gap={2}>
 
               <Avatar
                 src={profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "./assets/images/avatar.png"}
-                sx={{ width: 74, height: 74 }}
+                sx={{
+                  width: 74,
+                  height: 74,
+                  border: "4px solid #FFFFFF",
+                  bgcolor: "#FFFFFF"
+                }}
                 imgProps={{
                   onError: (e) => {
                     // Fallback to default avatar if image fails to load (e.g., Access Denied)

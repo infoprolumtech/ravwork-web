@@ -1084,6 +1084,7 @@ export default function ClientPage(): JSX.Element {
         <DialogContent
           sx={{
             p: 0,
+            pt: { xs: "20px", sm: 0 },
             height: { xs: "100%", sm: "auto" },
             overflowY: "auto",
             scrollbarWidth: "none",
@@ -1132,6 +1133,7 @@ export default function ClientPage(): JSX.Element {
         <DialogContent
           sx={{
             p: 0,
+            pt: { xs: "20px", sm: 0 },
             height: { xs: "100%", sm: "auto" },
             overflowY: "auto",
             scrollbarWidth: "none",
@@ -1173,6 +1175,7 @@ export default function ClientPage(): JSX.Element {
         <DialogContent
           sx={{
             p: 0,
+            pt: { xs: "20px", sm: 0 },
             height: { xs: "100%", sm: "auto" },
             overflowY: "auto",
             scrollbarWidth: "none",
