@@ -31,7 +31,7 @@ export default function JobDetailsModal({
       sx={{
         paddingLeft: { xs: "20px", sm: "32px", md: "40px" },
         paddingRight: { xs: "20px", sm: "32px", md: "40px" },
-        paddingTop: { xs: "12px", sm: "20px", md: "28px" },
+        paddingTop: { xs: "20px", sm: "24px", md: "32px" },
         paddingBottom: { xs: "20px", sm: "32px", md: "40px" },
         display: "flex",
         flexDirection: "column",
@@ -157,6 +157,29 @@ export default function JobDetailsModal({
                     }}
                   >
                     ${jobDetails.originalPrice.toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
+              {jobDetails.status === "completed" && jobDetails.finalPrice !== undefined && jobDetails.finalPrice !== null && jobDetails.finalPrice > 0 && (
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: { xs: "13px", sm: "14px" },
+                      fontWeight: 500,
+                      color: "#6C737F",
+                      mb: { xs: 0.25, sm: 0.5 },
+                    }}
+                  >
+                    Job close price
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: { xs: "15px", sm: "16px" },
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    ${jobDetails.finalPrice.toFixed(2)}
                   </Typography>
                 </Box>
               )}

@@ -50,6 +50,8 @@ export interface Job {
 
 export interface JobDetails extends Job {
   description?: string;
+  finalPrice?: number;
+  priceNotes?: string;
   client?: {
     id: string;
     name: string;

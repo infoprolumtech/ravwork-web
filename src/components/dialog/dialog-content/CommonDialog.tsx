@@ -25,7 +25,12 @@ export default function CommonDialog({
   };
 
   return (
-    <Stack gap={2}>
+    <Stack
+      gap={2}
+      sx={{
+        pt: { xs: 1.5, sm: 2 },
+      }}
+    >
       <Stack gap={1}>
         <Icon
           src="/assets/icons/alert.svg"
