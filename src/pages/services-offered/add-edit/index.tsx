@@ -51,24 +51,24 @@ const mapResponseTimeFromAPI = (apiResponseTime: string | null): string | null =
   }
   // Return as-is for valid values
   return apiResponseTime;
-}; 
+};
 
 // Transform API FormFields to CustomQuestionData format
 const transformFormFieldsToQuestions = (formFields: FormField[]): any[] => {
   return formFields
     .map((field) => ({
-    question: field.label,
-    answerType: field.fieldType === "select" ? "single_choice" : 
-                field.fieldType === "checkbox" ? "multiselect" :
-                field.fieldType === "textarea" ? "long_text" :
-                  field.fieldType === "date" ? "date_time" :
-                  field.fieldType === "time" ? "date_time" :
-                  (field.fieldType === "images" || field.fieldType === "file") ? "image" : "short_text",
-    options: field.options || [],
-    label: field.label,
-    fieldType: field.fieldType,
-    placeholder: field.placeholder,
-    isRequired: field.isRequired,
+      question: field.label,
+      answerType: field.fieldType === "select" ? "single_choice" :
+        field.fieldType === "checkbox" ? "multiselect" :
+          field.fieldType === "textarea" ? "long_text" :
+            field.fieldType === "date" ? "date_time" :
+              field.fieldType === "time" ? "date_time" :
+                (field.fieldType === "images" || field.fieldType === "file") ? "image" : "short_text",
+      options: field.options || [],
+      label: field.label,
+      fieldType: field.fieldType,
+      placeholder: field.placeholder,
+      isRequired: field.isRequired,
       sortOrder: field.sortOrder,
     }))
     .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)); // Sort by sortOrder
@@ -99,11 +99,11 @@ const transformQuestionsToFormFields = (questions: any[]): FormField[] => {
 
   return questions
     .map((q, index) => ({
-    label: q.label || q.question || "",
+      label: q.label || q.question || "",
       fieldType: q.fieldType || mapAnswerTypeToFieldType(q.answerType || "short_text"),
-    placeholder: q.placeholder || "",
-    options: q.options || [],
-    isRequired: q.isRequired || false,
+      placeholder: q.placeholder || "",
+      options: q.options || [],
+      isRequired: q.isRequired || false,
       sortOrder: q.sortOrder !== undefined ? q.sortOrder : index, // Use provided sortOrder or fallback to index
     }))
     .sort((a, b) => a.sortOrder - b.sortOrder); // Sort by sortOrder before returning
@@ -132,15 +132,9 @@ export default function AddEditServicePage(): JSX.Element {
       const loadService = async () => {
         try {
           const response = await getServiceById(id).unwrap();
-          
-          if (!response || !response.data) {
-            dispatch(showAlert({ message: "Service not found", severity: "error" }));
-            navigate("/services-offered");
-            return;
-          }
-          
-          const service = response.data as Service;
-          
+
+          const service = response;
+
           if (!service) {
             dispatch(showAlert({ message: "Service not found", severity: "error" }));
             navigate("/services-offered");
@@ -227,7 +221,7 @@ export default function AddEditServicePage(): JSX.Element {
 
   const handleServiceDetailsNext = (data: ServiceFormData) => {
     setServiceData(data);
-    
+
     // If editing a service, skip contact method and go directly to the appropriate step
     if (editingService) {
       if (editingService.contactMethod === "custom_form" || (editingService.formFields && editingService.formFields.length > 0)) {
@@ -247,7 +241,7 @@ export default function AddEditServicePage(): JSX.Element {
   const handleQuickContactUpdateDirectly = async (data: ServiceFormData) => {
     // Handle quick_contact service update directly from ServiceDetailsPage
     if (!id) return;
-    
+
     try {
       const requestBody: CreateServiceRequest = {
         name: data.serviceTitle,
@@ -287,7 +281,7 @@ export default function AddEditServicePage(): JSX.Element {
     try {
       const formFields = transformQuestionsToFormFields(questions);
       const contactMethod: "quick_contact" | "custom_form" = "custom_form";
-      
+
       const requestBody: CreateServiceRequest = {
         name: serviceData.serviceTitle,
         description: serviceData.whatsIncluded,
@@ -304,7 +298,7 @@ export default function AddEditServicePage(): JSX.Element {
         await createService(requestBody).unwrap();
         dispatch(showAlert({ message: "Service created successfully", severity: "success" }));
       }
-      
+
       navigate("/services-offered");
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to save service";
@@ -331,7 +325,7 @@ export default function AddEditServicePage(): JSX.Element {
         await createService(requestBody).unwrap();
         dispatch(showAlert({ message: "Service created successfully", severity: "success" }));
       }
-      
+
       navigate("/services-offered");
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to save service";
@@ -344,10 +338,10 @@ export default function AddEditServicePage(): JSX.Element {
   if (isLoadingService) {
     return (
       <ServiceProviderLayout>
-        <Box sx={{ 
-          display: "flex", 
-          justifyContent: "center", 
-          alignItems: "center", 
+        <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           minHeight: "50vh",
           p: { xs: 2, md: 3 },
         }}>
