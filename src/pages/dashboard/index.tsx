@@ -226,28 +226,60 @@ export default function Dashboard() {
                       {profileUrl || "https://rawwork.com/p/username"}
                     </Typography>
 
-                    <Box display="flex" gap={0.5}>
-                      <Box
+                    <Box display="flex" gap={1} alignItems="center">
+                      <Button
                         onClick={handleCopyUrl}
                         sx={{
-                          width: 24,
-                          height: 24,
-                          bgcolor: "#fff",
-                          borderRadius: "50%",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          gap: { xs: 0.375, sm: 0.5, md: 0.625 },
+                          bgcolor: "#FFFFFF",
+                          color: "#111927",
+                          borderRadius: { xs: "14px", sm: "16px", md: "20px" },
+                          px: { xs: 0.875, sm: 1.25, md: 1.5 },
+                          py: { xs: 0.375, sm: 0.5, md: 0.625 },
+                          minHeight: { xs: "24px", sm: "28px", md: "32px" },
+                          textTransform: "none",
+                          fontWeight: 600,
+                          fontSize: { xs: "11px", sm: "12px", md: "13px" },
+                          lineHeight: 1.2,
+                          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
+                          border: "none",
                           cursor: "pointer",
                           flexShrink: 0,
+                          whiteSpace: "nowrap",
+                          transition: "all 0.2s ease-in-out",
+                          "&:hover": {
+                            bgcolor: "#F9FAFB",
+                            boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.08)",
+                            transform: "translateY(-1px)",
+                          },
+                          "&:active": {
+                            transform: "translateY(0)",
+                            boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.08)",
+                          },
                         }}
                       >
-                        <img src="./assets/icons/copy.svg" alt="copy" />
-                      </Box>
+                        <Box
+                          component="img"
+                          src="./assets/icons/copy.svg"
+                          alt="copy"
+                          sx={{
+                            width: { xs: 12, sm: 13, md: 14 },
+                            height: { xs: 12, sm: 13, md: 14 },
+                            flexShrink: 0,
+                          }}
+                        />
+                        <Box component="span" sx={{ fontWeight: 600 }}>
+                          Copy Link
+                        </Box>
+                      </Button>
                       <Box
                         onClick={handleShareClick}
                         sx={{
-                          width: 24,
-                          height: 24,
+                          width: { xs: 24, sm: 28, md: 32 },
+                          height: { xs: 24, sm: 28, md: 32 },
                           bgcolor: "#fff",
                           borderRadius: "50%",
                           display: "flex",
@@ -255,9 +287,21 @@ export default function Dashboard() {
                           justifyContent: "center",
                           cursor: "pointer",
                           flexShrink: 0,
+                          boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.05)",
+                          "&:hover": {
+                            bgcolor: "#F9FAFB",
+                            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                          },
                         }}
                       >
-                        <img src="./assets/icons/share-arrow.svg" alt="share" />
+                        <img 
+                          src="./assets/icons/share-arrow.svg" 
+                          alt="share"
+                          style={{
+                            width: `${14}px`,
+                            height: `${14}px`,
+                          }}
+                        />
                       </Box>
                     </Box>
                   </Box>
