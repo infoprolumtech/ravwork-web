@@ -80,7 +80,7 @@ export default function ContactMethodPage({
           <Typography
             variant="h5"
             sx={{
-              fontSize: "28px",
+              fontSize: { xs: "20px", sm: "24px", md: "28px" },
               fontWeight: 600,
               color: "#111927",
             }}
@@ -89,7 +89,7 @@ export default function ContactMethodPage({
           </Typography>
           <Typography
             sx={{
-              fontSize: "14px",
+              fontSize: { xs: "13px", sm: "13.5px", md: "14px" },
               fontWeight: 400,
               color: "#6C737F",
               mt: 1,
@@ -107,7 +107,7 @@ export default function ContactMethodPage({
             e.target.value as "quick_contact" | "contact_info_questions"
           )
         }
-        sx={{ width: "100%", gap: 2 }}
+        sx={{ width: "100%", gap: { xs: 1.5, sm: 1.75, md: 2 } }}
       >
         {/* Quick Contact Option */}
         <FormControlLabel
@@ -119,7 +119,7 @@ export default function ContactMethodPage({
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 1,
+                gap: { xs: 0.75, sm: 0.875, md: 1 },
                 width: "100%",
                 position: "relative",
               }}
@@ -128,25 +128,28 @@ export default function ContactMethodPage({
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
-                  gap: 2,
+                  gap: { xs: 1.5, sm: 1.75, md: 2 },
                 }}
               >
-                <Box sx={{ flex: 1 }}>
+                <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
                   <Typography
                     sx={{
-                      fontSize: "18px",
+                      fontSize: { xs: "16px", sm: "17px", md: "18px" },
                       fontWeight: 600,
                       color: "#111927",
                       mb: 1,
+                      wordBreak: "break-word",
                     }}
                   >
                     Quick Contact
                   </Typography>
                   <Typography
                     sx={{
-                      fontSize: "14px",
+                      fontSize: { xs: "13px", sm: "13.5px", md: "14px" },
                       fontWeight: 400,
                       color: "#6C737F",
+                      wordBreak: "break-word",
+                      width: "100%",
                     }}
                   >
                     Collect Basic Information to get booked faster
@@ -155,8 +158,8 @@ export default function ContactMethodPage({
                 {/* Quick Contact icon at top right */}
                 <Box
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: { xs: 32, sm: 36, md: 40 },
+                    height: { xs: 32, sm: 36, md: 40 },
                     borderRadius: "8px",
                     display: "flex",
                     alignItems: "center",
@@ -169,8 +172,8 @@ export default function ContactMethodPage({
                     src="/assets/icons/service_offered_icons/quick_contact.svg"
                     alt="Quick Contact"
                     sx={{
-                      width: "40px",
-                      height: "40px",
+                      width: { xs: "32px", sm: "36px", md: "40px" },
+                      height: { xs: "32px", sm: "36px", md: "40px" },
                       objectFit: "contain",
                     }}
                   />
@@ -178,12 +181,12 @@ export default function ContactMethodPage({
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
                 <Typography
-                  sx={{ fontSize: "14px", fontWeight: 400, color: "#6C737F" }}
+                  sx={{ fontSize: { xs: "13px", sm: "13.5px", md: "14px" }, fontWeight: 400, color: "#6C737F" }}
                 >
                   • Name
                 </Typography>
                 <Typography
-                  sx={{ fontSize: "14px", fontWeight: 400, color: "#6C737F" }}
+                  sx={{ fontSize: { xs: "13px", sm: "13.5px", md: "14px" }, fontWeight: 400, color: "#6C737F" }}
                 >
                   • Phone Number
                 </Typography>
@@ -195,7 +198,7 @@ export default function ContactMethodPage({
               ? "1px solid #12B76A" 
               : "1px solid #E5E7EB",
             borderRadius: "8px",
-            p: 2,
+            p: { xs: 1.5, sm: 1.75, md: 2 },
             width: "100%",
             margin: 0,
             backgroundColor: selectedMethod === "quick_contact" 
@@ -228,36 +231,41 @@ export default function ContactMethodPage({
               sx={{
                 display: "flex",
                 alignItems: "flex-start",
-                gap: 2,
+                gap: { xs: 1.5, sm: 1.75, md: 2 },
                 width: "100%",
               }}
             >
-              <Box sx={{ flex: 1 }}>
+              <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
                 <Typography
                   sx={{
-                    fontSize: "18px",
+                    fontSize: { xs: "16px", sm: "17px", md: "18px" },
                     fontWeight: 600,
                     color: "#111927",
                     mb: 1,
+                    wordBreak: "break-word",
                   }}
                 >
                   Contact info + Job Questions
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "14px",
+                    fontSize: { xs: "13px", sm: "13.5px", md: "14px" },
                     fontWeight: 400,
                     color: "#6C737F",
                     mb: 0.5,
+                    wordBreak: "break-word",
+                    width: "100%",
                   }}
                 >
                   Collect job details with a custom form
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: "14px",
+                    fontSize: { xs: "13px", sm: "13.5px", md: "14px" },
                     fontWeight: 400,
                     color: "#6C737F",
+                    wordBreak: "break-word",
+                    width: "100%",
                   }}
                 >
                   you can create questions for your client to answer
@@ -266,8 +274,8 @@ export default function ContactMethodPage({
               {/* Document icon at top right */}
               <Box
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: { xs: 32, sm: 36, md: 40 },
+                  height: { xs: 32, sm: 36, md: 40 },
                   borderRadius: "8px",
                   display: "flex",
                   alignItems: "center",
@@ -280,8 +288,8 @@ export default function ContactMethodPage({
                   src="/assets/icons/service_offered_icons/custom_form.svg"
                   alt="Custom Form"
                   sx={{
-                    width: "40px",
-                    height: "40px",
+                    width: { xs: "32px", sm: "36px", md: "40px" },
+                    height: { xs: "32px", sm: "36px", md: "40px" },
                     objectFit: "contain",
                   }}
                 />
@@ -293,7 +301,7 @@ export default function ContactMethodPage({
               ? "1px solid #12B76A" 
               : "1px solid #E5E7EB",
             borderRadius: "8px",
-            p: 2,
+            p: { xs: 1.5, sm: 1.75, md: 2 },
             width: "100%",
             margin: 0,
             backgroundColor: selectedMethod === "contact_info_questions" 
