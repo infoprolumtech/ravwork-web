@@ -1,4 +1,5 @@
 import api from "../services";
+import type { ApiResponse, PaginatedData } from "../utils/apiTypes";
 
 // Type definitions for Service API
 export interface FormField {
@@ -47,42 +48,23 @@ export interface UpdateServiceRequest {
   formFields?: FormField[];
 }
 
-export interface ServiceApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: Service | Service[] | ServicesListResponse | null;
-}
-
 export interface GetServicesParams {
   page?: number;
   limit?: number;
 }
 
-export interface ServicesListResponse {
-  data: Service[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface ServicesListApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: ServicesListResponse;
-}
+export type ServicesListResponse = PaginatedData<Service>;
 
 const serviceApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // POST /api/v1/service - Create a new service
-    createService: builder.mutation<ServiceApiResponse, CreateServiceRequest>({
+    createService: builder.mutation<Service, CreateServiceRequest>({
       query: (body) => ({
         url: "/service",
         method: "POST",
         body,
       }),
+      transformResponse: (response: ApiResponse<Service>) => response.data,
       invalidatesTags: ["Services"],
     }),
 
@@ -93,34 +75,30 @@ const serviceApi = api.injectEndpoints({
         method: "GET",
         params: params || {},
       }),
-      transformResponse: (response: ServiceApiResponse | ServicesListApiResponse): ServicesListResponse | Service[] => {
-        // Handle both paginated and non-paginated responses
-        if (response.data && Array.isArray(response.data)) {
-          // Non-paginated response (array of services)
-          return response.data;
-        }
-        // Paginated response
-        return (response as ServicesListApiResponse).data;
+      transformResponse: (response: ApiResponse<ServicesListResponse | Service[]>): ServicesListResponse | Service[] => {
+        return response.data;
       },
       providesTags: ["Services"],
     }),
 
     // GET /api/v1/service/{id} - Get service by ID
-    getServiceById: builder.query<ServiceApiResponse, string>({
+    getServiceById: builder.query<Service, string>({
       query: (id) => ({
         url: `/service/${id}`,
         method: "GET",
       }),
+      transformResponse: (response: ApiResponse<Service>) => response.data,
       providesTags: (_result, _error, id) => [{ type: "Services", id }],
     }),
 
     // PATCH /api/v1/service/{id} - Update service
-    updateService: builder.mutation<ServiceApiResponse, { id: string; body: UpdateServiceRequest }>({
+    updateService: builder.mutation<Service, { id: string; body: UpdateServiceRequest }>({
       query: ({ id, body }) => ({
         url: `/service/${id}`,
         method: "PATCH",
         body,
       }),
+      transformResponse: (response: ApiResponse<Service>) => response.data,
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Services", id },
         "Services",
@@ -128,7 +106,7 @@ const serviceApi = api.injectEndpoints({
     }),
 
     // DELETE /api/v1/service/{id} - Delete service
-    deleteService: builder.mutation<ServiceApiResponse, string>({
+    deleteService: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/service/${id}`,
         method: "DELETE",
@@ -150,3 +128,4 @@ export const {
   useDeleteServiceMutation,
 } = serviceApi;
 
+export default serviceApi;

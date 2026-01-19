@@ -11,13 +11,12 @@ import authSlice from "./feature/authSlice";
 const secretKey = import.meta.env.VITE_AES_SECRET_KEY || "";
 const transforms = secretKey
   ? [
-      encryptTransform({
-        secretKey: secretKey,
-        onError: function (error) {
-          console.error(error);
-        },
-      }),
-    ]
+    encryptTransform({
+      secretKey: secretKey,
+      onError: function () {
+      },
+    }),
+  ]
   : [];
 
 const persistConfig = {

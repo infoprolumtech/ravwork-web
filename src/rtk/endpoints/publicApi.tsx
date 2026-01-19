@@ -1,4 +1,5 @@
 import api from "../services";
+import type { ApiResponse, PaginatedData } from "../utils/apiTypes";
 
 // Public Profile Types
 export interface FormField {
@@ -39,22 +40,11 @@ export interface PublicProfile {
   memberSince: string;
 }
 
-export interface ServicesData {
-  data: PublicService[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+export type ServicesData = PaginatedData<PublicService>;
 
-export interface PublicProfileResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: {
-    profile: PublicProfile;
-    services: ServicesData;
-  };
+export interface PublicProfileData {
+  profile: PublicProfile;
+  services: ServicesData;
 }
 
 export interface GetPublicProfileParams {
@@ -97,17 +87,10 @@ export interface BookingData {
   createdAt: string;
 }
 
-export interface CreateBookingResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: BookingData;
-}
-
 const publicApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // GET /api/v1/public/profile/{username} - Get provider public profile
-    getPublicProfile: builder.query<PublicProfileResponse["data"], GetPublicProfileParams>({
+    getPublicProfile: builder.query<PublicProfileData, GetPublicProfileParams>({
       query: ({ username, page = 1, limit = 10, search }) => ({
         url: `/public/profile/${username}`,
         method: "GET",
@@ -117,9 +100,9 @@ const publicApi = api.injectEndpoints({
           ...(search && { search }),
         },
       }),
-      transformResponse: (response: PublicProfileResponse) => response.data,
+      transformResponse: (response: ApiResponse<PublicProfileData>) => response.data,
     }),
-    
+
     // POST /api/v1/public/profile/{username}/booking - Create a booking
     createBooking: builder.mutation<BookingData, { username: string; body: CreateBookingRequest }>({
       query: ({ username, body }) => ({
@@ -127,14 +110,15 @@ const publicApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      transformResponse: (response: CreateBookingResponse) => response.data,
+      transformResponse: (response: ApiResponse<BookingData>) => response.data,
     }),
   }),
 });
 
-export const { 
-  useGetPublicProfileQuery, 
+export const {
+  useGetPublicProfileQuery,
   useLazyGetPublicProfileQuery,
   useCreateBookingMutation,
 } = publicApi;
 
+export default publicApi;

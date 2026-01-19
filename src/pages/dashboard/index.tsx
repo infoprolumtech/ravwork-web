@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Typography,
   Box,
@@ -20,40 +20,23 @@ import {
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
 import { useGetUserProfileQuery, useGetDashboardRequestsQuery } from "../../rtk/endpoints/userApi";
-import { getCloudFrontUrl } from "../../utils/helper";
-import ShareModal from "../client/components/ShareModal";
+import { useGetServicesQuery } from "../../rtk/endpoints/serviceApi";
+import { getCloudFrontUrl, calculateProfileComplete, getProfileUrl } from "../../utils/helper";
+import ShareModal from "../../components/client/ShareModal";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
 import GlobalDialog from "../../components/dialog";
-import JobDetailsModal from "../my-jobs/components/JobDetailsModal";
+import JobDetailsModal from "../../components/jobs/JobDetailsModal";
+import { useNavigate } from "react-router-dom";
 
-// Helper function to get profile URL dynamically
-const getProfileUrl = (username: string) => {
-  return `${window.location.origin}/${username}`;
-};
 
-// Calculate profile completion percentage
-const calculateProfileComplete = (profile: any): number => {
-  if (!profile) return 0;
-  
-  const fields = [
-    profile.displayName,
-    profile.businessDescription,
-    profile.profilePhoto,
-    profile.instagramUrl,
-    profile.facebookUrl,
-    profile.linkedinUrl,
-  ];
-  
-  const filledFields = fields.filter((field) => field && field.trim() !== "").length;
-  return Math.round((filledFields / fields.length) * 100);
-};
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // Memoize query parameters to ensure RTK Query properly tracks changes
   const dashboardRequestsParams = useMemo(
     () => ({
@@ -63,28 +46,31 @@ export default function Dashboard() {
     [currentPage]
   );
 
-  const { data: profile, isLoading: isLoadingProfile, refetch: refetchProfile } = useGetUserProfileQuery(undefined, {
+  const { data: profile, isLoading: isLoadingProfile } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
-  
-  const { data: dashboardRequestsData, isLoading: isLoadingRequests, refetch: refetchRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
+
+  const { data: dashboardRequestsData, isLoading: isLoadingRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
-  
-  // Ensure queries run when component first mounts
-  useEffect(() => {
-    refetchProfile();
-    refetchRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array - only run on mount (refetch functions are stable)
+
+  const { data: servicesData } = useGetServicesQuery();
+
+  // Note: Refetching on mount is handled by refetchOnMountOrArgChange: true in the hooks above.
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [jobDetailsModalOpen, setJobDetailsModalOpen] = useState(false);
 
+  const hasServices = useMemo(() => {
+    if (!servicesData) return false;
+    if (Array.isArray(servicesData)) return servicesData.length > 0;
+    return (servicesData.data && servicesData.data.length > 0) || false;
+  }, [servicesData]);
+
   // Calculate profile completion
   const profileComplete = useMemo(() => {
-    return calculateProfileComplete(profile);
-  }, [profile]);
+    return calculateProfileComplete(profile || null, hasServices);
+  }, [profile, hasServices]);
 
   // Get profile URL
   const profileUrl = useMemo(() => {
@@ -103,8 +89,16 @@ export default function Dashboard() {
   };
 
   const handleCompleteSetup = () => {
-    // Navigate to profile page
-    window.location.href = "/my-profile";
+    // If name, image, and description are filled (contribution to 50% complete), 
+    // and they haven't created a service yet, redirect to my services page.
+    const profileOnlyCompletion = calculateProfileComplete(profile || null, false);
+
+    if (profileOnlyCompletion >= 50 && !hasServices) {
+      navigate("/services-offered");
+    } else {
+      // Otherwise go to profile to complete core fields
+      navigate("/my-profile");
+    }
   };
 
   // Transform dashboard requests data for Recent Activity table
@@ -117,8 +111,8 @@ export default function Dashboard() {
       dateTime: request.bookingDate && request.bookingTime
         ? `${new Date(request.bookingDate).toLocaleDateString()} • ${request.bookingTime}`
         : request.createdAt
-        ? new Date(request.createdAt).toLocaleString()
-        : "No Date Available",
+          ? new Date(request.createdAt).toLocaleString()
+          : "No Date Available",
     }));
   }, [dashboardRequestsData]);
 
@@ -167,7 +161,7 @@ export default function Dashboard() {
         }}
       >
         {/* Complete Setup Banner */}
-        {profileComplete > 90 ? (
+        {profileComplete >= 50 ? (
           /* ===== COMPLETED PROFILE CARD ===== */
           <Card
             sx={{
@@ -188,9 +182,11 @@ export default function Dashboard() {
                 <Typography fontWeight={600} fontSize={14} color="#111927">
                   Welcome back!
                 </Typography>
-                <Button variant="dashboardbutton" onClick={handleCompleteSetup}>
-                  Complete Setup
-                </Button>
+                {profileComplete < 100 && (
+                  <Button variant="dashboardbutton" onClick={handleCompleteSetup}>
+                    Complete Setup
+                  </Button>
+                )}
               </Box>
 
               {/* Body */}
@@ -247,26 +243,74 @@ export default function Dashboard() {
                       >
                         <img src="./assets/icons/copy.svg" alt="copy" />
                       </Box>
-                        <Box
+                      <Box
                         onClick={handleShareClick}
-                          sx={{
-                            width: 24,
-                            height: 24,
-                            bgcolor: "#fff",
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            cursor: "pointer",
-                            flexShrink: 0,
-                          }}
-                        >
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          bgcolor: "#fff",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                        }}
+                      >
                         <img src="./assets/icons/share-arrow.svg" alt="share" />
-                        </Box>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
               </Box>
+
+              {/* Progress for Welcome Card (50% - 99%) */}
+              {profileComplete < 100 && (
+                <Box sx={{ mt: 2, display: "flex", alignItems: "center", gap: "6px" }}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={profileComplete}
+                    sx={{
+                      flex: 1,
+                      height: 16,
+                      borderRadius: 4,
+                      bgcolor: "#D1D5DB",
+                      border: "4px solid #FFFFFF",
+                      "& .MuiLinearProgress-bar": {
+                        bgcolor: "#BAEDBD",
+                        borderRadius: 4,
+                      },
+                    }}
+                  />
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontFamily: "Inter",
+                      fontWeight: 600,
+                      fontSize: { xs: "12px", md: "20px" },
+                      lineHeight: "36px",
+                      letterSpacing: "0%",
+                    }}
+                  >
+                    {profileComplete}%
+                  </Typography>
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontFamily: "Inter",
+                      fontWeight: 400,
+                      fontSize: "12px",
+                      lineHeight: "20px",
+                      letterSpacing: "0%",
+                      verticalAlign: "bottom",
+                      ml: 0.5,
+                      color: "#111927"
+                    }}
+                  >
+                    Complete
+                  </Typography>
+                </Box>
+              )}
             </CardContent>
           </Card>
         ) : (
@@ -476,18 +520,18 @@ export default function Dashboard() {
                     </TableRow>
                   ) : (
                     recentJobs.map((job, index) => (
-                    <TableRow
-                      key={index}
+                      <TableRow
+                        key={index}
                         onClick={() => handleJobClick(job.id)}
                         sx={{
                           "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
                           cursor: "pointer",
                         }}
-                    >
+                      >
                         <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
                         <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
                         <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
-                    </TableRow>
+                      </TableRow>
                     ))
                   )}
                 </TableBody>

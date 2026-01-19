@@ -16,11 +16,12 @@ import {
 } from "@mui/material";
 import { useGetPublicProfileQuery, useCreateBookingMutation, type PublicService, type FormFieldResponse } from "../../rtk/endpoints/publicApi";
 import { getCloudFrontUrl } from "../../utils/helper";
+import { colors } from "../../utils/constants";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
-import ClientContactInfoPage from "./components/ClientContactInfoPage";
-import ClientQuestionsPage from "./components/ClientQuestionsPage";
-import ShareModal from "./components/ShareModal";
+import ClientContactInfoPage from "../../components/client/ClientContactInfoPage";
+import ClientQuestionsPage from "../../components/client/ClientQuestionsPage";
+import ShareModal from "../../components/client/ShareModal";
 
 // Contact details form data
 interface ContactDetails {
@@ -51,7 +52,7 @@ export default function ClientPage(): JSX.Element {
   // Fetch public profile data
   const { data: profileData, isLoading, error, refetch } = useGetPublicProfileQuery(
     queryParams,
-    { 
+    {
       skip: !username,
       refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
     }
@@ -162,7 +163,6 @@ export default function ClientPage(): JSX.Element {
       dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
       handleContactDialogClose();
     } catch (error: any) {
-      console.error("Submit error:", error);
       dispatch(showAlert({
         message: error?.data?.message || "Failed to submit booking. Please try again.",
         severity: "error"
@@ -273,7 +273,6 @@ export default function ClientPage(): JSX.Element {
       dispatch(showAlert({ message: "Booking request submitted successfully!", severity: "success" }));
       handleContactDialogClose();
     } catch (error: any) {
-      console.error("Submit error:", error);
       dispatch(showAlert({
         message: error?.data?.message || "Failed to submit booking. Please try again.",
         severity: "error"
@@ -301,7 +300,6 @@ export default function ClientPage(): JSX.Element {
       dispatch(showAlert({ message: "Inquiry submitted successfully!", severity: "success" }));
       handleInquiryDialogClose();
     } catch (error: any) {
-      console.error("Submit error:", error);
       dispatch(showAlert({
         message: error?.data?.message || "Failed to submit inquiry. Please try again.",
         severity: "error"
@@ -383,158 +381,6 @@ export default function ClientPage(): JSX.Element {
         </Box>
 
         {/* Profile Card */}
-        {/* <Card
-          sx={{
-            backgroundColor: "#D2E7FF",
-            borderRadius: "16px",
-            p: 3,
-            mb: 4,
-            boxShadow: "none",
-          }}
-        >
-          <Box display="flex" gap="28px">
-            <Avatar
-              sx={{
-                width: { xs: "75px", sm: "175px" },
-                height: { xs: "75px", sm: "175px" },
-                border: "2px solid #fff",
-                display: { xs: "none", sm: "block" },
-              }}
-              src={profilePhotoUrl}
-              alt={profile.displayName || profile.username}
-            />
-            <Stack
-              display="flex"
-              justifyContent="space-between"
-              width={"100%"}
-              gap={((profile.facebookUrl && profile.facebookUrl.trim()) || 
-                (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
-                (profile.instagramUrl && profile.instagramUrl.trim())) ? undefined : 0}
-            >
-              <Box
-                display={"flex"}
-                flexDirection={{ xs: "column-reverse", sm: "row" }}
-                justifyContent={"space-between"}
-                gap={"4px"}
-              >
-                <Box>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 600,
-                      color: "#111927",
-                      mb: 0.5,
-                      fontSize: { xs: "20px", md: "18px" },
-                    }}
-                  >
-                    {profile.displayName || profile.username}
-                  </Typography>
-                  {((profile.facebookUrl && profile.facebookUrl.trim()) || 
-                    (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
-                    (profile.instagramUrl && profile.instagramUrl.trim())) && (
-                    <Box>
-                      <img src="/assets/icons/line.svg" alt="" />
-                  <Stack direction="row" spacing={1} alignItems="center" mt={1}>
-                        {profile.facebookUrl && profile.facebookUrl.trim() && (
-                    <IconButton
-                      size="small"
-                            sx={{ width: 32, height: 32, p: 0.5 }}
-                            onClick={() => window.open(profile.facebookUrl!, "_blank")}
-                    >
-                      <img
-                        src="/assets/icons/Facebook.svg"
-                        alt="Facebook"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
-                        )}
-                        {profile.linkedinUrl && profile.linkedinUrl.trim() && (
-                    <IconButton
-                      size="small"
-                            sx={{ width: 32, height: 32, p: 0.5 }}
-                            onClick={() => window.open(profile.linkedinUrl!, "_blank")}
-                    >
-                      <img
-                        src="/assets/icons/linkedin.svg"
-                        alt="LinkedIn"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
-                        )}
-                        {profile.instagramUrl && profile.instagramUrl.trim() && (
-                    <IconButton
-                      size="small"
-                            sx={{ width: 32, height: 32, p: 0.5 }}
-                            onClick={() => window.open(profile.instagramUrl!, "_blank")}
-                    >
-                      <img
-                        src="/assets/icons/instagram.svg"
-                        alt="Instagram"
-                        style={{ width: "24px", height: "24px" }}
-                      />
-                    </IconButton>
-                        )}
-                  </Stack>
-                </Box>
-                  )}
-                </Box>
-                <Box
-                  display="flex"
-                  alignItems="flex-start"
-                  justifyContent={"space-between"}
-                >
-                  <Avatar
-              sx={{
-                width: { xs: "75px", sm: "175px" },
-                height: { xs: "75px", sm: "175px" },
-                border: "2px solid #fff",
-                      display: { xs: "block", sm: "none" },
-              }}
-                    src={profilePhotoUrl}
-                    alt={profile.displayName || profile.username}
-            />
-                  <Button
-                    variant="blackbutton"
-                    startIcon={
-                      <>
-                        <img
-                          src="/assets/icons/share-arroww.svg"
-                          alt="Share"
-                          className="icon-default"
-                          style={{ width: "16px", height: "16px" }}
-                        />
-                        <img
-                          src="/assets/icons/share-arrow.svg"
-                          alt="Share"
-                          className="icon-hover"
-                          style={{ width: "16px", height: "16px" }}
-                        />
-                      </>
-                    }
-                    onClick={() => setShareModalOpen(true)}
-                  >
-                    Share
-                  </Button>
-                </Box>
-              </Box>
-              <Typography
-                sx={{
-                  color: "#6C737F",
-                  fontWeight: 500,
-                  fontSize: "14px",
-                  lineHeight: "20px",
-                  mt: ((profile.facebookUrl && profile.facebookUrl.trim()) || 
-                    (profile.linkedinUrl && profile.linkedinUrl.trim()) || 
-                    (profile.instagramUrl && profile.instagramUrl.trim())) ? 0 : -2,
-                }}
-              >
-                {profile.businessDescription || "No description available."}
-              </Typography>
-            </Stack>
-          </Box>
-        </Card> */}
-
-        {/* Profile Card */}
         <Card
           sx={{
             backgroundColor: "#D2E7FF",
@@ -546,7 +392,7 @@ export default function ClientPage(): JSX.Element {
         >
           <Box display="flex" gap="28px">
             {/* Desktop Avatar */}
-           
+
             <Avatar
               sx={{
                 width: { xs: "75px", sm: "175px" },
@@ -555,8 +401,8 @@ export default function ClientPage(): JSX.Element {
                 display: { xs: "none", sm: "flex" },
               }}
               src={profilePhotoUrl}
-              // alt={profile.displayName || profile.username}
-              
+            // alt={profile.displayName || profile.username}
+
             />
 
             <Stack width="100%">
@@ -654,7 +500,7 @@ export default function ClientPage(): JSX.Element {
                       display: { xs: "flex", sm: "none" },
                     }}
                     src={profilePhotoUrl}
-                    // alt={profile.displayName || profile.username}
+                  // alt={profile.displayName || profile.username}
                   />
 
                   <Button
@@ -1169,7 +1015,7 @@ export default function ClientPage(): JSX.Element {
             <Typography
               variant="body2"
               sx={{
-                color: "#1C1C1C",
+                color: colors["Base-Dark"],
                 fontSize: { xs: "14px", sm: "18px" },
                 fontWeight: 500,
               }}
@@ -1185,7 +1031,7 @@ export default function ClientPage(): JSX.Element {
                 component="a"
                 href="#"
                 sx={{
-                  color: "#1C1C1C",
+                  color: colors["Base-Dark"],
                   fontSize: { xs: "14px", sm: "18px" },
                   fontWeight: 500,
                   textDecoration: "none",
@@ -1201,7 +1047,7 @@ export default function ClientPage(): JSX.Element {
                 component="a"
                 href="#"
                 sx={{
-                  color: "#1C1C1C",
+                  color: colors["Base-Dark"],
                   fontSize: { xs: "14px", sm: "18px" },
                   fontWeight: 500,
                   textDecoration: "none",

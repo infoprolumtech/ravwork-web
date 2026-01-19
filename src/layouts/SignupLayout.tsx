@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import { Box, IconButton } from '@mui/material';
-// import { colors } from '../utils/constants';
+
 import { useNavigate } from 'react-router-dom';
 
 interface SignupLayoutProps {
@@ -56,7 +56,6 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
     <Box
       sx={{
         minHeight: "100vh",
-        // backgroundColor: colors["Base-White"],
         display: "flex",
         flexDirection: "column",
         width: "100%",
@@ -95,13 +94,13 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             <img
               src="/assets/icons/back-arrow.svg"
               alt="back-arrow"
-              style={{ width: "24px", height: "24px" , marginRight: "px"}}
+              style={{ width: "24px", height: "24px", marginRight: "px" }}
             />
           </IconButton>
         ) : (
           <Box sx={{ width: { xs: "40px", sm: "48px" } }} /> // Spacer to keep logo aligned when no back icon
         )}
-        
+
         {/* Logo Section - Always on the right, same row */}
         <Box
           sx={{
@@ -112,22 +111,22 @@ const SignupLayout = ({ children, showBackIcon = false, onBackClick }: SignupLay
             marginRight: { xs: "0px", sm: "100px" },
           }}
         >
-          <img 
-            src="/assets/icons/ravwork_logo_icon.svg" 
-            alt="Ravwork Icon" 
-            style={{ 
-              width: "auto", 
+          <img
+            src="/assets/icons/ravwork_logo_icon.svg"
+            alt="Ravwork Icon"
+            style={{
+              width: "auto",
               height: "auto",
               maxWidth: "32px",
               maxHeight: "32px"
-            }} 
+            }}
           />
           <Box
             component="img"
-            src="/assets/icons/ravwork_logo_text.svg" 
+            src="/assets/icons/ravwork_logo_text.svg"
             alt="Ravwork"
             sx={{
-              width: "auto", 
+              width: "auto",
               height: "auto",
               maxWidth: { xs: "100px", sm: "120px" },
               maxHeight: { xs: "24px", sm: "30px" }

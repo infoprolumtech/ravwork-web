@@ -11,7 +11,7 @@ import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
 
 interface CompleteJobModalProps {
   onClose: () => void;

@@ -1,5 +1,5 @@
 import { type JSX } from "react";
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 interface PaginationProps {
@@ -73,8 +73,9 @@ export default function Pagination({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        gap: 1,
+        gap: { xs: 0.5, sm: 1 },
         mt: 3,
+        flexWrap: { xs: "nowrap", sm: "wrap" },
       }}
     >
       {/* Previous Button */}
@@ -86,8 +87,10 @@ export default function Pagination({
           borderColor: "#D1D5DB",
           color: "#384250",
           textTransform: "none",
-          minWidth: "auto",
-          px: 2,
+          minWidth: { xs: "36px", sm: "auto" },
+          width: { xs: "36px", sm: "auto" },
+          height: { xs: "36px", sm: "40px" },
+          px: { xs: 0, sm: 2 },
           "&:disabled": {
             borderColor: "#E5E7EB",
             color: "#9CA3AF",
@@ -98,12 +101,25 @@ export default function Pagination({
           },
         }}
       >
-        <KeyboardArrowLeft sx={{ fontSize: 18, mr: 0.5 }} />
-        Previous
+        <KeyboardArrowLeft sx={{ fontSize: { xs: 16, sm: 18 }, mr: { xs: 0, sm: 0.5 } }} />
+        <Box
+          component="span"
+          sx={{
+            display: { xs: "none", sm: "inline" },
+          }}
+        >
+          Previous
+        </Box>
       </Button>
 
-      {/* Page Numbers */}
-      <Stack direction="row" spacing={0.5}>
+      {/* Page Numbers - Hidden on mobile, shown on tablet and up */}
+      <Stack 
+        direction="row" 
+        spacing={0.5}
+        sx={{
+          display: { xs: "none", sm: "flex" },
+        }}
+      >
         {pageNumbers.map((page, index) => {
           if (page === "...") {
             return (
@@ -151,6 +167,28 @@ export default function Pagination({
         })}
       </Stack>
 
+      {/* Mobile: Current Page Display */}
+      <Box
+        sx={{
+          display: { xs: "flex", sm: "none" },
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "80px",
+          height: "36px",
+          px: 1,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "#384250",
+          }}
+        >
+          {currentPage} / {totalPages}
+        </Typography>
+      </Box>
+
       {/* Next Button */}
       <Button
         variant="outlined"
@@ -160,8 +198,10 @@ export default function Pagination({
           borderColor: "#D1D5DB",
           color: "#384250",
           textTransform: "none",
-          minWidth: "auto",
-          px: 2,
+          minWidth: { xs: "36px", sm: "auto" },
+          width: { xs: "36px", sm: "auto" },
+          height: { xs: "36px", sm: "40px" },
+          px: { xs: 0, sm: 2 },
           "&:disabled": {
             borderColor: "#E5E7EB",
             color: "#9CA3AF",
@@ -172,8 +212,15 @@ export default function Pagination({
           },
         }}
       >
-        Next
-        <KeyboardArrowRight sx={{ fontSize: 18, ml: 0.5 }} />
+        <Box
+          component="span"
+          sx={{
+            display: { xs: "none", sm: "inline" },
+          }}
+        >
+          Next
+        </Box>
+        <KeyboardArrowRight sx={{ fontSize: { xs: 16, sm: 18 }, ml: { xs: 0, sm: 0.5 } }} />
       </Button>
     </Box>
   );

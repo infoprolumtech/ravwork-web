@@ -3,11 +3,11 @@ import { Box, Tabs, Tab, Stack, CircularProgress, Typography, Dialog, DialogCont
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import JobCard from "../../components/reusecard/JobCard";
 import GlobalDialog from "../../components/dialog";
-import JobDetailsModal from "./components/JobDetailsModal";
-import CompleteJobModal from "./components/CompleteJobModal";
-import DeclineJobModal from "./components/DeclineJobModal";
+import JobDetailsModal from "../../components/jobs/JobDetailsModal";
+import CompleteJobModal from "../../components/jobs/CompleteJobModal";
+import DeclineJobModal from "../../components/jobs/DeclineJobModal";
 import { useGetJobsQuery, useUpdateJobStatusMutation } from "../../rtk/endpoints/userApi";
-import { useAppDispatch, useAppSelector } from "../../rtk/store";
+import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
 
@@ -20,11 +20,10 @@ export default function MyJobsPage(): JSX.Element {
   const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
   const [jobToUpdate, setJobToUpdate] = useState<string | null>(null);
   const dispatch = useAppDispatch();
-  
-  // Get auth state to verify token is available
-  const authState = useAppSelector((state) => state.auth);
-  const hasToken = Boolean(authState.user?.accessToken || authState.signupToken);
-  
+
+
+
+
   const [updateJobStatus, { isLoading: isUpdatingJobStatus }] = useUpdateJobStatusMutation();
 
   // Map tab index to status
@@ -66,15 +65,7 @@ export default function MyJobsPage(): JSX.Element {
     refetch();
   }, []); // Empty dependency array - only run on mount (refetch is stable)
 
-  // Log for debugging (can be removed in production)
-  useEffect(() => {
-    if (hasToken) {
-      console.log("MyJobs: Token available, fetching jobs with params:", queryParams);
-      console.log("MyJobs: Token:", authState.user?.accessToken ? "User token" : authState.signupToken ? "Signup token" : "No token");
-    } else {
-      console.warn("MyJobs: No token available");
-    }
-  }, [hasToken, queryParams, authState]);
+
 
   const jobs = jobsData?.data || [];
 
@@ -86,8 +77,8 @@ export default function MyJobsPage(): JSX.Element {
       description: job.bookingDate && job.bookingTime
         ? `Scheduled for ${new Date(job.bookingDate).toLocaleDateString()} at ${job.bookingTime}`
         : job.type === "inquiry"
-        ? "Inquiry"
-        : "Booking",
+          ? "Inquiry"
+          : "Booking",
       clientName: job.clientName,
       clientEmail: job.clientEmail,
       clientPhone: job.clientPhone,
@@ -186,8 +177,8 @@ export default function MyJobsPage(): JSX.Element {
     <ServiceProviderLayout>
       <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
         {/* Pills - Fixed Position */}
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             position: "sticky",
             top: 30,
             zIndex: 100,
@@ -251,49 +242,49 @@ export default function MyJobsPage(): JSX.Element {
 
         <Box sx={{ px: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
           <Box sx={{ minHeight: "200px" }}>
-          {isLoading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-              <CircularProgress />
-            </Box>
-          ) : error ? (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-              <Typography color="error">
-                Failed to load jobs. Please try again.
-              </Typography>
-            </Box>
-          ) : transformedJobs.length === 0 ? (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-              <Typography color="text.secondary">
-                No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
-              </Typography>
-            </Box>
-          ) : (
-            <>
-              <Stack spacing={2}>
-                {transformedJobs.map((job) => (
-                  <JobCard
-                    key={job.id}
-                    title={job.title}
-                    description={job.description}
-                    clientName={job.clientName}
-                    clientEmail={job.clientEmail}
-                    clientPhone={job.clientPhone}
-                    showActions={tab === 0}
-                    onComplete={() => handleComplete(job.id)}
-                    onDecline={() => handleDecline(job.id)}
-                    onViewDetails={() => handleViewDetails(job.id)}
-                  />
-                ))}
-              </Stack>
+            {isLoading ? (
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+                <Typography color="error">
+                  Failed to load jobs. Please try again.
+                </Typography>
+              </Box>
+            ) : transformedJobs.length === 0 ? (
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+                <Typography color="text.secondary">
+                  No {currentStatus === "pending" ? "leads" : currentStatus === "completed" ? "completed" : "declined"} jobs found.
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                <Stack spacing={2}>
+                  {transformedJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      title={job.title}
+                      description={job.description}
+                      clientName={job.clientName}
+                      clientEmail={job.clientEmail}
+                      clientPhone={job.clientPhone}
+                      showActions={tab === 0}
+                      onComplete={() => handleComplete(job.id)}
+                      onDecline={() => handleDecline(job.id)}
+                      onViewDetails={() => handleViewDetails(job.id)}
+                    />
+                  ))}
+                </Stack>
 
-              {/* Pagination */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={jobsData?.totalPages || 1}
-                onPageChange={setCurrentPage}
-              />
-            </>
-          )}
+                {/* Pagination */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={jobsData?.totalPages || 1}
+                  onPageChange={setCurrentPage}
+                />
+              </>
+            )}
           </Box>
         </Box>
 

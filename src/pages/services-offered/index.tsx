@@ -21,6 +21,7 @@ import { useAppDispatch } from "../../rtk/store";
 import GlobalDialog from "../../components/dialog";
 import CommonDialog from "../../components/dialog/dialog-content/CommonDialog";
 import Pagination from "../../components/pagination/Pagination";
+import { extractErrorMessage } from "../../utils/helper";
 
 
 
@@ -33,7 +34,7 @@ const transformServiceToUI = (service: Service) => {
 
   const hasFormFields = service.formFields && service.formFields.length > 0;
   const contactMethodText = contactMethodMap[service.contactMethod] || "Contact Method: " + service.contactMethod;
-  const finalContactMethod = hasFormFields 
+  const finalContactMethod = hasFormFields
     ? `${contactMethodText} + Job Questions`
     : contactMethodText;
 
@@ -70,7 +71,7 @@ export default function ServicesOfferedPage(): JSX.Element {
   const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery(queryParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
-  
+
   // Ensure query runs when component first mounts
   React.useEffect(() => {
     refetch();
@@ -81,17 +82,17 @@ export default function ServicesOfferedPage(): JSX.Element {
   // Transform services data - handle both paginated and non-paginated responses
   const services = React.useMemo(() => {
     if (!servicesResponse) return [];
-    
+
     // Check if response is paginated (has data property)
     if ('data' in servicesResponse && Array.isArray(servicesResponse.data)) {
       return servicesResponse.data.map(transformServiceToUI);
     }
-    
+
     // Non-paginated response (direct array)
     if (Array.isArray(servicesResponse)) {
       return servicesResponse.map(transformServiceToUI);
     }
-    
+
     return [];
   }, [servicesResponse]);
 
@@ -100,7 +101,7 @@ export default function ServicesOfferedPage(): JSX.Element {
     if (!servicesResponse) {
       return { totalPages: 1 };
     }
-    
+
     // Check if response is paginated (has data property with array and totalPages)
     if ('data' in servicesResponse && Array.isArray(servicesResponse.data) && 'totalPages' in servicesResponse) {
       const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
@@ -108,7 +109,7 @@ export default function ServicesOfferedPage(): JSX.Element {
         totalPages: paginatedResponse.totalPages || 1,
       };
     }
-    
+
     // Check if response has totalPages directly (paginated structure)
     if ('totalPages' in servicesResponse) {
       const paginatedResponse = servicesResponse as { totalPages: number; total?: number; limit?: number };
@@ -116,7 +117,7 @@ export default function ServicesOfferedPage(): JSX.Element {
         totalPages: paginatedResponse.totalPages || 1,
       };
     }
-    
+
     // If we have total and limit, calculate totalPages
     if ('total' in servicesResponse && 'limit' in servicesResponse) {
       const paginatedResponse = servicesResponse as { total: number; limit: number };
@@ -124,7 +125,7 @@ export default function ServicesOfferedPage(): JSX.Element {
         totalPages: Math.ceil(paginatedResponse.total / paginatedResponse.limit) || 1,
       };
     }
-    
+
     // Non-paginated response (direct array) - default to 1 page
     // Since we're sending page/limit params, assume at least 1 page
     return { totalPages: 1 };
@@ -160,17 +161,19 @@ export default function ServicesOfferedPage(): JSX.Element {
       refetch();
       handleCloseDeleteDialog();
     } catch (error: any) {
-      const errorMessage = error?.data?.message || "Failed to delete service";
-      dispatch(showAlert({ message: errorMessage, severity: "error" }));
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to delete service"),
+        severity: "error"
+      }));
     }
   };
 
   return (
     <ServiceProviderLayout>
-      <Box sx={{ 
-        p: { xs: 1.5, md: 3 }, 
-        width: "100%", 
-        maxWidth: "100%", 
+      <Box sx={{
+        p: { xs: 1.5, md: 3 },
+        width: "100%",
+        maxWidth: "100%",
         boxSizing: "border-box",
         minHeight: "100%",
         backgroundColor: "transparent"

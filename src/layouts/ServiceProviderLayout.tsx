@@ -29,7 +29,8 @@ import GlobalDialog from "../components/dialog";
 import CommonDialog from "../components/dialog/dialog-content/CommonDialog";
 import { useLogoutMutation } from "../rtk/endpoints/authApi";
 import { useGetUserProfileQuery } from "../rtk/endpoints/userApi";
-import { decryptAES, getCloudFrontUrl } from "../utils/helper";
+import { useGetServicesQuery } from "../rtk/endpoints/serviceApi";
+import { decryptAES, getCloudFrontUrl, calculateProfileComplete } from "../utils/helper";
 import { Menu as MenuIcon, ChevronRight, Close } from "@mui/icons-material";
 
 const DRAWER_WIDTH = 280;
@@ -118,7 +119,6 @@ const UserMenu = React.memo(() => {
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
-      console.error("Logout error:", error);
       // Even if logout fails, still log out user locally
       dispatch(logoutUser());
       navigate("/login");
@@ -216,6 +216,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     refetchOnMountOrArgChange: true,
   });
 
+  const { data: servicesData } = useGetServicesQuery();
+
   const handleDrawerToggle = React.useCallback(() => {
     setMobileOpen((prev: boolean) => !prev);
   }, []);
@@ -239,7 +241,6 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       dispatch(logoutUser());
       navigate("/login");
     } catch (error) {
-      console.error("Logout error:", error);
       // Even if logout fails, still log out user locally
       dispatch(logoutUser());
       navigate("/login");
@@ -257,7 +258,23 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     [pathParts]
   );
 
-  const profileComplete = 77; // This should come from API
+  const hasServices = React.useMemo(() => {
+    if (!servicesData) return false;
+    if (Array.isArray(servicesData)) return servicesData.length > 0;
+    return (servicesData.data && servicesData.data.length > 0) || false;
+  }, [servicesData]);
+
+  const profileComplete = React.useMemo(() => calculateProfileComplete(userProfile || null, hasServices), [userProfile, hasServices]);
+
+  const handleCompleteSetup = React.useCallback(() => {
+    const profileOnlyCompletion = calculateProfileComplete(userProfile || null, false);
+    if (profileOnlyCompletion >= 50 && !hasServices) {
+      navigate("/services-offered");
+    } else {
+      navigate("/my-profile");
+    }
+  }, [userProfile, hasServices, navigate]);
+
 
   // Memoize current page info for breadcrumb
   const currentPageInfo = React.useMemo(() => {
@@ -434,26 +451,29 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               </Typography>
             </Stack>
 
-            <Button
-              variant="contained"
-              sx={{
-                height: "26px",
-                px: 1.5,
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: 500,
-                textTransform: "none",
-                backgroundColor: "#000",
-                color: "#fff",
-                boxShadow: "none",
-                "&:hover": {
-                  backgroundColor: "#111",
+            {profileComplete < 100 && (
+              <Button
+                variant="contained"
+                onClick={handleCompleteSetup}
+                sx={{
+                  height: "26px",
+                  px: 1.5,
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  textTransform: "none",
+                  backgroundColor: "#000",
+                  color: "#fff",
                   boxShadow: "none",
-                },
-              }}
-            >
-              Complete profile
-            </Button>
+                  "&:hover": {
+                    backgroundColor: "#111",
+                    boxShadow: "none",
+                  },
+                }}
+              >
+                {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
+              </Button>
+            )}
           </Box>
         </Box>
 

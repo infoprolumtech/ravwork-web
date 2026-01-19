@@ -3,18 +3,19 @@
 // User types
 export interface User {
   id?: string;
+  username?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
   phoneNumber?: string;
   countryCode?: string;
   companyName?: string;
-  displayName?: string;
-  businessDescription?: string;
-  profilePhoto?: string;
-  instagramUrl?: string;
-  facebookUrl?: string;
-  linkedinUrl?: string;
+  displayName?: string | null;
+  businessDescription?: string | null;
+  profilePhoto?: string | null;
+  instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  linkedinUrl?: string | null;
   accessToken?: string;
   refreshToken?: string;
   role?: string;

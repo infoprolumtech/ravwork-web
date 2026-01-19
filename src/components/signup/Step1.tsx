@@ -3,13 +3,14 @@ import { Box, Button, Typography, MenuItem, Select, FormControl, CircularProgres
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
+import { colors } from "../../utils/constants";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { step1Schema } from "../validationSchemas";
-import type { Step1FormInputs } from "../types";
-import Icon from "../../../components/shared/Icon";
-import PasswordField from "../../../components/shared/PasswordField";
-import PageIcon from "../../../components/shared/PageIcon";
+import { step1Schema } from "../../pages/signup/validationSchemas";
+import type { Step1FormInputs } from "../../pages/signup/types";
+import Icon from "../shared/Icon";
+import PasswordField from "../shared/PasswordField";
+import PageIcon from "../shared/PageIcon";
 import {
   pageTitleSx,
   bottomButtonContainerSx,
@@ -296,7 +297,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
                 sx={{
                   // borderRadius: "100px",
                   fontSize: { xs: "14px", sm: "16px" },
-                  color: "#1C1C1C",
+                  color: colors["Base-Dark"],
                   height: "48px",
                   cursor: "pointer",
                   "& .MuiSelect-select": {
@@ -354,11 +355,11 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
           helperText={form.formState.errors.phoneNumber?.message}
           sx={{
             ...inputFieldSx(Boolean(form.formState.errors.phoneNumber), {
-            mb: 0,
-            "& .MuiInputBase-root": {
-              height: "48px",
-              minHeight: "48px",
-            },
+              mb: 0,
+              "& .MuiInputBase-root": {
+                height: "48px",
+                minHeight: "48px",
+              },
             }),
             "& .MuiInputBase-input": {
               borderRadius: "0 !important",
@@ -447,7 +448,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
           sx={{
             fontSize: { xs: "14px", sm: "16px" },
             fontWeight: 400,
-            color: "#1C1C1C",
+            color: colors["Base-Dark"],
             fontFamily: "Inter, sans-serif",
             mt: { xs: 1.5, sm: 3 },
             mb: { xs: 1, sm: 0 },
@@ -456,7 +457,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
           Already Have an Account?{" "}
           <Typography
             component="span"
-            sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#1C1C1C", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+            sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: colors["Base-Dark"], cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
             onClick={() => navigate("/login")}
           >
             Log In
