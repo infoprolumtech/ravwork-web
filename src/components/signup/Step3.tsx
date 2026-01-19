@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton } from "@mui/material";
-import Icon from "../../../components/shared/Icon";
+import Icon from "../shared/Icon";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { step3Schema } from "../validationSchemas";
-import type { Step3FormInputs } from "../types";
-import PageIcon from "../../../components/shared/PageIcon";
+import { step3Schema } from "../../pages/signup/validationSchemas";
+import type { Step3FormInputs } from "../../pages/signup/types";
+import PageIcon from "../shared/PageIcon";
 import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx, helperTextSx } from "./commonStyles";
 
 interface Step3Props {

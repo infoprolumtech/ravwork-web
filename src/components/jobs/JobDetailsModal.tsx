@@ -8,8 +8,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
-import { useGetJobByIdQuery } from "../../../rtk/endpoints/userApi";
-import { getCloudFrontUrl } from "../../../utils/helper";
+import { useGetJobByIdQuery } from "../../rtk/endpoints/userApi";
+import { getCloudFrontUrl } from "../../utils/helper";
 
 interface JobDetailsModalProps {
   jobId: string | null;

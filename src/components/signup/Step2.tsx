@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Stack, Chip, IconButton } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { colors } from "../../utils/constants";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { step2Schema } from "../validationSchemas";
-import type { Step2FormInputs } from "../types";
-import CheckboxIcon from "../../../components/shared/CheckboxIcon";
-import PageIcon from "../../../components/shared/PageIcon";
-import Icon from "../../../components/shared/Icon";
+import { step2Schema } from "../../pages/signup/validationSchemas";
+import type { Step2FormInputs } from "../../pages/signup/types";
+import CheckboxIcon from "../shared/CheckboxIcon";
+import PageIcon from "../shared/PageIcon";
+import Icon from "../shared/Icon";
 import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } from "./commonStyles";
 
 interface Step2Props {
@@ -133,7 +134,7 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
                         right: 0,
                         backgroundColor: "#BAEDBD",
                         borderRadius: "68px",
-                        color: "#1C1C1C",
+                        color: colors["Base-Dark"],
                         fontWeight: 600,
                         fontSize: { xs: "9px", sm: "10px" },
                         height: { xs: "18px", sm: "20px" },

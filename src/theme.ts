@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import { colors } from "./utils/constants";
 // @ts-ignore
 import '@fontsource/inter';
 
@@ -331,7 +332,7 @@ const theme = createTheme({
             letterSpacing: "0%",
             padding: "8px 12px",
             "&:hover": {
-              // backgroundColor: "#5c5a5aff",
+
             },
 
             "@media (max-width:600px)": {
@@ -346,13 +347,13 @@ const theme = createTheme({
         {
           props: { variant: "blackbutton" },
           style: {
-            backgroundColor: "#1C1C1C",
+            backgroundColor: colors["Base-Dark"],
             color: "#fff",
             textTransform: "none",
             fontSize: "14px",
             fontWeight: 500,
             height: "32px",
-            width:"82px",
+            width: "82px",
             borderRadius: "68px",
             px: 2,
             py: 0.75,
@@ -361,7 +362,7 @@ const theme = createTheme({
             alignItems: "center",
             "&:hover": {
               backgroundColor: "#F9FAFB",
-              color: "#1C1C1C",
+              color: colors["Base-Dark"],
             },
             "& .icon-default": {
               display: "inline",

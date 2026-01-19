@@ -1,4 +1,5 @@
 import api from "../services";
+import type { ApiResponse, PaginatedData } from "../utils/apiTypes";
 
 // User Profile Types
 export interface UserProfile {
@@ -73,27 +74,7 @@ export interface GetJobsParams {
   limit?: number;
 }
 
-export interface JobsListResponse {
-  data: Job[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface JobsApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: JobsListResponse;
-}
-
-export interface JobDetailsApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: JobDetails;
-}
+export type JobsListResponse = PaginatedData<Job>;
 
 export interface UpdateJobStatusRequest {
   status: "completed" | "declined";
@@ -106,13 +87,6 @@ export interface UpdateJobStatusResponse {
   status: "completed" | "declined";
   finalPrice?: number;
   completedAt?: string;
-}
-
-export interface UpdateJobStatusApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: UpdateJobStatusResponse;
 }
 
 // Dashboard Request Types
@@ -132,28 +106,7 @@ export interface GetDashboardRequestsParams {
   limit?: number;
 }
 
-export interface DashboardRequestsListResponse {
-  data: DashboardRequest[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface DashboardRequestsApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: DashboardRequestsListResponse;
-}
-
-// API Response wrapper
-interface UserProfileApiResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: UserProfile;
-}
+export type DashboardRequestsListResponse = PaginatedData<DashboardRequest>;
 
 const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -163,7 +116,7 @@ const userApi = api.injectEndpoints({
         url: "/user/profile",
         method: "GET",
       }),
-      transformResponse: (response: UserProfileApiResponse): UserProfile => {
+      transformResponse: (response: ApiResponse<UserProfile>): UserProfile => {
         return response.data;
       },
       providesTags: ["UserProfile"],
@@ -175,7 +128,7 @@ const userApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      transformResponse: (response: UserProfileApiResponse): UserProfile => {
+      transformResponse: (response: ApiResponse<UserProfile>): UserProfile => {
         return response.data;
       },
       invalidatesTags: ["UserProfile"],
@@ -188,7 +141,7 @@ const userApi = api.injectEndpoints({
         method: "GET",
         params: params || {},
       }),
-      transformResponse: (response: JobsApiResponse): JobsListResponse => {
+      transformResponse: (response: ApiResponse<JobsListResponse>): JobsListResponse => {
         return response.data;
       },
       providesTags: ["Jobs"],
@@ -200,7 +153,7 @@ const userApi = api.injectEndpoints({
         url: `/user/jobs/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: JobDetailsApiResponse): JobDetails => {
+      transformResponse: (response: ApiResponse<JobDetails>): JobDetails => {
         return response.data;
       },
       providesTags: (_result, _error, id) => [{ type: "Jobs", id }],
@@ -213,7 +166,7 @@ const userApi = api.injectEndpoints({
         method: "GET",
         params: params || {},
       }),
-      transformResponse: (response: DashboardRequestsApiResponse): DashboardRequestsListResponse => {
+      transformResponse: (response: ApiResponse<DashboardRequestsListResponse>): DashboardRequestsListResponse => {
         return response.data;
       },
       providesTags: ["DashboardRequests"],
@@ -226,7 +179,7 @@ const userApi = api.injectEndpoints({
         method: "PATCH",
         body,
       }),
-      transformResponse: (response: UpdateJobStatusApiResponse): UpdateJobStatusResponse => {
+      transformResponse: (response: ApiResponse<UpdateJobStatusResponse>): UpdateJobStatusResponse => {
         return response.data;
       },
       invalidatesTags: ["Jobs"],
@@ -246,4 +199,3 @@ export const {
   useLazyGetDashboardRequestsQuery,
   useUpdateJobStatusMutation,
 } = userApi;
-

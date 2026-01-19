@@ -1,6 +1,7 @@
-import { styled, type Theme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { colors } from "./constants";
 import CryptoJS from "crypto-js";
+import type { UserProfile } from "../rtk/endpoints/userApi";
 
 import {
   TextField,
@@ -10,13 +11,44 @@ import {
 
 
 // Replace with your actual color palette object
-
 export const ROWS_LIMIT = 100;
+// ... existing code ...
+
+// Calculate profile completion percentage
+export const calculateProfileComplete = (profile: Partial<UserProfile> | null, hasServices: boolean = false): number => {
+  if (!profile) return 0;
+
+  // core fields: name (displayName), profile image (profilePhoto), and description (businessDescription)
+  const coreFields = [
+    profile.displayName,
+    profile.profilePhoto,
+    profile.businessDescription,
+  ];
+
+  // Check if all core fields are filled
+  const coreFieldsFilled = coreFields.filter((field) => typeof field === 'string' && field.trim() !== "").length;
+
+  // Each core field contributes roughly 16.67% to the first 50%
+  // 3 core fields * 16.67 = 50%
+  let percentage = Math.round((coreFieldsFilled / 3) * 50);
+
+  // Creating a service contributes the other 50%
+  if (hasServices) {
+    percentage += 50;
+  }
+
+  return percentage;
+};
+
+
+// Replace with your actual color palette object
+
+
 
 export const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
     backgroundColor: theme.palette.primary.light, // light background
-    color: "#1C1C1C", // text color
+    color: colors["Base-Dark"], // text color
     borderRadius: "100px",
     fontSize: "16px",
     overflow: "hidden", // Ensure autofill styling stays within bounds
@@ -27,24 +59,24 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     // Override browser autofill styling - only affects the input field itself
     "&:-webkit-autofill": {
       WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
-      WebkitTextFillColor: "#1C1C1C !important",
-      caretColor: "#1C1C1C",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
+      caretColor: colors["Base-Dark"],
       borderRadius: "100px",
       transition: "background-color 5000s ease-in-out 0s",
     },
     "&:-webkit-autofill:hover": {
       WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
-      WebkitTextFillColor: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
       borderRadius: "100px",
     },
     "&:-webkit-autofill:focus": {
       WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
-      WebkitTextFillColor: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
       borderRadius: "100px",
     },
     "&:-webkit-autofill:active": {
       WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,
-      WebkitTextFillColor: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
       borderRadius: "100px",
     },
   },
@@ -73,7 +105,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     marginBottom: "8px",
   },
   '& .MuiInputBase-input::placeholder': {
-    color: "#1C1C1C"
+    color: colors["Base-Dark"]
   },
   "& .MuiOutlinedInput-root": {
     "& .MuiOutlinedInput-notchedOutline": {
@@ -90,7 +122,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
       transition: "max-width 0.1s ease-in-out",
     },
     "&.Mui-focused legend": {
-      width:"50%",
+      width: "50%",
     },
   },
 
@@ -102,19 +134,19 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     border: "1px solid #DC2626",
   },
   "& .MuiOutlinedInput-root.Mui-error .MuiInputBase-input": {
-    color: "#1C1C1C !important",
-    WebkitTextFillColor: "#1C1C1C !important",
+    color: `${colors["Base-Dark"]} !important`,
+    WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
     "&:-webkit-autofill": {
-      WebkitTextFillColor: "#1C1C1C !important",
-      color: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
+      color: `${colors["Base-Dark"]} !important`,
     },
     "&:-webkit-autofill:hover": {
-      WebkitTextFillColor: "#1C1C1C !important",
-      color: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
+      color: `${colors["Base-Dark"]} !important`,
     },
     "&:-webkit-autofill:focus": {
-      WebkitTextFillColor: "#1C1C1C !important",
-      color: "#1C1C1C !important",
+      WebkitTextFillColor: `${colors["Base-Dark"]} !important`,
+      color: `${colors["Base-Dark"]} !important`,
     },
   },
 
@@ -138,7 +170,7 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
 
 export const StyledHeaderTypography = styled((props: TypographyProps) => (
   <Typography {...props} />
-))(({ theme: _theme }: { theme: Theme }) => ({
+))(() => ({
   fontSize: "24px",
   fontWeight: "600",
   color: colors["Gray-900"],
@@ -149,7 +181,6 @@ const AES_KEY = import.meta.env.VITE_AES_KEY || "";
 
 export function encryptAES(plaintext: string): string {
   if (!AES_KEY || !IV_KEY) {
-    console.error("AES encryption keys are not configured");
     return "";
   }
 
@@ -164,8 +195,7 @@ export function encryptAES(plaintext: string): string {
     });
 
     return encrypted.ciphertext.toString(CryptoJS.enc.Hex);
-  } catch (error) {
-    console.error("Encryption error:", error);
+  } catch {
     return "";
   }
 }
@@ -177,15 +207,15 @@ export function encryptAES(plaintext: string): string {
  */
 export function getCloudFrontUrl(s3Url: string | null | undefined): string {
   if (!s3Url) return "";
-  
+
   const cloudFrontDomain = import.meta.env.VITE_CLOUDFRONT_DOMAIN || "https://dea8d2sq2agcg.cloudfront.net";
-  
+
   try {
     // Check if it's already a CloudFront URL
     if (s3Url.includes("cloudfront.net")) {
       return s3Url;
     }
-    
+
     // Check if it's an S3 URL
     if (s3Url.includes("s3.") || s3Url.includes("amazonaws.com")) {
       const url = new URL(s3Url);
@@ -197,11 +227,10 @@ export function getCloudFrontUrl(s3Url: string | null | undefined): string {
       const cloudFrontUrl = `${cloudFrontDomain}/${cleanPath}`;
       return cloudFrontUrl;
     }
-    
+
     // If it's not an S3 URL, return as is (might be a relative path or other URL)
     return s3Url;
-  } catch (error) {
-    console.error("Error converting S3 URL to CloudFront URL:", error);
+  } catch {
     return s3Url;
   }
 }
@@ -225,10 +254,38 @@ export function decryptAES(cipherHex: string | null | undefined): string {
     });
 
     return decrypted.toString(CryptoJS.enc.Utf8);
-  } catch (error) {
-    console.error("Decryption error:", error);
+  } catch {
     return "";
   }
 }
+
+// Helper function to get profile URL dynamically
+export const getProfileUrl = (username: string) => {
+  return `${window.location.origin}/${username}`;
+};
+
+/**
+ * Standardizes error message extraction from API responses
+ * @param error - The error object from RTK Query
+ * @param defaultMessage - Fallback message
+ * @returns string
+ */
+export const extractErrorMessage = (error: unknown, defaultMessage: string = "Something went wrong. Please try again."): string => {
+  const err = error as {
+    data?: {
+      message?: string;
+      error?: string;
+    };
+    error?: string;
+    message?: string;
+  };
+  return (
+    err?.data?.message ||
+    err?.data?.error ||
+    err?.error ||
+    err?.message ||
+    defaultMessage
+  );
+};
 
 

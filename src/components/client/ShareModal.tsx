@@ -10,7 +10,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Close, Twitter, WhatsApp } from "@mui/icons-material";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField } from "../../utils/helper";
 
 interface ShareModalProps {
   open: boolean;

@@ -16,16 +16,17 @@ import {
   FormGroup,
   FormHelperText,
 } from "@mui/material";
+import { colors } from "../../utils/constants";
 import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { type FormField } from "../../../rtk/endpoints/publicApi";
-import { StyledTextField, getCloudFrontUrl } from "../../../utils/helper";
-import { createCustomFormSchema } from "../validationSchemas";
-import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
-import { useAppDispatch } from "../../../rtk/store";
-import { showAlert } from "../../../rtk/feature/alertSlice";
-import Icon from "../../../components/shared/Icon";
+import { type FormField } from "../../rtk/endpoints/publicApi";
+import { StyledTextField, getCloudFrontUrl, extractErrorMessage } from "../../utils/helper";
+import { createCustomFormSchema } from "../../pages/client/validationSchemas";
+import { useGeneratePresignedUrlMutation } from "../../rtk/endpoints/authApi";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import Icon from "../shared/Icon";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -47,13 +48,13 @@ interface ClientQuestionsPageProps {
 }
 
 const pickerTextFieldStyles = {
-  
+
   "& .MuiPickersOutlinedInput-root": {
     borderRadius: "100px", // rounded field
     height: 44, // consistent height
     fontSize: "14px",
     backgroundColor: "#FFFFFF",
-    px:2,
+    px: 2,
 
     "& fieldset": {
       borderColor: "#E5E7EB",
@@ -155,7 +156,7 @@ export default function ClientQuestionsPage({
 
   // Watch all form values to check if required fields are filled
   const watchedValues = form.watch();
-  
+
   // Check if all REQUIRED fields are filled (optional fields can be empty)
   const areRequiredFieldsFilled = React.useMemo(() => {
     if (formFields.length === 0) {
@@ -170,11 +171,11 @@ export default function ClientQuestionsPage({
 
     return requiredFields.every((field) => {
       const value = watchedValues[field.id];
-      
+
       if (field.fieldType === "checkbox") {
         return Array.isArray(value) && value.length > 0;
       }
-      
+
       // For date fields, check if both date and time are present
       if (field.fieldType === "date" || field.fieldType === "date_time") {
         if (typeof value === "object" && !Array.isArray(value)) {
@@ -183,7 +184,7 @@ export default function ClientQuestionsPage({
         }
         return false;
       }
-      
+
       // For image upload fields, check if array has at least 1 image
       if (field.fieldType === "file" || field.fieldType === "images") {
         if (Array.isArray(value)) {
@@ -195,11 +196,11 @@ export default function ClientQuestionsPage({
         }
         return false;
       }
-      
+
       if (field.options && field.options.length > 0) {
         return value !== "" && value !== null && value !== undefined;
       }
-      
+
       return value !== "" && value !== null && value !== undefined;
     });
   }, [formFields, watchedValues]);
@@ -208,7 +209,7 @@ export default function ClientQuestionsPage({
   const renderFormField = (field: FormField) => {
     const value = formFieldValues[field.id] || "";
     const hasOptions = field.options && field.options.length > 0;
-    
+
     // If field has options, render as radio buttons regardless of fieldType
     if (hasOptions && (field.fieldType === "text" || field.fieldType === "radio")) {
       return (
@@ -243,12 +244,12 @@ export default function ClientQuestionsPage({
                   }}
                 >
                   {field.options?.map((option, idx) => (
-                    <FormControlLabel 
-                      key={idx} 
-                      value={option} 
+                    <FormControlLabel
+                      key={idx}
+                      value={option}
                       control={
-                        <Radio 
-                          size="small" 
+                        <Radio
+                          size="small"
                           sx={{
                             color: "#D1D5DB",
                             "&.Mui-checked": {
@@ -256,7 +257,7 @@ export default function ClientQuestionsPage({
                             },
                           }}
                         />
-                      } 
+                      }
                       label={option}
                       sx={{
                         "& .MuiFormControlLabel-label": {
@@ -278,7 +279,7 @@ export default function ClientQuestionsPage({
         />
       );
     }
-    
+
     switch (field.fieldType) {
       case "text":
         return (
@@ -327,7 +328,7 @@ export default function ClientQuestionsPage({
             )}
           />
         );
-      
+
       case "textarea":
         return (
           <Controller
@@ -394,7 +395,7 @@ export default function ClientQuestionsPage({
             )}
           />
         );
-      
+
       case "select":
         return (
           <Controller
@@ -442,7 +443,7 @@ export default function ClientQuestionsPage({
                       },
                       "& .MuiSelect-select": {
                         padding: "12px 16px",
-                        color: "#1C1C1C",
+                        color: colors["Base-Dark"],
                         borderRadius: "100px",
                       },
                       "& .MuiOutlinedInput-notchedOutline": {
@@ -476,7 +477,7 @@ export default function ClientQuestionsPage({
             )}
           />
         );
-      
+
       case "radio":
         return (
           <Box key={field.id}>
@@ -496,12 +497,12 @@ export default function ClientQuestionsPage({
               onChange={(e) => setFormFieldValues({ ...formFieldValues, [field.id]: e.target.value })}
             >
               {field.options?.map((option, idx) => (
-                <FormControlLabel 
-                  key={idx} 
-                  value={option} 
+                <FormControlLabel
+                  key={idx}
+                  value={option}
                   control={
-                    <Radio 
-                      size="small" 
+                    <Radio
+                      size="small"
                       sx={{
                         color: "#D1D5DB",
                         "&.Mui-checked": {
@@ -509,7 +510,7 @@ export default function ClientQuestionsPage({
                         },
                       }}
                     />
-                  } 
+                  }
                   label={option}
                   sx={{
                     "& .MuiFormControlLabel-label": {
@@ -522,7 +523,7 @@ export default function ClientQuestionsPage({
             </RadioGroup>
           </Box>
         );
-      
+
       case "checkbox":
         return (
           <Controller
@@ -530,8 +531,8 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => {
-              const checkboxValues = Array.isArray(formField.value) 
-                ? formField.value as string[] 
+              const checkboxValues = Array.isArray(formField.value)
+                ? formField.value as string[]
                 : [];
               return (
                 <Box>
@@ -596,157 +597,157 @@ export default function ClientQuestionsPage({
           />
         );
 
-        case "date":
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Controller
-        key={field.id}
-        name={field.id}
-        control={form.control}
-        render={({ field: formField }) => {
-          const today = dayjs();
+      case "date":
+        return (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Controller
+              key={field.id}
+              name={field.id}
+              control={form.control}
+              render={({ field: formField }) => {
+                const today = dayjs();
 
-          const currentValue = formFieldValues[field.id] as
-            | { date?: string; time?: string }
-            | string
-            | undefined;
+                const currentValue = formFieldValues[field.id] as
+                  | { date?: string; time?: string }
+                  | string
+                  | undefined;
 
-          const dateValue = currentValue && typeof currentValue === "object"
-            ? currentValue.date
-            : typeof currentValue === "string"
-            ? currentValue
-            : "";
+                const dateValue = currentValue && typeof currentValue === "object"
+                  ? currentValue.date
+                  : typeof currentValue === "string"
+                    ? currentValue
+                    : "";
 
-          const timeValue =
-            currentValue && typeof currentValue === "object"
-              ? currentValue.time
-              : "";
+                const timeValue =
+                  currentValue && typeof currentValue === "object"
+                    ? currentValue.time
+                    : "";
 
-          const selectedDate = dateValue ? dayjs(dateValue) : null;
-          const selectedTime = timeValue ? dayjs(timeValue, "HH:mm") : null;
+                const selectedDate = dateValue ? dayjs(dateValue) : null;
+                const selectedTime = timeValue ? dayjs(timeValue, "HH:mm") : null;
 
-          // Min time logic (same as before)
-          const isToday =
-            selectedDate && selectedDate.isSame(today, "day");
+                // Min time logic (same as before)
+                const isToday =
+                  selectedDate && selectedDate.isSame(today, "day");
 
-          const minTime = isToday
-            ? dayjs().add(1, "minute")
-            : undefined;
+                const minTime = isToday
+                  ? dayjs().add(1, "minute")
+                  : undefined;
 
-          return (
-            <Box>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                <Typography
-                  variant="body2"
-                  sx={{ fontSize: "20px", fontWeight: 600, color: "#111927" }}
-                >
-                  {field.label}
-                  {field.isRequired && (
-                    <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>
-                      *
-                    </Box>
-                  )}
-                </Typography>
-              </Stack>
+                return (
+                  <Box>
+                    <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: "20px", fontWeight: 600, color: "#111927" }}
+                      >
+                        {field.label}
+                        {field.isRequired && (
+                          <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>
+                            *
+                          </Box>
+                        )}
+                      </Typography>
+                    </Stack>
 
-              <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
-                {/* Date Picker */}
-                
-                <DatePicker
-                  value={selectedDate}
-                  minDate={today}
-                  onChange={(newDate: Dayjs | null) => {
-                    const newValue = {
-                      date: newDate ? newDate.format("YYYY-MM-DD") : "",
-                      time: timeValue,
-                    };
-                    formField.onChange(newValue);
-                    setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
-                    form.trigger(field.id);
-                  }}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      required: field.isRequired,
-                      error: Boolean(form.formState.errors[field.id]),
-                      sx: pickerTextFieldStyles,
-                    },
-                    popper: {
-                      sx: {
-                        "& .MuiPaper-root": {
-                          borderRadius: "12px",
-                          boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                          "& .MuiPickersCalendarHeader-root": {
-                            padding: "16px",
+                    <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+                      {/* Date Picker */}
+
+                      <DatePicker
+                        value={selectedDate}
+                        minDate={today}
+                        onChange={(newDate: Dayjs | null) => {
+                          const newValue = {
+                            date: newDate ? newDate.format("YYYY-MM-DD") : "",
+                            time: timeValue,
+                          };
+                          formField.onChange(newValue);
+                          setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                          form.trigger(field.id);
+                        }}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            required: field.isRequired,
+                            error: Boolean(form.formState.errors[field.id]),
+                            sx: pickerTextFieldStyles,
                           },
-                          "& .MuiDayCalendar-weekContainer": {
-                            margin: "8px 0",
-                          },
-                          "& .MuiPickersDay-root": {
-                            fontSize: "16px",
-                            width: "40px",
-                            height: "40px",
-                            borderRadius: "8px",
-                            "&.Mui-selected": {
-                              backgroundColor: "#111927",
-                              color: "#FFFFFF",
-                              "&:hover": {
-                                backgroundColor: "#384250",
-                                color: "#FFFFFF",
-                              },
-                              "&:focus": {
-                                backgroundColor: "#111927",
-                                color: "#FFFFFF",
+                          popper: {
+                            sx: {
+                              "& .MuiPaper-root": {
+                                borderRadius: "12px",
+                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                                "& .MuiPickersCalendarHeader-root": {
+                                  padding: "16px",
+                                },
+                                "& .MuiDayCalendar-weekContainer": {
+                                  margin: "8px 0",
+                                },
+                                "& .MuiPickersDay-root": {
+                                  fontSize: "16px",
+                                  width: "40px",
+                                  height: "40px",
+                                  borderRadius: "8px",
+                                  "&.Mui-selected": {
+                                    backgroundColor: "#111927",
+                                    color: "#FFFFFF",
+                                    "&:hover": {
+                                      backgroundColor: "#384250",
+                                      color: "#FFFFFF",
+                                    },
+                                    "&:focus": {
+                                      backgroundColor: "#111927",
+                                      color: "#FFFFFF",
+                                    },
+                                  },
+                                  "&:hover": {
+                                    backgroundColor: "#F3F4F6",
+                                  },
+                                },
                               },
                             },
-                            "&:hover": {
-                              backgroundColor: "#F3F4F6",
-                            },
                           },
-                        },
-                      },
-                    },
-                  }}
-                />
+                        }}
+                      />
 
-                {/* Time Picker */}
-                <TimePicker
-                  value={selectedTime}
-                  minTime={minTime}
-                  onChange={(newTime: Dayjs | null) => {
-                    const newValue = {
-                      date: dateValue,
-                      time: newTime ? newTime.format("HH:mm") : "",
-                    };
-                    formField.onChange(newValue);
-                    setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
-                    form.trigger(field.id);
-                  }}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      required: field.isRequired,
-                      error: Boolean(form.formState.errors[field.id]),
-                      sx: pickerTextFieldStyles,
-                    },
-                  }}
-                />
-              </Stack>
+                      {/* Time Picker */}
+                      <TimePicker
+                        value={selectedTime}
+                        minTime={minTime}
+                        onChange={(newTime: Dayjs | null) => {
+                          const newValue = {
+                            date: dateValue,
+                            time: newTime ? newTime.format("HH:mm") : "",
+                          };
+                          formField.onChange(newValue);
+                          setFormFieldValues({ ...formFieldValues, [field.id]: newValue });
+                          form.trigger(field.id);
+                        }}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            required: field.isRequired,
+                            error: Boolean(form.formState.errors[field.id]),
+                            sx: pickerTextFieldStyles,
+                          },
+                        }}
+                      />
+                    </Stack>
 
-              {form.formState.errors[field.id] && (
-                <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
-                  {form.formState.errors[field.id]?.message as string}
-                  
-                </FormHelperText>
-              )}
-            </Box>
-          );
-        }}
-      />
-    </LocalizationProvider>
-  );
+                    {form.formState.errors[field.id] && (
+                      <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
+                        {form.formState.errors[field.id]?.message as string}
 
-      
+                      </FormHelperText>
+                    )}
+                  </Box>
+                );
+              }}
+            />
+          </LocalizationProvider>
+        );
+
+
       // case "date":
       //   return (
       //     <Controller
@@ -756,12 +757,12 @@ export default function ClientQuestionsPage({
       //       render={({ field: formField }) => {
       //         // Get today's date in YYYY-MM-DD format
       //         const today = new Date().toISOString().split('T')[0];
-              
+
       //         // Get current value (should be an object with date and time)
       //         const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
       //         let dateValue = "";
       //         let timeValue = "";
-              
+
       //         if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
       //           dateValue = currentValue.date || "";
       //           timeValue = currentValue.time || "";
@@ -769,7 +770,7 @@ export default function ClientQuestionsPage({
       //           // Handle legacy format where it might be just a date string
       //           dateValue = currentValue;
       //         }
-              
+
       //         // Calculate min time based on whether date is today
       //         let minTime: string | undefined;
       //         if (dateValue) {
@@ -777,7 +778,7 @@ export default function ClientQuestionsPage({
       //           const todayDate = new Date();
       //           todayDate.setHours(0, 0, 0, 0);
       //           selectedDate.setHours(0, 0, 0, 0);
-                
+
       //           // If date is today, set min time to current time + 1 minute
       //           if (selectedDate.getTime() === todayDate.getTime()) {
       //             const now = new Date();
@@ -792,7 +793,7 @@ export default function ClientQuestionsPage({
       //           const minutes = String(now.getMinutes() + 1).padStart(2, '0');
       //           minTime = `${hours}:${minutes}`;
       //         }
-              
+
       //         return (
       //           <Box>
       //             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
@@ -874,7 +875,7 @@ export default function ClientQuestionsPage({
       //       }}
       //     />
       //   );
-      
+
       case "date_time":
         return (
           <Controller
@@ -884,17 +885,17 @@ export default function ClientQuestionsPage({
             render={({ field: formField }) => {
               // Get today's date in YYYY-MM-DD format
               const today = new Date().toISOString().split('T')[0];
-              
+
               // Get current value (should be an object with date and time)
               const currentValue = formFieldValues[field.id] as { date?: string; time?: string } | string | undefined;
               let dateValue = "";
               let timeValue = "";
-              
+
               if (currentValue && typeof currentValue === "object" && !Array.isArray(currentValue)) {
                 dateValue = currentValue.date || "";
                 timeValue = currentValue.time || "";
               }
-              
+
               // Calculate min time based on whether date is today
               let minTime: string | undefined;
               if (dateValue) {
@@ -902,7 +903,7 @@ export default function ClientQuestionsPage({
                 const todayDate = new Date();
                 todayDate.setHours(0, 0, 0, 0);
                 selectedDate.setHours(0, 0, 0, 0);
-                
+
                 // If date is today, set min time to current time + 1 minute
                 if (selectedDate.getTime() === todayDate.getTime()) {
                   const now = new Date();
@@ -917,7 +918,7 @@ export default function ClientQuestionsPage({
                 const minutes = String(now.getMinutes() + 1).padStart(2, '0');
                 minTime = `${hours}:${minutes}`;
               }
-              
+
               return (
                 <Box>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
@@ -999,7 +1000,7 @@ export default function ClientQuestionsPage({
             }}
           />
         );
-      
+
       case "time":
         return (
           <Controller
@@ -1013,7 +1014,7 @@ export default function ClientQuestionsPage({
                 .slice(0, currentFieldIndex)
                 .reverse()
                 .find(f => f.fieldType === "date");
-              
+
               // Calculate min time based on whether date is today
               let minTime: string | undefined;
               if (relatedDateField) {
@@ -1023,7 +1024,7 @@ export default function ClientQuestionsPage({
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
                   selectedDate.setHours(0, 0, 0, 0);
-                  
+
                   // If date is today, set min time to current time + 1 minute
                   if (selectedDate.getTime() === today.getTime()) {
                     const now = new Date();
@@ -1045,7 +1046,7 @@ export default function ClientQuestionsPage({
                 const minutes = String(now.getMinutes() + 1).padStart(2, '0');
                 minTime = `${hours}:${minutes}`;
               }
-              
+
               return (
                 <Box>
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
@@ -1087,7 +1088,7 @@ export default function ClientQuestionsPage({
             }}
           />
         );
-      
+
       case "file":
       case "images":
         return (
@@ -1096,12 +1097,12 @@ export default function ClientQuestionsPage({
             name={field.id}
             control={form.control}
             render={({ field: formField }) => {
-              const currentImages = Array.isArray(formFieldValues[field.id]) 
+              const currentImages = Array.isArray(formFieldValues[field.id])
                 ? (formFieldValues[field.id] as string[]).filter((url: string) => url && url !== "")
                 : (formFieldValues[field.id] && typeof formFieldValues[field.id] === "string" && formFieldValues[field.id] !== "")
                   ? [formFieldValues[field.id] as string]
                   : [];
-              
+
               const previewUrls = imagePreviews[field.id] || [];
               const isUploading = uploadingFields[field.id] || false;
               const maxImages = 10;
@@ -1114,9 +1115,9 @@ export default function ClientQuestionsPage({
                 // Check if adding these files would exceed the limit
                 const filesToAdd = Array.from(files);
                 if (currentImages.length + filesToAdd.length > maxImages) {
-                  dispatch(showAlert({ 
-                    message: `Maximum ${maxImages} images allowed. You can add ${maxImages - currentImages.length} more.`, 
-                    severity: "error" 
+                  dispatch(showAlert({
+                    message: `Maximum ${maxImages} images allowed. You can add ${maxImages - currentImages.length} more.`,
+                    severity: "error"
                   }));
                   event.target.value = "";
                   return;
@@ -1125,16 +1126,16 @@ export default function ClientQuestionsPage({
                 // Validate file types
                 const invalidFiles = filesToAdd.filter(file => !file.type.match(/^image\/(png|jpeg|jpg)$/));
                 if (invalidFiles.length > 0) {
-                  dispatch(showAlert({ 
-                    message: "Invalid file type. Please upload PNG or JPG images only.", 
-                    severity: "error" 
+                  dispatch(showAlert({
+                    message: "Invalid file type. Please upload PNG or JPG images only.",
+                    severity: "error"
                   }));
                   event.target.value = "";
                   return;
                 }
 
                 setUploadingFields({ ...uploadingFields, [field.id]: true });
-                
+
                 try {
                   const uploadedUrls: string[] = [];
                   const previewPromises: Promise<string>[] = [];
@@ -1158,11 +1159,11 @@ export default function ClientQuestionsPage({
                       ],
                     }).unwrap();
 
-                    if (!presignedResponse?.data?.[0]?.signedUrl) {
+                    if (!presignedResponse?.[0]?.signedUrl) {
                       throw new Error("Failed to generate presigned URL");
                     }
 
-                    const signedUrl = presignedResponse.data[0].signedUrl;
+                    const signedUrl = presignedResponse[0].signedUrl;
 
                     // Step 2: Upload file to S3 using presigned URL
                     const uploadResponse = await fetch(signedUrl, {
@@ -1197,19 +1198,18 @@ export default function ClientQuestionsPage({
                   const updatedImages = [...currentImages, ...uploadedUrls];
                   formField.onChange(updatedImages);
                   setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
-                  
+
                   // Update previews
                   const updatedPreviews = [...previewUrls, ...newPreviews];
                   setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
 
-                  dispatch(showAlert({ 
-                    message: `${filesToAdd.length} image(s) uploaded successfully!`, 
-                    severity: "success" 
-                  }));
-                } catch (error: any) {
-                  console.error("Upload error:", error);
                   dispatch(showAlert({
-                    message: error?.message || "Failed to upload image(s). Please try again.",
+                    message: `${filesToAdd.length} image(s) uploaded successfully!`,
+                    severity: "success"
+                  }));
+                } catch (error: unknown) {
+                  dispatch(showAlert({
+                    message: extractErrorMessage(error, "Failed to upload image(s). Please try again."),
                     severity: "error"
                   }));
                 } finally {
@@ -1221,7 +1221,7 @@ export default function ClientQuestionsPage({
               const handleRemoveImage = (indexToRemove: number) => {
                 const updatedImages = currentImages.filter((_, index) => index !== indexToRemove);
                 const updatedPreviews = previewUrls.filter((_, index) => index !== indexToRemove);
-                
+
                 formField.onChange(updatedImages);
                 setFormFieldValues({ ...formFieldValues, [field.id]: updatedImages });
                 setImagePreviews({ ...imagePreviews, [field.id]: updatedPreviews });
@@ -1245,7 +1245,7 @@ export default function ClientQuestionsPage({
                       )}
                     </Typography>
                   </Stack>
-                  
+
                   {/* Upload Button */}
                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                     <Box sx={{ position: "relative", display: "inline-block" }}>
@@ -1282,7 +1282,7 @@ export default function ClientQuestionsPage({
                             justifyContent: "center",
                           }}
                         >
-                          <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
+                          <CircularProgress size={40} sx={{ color: colors["Base-Dark"] }} />
                         </Box>
                       ) : canAddMore ? (
                         <label htmlFor={`file-upload-${field.id}`}>
@@ -1337,14 +1337,14 @@ export default function ClientQuestionsPage({
                           fontWeight: 400,
                         }}
                       >
-                        {currentImages.length === 0 
+                        {currentImages.length === 0
                           ? (field.isRequired ? "Upload at least 1 image (max 10)" : "Upload up to 10 images")
                           : `${currentImages.length}/${maxImages} images. You can add ${maxImages - currentImages.length} more.`
                         }
                       </Typography>
                     )}
                   </Box>
-                  
+
                   {/* Image Grid - Show after upload box */}
                   {currentImages.length > 0 && (
                     <Box sx={{ mt: 2 }}>
@@ -1360,10 +1360,10 @@ export default function ClientQuestionsPage({
                         }}
                       >
                         {currentImages.map((imageUrl, index) => {
-                          const previewUrl = previewUrls[index] 
+                          const previewUrl = previewUrls[index]
                             ? (previewUrls[index].startsWith("http") ? getCloudFrontUrl(previewUrls[index]) : previewUrls[index])
                             : (imageUrl.startsWith("http") ? getCloudFrontUrl(imageUrl) : imageUrl);
-                          
+
                           return (
                             <Box
                               key={index}
@@ -1409,7 +1409,7 @@ export default function ClientQuestionsPage({
                       </Box>
                     </Box>
                   )}
-                  
+
                   {form.formState.errors[field.id] && (
                     <FormHelperText error sx={{ mt: 0.5, ml: 1.75, fontSize: "12px", color: "#DC2626 !important" }}>
                       {form.formState.errors[field.id]?.message as string}
@@ -1420,7 +1420,7 @@ export default function ClientQuestionsPage({
             }}
           />
         );
-      
+
       default:
         return (
           <Controller
@@ -1430,19 +1430,19 @@ export default function ClientQuestionsPage({
             render={({ field: formField }) => (
               <Box>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: "20px",
-                        fontWeight: 600,
-                        color: "#111927",
-                      }}
-                    >
-                      {field.label}
-                      {field.isRequired && (
-                        <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
-                      )}
-                    </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "#111927",
+                    }}
+                  >
+                    {field.label}
+                    {field.isRequired && (
+                      <Box component="span" sx={{ color: "#F04438", ml: 0.5 }}>*</Box>
+                    )}
+                  </Typography>
                 </Stack>
                 <StyledTextField
                   {...formField}
@@ -1488,10 +1488,10 @@ export default function ClientQuestionsPage({
         justifyContent="flex-end"
         sx={{ width: "100%" }}
       >
-        <IconButton 
-          onClick={onClose} 
+        <IconButton
+          onClick={onClose}
           size="small"
-          sx={{ 
+          sx={{
             p: 0.5,
             "&:hover": { backgroundColor: "transparent" }
           }}
@@ -1508,7 +1508,7 @@ export default function ClientQuestionsPage({
               .sort((a, b) => a.sortOrder - b.sortOrder)
               .map((field) => {
                 const fieldComponent = renderFormField(field);
-                
+
                 return (
                   <Box key={field.id}>
                     {fieldComponent}
@@ -1524,9 +1524,9 @@ export default function ClientQuestionsPage({
       </form>
 
       {/* Action Buttons */}
-      <Stack 
-        direction="row" 
-        justifyContent="flex-end" 
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
         spacing={{ xs: 1.5, sm: 2 }}
         sx={{
           width: "100%",

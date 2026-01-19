@@ -2,16 +2,17 @@ import { useState, useEffect } from "react";
 import { Box, Button, Typography, InputAdornment, Stack, Grid, IconButton, CircularProgress } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { StyledTextField } from "../../../utils/helper";
+import { StyledTextField, extractErrorMessage } from "../../utils/helper";
+import { colors } from "../../utils/constants";
 import { ProgressIndicator } from "./ProgressIndicator";
-import { step4Schema } from "../validationSchemas";
-import type { Step4FormInputs } from "../types";
-import PageIcon from "../../../components/shared/PageIcon";
-import Icon from "../../../components/shared/Icon";
+import { step4Schema } from "../../pages/signup/validationSchemas";
+import type { Step4FormInputs } from "../../pages/signup/types";
+import PageIcon from "../shared/PageIcon";
+import Icon from "../shared/Icon";
 import { pageTitleSx, bottomButtonContainerSx, backIconButtonSx, iconButtonSx } from "./commonStyles";
-import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
-import { useAppDispatch } from "../../../rtk/store";
-import { showAlert } from "../../../rtk/feature/alertSlice";
+import { useGeneratePresignedUrlMutation } from "../../rtk/endpoints/authApi";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
 
 interface Step4Props {
   onNext: (data: Step4FormInputs) => void;
@@ -57,15 +58,15 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
 
     // Validate file type
     if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
-      dispatch(showAlert({ 
-        message: "Invalid file type. Please upload a PNG or JPG image.", 
-        severity: "error" 
+      dispatch(showAlert({
+        message: "Invalid file type. Please upload a PNG or JPG image.",
+        severity: "error"
       }));
       return;
     }
 
     setIsUploading(true);
-    
+
     try {
       // Generate unique filename
       const timestamp = Date.now();
@@ -84,11 +85,11 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
         ],
       }).unwrap();
 
-      if (!presignedResponse?.data?.[0]?.signedUrl) {
+      if (!presignedResponse?.[0]?.signedUrl) {
         throw new Error("Failed to generate presigned URL");
       }
 
-      const signedUrl = presignedResponse.data[0].signedUrl;
+      const signedUrl = presignedResponse[0].signedUrl;
 
       // Step 2: Upload file to S3 using presigned URL
       // Note: Do not set Content-Type header as it's already included in the presigned URL signature
@@ -119,15 +120,14 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       };
       reader.readAsDataURL(file);
 
-      dispatch(showAlert({ 
-        message: "Profile picture uploaded successfully", 
-        severity: "success" 
+      dispatch(showAlert({
+        message: "Profile picture uploaded successfully",
+        severity: "success"
       }));
-    } catch (error: any) {
-      console.error("Image upload error:", error);
-      dispatch(showAlert({ 
-        message: error?.data?.message || "Failed to upload image. Please try again.", 
-        severity: "error" 
+    } catch (error: unknown) {
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to upload image. Please try again."),
+        severity: "error"
       }));
       // Clear file input
       event.target.value = "";
@@ -153,16 +153,16 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
   };
 
   return (
-    <Box 
-      width="100%" 
-      maxWidth={{ xs: "100%", sm: "730px" }} 
-      sx={{ 
+    <Box
+      width="100%"
+      maxWidth={{ xs: "100%", sm: "730px" }}
+      sx={{
         minHeight: { xs: "auto", sm: "846px" },
         pb: { xs: 10, sm: 0 },
         mx: "auto",
         position: "relative",
-      }} 
-      component="form" 
+      }}
+      component="form"
       onSubmit={form.handleSubmit(handleSubmit)}
     >
       {/* Back Icon - Above progress bar for large screens */}
@@ -174,10 +174,10 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
         <ProgressIndicator currentStep={4} />
       </Box>
-      
+
       {/* Icon above title */}
       <PageIcon iconSrc="/assets/icons/profile_icon.svg" iconAlt="icon" />
-      
+
       {/* Title - Centered */}
       <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
         Profile Set Up
@@ -191,13 +191,13 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
           mb: 3,
         }}
       >
-        
+
       </Box>
 
       {/* Name or Business Name Field - Two Column Layout */}
       <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: colors["Base-Dark"], mb: { xs: 0.5, sm: 0 } }}>
             Name or Business Name
           </Typography>
         </Grid>
@@ -212,7 +212,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             })}
             error={Boolean(form.formState.errors.businessName)}
             helperText={form.formState.errors.businessName?.message}
-            sx={{ 
+            sx={{
               mt: 0,
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
@@ -226,7 +226,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       {/* Business Description Field - Two Column Layout */}
       <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: colors["Base-Dark"], mb: { xs: 0.5, sm: 0 } }}>
             Business Description
           </Typography>
         </Grid>
@@ -244,7 +244,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             })}
             error={Boolean(form.formState.errors.businessDescription)}
             helperText={form.formState.errors.businessDescription?.message}
-            sx={{ 
+            sx={{
               mt: 0,
               "& .MuiOutlinedInput-root": {
                 borderRadius: { xs: "12px", sm: "18px" },
@@ -266,7 +266,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       {/* Photo Section - Two Column Layout: Label on left, Image on right */}
       <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 2, sm: 3 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ mb: { xs: 0.5, sm: 1 }, fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C" }}>
+          <Typography variant="body2" sx={{ mb: { xs: 0.5, sm: 1 }, fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: colors["Base-Dark"] }}>
             Photo
           </Typography>
           <Typography variant="caption" sx={{ color: "#6C737F", display: "block", fontSize: { xs: "12px", sm: "14px" } }}>
@@ -324,29 +324,29 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
                     justifyContent: "center",
                   }}
                 >
-                  <CircularProgress size={40} sx={{ color: "#1C1C1C" }} />
+                  <CircularProgress size={40} sx={{ color: colors["Base-Dark"] }} />
                 </Box>
               ) : (
-              <label htmlFor="profile-image-upload">
-                <Button
-                  component="span"
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    minWidth: "auto",
-                    p: 1,
-                    backgroundColor: "rgba(0,0,0,0.5)",
-                    borderRadius: "50%",
-                    width: 40,
-                    height: 40,
-                    "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                  }}
-                >
-                  <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
-                </Button>
-              </label>
+                <label htmlFor="profile-image-upload">
+                  <Button
+                    component="span"
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      minWidth: "auto",
+                      p: 1,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "50%",
+                      width: 40,
+                      height: 40,
+                      "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+                    }}
+                  >
+                    <Icon src="/assets/icons/upload.svg" alt="upload" size={20} sx={{ filter: "invert(1)" }} />
+                  </Button>
+                </label>
               )}
               {profileImagePreview && (
                 <Typography
@@ -379,7 +379,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       {/* Your Public URL Section - Label only */}
       <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: -4, sm: -6 }, alignItems: "flex-start" }}>
         <Grid size={{ xs: 12, sm: 4 }}>
-          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: "#1C1C1C", mb: { xs: 0.5, sm: 0 } }}>
+          <Typography variant="body2" sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 500, color: colors["Base-Dark"], mb: { xs: 0.5, sm: 0 } }}>
             Your Public URL
           </Typography>
           <Typography variant="caption" sx={{ color: "#6C737F", display: "block", fontSize: { xs: "12px", sm: "14px" } }}>
@@ -403,7 +403,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             })}
             error={Boolean(form.formState.errors.instagram)}
             helperText={form.formState.errors.instagram?.message}
-            sx={{ 
+            sx={{
               mt: 0,
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
@@ -436,7 +436,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             })}
             error={Boolean(form.formState.errors.facebook)}
             helperText={form.formState.errors.facebook?.message}
-            sx={{ 
+            sx={{
               mt: 0,
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
@@ -469,7 +469,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             })}
             error={Boolean(form.formState.errors.linkedin)}
             helperText={form.formState.errors.linkedin?.message}
-            sx={{ 
+            sx={{
               mt: 0,
               "& .MuiInputBase-input": {
                 fontSize: { xs: "14px", sm: "16px" },
@@ -496,9 +496,9 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             variant="outlined"
             onClick={onSkip}
             disabled={isSkipping || isSubmitting}
-            sx={{ 
-              borderColor: "#D1D5DB", 
-              color: "#1C1C1C", 
+            sx={{
+              borderColor: "#D1D5DB",
+              color: colors["Base-Dark"],
               backgroundColor: "#E5ECF6",
               borderRadius: "100px",
               textTransform: "none",
@@ -511,17 +511,17 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
             }}
           >
             {isSkipping ? (
-              <CircularProgress size={24} sx={{ color: "#1C1C1C" }} />
+              <CircularProgress size={24} sx={{ color: colors["Base-Dark"] }} />
             ) : (
               "Skip"
             )}
           </Button>
-          <Button 
-            fullWidth 
-            type="submit" 
-            variant="secondary" 
+          <Button
+            fullWidth
+            type="submit"
+            variant="secondary"
             disabled={isSubmitting || isSkipping}
-            sx={{ 
+            sx={{
               textTransform: "none",
               height: { xs: "44px", sm: "48px" },
             }}

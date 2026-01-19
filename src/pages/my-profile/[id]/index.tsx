@@ -16,7 +16,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ServiceProviderLayout from "../../../layouts/ServiceProviderLayout";
-import { StyledTextField, getCloudFrontUrl } from "../../../utils/helper";
+import { StyledTextField, getCloudFrontUrl, extractErrorMessage } from "../../../utils/helper";
 import { useGetUserProfileQuery, useUpdateUserProfileMutation } from "../../../rtk/endpoints/userApi";
 import { useGeneratePresignedUrlMutation } from "../../../rtk/endpoints/authApi";
 import { showAlert } from "../../../rtk/feature/alertSlice";
@@ -68,7 +68,7 @@ export default function EditProfile(): JSX.Element {
   const { data: profile, isLoading: isLoadingProfile, error: profileError, refetch: refetchProfile } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
-  
+
   // Ensure query runs when component first mounts
   useEffect(() => {
     refetchProfile();
@@ -122,15 +122,15 @@ export default function EditProfile(): JSX.Element {
 
     // Validate file type
     if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
-      dispatch(showAlert({ 
-        message: "Invalid file type. Please upload a PNG or JPG image.", 
-        severity: "error" 
+      dispatch(showAlert({
+        message: "Invalid file type. Please upload a PNG or JPG image.",
+        severity: "error"
       }));
       return;
     }
 
     setIsUploading(true);
-    
+
     try {
       // Generate unique filename
       const timestamp = Date.now();
@@ -149,11 +149,11 @@ export default function EditProfile(): JSX.Element {
         ],
       }).unwrap();
 
-      if (!presignedResponse?.data?.[0]?.signedUrl) {
+      if (!presignedResponse?.[0]?.signedUrl) {
         throw new Error("Failed to generate presigned URL");
       }
 
-      const signedUrl = presignedResponse.data[0].signedUrl;
+      const signedUrl = presignedResponse[0].signedUrl;
 
       // Step 2: Upload file to S3 using presigned URL
       const uploadResponse = await fetch(signedUrl, {
@@ -179,14 +179,14 @@ export default function EditProfile(): JSX.Element {
       };
       reader.readAsDataURL(file);
 
-      dispatch(showAlert({ 
-        message: "Profile picture uploaded successfully", 
-        severity: "success" 
+      dispatch(showAlert({
+        message: "Profile picture uploaded successfully",
+        severity: "success"
       }));
-    } catch (error: any) {
-      dispatch(showAlert({ 
-        message: error?.data?.message || "Failed to upload image. Please try again.", 
-        severity: "error" 
+    } catch (error: unknown) {
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to upload image. Please try again."),
+        severity: "error"
       }));
       event.target.value = "";
     } finally {
@@ -218,16 +218,15 @@ export default function EditProfile(): JSX.Element {
       }
 
       await updateProfile(updateData).unwrap();
-      dispatch(showAlert({ 
-        message: "Profile updated successfully", 
-        severity: "success" 
+      dispatch(showAlert({
+        message: "Profile updated successfully",
+        severity: "success"
       }));
       navigate("/my-profile");
-    } catch (error: any) {
-      const errorMessage = error?.data?.message || "Failed to update profile";
-      dispatch(showAlert({ 
-        message: errorMessage, 
-        severity: "error" 
+    } catch (error: unknown) {
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to update profile"),
+        severity: "error"
       }));
     }
   };
@@ -297,10 +296,10 @@ export default function EditProfile(): JSX.Element {
               <Box display={"flex"} alignItems={"center"} gap={2}>
                 <Avatar
                   src={
-                    profileImagePreview 
+                    profileImagePreview
                       ? profileImagePreview // This is either a base64 data URL (new upload) or CloudFront URL (existing photo)
-                      : profile?.profilePhoto 
-                        ? getCloudFrontUrl(profile.profilePhoto) 
+                      : profile?.profilePhoto
+                        ? getCloudFrontUrl(profile.profilePhoto)
                         : "./assets/images/avatar.png"
                   }
                   sx={{ width: 74, height: 74 }}
@@ -327,9 +326,9 @@ export default function EditProfile(): JSX.Element {
                     <Button
                       variant="secondary"
                       component="span"
-                      sx={{ 
-                        height: "28px", 
-                        fontWeight: "500", 
+                      sx={{
+                        height: "28px",
+                        fontWeight: "500",
                         fontSize: "12px",
                         display: "flex",
                         alignItems: "center",
@@ -339,9 +338,9 @@ export default function EditProfile(): JSX.Element {
                       disabled={isUploading}
                     >
                       {isUploading ? (
-                        <CircularProgress 
-                          size={14} 
-                          sx={{ color: "#fff" }} 
+                        <CircularProgress
+                          size={14}
+                          sx={{ color: "#fff" }}
                         />
                       ) : (
                         "Change Photo"

@@ -15,7 +15,8 @@ import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
 import { getCloudFrontUrl } from "../../utils/helper";
-import ShareModal from "../client/components/ShareModal";
+import { colors } from "../../utils/constants";
+import ShareModal from "../../components/client/ShareModal";
 
 // Helper function to get profile URL dynamically (same as client page)
 const getProfileUrl = (username: string) => {
@@ -27,7 +28,7 @@ export default function MyProfilePage(): JSX.Element {
   const { data: profile, isLoading, error, refetch } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
-  
+
   // Ensure query runs when component first mounts
   useEffect(() => {
     refetch();
@@ -46,7 +47,7 @@ export default function MyProfilePage(): JSX.Element {
   const handleShareClick = () => {
     setShareModalOpen(true);
   };
-  
+
   const InfoItem = ({
     icon,
     value,
@@ -138,8 +139,8 @@ export default function MyProfilePage(): JSX.Element {
   }
 
   const profileUrl = getProfileUrl(profile.username);
-  const phoneDisplay = profile.countryCode && profile.phoneNumber 
-    ? `${profile.countryCode} ${profile.phoneNumber}` 
+  const phoneDisplay = profile.countryCode && profile.phoneNumber
+    ? `${profile.countryCode} ${profile.phoneNumber}`
     : "N/A";
 
   return (
@@ -182,7 +183,7 @@ export default function MyProfilePage(): JSX.Element {
 
             {/* Body */}
             <Box gap={2}>
-            
+
               <Avatar
                 src={profile.profilePhoto ? getCloudFrontUrl(profile.profilePhoto) : "./assets/images/avatar.png"}
                 sx={{ width: 74, height: 74 }}
@@ -191,7 +192,6 @@ export default function MyProfilePage(): JSX.Element {
                     // Fallback to default avatar if image fails to load (e.g., Access Denied)
                     const target = e.target as HTMLImageElement;
                     if (target.src !== "./assets/images/avatar.png" && !target.src.includes("avatar.png")) {
-                      console.warn("Profile image failed to load, using default avatar. URL:", target.src);
                       target.src = "./assets/images/avatar.png";
                     }
                   },
@@ -202,7 +202,7 @@ export default function MyProfilePage(): JSX.Element {
                 <Typography fontWeight={600} fontSize={18} sx={{ marginTop: "10px" }}>
                   {profile.username || "N/A"}
                 </Typography>
-                
+
                 <img src="./assets/icons/line.svg" alt="" />
 
                 <Box
@@ -244,22 +244,22 @@ export default function MyProfilePage(): JSX.Element {
                     >
                       <img src={`./assets/icons/copy.svg`} alt="copy" />
                     </Box>
-                      <Box
+                    <Box
                       onClick={handleShareClick}
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          bgcolor: "#fff",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          flexShrink: 0,
-                        }}
-                      >
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        bgcolor: "#fff",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                      }}
+                    >
                       <img src={`./assets/icons/share-arrow.svg`} alt="share" />
-                      </Box>
+                    </Box>
                   </Box>
                 </Box>
               </Box>
@@ -273,20 +273,20 @@ export default function MyProfilePage(): JSX.Element {
               <InfoItem
                 icon="./assets/icons/personalcard.svg"
                 value={profile.displayName || profile.username || "N/A"}
-                
+
                 showImg={false}
               />
 
               <InfoItem
                 icon="./assets/icons/mail.svg"
                 value={profile.email || "N/A"}
-               
+
               />
 
               <InfoItem
                 icon="./assets/icons/phone.svg"
                 value={phoneDisplay || "N/A"}
-                
+
               />
               <Box
                 sx={{
@@ -309,13 +309,13 @@ export default function MyProfilePage(): JSX.Element {
             <Typography fontWeight={600} fontSize={14} color="#111927" mb={1}>
               Business Details
             </Typography>
-            
+
             <img src="./assets/icons/line2.svg" alt="" />
 
             <Typography fontWeight={600} fontSize={14} color="#111927">
               {profile.displayName || "N/A"}
             </Typography>
-            <Typography fontWeight={400} fontSize={16} color="#1C1C1C" mt={0.5}>
+            <Typography fontWeight={400} fontSize={16} color={colors["Base-Dark"]} mt={0.5}>
               {profile.businessDescription || "No business description provided."}
             </Typography>
 

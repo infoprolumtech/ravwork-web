@@ -1,4 +1,5 @@
 import { type SxProps, type Theme } from "@mui/material";
+import { colors } from "../../utils/constants";
 
 /**
  * Common style objects used across signup steps to avoid duplication
@@ -6,7 +7,7 @@ import { type SxProps, type Theme } from "@mui/material";
 
 export const pageTitleSx: SxProps<Theme> = {
   fontSize: { xs: "24px", sm: "28px", md: "34px" },
-  color: "#1C1C1C",
+  color: colors["Base-Dark"],
   fontWeight: 600,
   textAlign: "center",
   lineHeight: { xs: 1.3, sm: 1.2 },
@@ -49,7 +50,7 @@ export const inputBaseSx: SxProps<Theme> = {
 };
 
 export const inputTextSx: SxProps<Theme> = {
-  color: "#1C1C1C",
+  color: colors["Base-Dark"],
   height: "48px",
   borderRadius: "100px",
   "&::placeholder": {

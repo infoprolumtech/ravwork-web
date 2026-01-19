@@ -3,16 +3,16 @@ import { Box } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../rtk/store";
 import SignupLayout from "../../layouts/SignupLayout";
-import { Step1 } from "./components/Step1";
-import { Step2 } from "./components/Step2";
-import { Step3 } from "./components/Step3";
-import { Step4 } from "./components/Step4";
+import { Step1 } from "../../components/signup/Step1";
+import { Step2 } from "../../components/signup/Step2";
+import { Step3 } from "../../components/signup/Step3";
+import { Step4 } from "../../components/signup/Step4";
 import type { Step1FormInputs, Step2FormInputs, Step3FormInputs, Step4FormInputs } from "./types";
 import { useSignupMutation, useUpdateProfileMutation, useSkipProfileMutation, useLazyGetCurrentUserQuery } from "../../rtk/endpoints/authApi";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { setSignupToken, clearSignupToken, logoutUser, loginUser } from "../../rtk/feature/authSlice";
+import { extractErrorMessage } from "../../utils/helper";
 
-// Location state type for resume step from login
 interface LocationState {
   resumeStep?: number;
 }
@@ -25,28 +25,22 @@ export default function SignUpPage(): JSX.Element {
   const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
   const [skipProfile, { isLoading: isSkippingProfile }] = useSkipProfileMutation();
   const [getCurrentUser] = useLazyGetCurrentUserQuery();
-  
-  // Get signup token and user from Redux state
+
   const signupToken = useAppSelector((state) => state.auth.signupToken);
   const user = useAppSelector((state) => state.auth.user);
   const isLoggedIn = useAppSelector((state) => state.auth.isLogin);
-  
-  // Determine initial step from location state (from login redirect) or user's profileStep
+
   const locationState = location.state as LocationState | null;
   const resumeStep = locationState?.resumeStep || (user?.profileStep ? user.profileStep + 1 : 1);
-  
-  // Initialize current step based on resume step
-  const [currentStep, setCurrentStep] = useState(resumeStep > 3 ? 1 : resumeStep);
-  
-  // Redirect to dashboard if user is logged in and signup is complete
-  // profileStep 3 = signup complete
+
+  const [currentStep, setCurrentStep] = useState(resumeStep > 4 ? 1 : resumeStep);
+
   useEffect(() => {
     if (isLoggedIn && user?.profileStep && user.profileStep >= 3) {
       navigate("/dashboard", { replace: true });
     }
   }, [isLoggedIn, user?.profileStep, navigate]);
-  
-  // Store form data for each step to preserve when navigating back
+
   const [step1Data, setStep1Data] = useState<Step1FormInputs | null>(null);
   const [step2Data, setStep2Data] = useState<Step2FormInputs | null>(null);
   const [step3Data, setStep3Data] = useState<Step3FormInputs | null>(null);
@@ -54,26 +48,20 @@ export default function SignUpPage(): JSX.Element {
 
   const handleStep1Submit = async (data: Step1FormInputs) => {
     try {
-      // Extract username without prefix
       const PREFIX = "ravwork.link/";
-      const username = data.username.startsWith(PREFIX) 
-        ? data.username.replace(PREFIX, "") 
+      const username = data.username.startsWith(PREFIX)
+        ? data.username.replace(PREFIX, "")
         : data.username;
 
-      // Check if signup was already completed (only skip API if we have signupToken in Redux)
-      // This means we've already successfully submitted Step 1 before
       if (signupToken && step1Data) {
-        // Signup was already successful and we're navigating back, just proceed to next step
         setStep1Data(data);
         setCurrentStep(2);
         return;
       }
 
-      // Store Step 1 data
       setStep1Data(data);
-      
-      // Call signup API (always call on first submission)
-      const response = await signup({
+
+      const result = await signup({
         username,
         email: data.email,
         countryCode: data.countryCode,
@@ -81,41 +69,47 @@ export default function SignUpPage(): JSX.Element {
         password: data.password,
       }).unwrap();
 
-      // If signup successful, store token in Redux state for Step 4 API calls
-      // Don't set login state to avoid redirect to dashboard
-      if (response?.data?.tokens?.accessToken) {
-        // Store token in Redux state (not localStorage)
-        dispatch(setSignupToken(response.data.tokens.accessToken));
+      const accessToken = result.tokens?.accessToken || result.accessToken || result.user?.accessToken;
+      if (accessToken) {
+        dispatch(setSignupToken(accessToken));
         setCurrentStep(2);
       }
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      dispatch(showAlert({ 
-        message: error?.data?.message || "Signup failed. Please try again.", 
-        severity: "error" 
+    } catch (error: unknown) {
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Signup failed. Please try again."),
+        severity: "error"
       }));
     }
   };
 
   const handleStep2Submit = (data: Step2FormInputs) => {
-    console.log("Step 2 data:", data);
     setStep2Data(data);
     setCurrentStep(3);
   };
 
   const handleStep3Submit = (data: Step3FormInputs) => {
-    console.log("Step 3 data:", data);
     setStep3Data(data);
-    // Step 3 is payment method - just proceed to next step
     setCurrentStep(4);
+  };
+
+  const finalizeSignup = async (userData: import("../../types").User, token: string) => {
+    const finalUserData = {
+      ...userData,
+      accessToken: token,
+      profileStep: 3,
+    };
+    dispatch(clearSignupToken());
+    dispatch(loginUser(finalUserData));
+    setStep1Data(null);
+    setStep2Data(null);
+    setStep3Data(null);
+    setStep4Data(null);
+    navigate("/dashboard", { replace: true });
   };
 
   const handleStep4Submit = async (data: Step4FormInputs) => {
     try {
-      // Store Step 4 data
       setStep4Data(data);
-      
-      // Step 4 is profile completion - call updateProfile API
       await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
@@ -124,46 +118,19 @@ export default function SignUpPage(): JSX.Element {
         facebookUrl: data.facebook || undefined,
         linkedinUrl: data.linkedin || undefined,
       }).unwrap();
-      
-      // Get current user data to log them in directly
-      const userResponse = await getCurrentUser(undefined).unwrap();
-      
-      if (userResponse?.data && signupToken) {
-        // Log the user in with the signup token as access token
-        const userData = {
-          ...userResponse.data,
-          accessToken: signupToken,
-          profileStep: 3, // Signup complete
-        };
-        
-        // Clear signup token first
-        dispatch(clearSignupToken());
-        
-        // Log in the user
-        dispatch(loginUser(userData));
-        
-        // Clear form data
-      setStep1Data(null);
-      setStep2Data(null);
-      setStep3Data(null);
-      setStep4Data(null);
-        
-        // Show success message
+
+      const userResult = await getCurrentUser(undefined).unwrap();
+      if (userResult && signupToken) {
+        await finalizeSignup(userResult, signupToken);
         dispatch(showAlert({ message: "Welcome! Your profile is complete.", severity: "success" }));
-        
-        // Redirect to dashboard
-        navigate("/dashboard", { replace: true });
       } else {
-        // Fallback: redirect to login if something goes wrong
         dispatch(clearSignupToken());
-        dispatch(showAlert({ message: "Profile updated. Please sign in.", severity: "success" }));
         navigate("/login", { replace: true });
       }
-    } catch (error: any) {
-      console.error("Profile update error:", error);
-      dispatch(showAlert({ 
-        message: error?.data?.message || "Failed to update profile. Please try again.", 
-        severity: "error" 
+    } catch (error: unknown) {
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to update profile. Please try again."),
+        severity: "error"
       }));
     }
   };
@@ -171,83 +138,40 @@ export default function SignUpPage(): JSX.Element {
   const handleSkipProfile = async () => {
     try {
       await skipProfile(undefined).unwrap();
-      
-      // Get current user data to log them in directly
-      const userResponse = await getCurrentUser(undefined).unwrap();
-      
-      if (userResponse?.data && signupToken) {
-        // Log the user in with the signup token as access token
-        const userData = {
-          ...userResponse.data,
-          accessToken: signupToken,
-          profileStep: 3, // Signup complete
-        };
-        
-        // Clear signup token first
-        dispatch(clearSignupToken());
-        
-        // Log in the user
-        dispatch(loginUser(userData));
-        
-        // Clear form data
-      setStep1Data(null);
-      setStep2Data(null);
-      setStep3Data(null);
-      setStep4Data(null);
-        
-        // Show success message
+      const userResult = await getCurrentUser(undefined).unwrap();
+      if (userResult && signupToken) {
+        await finalizeSignup(userResult, signupToken);
         dispatch(showAlert({ message: "Welcome! You can complete your profile later.", severity: "success" }));
-        
-        // Redirect to dashboard
-        navigate("/dashboard", { replace: true });
       } else {
-        // Fallback: redirect to login if something goes wrong
         dispatch(clearSignupToken());
-        dispatch(showAlert({ message: "Signup completed. Please sign in.", severity: "success" }));
         navigate("/login", { replace: true });
       }
-    } catch (error: any) {
-      console.error("Skip profile error:", error);
-      // Fallback: redirect to login
+    } catch {
       dispatch(clearSignupToken());
-      dispatch(showAlert({ message: "Signup completed. Please sign in.", severity: "success" }));
       navigate("/login", { replace: true });
     }
   };
 
   const handleBackClick = () => {
-    // When user clicks back on any step after Step 1, log them out and redirect to login
-    // This allows them to login again and resume from where they left off
     if (currentStep > 1) {
-      // Clear signup token
       dispatch(clearSignupToken());
-      
-      // If user is logged in (resuming signup), log them out
       if (isLoggedIn) {
         dispatch(logoutUser());
       }
-      
-      // Clear form data
       setStep1Data(null);
       setStep2Data(null);
       setStep3Data(null);
       setStep4Data(null);
-      
-      // Redirect to login page
       navigate("/login");
     }
-    // If on step 1, do nothing (back button won't be shown anyway)
   };
 
-  // Update current step when resumeStep changes (e.g., when navigating from login)
   useEffect(() => {
     if (resumeStep > 1 && resumeStep <= 4) {
       setCurrentStep(resumeStep);
     }
   }, [resumeStep]);
 
-  // Check if signup was already successful (to prevent re-submission)
-  // This is true if we have a signup token OR if user is logged in with incomplete profile
   const isSignupCompleted = !!signupToken || (isLoggedIn && (user?.profileStep || 0) >= 1);
 
   return (
@@ -261,3 +185,4 @@ export default function SignUpPage(): JSX.Element {
     </SignupLayout>
   );
 }
+

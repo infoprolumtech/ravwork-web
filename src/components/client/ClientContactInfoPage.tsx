@@ -9,8 +9,8 @@ import {
 import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { StyledTextField } from "../../../utils/helper";
-import { contactInfoSchema, inquirySchema } from "../validationSchemas";
+import { StyledTextField } from "../../utils/helper";
+import { contactInfoSchema, inquirySchema } from "../../pages/client/validationSchemas";
 
 interface ContactFormInputs {
   fullName: string;

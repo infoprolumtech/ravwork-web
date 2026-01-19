@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import OTPInput from "../../components/Otp";
-// import { encryptAES } from "../../utils/helper";
+
 
 export default function OTPVerificationPage(): JSX.Element {
   const [searchParams] = useSearchParams();
@@ -19,8 +19,6 @@ export default function OTPVerificationPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   // TODO: OTP verification endpoints removed - need to implement based on new API
-  // const [verifyOtp, { data: verifyData, isSuccess: isVerifySuccess }] = useVerifyOtpMutation();
-  // const [resend, { isSuccess: isResendSuccess }] = useResendMutation();
   const isVerifySuccess = false;
   const isResendSuccess = false;
 
@@ -28,7 +26,7 @@ export default function OTPVerificationPage(): JSX.Element {
   useEffect(() => {
     const urlToken = searchParams.get("token");
     const loginToken = localStorage.getItem("loginToken");
-    
+
     if (!urlToken && !loginToken) {
       navigate("/login");
     }

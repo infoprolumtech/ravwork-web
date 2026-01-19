@@ -173,7 +173,6 @@ export default function AddEditServicePage(): JSX.Element {
             setCurrentStep("service_details");
           }
         } catch (error: any) {
-          console.error("Error loading service:", error);
           const errorMessage = error?.data?.message || error?.message || "Failed to load service";
           dispatch(showAlert({ message: errorMessage, severity: "error" }));
           navigate("/services-offered");
