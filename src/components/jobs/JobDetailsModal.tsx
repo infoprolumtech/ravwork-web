@@ -31,7 +31,7 @@ export default function JobDetailsModal({
       sx={{
         paddingLeft: { xs: "20px", sm: "32px", md: "40px" },
         paddingRight: { xs: "20px", sm: "32px", md: "40px" },
-        paddingTop: { xs: "12px", sm: "20px", md: "28px" },
+        paddingTop: { xs: "20px", sm: "24px", md: "32px" },
         paddingBottom: { xs: "20px", sm: "32px", md: "40px" },
         display: "flex",
         flexDirection: "column",
