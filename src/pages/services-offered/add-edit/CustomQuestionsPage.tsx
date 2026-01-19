@@ -312,7 +312,7 @@ export default function CustomQuestionsPage({
               mt: 1,
             }}
           >
-            Create Questions that will be asked to all clients during service booking.
+            Create questions to ask clients when booking this service.
           </Typography>
         </Box>
 
