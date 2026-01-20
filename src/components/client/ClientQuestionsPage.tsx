@@ -707,6 +707,53 @@ export default function ClientQuestionsPage({
                               },
                             },
                           },
+                          dialog: {
+                            sx: {
+                              "& .MuiPaper-root": {
+                                borderRadius: "12px",
+                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                                "& .MuiPickersCalendarHeader-root": {
+                                  padding: "16px",
+                                },
+                                "& .MuiDayCalendar-weekContainer": {
+                                  margin: "8px 0",
+                                },
+                                "& .MuiPickersDay-root": {
+                                  fontSize: "16px",
+                                  width: "40px",
+                                  height: "40px",
+                                  borderRadius: "8px",
+                                  "&.Mui-selected": {
+                                    backgroundColor: "#111927",
+                                    color: "#FFFFFF",
+                                    "&:hover": {
+                                      backgroundColor: "#384250",
+                                      color: "#FFFFFF",
+                                    },
+                                    "&:focus": {
+                                      backgroundColor: "#111927",
+                                      color: "#FFFFFF",
+                                    },
+                                  },
+                                  "&:hover": {
+                                    backgroundColor: "#F3F4F6",
+                                  },
+                                },
+                              },
+                              "& .MuiDialogActions-root": {
+          padding: "16px",
+        },
+
+        "& .MuiDialogActions-root .MuiButton-root": {
+          color: "#000000", // BLACK text
+          fontWeight: 500,
+        },
+
+        "& .MuiDialogActions-root .MuiButton-root:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+        },
+                            },
+                          },
                         }}
                       />
 
@@ -729,6 +776,20 @@ export default function ClientQuestionsPage({
                             required: field.isRequired,
                             error: Boolean(form.formState.errors[field.id]),
                             sx: pickerTextFieldStyles,
+                          },
+                          dialog: {
+                            sx: {
+                              "& .MuiDialogActions-root": {
+          padding: "16px",
+        },"& .MuiDialogActions-root .MuiButton-root": {
+          color: "#000000", // BLACK text
+          fontWeight: 500,
+        },
+
+        "& .MuiDialogActions-root .MuiButton-root:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+        },
+                            },
                           },
                         }}
                        
