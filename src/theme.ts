@@ -407,6 +407,49 @@ const theme = createTheme({
         },
       ],
     } as any,
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          // Hide scrollbar for Chrome, Safari and Opera
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          // Hide scrollbar for IE, Edge and Firefox
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+        },
+        // Also apply to all scrollable elements
+        "*": {
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
+          msOverflowStyle: "none",
+          scrollbarWidth: "none",
+          // Text selection styling
+          "&::selection": {
+            backgroundColor: "#111927",
+            color: "#FFFFFF",
+          },
+          "&::-moz-selection": {
+            backgroundColor: "#111927",
+            color: "#FFFFFF",
+          },
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          "& .MuiButton-root": {
+            color: "#000000",
+            fontWeight: 500,
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
+            },
+          },
+        },
+      },
+    },
   },
 
 });

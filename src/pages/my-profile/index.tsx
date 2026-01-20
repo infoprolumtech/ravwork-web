@@ -7,7 +7,6 @@ import {
   CardContent,
   Stack,
   Typography,
-  CircularProgress,
   Alert,
   Snackbar,
 } from "@mui/material";
@@ -18,6 +17,8 @@ import { useGetServicesQuery } from "../../rtk/endpoints/serviceApi";
 import { getCloudFrontUrl, calculateProfileComplete } from "../../utils/helper";
 import { colors } from "../../utils/constants";
 import ShareModal from "../../components/client/ShareModal";
+import { ProfileViewSkeleton } from "../../components/skeletons/ProfileSkeleton";
+
 
 // Helper function to get profile URL dynamically (same as client page)
 const getProfileUrl = (username: string) => {
@@ -122,17 +123,7 @@ export default function MyProfilePage(): JSX.Element {
   if (isLoading) {
     return (
       <ServiceProviderLayout>
-        <Box
-          sx={{
-            p: { xs: 1.5, md: 3 },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "400px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <ProfileViewSkeleton />
       </ServiceProviderLayout>
     );
   }
@@ -309,14 +300,11 @@ export default function MyProfilePage(): JSX.Element {
                         cursor: "pointer",
                         flexShrink: 0,
                         whiteSpace: "nowrap",
-                        transition: "all 0.2s ease-in-out",
                         "&:hover": {
                           bgcolor: "#F9FAFB",
                           boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.08)",
-                          transform: "translateY(-1px)",
                         },
                         "&:active": {
-                          transform: "translateY(0)",
                           boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.08)",
                         },
                       }}
@@ -333,7 +321,7 @@ export default function MyProfilePage(): JSX.Element {
                       />
                       <Box component="span" sx={{ fontWeight: 600 }}>
                         Copy Link
-                    </Box>
+                      </Box>
                     </Button>
                     <Box
                       onClick={handleShareClick}
@@ -354,8 +342,8 @@ export default function MyProfilePage(): JSX.Element {
                         },
                       }}
                     >
-                      <img 
-                        src={`./assets/icons/share-arrow.svg`} 
+                      <img
+                        src={`./assets/icons/share-arrow.svg`}
                         alt="share"
                         style={{
                           width: `${14}px`,

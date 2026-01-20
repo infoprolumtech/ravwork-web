@@ -16,6 +16,7 @@ import {
   Button,
   Avatar,
   CircularProgress,
+  Skeleton,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
@@ -29,6 +30,8 @@ import Pagination from "../../components/pagination/Pagination";
 import GlobalDialog from "../../components/dialog";
 import JobDetailsModal from "../../components/jobs/JobDetailsModal";
 import { useNavigate } from "react-router-dom";
+import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton";
+
 
 
 
@@ -53,7 +56,7 @@ export default function Dashboard() {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
 
-  const { data: dashboardRequestsData, isLoading: isLoadingRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
+  const { data: dashboardRequestsData, isLoading: isLoadingRequests, isFetching: isFetchingRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
 
@@ -139,20 +142,10 @@ export default function Dashboard() {
     return getCloudFrontUrl(profile.profilePhoto);
   }, [profile]);
 
-  if (isLoadingProfile) {
+  if (isLoadingProfile || isLoadingStats || isLoadingRequests) {
     return (
       <ServiceProviderLayout>
-        <Box
-          sx={{
-            p: { xs: 1.5, md: 3 },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "400px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <DashboardSkeleton />
       </ServiceProviderLayout>
     );
   }
@@ -256,14 +249,11 @@ export default function Dashboard() {
                           cursor: "pointer",
                           flexShrink: 0,
                           whiteSpace: "nowrap",
-                          transition: "all 0.2s ease-in-out",
                           "&:hover": {
                             bgcolor: "#F9FAFB",
                             boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.08)",
-                            transform: "translateY(-1px)",
                           },
                           "&:active": {
-                            transform: "translateY(0)",
                             boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.08)",
                           },
                         }}
@@ -301,8 +291,8 @@ export default function Dashboard() {
                           },
                         }}
                       >
-                        <img 
-                          src="./assets/icons/share-arrow.svg" 
+                        <img
+                          src="./assets/icons/share-arrow.svg"
                           alt="share"
                           style={{
                             width: `${14}px`,
@@ -553,36 +543,39 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {isLoadingRequests ? (
-                    <TableRow>
-                      <TableCell colSpan={3} align="center">
-                        <CircularProgress size={24} />
-                      </TableCell>
-                    </TableRow>
-                  ) : recentJobs.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={3} align="center">
-                        <Typography color="text.secondary">
-                          No recent activity
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    recentJobs.map((job, index) => (
-                      <TableRow
-                        key={index}
-                        onClick={() => handleJobClick(job.id)}
-                        sx={{
-                          "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
-                          cursor: "pointer",
-                        }}
-                      >
-                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
+                  {isLoadingRequests || isFetchingRequests ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={`skeleton-row-${index}`}>
+                        <TableCell><Skeleton variant="text" width="80%" /></TableCell>
+                        <TableCell align="center"><Skeleton variant="text" width="60%" sx={{ mx: "auto" }} /></TableCell>
+                        <TableCell align="right"><Skeleton variant="text" width="80%" sx={{ ml: "auto" }} /></TableCell>
                       </TableRow>
                     ))
-                  )}
+                  )
+                    : recentJobs.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center">
+                          <Typography color="text.secondary">
+                            No recent activity
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recentJobs.map((job, index) => (
+                        <TableRow
+                          key={index}
+                          onClick={() => handleJobClick(job.id)}
+                          sx={{
+                            "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
+                            cursor: "pointer",
+                          }}
+                        >
+                          <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.name}</TableCell>
+                          <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.jobType}</TableCell>
+                          <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.dateTime}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
                 </TableBody>
               </Table>
             </TableContainer>

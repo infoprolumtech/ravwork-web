@@ -36,7 +36,7 @@ export default function ShareModal({
   const handleSocialShare = (platform: string) => {
     const encodedUrl = encodeURIComponent(profileUrl);
     const encodedTitle = encodeURIComponent(profileName);
-    
+
     let shareUrl = "";
     switch (platform) {
       case "facebook":
@@ -57,7 +57,7 @@ export default function ShareModal({
       default:
         return;
     }
-    
+
     window.open(shareUrl, "_blank", "width=600,height=400");
   };
 
@@ -158,10 +158,10 @@ export default function ShareModal({
               <IconButton
                 onClick={() => handleSocialShare("facebook")}
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
                   p: 0,
-                  minWidth: 40,
+                  minWidth: { xs: 32, sm: 40 },
                 }}
               >
                 <Box
@@ -174,21 +174,21 @@ export default function ShareModal({
               <IconButton
                 onClick={() => handleSocialShare("twitter")}
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
                   p: 0,
-                  minWidth: 40,
+                  minWidth: { xs: 32, sm: 40 },
                 }}
               >
-                <Twitter sx={{ fontSize: 24, color: "#1DA1F2", width: "100%", height: "100%" }} />
+                <Twitter sx={{ fontSize: { xs: 20, sm: 24 }, color: "#1DA1F2", width: "100%", height: "100%" }} />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("instagram")}
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
                   p: 0,
-                  minWidth: 40,
+                  minWidth: { xs: 32, sm: 40 },
                 }}
               >
                 <Box
@@ -201,13 +201,13 @@ export default function ShareModal({
               <IconButton
                 onClick={() => handleSocialShare("whatsapp")}
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
                   p: 0,
-                  minWidth: 40,
+                  minWidth: { xs: 32, sm: 40 },
                 }}
               >
-                <WhatsApp sx={{ fontSize: 24, color: "#25D366", width: "100%", height: "100%" }} />
+                <WhatsApp sx={{ fontSize: { xs: 20, sm: 24 }, color: "#25D366", width: "100%", height: "100%" }} />
               </IconButton>
             </Stack>
           </Stack>

@@ -9,7 +9,6 @@ import {
   Avatar,
   IconButton,
   Container,
-  CircularProgress,
   Alert,
   Dialog,
   DialogContent,
@@ -22,6 +21,8 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import ClientContactInfoPage from "../../components/client/ClientContactInfoPage";
 import ClientQuestionsPage from "../../components/client/ClientQuestionsPage";
 import ShareModal from "../../components/client/ShareModal";
+import ClientPageSkeleton from "../../components/skeletons/ClientPageSkeleton";
+
 
 // Contact details form data
 interface ContactDetails {
@@ -310,21 +311,8 @@ export default function ClientPage(): JSX.Element {
     }
   };
 
-  // Loading state
   if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#FFFFFF",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <ClientPageSkeleton />;
   }
 
   // Error state

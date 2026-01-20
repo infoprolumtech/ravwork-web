@@ -6,13 +6,14 @@ import {
   Stack,
   Button,
   Card,
-  CircularProgress,
 } from "@mui/material";
 import ServiceProviderLayout from "../../../layouts/ServiceProviderLayout";
 import { ArrowBack } from "@mui/icons-material";
 import ServiceDetailsPage, { type ServiceFormData } from "./ServiceDetailsPage";
 import ContactMethodPage from "./ContactMethodPage";
 import CustomQuestionsPage from "./CustomQuestionsPage";
+import AddEditServiceSkeleton from "../../../components/skeletons/AddEditServiceSkeleton";
+
 import {
   useCreateServiceMutation,
   useUpdateServiceMutation,
@@ -338,20 +339,7 @@ export default function AddEditServicePage(): JSX.Element {
   if (isLoadingService) {
     return (
       <ServiceProviderLayout>
-        <Box sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "50vh",
-          p: { xs: 2, md: 3 },
-        }}>
-          <Stack alignItems="center" spacing={2}>
-            <CircularProgress size={40} />
-            <Typography variant="body1" sx={{ color: "#6C737F" }}>
-              Loading service...
-            </Typography>
-          </Stack>
-        </Box>
+        <AddEditServiceSkeleton />
       </ServiceProviderLayout>
     );
   }
