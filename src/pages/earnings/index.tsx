@@ -1,4 +1,4 @@
-import { useState, type JSX } from "react";
+import { useState, useMemo, type JSX } from "react";
 import {
   Box,
   Card,
@@ -13,39 +13,111 @@ import {
   Grid,
   Stack,
   IconButton,
+  CircularProgress,
+  Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import EarningsCard from "../../components/reusecard/Earnings";
 import Pagination from "../../components/pagination/Pagination";
-
+import { useGetEarningsQuery, useExportEarningsMutation } from "../../rtk/endpoints/userApi";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 export default function EarningsPage(): JSX.Element {
+  const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  
-  // Mock data - replace with actual API call when available
-  const jobsData = [
-    {
-      jobTitle: "New Request",
-      date: "2nd June, 2026",
-      earnings: "$248",
-    },
-    {
-      jobTitle: "Painter",
-      date: "NDA (No date available)",
-      earnings: "$848",
-    },
-    {
-      jobTitle: "Plumbing",
-      date: "2nd June, 2026",
-      earnings: "$248",
-    },
-  ];
+  const [fromDate, setFromDate] = useState<Dayjs | null>(null);
+  const [toDate, setToDate] = useState<Dayjs | null>(null);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
-  // Mock pagination data - replace with actual API response when available
-  const totalPages = 10; // This should come from API response
+  // Format dates for API (YYYY-MM-DD)
+  const fromDateString = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
+  const toDateString = toDate ? toDate.format("YYYY-MM-DD") : undefined;
+
+  // Memoize query parameters
+  const earningsParams = useMemo(
+    () => ({
+      fromDate: fromDateString,
+      toDate: toDateString,
+      page: currentPage,
+      limit: 10,
+    }),
+    [fromDateString, toDateString, currentPage]
+  );
+
+  // Fetch earnings data
+  const { data: earningsData, isLoading, error } = useGetEarningsQuery(earningsParams);
+  const [exportEarnings, { isLoading: isExporting }] = useExportEarningsMutation();
+
+  // Handle export
+  const handleExport = async () => {
+    if (!fromDateString || !toDateString) {
+      dispatch(showAlert({ message: "Please select both From and To dates", severity: "error" }));
+      return;
+    }
+
+    try {
+      await exportEarnings({
+        fromDate: fromDateString,
+        toDate: toDateString,
+      }).unwrap();
+      setExportSuccess(true);
+      dispatch(showAlert({ message: "Earnings report has been sent to your email", severity: "success" }));
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || "Failed to export earnings. Please try again.";
+      dispatch(showAlert({ message: errorMessage, severity: "error" }));
+    }
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Format percentage change
+  const formatPercentage = (change: number) => {
+    const sign = change >= 0 ? "+" : "";
+    return `${sign}${change.toFixed(2)}%`;
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return "N/A";
+    }
+  };
+
+  // Reset to page 1 when dates change
+  const handleFromDateChange = (newDate: Dayjs | null) => {
+    setFromDate(newDate);
+    setCurrentPage(1);
+  };
+
+  const handleToDateChange = (newDate: Dayjs | null) => {
+    setToDate(newDate);
+    setCurrentPage(1);
+  };
+
+  const summary = earningsData?.summary;
+  const earnings = earningsData?.earnings;
   return (
     <ServiceProviderLayout>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -64,25 +136,25 @@ export default function EarningsPage(): JSX.Element {
           >
             <EarningsCard
               icon="/assets/icons/IconText.svg"
-              label="Today's Clicks"
-              value="1,721k"
-              percentage="+2.4%"
+              label="Total Earnings"
+              value={summary ? formatCurrency(summary.totalEarnings).replace("$", "") : "0"}
+              percentage={summary ? formatPercentage(summary.totalChange) : undefined}
               theme="theme1"
               backgroundColor="#E3F5FF"
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Week"
-              value="367k"
-              percentage="-5.2%"
+              value={summary ? formatCurrency(summary.weekEarnings).replace("$", "") : "0"}
+              percentage={summary ? formatPercentage(summary.weekChange) : undefined}
               theme="theme2"
               backgroundColor="#E3F5FF"
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Month"
-              value="1,156"
-              percentage="-11.2%"
+              value={summary ? formatCurrency(summary.monthEarnings).replace("$", "") : "0"}
+              percentage={summary ? formatPercentage(summary.monthChange) : undefined}
               theme="theme1"
               backgroundColor="#E3F5FF"
             />
@@ -99,6 +171,8 @@ export default function EarningsPage(): JSX.Element {
           >
             <DatePicker
               label="From"
+              value={fromDate}
+              onChange={handleFromDateChange}
               slotProps={{
                 textField: {
                   sx: {
@@ -131,6 +205,9 @@ export default function EarningsPage(): JSX.Element {
             {/* TO */}
             <DatePicker
               label="To"
+              value={toDate}
+              onChange={handleToDateChange}
+              minDate={fromDate || undefined}
               slotProps={{
                 textField: {
                   sx: {
@@ -162,33 +239,44 @@ export default function EarningsPage(): JSX.Element {
             />
 
             <IconButton
+              onClick={handleExport}
+              disabled={isExporting || !fromDateString || !toDateString}
               sx={{
                 width: "40px",
                 height: "40px",
                 bgcolor: "#E3F5FF",
                 borderRadius: 50,
+                "&:disabled": {
+                  opacity: 0.5,
+                },
               }}
             >
-              <Box
-                component="img"
-                src="/assets/icons/mail.svg"
-                alt="mail"
-                sx={{
-                  width: 20,
-                  height: 20,
-                  display: { xs: "none", sm: "block" },
-                }}
-              />
-              <Box
-                component="img"
-                src="/assets/icons/download.svg"
-                alt="download"
-                sx={{
-                  width: 20,
-                  height: 20,
-                  display: { xs: "block", sm: "none" },
-                }}
-              />
+              {isExporting ? (
+                <CircularProgress size={20} />
+              ) : (
+                <>
+                  <Box
+                    component="img"
+                    src="/assets/icons/mail.svg"
+                    alt="mail"
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      display: { xs: "none", sm: "block" },
+                    }}
+                  />
+                  <Box
+                    component="img"
+                    src="/assets/icons/download.svg"
+                    alt="download"
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      display: { xs: "block", sm: "none" },
+                    }}
+                  />
+                </>
+              )}
             </IconButton>
           </Stack>
 
@@ -211,31 +299,79 @@ export default function EarningsPage(): JSX.Element {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {jobsData.map((job, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
-                          cursor: "pointer",
-                        }}
-                      >
-                        <TableCell sx={{ color: "#384250", textAlign: "left" }}>{job.jobTitle}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "center" }}>{job.date}</TableCell>
-                        <TableCell sx={{ color: "#384250", textAlign: "right" }}>{job.earnings}</TableCell>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                          <CircularProgress />
+                        </TableCell>
                       </TableRow>
-                    ))}
+                    ) : error ? (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                          <Typography color="error">
+                            Failed to load earnings. Please try again.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ) : earnings?.data && earnings.data.length > 0 ? (
+                      earnings.data.map((job) => (
+                        <TableRow
+                          key={job.id}
+                          sx={{
+                            "&:hover": { backgroundColor: "#F3F4F6", cursor: "pointer" },
+                            cursor: "pointer",
+                          }}
+                        >
+                          <TableCell sx={{ color: "#384250", textAlign: "left" }}>
+                            {job.jobTitle}
+                          </TableCell>
+                          <TableCell sx={{ color: "#384250", textAlign: "center" }}>
+                            {formatDate(job.date)}
+                          </TableCell>
+                          <TableCell sx={{ color: "#384250", textAlign: "right" }}>
+                            {formatCurrency(job.earnings)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                          <Typography color="text.secondary">
+                            No earnings found for the selected period.
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
 
               {/* Pagination */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+              {earnings && earnings.totalPages > 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={earnings.totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
             </CardContent>
           </Card>
+
+          {/* Export Success Snackbar */}
+          <Snackbar
+            open={exportSuccess}
+            autoHideDuration={3000}
+            onClose={() => setExportSuccess(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert
+              onClose={() => setExportSuccess(false)}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Earnings report has been sent to your email
+            </Alert>
+          </Snackbar>
         </Box>
       </LocalizationProvider>
     </ServiceProviderLayout>

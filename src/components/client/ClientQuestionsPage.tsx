@@ -634,79 +634,6 @@ export default function ClientQuestionsPage({
                   ? dayjs().add(1, "minute")
                   : undefined;
 
-                // Ref for time input to set placeholder
-                const timeInputRef = React.useRef<HTMLInputElement>(null);
-                const timePickerContainerRef = React.useRef<HTMLDivElement>(null);
-
-                // Set placeholder directly on the input element after render
-                React.useEffect(() => {
-                  const setPlaceholder = () => {
-                    // Try multiple methods to find and set the placeholder
-                    if (timeInputRef.current) {
-                      timeInputRef.current.placeholder = "HH:MM:AA";
-                      timeInputRef.current.setAttribute("placeholder", "HH:MM:AA");
-                    }
-                    
-                    // Find input within the time picker container
-                    if (timePickerContainerRef.current) {
-                      const input = timePickerContainerRef.current.querySelector('input[type="text"]') as HTMLInputElement;
-                      if (input) {
-                        input.placeholder = "HH:MM:AA";
-                        input.setAttribute("placeholder", "HH:MM:AA");
-                      }
-                    }
-                    
-                    // Find by common MUI TimePicker selectors
-                    const selectors = [
-                      'input[placeholder*="hh:mm"]',
-                      'input[placeholder*="HH:mm"]',
-                      'input[aria-label*="time" i]',
-                      'input.MuiInputBase-input',
-                      '.MuiPickersInputBase-input',
-                    ];
-                    
-                    selectors.forEach(selector => {
-                      const inputs = document.querySelectorAll(selector);
-                      inputs.forEach((input) => {
-                        if (input instanceof HTMLInputElement) {
-                          const placeholder = input.getAttribute('placeholder') || '';
-                          if (placeholder.toLowerCase().includes('hh:mm') || placeholder.toLowerCase().includes('time')) {
-                            input.placeholder = "HH:MM:AA";
-                            input.setAttribute("placeholder", "HH:MM:AA");
-                          }
-                        }
-                      });
-                    });
-                  };
-
-                  // Try immediately and with delays
-                  setPlaceholder();
-                  const timer1 = setTimeout(setPlaceholder, 100);
-                  const timer2 = setTimeout(setPlaceholder, 500);
-                  const timer3 = setTimeout(setPlaceholder, 1000);
-
-                  // Use MutationObserver to watch for input changes
-                  const observer = new MutationObserver(() => {
-                    setPlaceholder();
-                  });
-
-                  if (timePickerContainerRef.current) {
-                    observer.observe(timePickerContainerRef.current, {
-                      childList: true,
-                      subtree: true,
-                      attributes: true,
-                      attributeFilter: ['placeholder'],
-                    });
-                  }
-
-                  return () => {
-                    clearTimeout(timer1);
-                    clearTimeout(timer2);
-                    clearTimeout(timer3);
-                    observer.disconnect();
-                  };
-                }, []);
-
                 return (
                   <Box>
                     <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
@@ -743,15 +670,7 @@ export default function ClientQuestionsPage({
                             fullWidth: true,
                             required: field.isRequired,
                             error: Boolean(form.formState.errors[field.id]),
-                            sx: {
-                              ...pickerTextFieldStyles,
-                              "& .MuiPickersInputBase-input": {
-                                color: "#111927",
-                              },
-                              "& .MuiPickersOutlinedInput-input": {
-                                color: "#111927",
-                              },
-                            },
+                            sx: pickerTextFieldStyles,
                           },
                           popper: {
                             sx: {
@@ -769,88 +688,22 @@ export default function ClientQuestionsPage({
                                   width: "40px",
                                   height: "40px",
                                   borderRadius: "8px",
-                                  color: "#111927",
                                   "&.Mui-selected": {
-                                    backgroundColor: "#111927 !important",
-                                    color: "#FFFFFF !important",
-                                    fontWeight: 600,
+                                    backgroundColor: "#111927",
+                                    color: "#FFFFFF",
                                     "&:hover": {
-                                      backgroundColor: "#384250 !important",
-                                      color: "#FFFFFF !important",
+                                      backgroundColor: "#384250",
+                                      color: "#FFFFFF",
                                     },
                                     "&:focus": {
-                                      backgroundColor: "#111927 !important",
-                                      color: "#FFFFFF !important",
-                                    },
-                                    "& *": {
-                                      color: "#FFFFFF !important",
-                                    },
-                                    "& span": {
-                                      color: "#FFFFFF !important",
-                                    },
-                                    "& .MuiPickersDay-dayLabel": {
-                                      color: "#FFFFFF !important",
-                                    },
-                                    // Target the specific input classes for mobile
-                                    "& .MuiPickersInputBase-input": {
-                                      color: "#FFFFFF !important",
-                                    },
-                                    "& .MuiPickersOutlinedInput-input": {
-                                      color: "#FFFFFF !important",
+                                      backgroundColor: "#111927",
+                                      color: "#FFFFFF",
                                     },
                                   },
-                                  "&:hover:not(.Mui-selected)": {
+                                  "&:hover": {
                                     backgroundColor: "#F3F4F6",
                                   },
                                 },
-                                "& .MuiPickersDay-dayLabel": {
-                                  "&.Mui-selected": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                },
-                                "& .Mui-selected": {
-                                  "& .MuiPickersDay-dayLabel": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                  "& span": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                  "& *": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                },
-                                "& .MuiPickersActionBar-root": {
-                                  padding: "8px 16px",
-                                  "& .MuiButton-root": {
-                                    backgroundColor: "#FFFFFF !important",
-                                    color: "#111927 !important",
-                                    fontWeight: 500,
-                                    textTransform: "none",
-                                    borderRadius: "8px",
-                                    minWidth: "80px",
-                                  },
-                                },
-                                // Ensure selected date text is white
-                                "& .MuiPickersDay-root.Mui-selected": {
-                                  "& .MuiPickersInputBase-input": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                  "& .MuiPickersOutlinedInput-input": {
-                                    color: "#FFFFFF !important",
-                                  },
-                                },
-                              },
-                            },
-                          },
-                          actionBar: {
-                            sx: {
-                              "& .MuiButton-root": {
-                                backgroundColor: "#FFFFFF !important",
-                                color: "#111927 !important",
-                                fontWeight: 500,
-                                textTransform: "none",
-                                borderRadius: "8px",
-                                minWidth: "80px",
                               },
                             },
                           },
@@ -858,11 +711,9 @@ export default function ClientQuestionsPage({
                       />
 
                       {/* Time Picker */}
-                      <Box ref={timePickerContainerRef}>
-                        <TimePicker
+                      <TimePicker
                         value={selectedTime}
                         minTime={minTime}
-                        format="hh:mm A"
                         onChange={(newTime: Dayjs | null) => {
                           const newValue = {
                             date: dateValue,
@@ -877,68 +728,11 @@ export default function ClientQuestionsPage({
                             fullWidth: true,
                             required: field.isRequired,
                             error: Boolean(form.formState.errors[field.id]),
-                            placeholder: "HH:MM:AA",
-                            inputProps: {
-                              placeholder: "HH:MM:AA",
-                              ref: timeInputRef,
-                            },
-                            inputRef: timeInputRef,
-                            sx: {
-                              ...pickerTextFieldStyles,
-                              "& .MuiInputBase-input": {
-                                "&::placeholder": {
-                                  color: "#9CA3AF !important",
-                                  opacity: "1 !important",
-                                },
-                                "&::-webkit-input-placeholder": {
-                                  color: "#9CA3AF !important",
-                                  opacity: "1 !important",
-                                },
-                                "&::-moz-placeholder": {
-                                  color: "#9CA3AF !important",
-                                  opacity: "1 !important",
-                                },
-                                "&:-ms-input-placeholder": {
-                                  color: "#9CA3AF !important",
-                                  opacity: "1 !important",
-                                },
-                              },
-                            },
-                          },
-                          popper: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                borderRadius: "12px",
-                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                "& .MuiPickersActionBar-root": {
-                                  padding: "8px 16px",
-                                  "& .MuiButton-root": {
-                                    backgroundColor: "#FFFFFF !important",
-                                    color: "#111927 !important",
-                                    fontWeight: 500,
-                                    textTransform: "none",
-                                    borderRadius: "8px",
-                                    minWidth: "80px",
-                                  },
-                                },
-                              },
-                            },
-                          },
-                          actionBar: {
-                            sx: {
-                              "& .MuiButton-root": {
-                                backgroundColor: "#FFFFFF !important",
-                                color: "#111927 !important",
-                                fontWeight: 500,
-                                textTransform: "none",
-                                borderRadius: "8px",
-                                minWidth: "80px",
-                              },
-                            },
+                            sx: pickerTextFieldStyles,
                           },
                         }}
-                        />
-                      </Box>
+                       
+                      />
                     </Stack>
 
                     {form.formState.errors[field.id] && (

@@ -84,9 +84,21 @@ export default function EarningsCard({
           <Typography
             fontWeight={400}
             fontSize={12}
-            color={Number(percentage.toString().replace("%", "")) >= 0 ? "green" : "red"}
+            color={Number(percentage.toString().replace(/[+%]/g, "")) >= 0 ? "green" : "red"}
+            sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
           >
-            {percentage} <img src="./assets/icons/IconText.svg" alt=""  />
+            {percentage}{" "}
+            <Box
+              component="img"
+              src="/assets/icons/IconText.svg"
+              alt=""
+              sx={{
+                transform: (() => {
+                  const numValue = Number(percentage.toString().replace(/[+%]/g, ""));
+                  return numValue < 0 ? "rotate(180deg)" : "none";
+                })(),
+              }}
+            />
           </Typography>
         )}
       </Box>

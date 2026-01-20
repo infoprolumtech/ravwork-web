@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import DashboardCard from "../../components/reusecard/DashboardCard";
-import { useGetUserProfileQuery, useGetDashboardRequestsQuery } from "../../rtk/endpoints/userApi";
+import { useGetUserProfileQuery, useGetDashboardRequestsQuery, useGetDashboardStatsQuery } from "../../rtk/endpoints/userApi";
 import { useGetServicesQuery } from "../../rtk/endpoints/serviceApi";
 import { getCloudFrontUrl, calculateProfileComplete, getProfileUrl } from "../../utils/helper";
 import ShareModal from "../../components/client/ShareModal";
@@ -37,6 +37,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
+  const formatNumber = (value: number | undefined) =>
+    new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value ?? 0);
+
   // Memoize query parameters to ensure RTK Query properly tracks changes
   const dashboardRequestsParams = useMemo(
     () => ({
@@ -52,6 +55,10 @@ export default function Dashboard() {
 
   const { data: dashboardRequestsData, isLoading: isLoadingRequests } = useGetDashboardRequestsQuery(dashboardRequestsParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
+  });
+
+  const { data: dashboardStats, isLoading: isLoadingStats } = useGetDashboardStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
   });
 
   const { data: servicesData } = useGetServicesQuery();
@@ -474,7 +481,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Today's Clicks"
-            value="1,721k"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.clicks?.today)}
             theme="theme1"
             backgroundColor="#E3F5FF"
             mobileLeftColor="#E3F5FF"
@@ -482,7 +489,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Clicks This Week"
-            value="367k"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.clicks?.thisWeek)}
             theme="theme2"
             backgroundColor="#E3F5FF"
             mobileRightColor="#E5ECF6"
@@ -490,7 +497,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/mouse-square.svg"
             label="Clicks This Month"
-            value="1,156"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.clicks?.thisMonth)}
             theme="theme1"
             backgroundColor="#E3F5FF"
             mobileLeftColor="#E3F5FF"
@@ -498,7 +505,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/user-check.svg"
             label="Today's Bookings"
-            value="721k"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.bookings?.today)}
             theme="theme2"
             backgroundColor="#E5ECF6"
             mobileRightColor="#E5ECF6"
@@ -506,7 +513,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/user-check.svg"
             label="This Week's Bookings"
-            value="367k"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.bookings?.thisWeek)}
             theme="theme1"
             backgroundColor="#E5ECF6"
             mobileLeftColor="#E3F5FF"
@@ -514,7 +521,7 @@ export default function Dashboard() {
           <DashboardCard
             icon="/assets/icons/user-check.svg"
             label="Bookings This Month"
-            value="1,156"
+            value={isLoadingStats ? "..." : formatNumber(dashboardStats?.bookings?.thisMonth)}
             theme="theme2"
             backgroundColor="#E5ECF6"
             mobileRightColor="#E5ECF6"
