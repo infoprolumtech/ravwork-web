@@ -110,6 +110,44 @@ export interface GetDashboardRequestsParams {
 
 export type DashboardRequestsListResponse = PaginatedData<DashboardRequest>;
 
+// Earnings Types
+export interface EarningsItem {
+  id: string;
+  jobTitle: string;
+  date: string;
+  earnings: number;
+}
+
+export interface EarningsSummary {
+  totalEarnings: number;
+  totalChange: number;
+  weekEarnings: number;
+  weekChange: number;
+  monthEarnings: number;
+  monthChange: number;
+}
+
+export interface EarningsData {
+  summary: EarningsSummary;
+  earnings: PaginatedData<EarningsItem>;
+}
+
+export interface GetEarningsParams {
+  fromDate?: string; // YYYY-MM-DD
+  toDate?: string; // YYYY-MM-DD
+  page?: number;
+  limit?: number;
+}
+
+export interface ExportEarningsRequest {
+  fromDate: string; // YYYY-MM-DD
+  toDate: string; // YYYY-MM-DD
+}
+
+export interface ExportEarningsResponse {
+  message: string;
+}
+
 const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // GET /api/v1/user/profile - Get user profile
@@ -186,6 +224,31 @@ const userApi = api.injectEndpoints({
       },
       invalidatesTags: ["Jobs"],
     }),
+
+    // GET /api/v1/user/earnings - Get earnings summary and paginated list
+    getEarnings: builder.query<EarningsData, GetEarningsParams | void>({
+      query: (params) => ({
+        url: "/user/earnings",
+        method: "GET",
+        params: params || {},
+      }),
+      transformResponse: (response: ApiResponse<EarningsData>): EarningsData => {
+        return response.data;
+      },
+      providesTags: ["Jobs"], // Earnings are related to jobs
+    }),
+
+    // POST /api/v1/user/earnings/export - Export earnings to CSV
+    exportEarnings: builder.mutation<ExportEarningsResponse, ExportEarningsRequest>({
+      query: (body) => ({
+        url: "/user/earnings/export",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: ApiResponse<ExportEarningsResponse>): ExportEarningsResponse => {
+        return response.data;
+      },
+    }),
   }),
 });
 
@@ -200,4 +263,7 @@ export const {
   useGetDashboardRequestsQuery,
   useLazyGetDashboardRequestsQuery,
   useUpdateJobStatusMutation,
+  useGetEarningsQuery,
+  useLazyGetEarningsQuery,
+  useExportEarningsMutation,
 } = userApi;
