@@ -1,15 +1,16 @@
-import { Paper, Stack, Typography, Box } from "@mui/material";
+import { Paper, Stack, Typography, Box, Skeleton } from "@mui/material";
 import type { ReactNode } from "react";
 
 type Theme = "theme1" | "theme2";
 
 interface EarningsCardProps {
   icon?: string | ReactNode;
-  value: string | number;
+  value?: string | number | null;
   label: string;
   percentage?: string | number; // new prop
   theme?: Theme;
   backgroundColor?: string;
+  isLoading?: boolean;
 }
 
 const THEME_COLORS: Record<Theme, { cardBg: string; iconBg: string }> = {
@@ -30,6 +31,7 @@ export default function EarningsCard({
   percentage,
   theme = "theme1",
   backgroundColor,
+  isLoading = false,
 }: EarningsCardProps) {
   return (
     <Paper
@@ -78,9 +80,11 @@ export default function EarningsCard({
         }}
       >
         <Typography fontWeight={600} fontSize={{ xs: "19px", md: "24px" }}>
-          {value}
+          {isLoading ? <Skeleton width={60} height={32} /> : value}
         </Typography>
-        {percentage && (
+        {isLoading ? (
+          <Skeleton width={40} height={20} />
+        ) : percentage && (
           <Typography
             fontWeight={400}
             fontSize={12}

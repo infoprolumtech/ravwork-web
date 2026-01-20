@@ -23,6 +23,8 @@ import { showAlert } from "../../../rtk/feature/alertSlice";
 import { useAppDispatch } from "../../../rtk/store";
 import { profileEditSchema, type ProfileEditFormInputs } from "../validationSchemas";
 import Icon from "../../../components/shared/Icon";
+import { ProfileEditSkeleton } from "../../../components/skeletons/ProfileSkeleton";
+
 
 // Common country codes with ISO codes
 const COUNTRY_CODES = [
@@ -234,19 +236,7 @@ export default function EditProfile(): JSX.Element {
   if (isLoadingProfile) {
     return (
       <ServiceProviderLayout>
-        <Box
-          sx={{
-            p: { xs: 2, md: 0 },
-            maxWidth: 900,
-            mx: "auto",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "400px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <ProfileEditSkeleton />
       </ServiceProviderLayout>
     );
   }

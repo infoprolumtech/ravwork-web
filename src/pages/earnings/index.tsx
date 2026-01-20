@@ -15,11 +15,14 @@ import {
   IconButton,
   CircularProgress,
   Typography,
+  Skeleton,
   Snackbar,
   Alert,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import EarningsCard from "../../components/reusecard/Earnings";
+import EarningsSkeleton from "../../components/skeletons/EarningsSkeleton";
+
 import Pagination from "../../components/pagination/Pagination";
 import { useGetEarningsQuery, useExportEarningsMutation } from "../../rtk/endpoints/userApi";
 import { useAppDispatch } from "../../rtk/store";
@@ -37,8 +40,13 @@ export default function EarningsPage(): JSX.Element {
   const [exportSuccess, setExportSuccess] = useState(false);
 
   // Format dates for API (YYYY-MM-DD)
-  const fromDateString = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
-  const toDateString = toDate ? toDate.format("YYYY-MM-DD") : undefined;
+  const fromDateString = useMemo(() =>
+    fromDate && fromDate.isValid() ? fromDate.format("YYYY-MM-DD") : undefined
+    , [fromDate]);
+
+  const toDateString = useMemo(() =>
+    toDate && toDate.isValid() ? toDate.format("YYYY-MM-DD") : undefined
+    , [toDate]);
 
   // Memoize query parameters
   const earningsParams = useMemo(
@@ -52,7 +60,7 @@ export default function EarningsPage(): JSX.Element {
   );
 
   // Fetch earnings data
-  const { data: earningsData, isLoading, error } = useGetEarningsQuery(earningsParams);
+  const { data: earningsData, isLoading, isFetching, error } = useGetEarningsQuery(earningsParams);
   const [exportEarnings, { isLoading: isExporting }] = useExportEarningsMutation();
 
   // Handle export
@@ -118,6 +126,14 @@ export default function EarningsPage(): JSX.Element {
 
   const summary = earningsData?.summary;
   const earnings = earningsData?.earnings;
+  if (isLoading) {
+    return (
+      <ServiceProviderLayout>
+        <EarningsSkeleton />
+      </ServiceProviderLayout>
+    );
+  }
+
   return (
     <ServiceProviderLayout>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -137,26 +153,29 @@ export default function EarningsPage(): JSX.Element {
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Total Earnings"
-              value={summary ? formatCurrency(summary.totalEarnings).replace("$", "") : "0"}
-              percentage={summary ? formatPercentage(summary.totalChange) : undefined}
+              value={!summary || isFetching ? null : formatCurrency(summary.totalEarnings).replace("$", "")}
+              percentage={!summary || isFetching ? undefined : formatPercentage(summary.totalChange)}
               theme="theme1"
               backgroundColor="#E3F5FF"
+              isLoading={!summary || isFetching}
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Week"
-              value={summary ? formatCurrency(summary.weekEarnings).replace("$", "") : "0"}
-              percentage={summary ? formatPercentage(summary.weekChange) : undefined}
+              value={!summary || isFetching ? null : formatCurrency(summary.weekEarnings).replace("$", "")}
+              percentage={!summary || isFetching ? undefined : formatPercentage(summary.weekChange)}
               theme="theme2"
               backgroundColor="#E3F5FF"
+              isLoading={!summary || isFetching}
             />
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Month"
-              value={summary ? formatCurrency(summary.monthEarnings).replace("$", "") : "0"}
-              percentage={summary ? formatPercentage(summary.monthChange) : undefined}
+              value={!summary || isFetching ? null : formatCurrency(summary.monthEarnings).replace("$", "")}
+              percentage={!summary || isFetching ? undefined : formatPercentage(summary.monthChange)}
               theme="theme1"
               backgroundColor="#E3F5FF"
+              isLoading={!summary || isFetching}
             />
           </Grid>
 
@@ -299,12 +318,14 @@ export default function EarningsPage(): JSX.Element {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
-                          <CircularProgress />
-                        </TableCell>
-                      </TableRow>
+                    {isFetching ? (
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <TableRow key={`skeleton-row-${index}`}>
+                          <TableCell><Skeleton variant="text" width="80%" /></TableCell>
+                          <TableCell align="center"><Skeleton variant="text" width="60%" sx={{ mx: "auto" }} /></TableCell>
+                          <TableCell align="right"><Skeleton variant="text" width="80%" sx={{ ml: "auto" }} /></TableCell>
+                        </TableRow>
+                      ))
                     ) : error ? (
                       <TableRow>
                         <TableCell colSpan={3} align="center" sx={{ py: 4 }}>

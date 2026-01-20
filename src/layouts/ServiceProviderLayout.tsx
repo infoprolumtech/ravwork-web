@@ -32,6 +32,7 @@ import { useGetUserProfileQuery } from "../rtk/endpoints/userApi";
 import { useGetServicesQuery } from "../rtk/endpoints/serviceApi";
 import { decryptAES, getCloudFrontUrl, calculateProfileComplete } from "../utils/helper";
 import { Menu as MenuIcon, ChevronRight, Close } from "@mui/icons-material";
+import SidebarSkeleton from "../components/skeletons/SidebarSkeleton";
 
 const DRAWER_WIDTH = 280;
 
@@ -118,7 +119,7 @@ const UserMenu = React.memo(() => {
       dispatch(showAlert({ message: "Logged out successfully", severity: "success" }));
       dispatch(logoutUser());
       navigate("/login");
-    } catch (error) {
+    } catch {
       // Even if logout fails, still log out user locally
       dispatch(logoutUser());
       navigate("/login");
@@ -212,7 +213,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
   // Fetch user profile to get complete data including profile photo
-  const { data: userProfile } = useGetUserProfileQuery(undefined, {
+  const { data: userProfile, isLoading: isLoadingProfile } = useGetUserProfileQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -240,7 +241,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
       dispatch(showAlert({ message: "Logged out successfully", severity: "success" }));
       dispatch(logoutUser());
       navigate("/login");
-    } catch (error) {
+    } catch {
       // Even if logout fails, still log out user locally
       dispatch(logoutUser());
       navigate("/login");
@@ -311,319 +312,328 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
 
   // Memoize drawer content to prevent unnecessary re-renders
   const drawer = React.useMemo(
-    () => (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: theme.palette.background.default,
-          overflow: "auto",
-          overflowX: "hidden",
-          overscrollBehavior: "contain", // Prevent scroll chaining
-          width: "100%",
-          maxWidth: "100%",
-          boxSizing: "border-box",
-          // Hide scrollbar but keep scroll functionality
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // IE and Edge
-        }}
-      >
-        {/* Close button for mobile */}
+    () => {
+      if (isLoadingProfile) {
+        return (
+          <Box sx={{ height: "100%", backgroundColor: theme.palette.background.default }}>
+            <SidebarSkeleton />
+          </Box>
+        );
+      }
+      return (
         <Box
           sx={{
-            display: { xs: "flex", md: "none" },
-            justifyContent: "flex-end",
-            p: 1,
-            pr: 2,
-          }}
-        >
-          <IconButton
-            onClick={handleDrawerToggle}
-            sx={{
-              color: "#384250",
-            }}
-            aria-label="close drawer"
-          >
-            <Close />
-          </IconButton>
-        </Box>
-
-        {/* User Profile Section */}
-        <Box
-          sx={{
-            p: 2,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: theme.palette.background.default,
+            overflow: "auto",
+            overflowX: "hidden",
+            overscrollBehavior: "contain", // Prevent scroll chaining
             width: "100%",
+            maxWidth: "100%",
             boxSizing: "border-box",
+            // Hide scrollbar but keep scroll functionality
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none", // Firefox
+            msOverflowStyle: "none", // IE and Edge
           }}
         >
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-            <Avatar
-              src={userInfo.profilePhoto || "./assets/images/avatar.png"}
-              sx={{
-                width: 44,
-                height: 44,
-              }}
-              imgProps={{
-                onError: (e) => {
-                  // Fallback to default avatar if image fails to load (e.g., Access Denied)
-                  const target = e.target as HTMLImageElement;
-                  if (target.src !== "./assets/images/avatar.png" && !target.src.includes("avatar.png")) {
-                    target.src = "./assets/images/avatar.png";
-                  }
-                },
-              }}
-            />
-
-            <Stack spacing={0}>
-              <Typography
-                sx={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#111927",
-                  lineHeight: "20px",
-                }}
-              >
-                {userInfo.firstName}
-              </Typography>
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                  color: "#6C737F",
-                  lineHeight: "18px",
-                }}
-              >
-                {userInfo.companyName}
-              </Typography>
-            </Stack>
-          </Stack>
-
-          {/* Progress Card */}
+          {/* Close button for mobile */}
           <Box
             sx={{
-              backgroundColor: "#F7F9FB",
-              borderRadius: "14px",
-              px: 2,
-              py: 1.5,
-              width: "100%",
+              display: { xs: "flex", md: "none" },
+              justifyContent: "flex-end",
+              p: 1,
+              pr: 2,
             }}
           >
-            <Typography
+            <IconButton
+              onClick={handleDrawerToggle}
               sx={{
-                fontSize: "11px",
-                color: "#6C737F",
-                fontWeight: 500,
-
+                color: "#384250",
               }}
+              aria-label="close drawer"
             >
-              Get More Clients with a complete Profile
-            </Typography>
+              <Close />
+            </IconButton>
+          </Box>
 
-            <Stack direction="row" alignItems="center" spacing={1} >
-              <LinearProgress
-                variant="determinate"
-                value={profileComplete}
+          {/* User Profile Section */}
+          <Box
+            sx={{
+              p: 2,
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
+              <Avatar
+                src={userInfo.profilePhoto || "./assets/images/avatar.png"}
                 sx={{
-                  flex: 1,
-                  height: 6,
-                  borderRadius: 6,
-                  backgroundColor: "#E5E7EB",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#12B76A",
-                    borderRadius: 6,
+                  width: 44,
+                  height: 44,
+                }}
+                imgProps={{
+                  onError: (e) => {
+                    // Fallback to default avatar if image fails to load (e.g., Access Denied)
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== "./assets/images/avatar.png" && !target.src.includes("avatar.png")) {
+                      target.src = "./assets/images/avatar.png";
+                    }
                   },
                 }}
               />
 
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: "#111927",
-                  minWidth: "36px",
-                  textAlign: "right",
-                }}
-              >
-                {profileComplete}%
-              </Typography>
+              <Stack spacing={0}>
+                <Typography
+                  sx={{
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    color: "#111927",
+                    lineHeight: "20px",
+                  }}
+                >
+                  {userInfo.firstName}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    color: "#6C737F",
+                    lineHeight: "18px",
+                  }}
+                >
+                  {userInfo.companyName}
+                </Typography>
+              </Stack>
             </Stack>
 
-            {profileComplete < 100 && (
-              <Button
-                variant="contained"
-                onClick={handleCompleteSetup}
+            {/* Progress Card */}
+            <Box
+              sx={{
+                backgroundColor: "#F7F9FB",
+                borderRadius: "14px",
+                px: 2,
+                py: 1.5,
+                width: "100%",
+              }}
+            >
+              <Typography
                 sx={{
-                  height: "26px",
-                  px: 1.5,
-                  borderRadius: "999px",
-                  fontSize: "12px",
+                  fontSize: "11px",
+                  color: "#6C737F",
                   fontWeight: 500,
-                  textTransform: "none",
-                  backgroundColor: "#000",
-                  color: "#fff",
-                  boxShadow: "none",
-                  "&:hover": {
-                    backgroundColor: "#111",
-                    boxShadow: "none",
-                  },
+
                 }}
               >
-                {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
-              </Button>
-            )}
+                Get More Clients with a complete Profile
+              </Typography>
+
+              <Stack direction="row" alignItems="center" spacing={1} >
+                <LinearProgress
+                  variant="determinate"
+                  value={profileComplete}
+                  sx={{
+                    flex: 1,
+                    height: 6,
+                    borderRadius: 6,
+                    backgroundColor: "#E5E7EB",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#12B76A",
+                      borderRadius: 6,
+                    },
+                  }}
+                />
+
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#111927",
+                    minWidth: "36px",
+                    textAlign: "right",
+                  }}
+                >
+                  {profileComplete}%
+                </Typography>
+              </Stack>
+
+              {profileComplete < 100 && (
+                <Button
+                  variant="contained"
+                  onClick={handleCompleteSetup}
+                  sx={{
+                    height: "26px",
+                    px: 1.5,
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    textTransform: "none",
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    boxShadow: "none",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                      boxShadow: "none",
+                    },
+                  }}
+                >
+                  {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
+                </Button>
+              )}
+            </Box>
           </Box>
-        </Box>
 
 
-        {/* Navigation Menu */}
-        <Box sx={{ py: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-          <List sx={{ px: { xs: 1, md: 2 }, width: "100%", maxWidth: "100%" }}>
-            {NAVIGATION_ITEMS.map((item) => {
-              const selected = isPathSelected(item.segment);
-              const handleNavClick = () => navigate(item.path);
-              return (
-                <ListItem key={item.segment} disablePadding sx={{ mb: 0.5 }}>
-                  <ListItemButton
-                    selected={selected}
-                    onClick={handleNavClick}
-                    sx={{
-                      borderRadius: 2,
-                      backgroundColor: selected ? "#F3F4F6" : "#fff",
-                      py: 0.25,
-                      pr: 0.5,
-                      pl: selected ? 1.5 : 0.5,
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      // Vertical line indicator for active page - black bar
-                      "&::before": selected
-                        ? {
-                          content: '""',
-                          position: "absolute",
-                          left: 0,
-                          top: 8,
-                          bottom: 8,
-                          width: "4px",
-                          borderRadius: "0 4px 4px 0",
-                          backgroundColor: "#111927",
-                          zIndex: 1,
-                        }
-                        : {},
-                      "&:hover": {
-                        backgroundColor: selected ? "#F3F4F6" : "#F9FAFB",
-                      },
-                      "&.Mui-selected": {
-                        backgroundColor: "#F3F4F6",
-                        "& .MuiTypography-root": {
-                          color: "#111927",
-                          fontWeight: 400,
+          {/* Navigation Menu */}
+          <Box sx={{ py: 2, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+            <List sx={{ px: { xs: 1, md: 2 }, width: "100%", maxWidth: "100%" }}>
+              {NAVIGATION_ITEMS.map((item) => {
+                const selected = isPathSelected(item.segment);
+                const handleNavClick = () => navigate(item.path);
+                return (
+                  <ListItem key={item.segment} disablePadding sx={{ mb: 0.5 }}>
+                    <ListItemButton
+                      selected={selected}
+                      onClick={handleNavClick}
+                      sx={{
+                        borderRadius: 2,
+                        backgroundColor: selected ? "#F3F4F6" : "#fff",
+                        py: 0.25,
+                        pr: 0.5,
+                        pl: selected ? 1.5 : 0.5,
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        // Vertical line indicator for active page - black bar
+                        "&::before": selected
+                          ? {
+                            content: '""',
+                            position: "absolute",
+                            left: 0,
+                            top: 8,
+                            bottom: 8,
+                            width: "4px",
+                            borderRadius: "0 4px 4px 0",
+                            backgroundColor: "#111927",
+                            zIndex: 1,
+                          }
+                          : {},
+                        "&:hover": {
+                          backgroundColor: selected ? "#F3F4F6" : "#F9FAFB",
                         },
-                      },
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                      {/* Grey arrow for inactive items */}
-                      {!selected && (
-                        <ChevronRight
+                        "&.Mui-selected": {
+                          backgroundColor: "#F3F4F6",
+                          "& .MuiTypography-root": {
+                            color: "#111927",
+                            fontWeight: 400,
+                          },
+                        },
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        {/* Grey arrow for inactive items */}
+                        {!selected && (
+                          <ChevronRight
+                            sx={{
+                              fontSize: 14,
+                              color: "#9CA3AF",
+                              width: 16,
+                              height: 16,
+                            }}
+                          />
+                        )}
+                        <ListItemIcon
                           sx={{
-                            fontSize: 14,
-                            color: "#9CA3AF",
-                            width: 16,
-                            height: 16,
+                            minWidth: 28,
+                            "& img": {
+                              width: 24,
+                              height: 24,
+                              // No filter - icons should be outlined in black
+                            },
+                          }}
+                        >
+                          <img src={item.icon} alt={item.title} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.title}
+                          primaryTypographyProps={{
+                            fontSize: "14px",
+                            color: "#111927",
+                            fontWeight: 400,
                           }}
                         />
-                      )}
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 28,
-                          "& img": {
-                            width: 24,
-                            height: 24,
-                            // No filter - icons should be outlined in black
-                          },
-                        }}
-                      >
-                        <img src={item.icon} alt={item.title} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.title}
-                        primaryTypographyProps={{
-                          fontSize: "14px",
-                          color: "#111927",
-                          fontWeight: 400,
-                        }}
-                      />
-                    </Box>
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
+                      </Box>
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Box>
+
+          {/* Footer Links */}
+          <Box sx={{ p: { xs: 1.5, md: 2 }, pt: 1.5, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+            <Stack spacing={1}>
+              <Typography
+                variant="body2"
+                onClick={() => navigate("/terms-and-conditions")}
+                sx={{
+                  fontSize: "12px",
+                  color: "#6C737F",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  "&:hover": { color: "#384250" },
+                }}
+              >
+                Terms & Conditions
+              </Typography>
+              <Typography
+                variant="body2"
+                onClick={() => navigate("/privacy-policy")}
+                sx={{
+                  fontSize: "12px",
+                  color: "#6C737F",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  "&:hover": { color: "#384250" },
+                }}
+              >
+                Privacy Policy
+              </Typography>
+              <Typography
+                variant="body2"
+                onClick={handleLogout}
+                sx={{
+                  fontSize: "12px",
+                  color: "#6C737F",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  "&:hover": { color: "#384250" },
+                }}
+              >
+                Log Out
+              </Typography>
+
+              {/* Horizontal Divider */}
+              <Divider sx={{ my: 1, borderColor: "#E5E7EB" }} />
+
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "12px",
+                  color: "#6C737F",
+                }}
+              >
+                Ravwork Inc. © 2023 All Right Reserved
+              </Typography>
+            </Stack>
+          </Box>
         </Box>
-
-        {/* Footer Links */}
-        <Box sx={{ p: { xs: 1.5, md: 2 }, pt: 1.5, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-          <Stack spacing={1}>
-            <Typography
-              variant="body2"
-              onClick={() => navigate("/terms-and-conditions")}
-              sx={{
-                fontSize: "12px",
-                color: "#6C737F",
-                textDecoration: "none",
-                cursor: "pointer",
-                "&:hover": { color: "#384250" },
-              }}
-            >
-              Terms & Conditions
-            </Typography>
-            <Typography
-              variant="body2"
-              onClick={() => navigate("/privacy-policy")}
-              sx={{
-                fontSize: "12px",
-                color: "#6C737F",
-                textDecoration: "none",
-                cursor: "pointer",
-                "&:hover": { color: "#384250" },
-              }}
-            >
-              Privacy Policy
-            </Typography>
-            <Typography
-              variant="body2"
-              onClick={handleLogout}
-              sx={{
-                fontSize: "12px",
-                color: "#6C737F",
-                textDecoration: "none",
-                cursor: "pointer",
-                "&:hover": { color: "#384250" },
-              }}
-            >
-              Log Out
-            </Typography>
-
-            {/* Horizontal Divider */}
-            <Divider sx={{ my: 1, borderColor: "#E5E7EB" }} />
-
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "12px",
-                color: "#6C737F",
-              }}
-            >
-              Ravwork Inc. © 2023 All Right Reserved
-            </Typography>
-          </Stack>
-        </Box>
-      </Box>
-    ),
-    [userInfo, profileComplete, isPathSelected, navigate, handleDrawerToggle, handleLogout]
+      );
+    },
+    [userInfo, profileComplete, isPathSelected, navigate, handleDrawerToggle, handleLogout, isLoadingProfile]
   );
 
   const container =
@@ -806,40 +816,34 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, md: 3 },
           width: {
             xs: "100%",
             md: desktopOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : "100%"
           },
-          maxWidth: "100%",
-          backgroundColor: theme.palette.primary.light,
-          height: "100vh",
-          overflowX: "hidden",
-          overflowY: "auto",
-          overscrollBehavior: "contain", // Prevent scroll chaining
-          boxSizing: "border-box",
-          transition: "width 0.3s",
-          // Hide scrollbar but keep scroll functionality
-          "&::-webkit-scrollbar": {
-            display: "none",
+          ml: {
+            xs: 0,
+            md: 0
           },
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // IE and Edge
+          transition: "width 0.3s, margin-left 0.3s",
+          mt: { xs: "56px", md: "64px" },
+          height: { xs: "calc(100vh - 56px)", md: "calc(100vh - 64px)" },
+          overflow: "auto",
+          backgroundColor: theme.palette.background.default,
+          p: { xs: 1.5, sm: 2, md: 3 },
         }}
       >
-        <Toolbar />
         {children}
       </Box>
 
-      {/* Logout Dialog */}
+      {/* Logout Confirmation Dialog */}
       <GlobalDialog
         open={openLogoutDialog}
         handleClose={handleCloseLogoutDialog}
         component={
           <CommonDialog
             handleCancel={handleCloseLogoutDialog}
-            title="Logout"
-            subTitle="Are you sure want to log out of your account?"
+            title="Log Out"
+            subTitle="Are you sure you want to log out?"
             handleConfirm={handleLogoutConfirm}
             confirmDisabled={isLoggingOut}
           />

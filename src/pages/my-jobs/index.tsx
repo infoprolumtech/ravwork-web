@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, type JSX } from "react";
-import { Box, Tabs, Tab, Stack, CircularProgress, Typography, Dialog, DialogContent } from "@mui/material";
+import { Box, Tabs, Tab, Stack, Typography, Dialog, DialogContent } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import JobCard from "../../components/reusecard/JobCard";
 import GlobalDialog from "../../components/dialog";
@@ -10,6 +10,8 @@ import { useGetJobsQuery, useUpdateJobStatusMutation } from "../../rtk/endpoints
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import Pagination from "../../components/pagination/Pagination";
+import JobsSkeleton from "../../components/skeletons/JobsSkeleton";
+
 
 export default function MyJobsPage(): JSX.Element {
   const [tab, setTab] = useState(0);
@@ -52,7 +54,7 @@ export default function MyJobsPage(): JSX.Element {
 
   // Fetch jobs based on selected tab
   // The query will automatically run when queryParams change or component mounts
-  const { data: jobsData, isLoading, error, refetch } = useGetJobsQuery(queryParams, {
+  const { data: jobsData, isLoading, isFetching, error, refetch } = useGetJobsQuery(queryParams, {
     // Don't skip - let RTK Query handle the request and errors
     // If no token, it will return 401 and handle it appropriately
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
@@ -61,7 +63,6 @@ export default function MyJobsPage(): JSX.Element {
   // Ensure query runs when component first mounts
   useEffect(() => {
     // Trigger refetch on mount to ensure data is fresh
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     refetch();
   }, []); // Empty dependency array - only run on mount (refetch is stable)
 
@@ -180,7 +181,7 @@ export default function MyJobsPage(): JSX.Element {
         <Box
           sx={{
             position: "sticky",
-            top: 30,
+            top: 0,
             zIndex: 100,
             backgroundColor: "#FFFFFF",
             width: "100%",
@@ -242,10 +243,8 @@ export default function MyJobsPage(): JSX.Element {
 
         <Box sx={{ px: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
           <Box sx={{ minHeight: "200px" }}>
-            {isLoading ? (
-              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
-                <CircularProgress />
-              </Box>
+            {isLoading || isFetching ? (
+              <JobsSkeleton />
             ) : error ? (
               <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
                 <Typography color="error">
@@ -278,11 +277,13 @@ export default function MyJobsPage(): JSX.Element {
                 </Stack>
 
                 {/* Pagination */}
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={jobsData?.totalPages || 1}
-                  onPageChange={setCurrentPage}
-                />
+                <Box sx={{ pb: 4 }}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={jobsData?.totalPages || 1}
+                    onPageChange={setCurrentPage}
+                  />
+                </Box>
               </>
             )}
           </Box>

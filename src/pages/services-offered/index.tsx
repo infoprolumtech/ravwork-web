@@ -4,7 +4,6 @@ import {
   Typography,
   Card,
   Stack,
-  CircularProgress,
   Alert,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
@@ -22,6 +21,8 @@ import GlobalDialog from "../../components/dialog";
 import CommonDialog from "../../components/dialog/dialog-content/CommonDialog";
 import Pagination from "../../components/pagination/Pagination";
 import { extractErrorMessage } from "../../utils/helper";
+import ServicesSkeleton from "../../components/skeletons/ServicesSkeleton";
+
 
 
 
@@ -68,7 +69,7 @@ export default function ServicesOfferedPage(): JSX.Element {
   );
 
   // API hooks
-  const { data: servicesResponse, isLoading, error, refetch } = useGetServicesQuery(queryParams, {
+  const { data: servicesResponse, isLoading, isFetching, error, refetch } = useGetServicesQuery(queryParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch when component mounts
   });
 
@@ -236,11 +237,7 @@ export default function ServicesOfferedPage(): JSX.Element {
         </Typography>
 
         {/* Loading State */}
-        {isLoading && (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
-          </Box>
-        )}
+        {(isLoading || isFetching) && <ServicesSkeleton />}
 
         {/* Error State */}
         {error && (
@@ -250,7 +247,7 @@ export default function ServicesOfferedPage(): JSX.Element {
         )}
 
         {/* Services List */}
-        {!isLoading && !error && (
+        {!(isLoading || isFetching) && !error && (
           <>
             <Stack spacing={{ xs: 1.5, md: 2 }}>
               {services.length === 0 ? (
