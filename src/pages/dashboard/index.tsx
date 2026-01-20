@@ -15,7 +15,7 @@ import {
   Grid,
   Button,
   Avatar,
-  CircularProgress,
+  // CircularProgress,
   Skeleton,
 } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
