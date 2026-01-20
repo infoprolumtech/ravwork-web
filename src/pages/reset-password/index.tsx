@@ -1,5 +1,6 @@
 import { useEffect, useState, type JSX } from "react";
-import { Stack, Button, Typography } from "@mui/material";
+import { Box, Stack, Button, Typography, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -126,18 +127,77 @@ export default function ResetPasswordPage(): JSX.Element {
       <GlobalDialog
         open={showCongratulationPopup}
         handleClose={handleCloseCongratulationPopup}
+        hideWarningLine={true}
         component={
-          <Stack spacing={2} sx={{ p: 4, alignItems: "center", textAlign: "center" }}>
-            <img src="/assets/icons/congratulation.svg" alt="Success" style={{ width: 80, height: 80 }} />
-            <Typography variant="h5" fontWeight={600} sx={{ mt: 2 }}>Congratulation!!</Typography>
-            <Typography variant="body2" color="#6C737F" sx={{ mb: 3 }}>
-              Your Password has been Successfully changed
-            </Typography>
-            <Stack direction="row" spacing={2} width="100%">
-              <Button fullWidth variant="outlined" onClick={handleCloseCongratulationPopup} sx={{ borderRadius: "50px", textTransform: "none" }}>Cancel</Button>
-              <Button fullWidth variant="secondary" onClick={() => navigate("/login")} sx={{ borderRadius: "50px", textTransform: "none" }}>Sign In</Button>
+          <Box
+            sx={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              minHeight: 0,
+            }}
+          >
+            <IconButton
+              onClick={handleCloseCongratulationPopup}
+              aria-label="close"
+              sx={{ position: "absolute", top: { xs: 6, sm: 8 }, right: { xs: 6, sm: 8 } }}
+            >
+              <CloseIcon />
+            </IconButton>
+
+            <Stack
+              spacing={1.5}
+              sx={{
+                p: { xs: 2.5, sm: 4 },
+                alignItems: "flex-start",
+                textAlign: "left",
+                flex: 1,
+                minHeight: 0,
+              }}
+            >
+              <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: "18px", sm: "24px" } }}>
+                Congratulation!!
+              </Typography>
+              <Typography variant="body2" color="#6C737F" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: "13px", sm: "14px" } }}>
+                Your Password has been Successfully changed
+              </Typography>
+
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                width="100%"
+                sx={{
+                  mt: "auto",
+                  pt: { xs: 2, sm: 3 },
+                  justifyContent: { xs: "stretch", sm: "flex-end" },
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={handleCloseCongratulationPopup}
+                  sx={{
+                    borderRadius: "50px",
+                    textTransform: "none",
+                    color: "#111927",
+                    borderColor: "#E5E7EB",
+                    width: { xs: "100%", sm: "auto" },
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate("/login")}
+                  sx={{ borderRadius: "50px", textTransform: "none", width: { xs: "100%", sm: "auto" } }}
+                >
+                  Sign in
+                </Button>
+              </Stack>
             </Stack>
-          </Stack>
+          </Box>
         }
       />
     </>
