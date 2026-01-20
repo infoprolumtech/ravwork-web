@@ -101,6 +101,9 @@ const pickerTextFieldStyles = {
 
 
 
+
+
+
 export default function ClientQuestionsPage({
   onClose,
   onSubmit,
@@ -757,6 +760,8 @@ export default function ClientQuestionsPage({
                         }}
                       />
 
+                      
+
                       {/* Time Picker */}
                       <TimePicker
                         value={selectedTime}
@@ -779,6 +784,24 @@ export default function ClientQuestionsPage({
                           },
                           dialog: {
                             sx: {
+                              
+
+                              "& .MuiDialogActions-root": {
+          padding: "16px",
+        },"& .MuiDialogActions-root .MuiButton-root": {
+          color: "#000000", // BLACK text
+          fontWeight: 500,
+        },
+
+        "& .MuiDialogActions-root .MuiButton-root:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+        },
+                            },
+                          },
+                          popper: {
+                            
+                            sx: {
+                              
                               "& .MuiDialogActions-root": {
           padding: "16px",
         },"& .MuiDialogActions-root .MuiButton-root": {
