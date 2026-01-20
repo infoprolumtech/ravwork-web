@@ -2,6 +2,7 @@ import React, { type JSX } from "react";
 import {
   Box,
   Button,
+  CircularProgress,
   Stack,
   Typography,
   RadioGroup,
@@ -14,6 +15,7 @@ interface ContactMethodPageProps {
   onSelect: (method: "quick_contact" | "contact_info_questions") => void;
   onCreate?: () => void; // For quick_contact direct create
   isEditMode?: boolean;
+  isSubmitting?: boolean;
 }
 
 export default function ContactMethodPage({
@@ -22,6 +24,7 @@ export default function ContactMethodPage({
   onSelect,
   onCreate,
   isEditMode = false,
+  isSubmitting = false,
 }: ContactMethodPageProps): JSX.Element {
   const [selectedMethod, setSelectedMethod] = React.useState<
     "quick_contact" | "contact_info_questions" | ""
@@ -343,10 +346,19 @@ export default function ContactMethodPage({
           <Button
             variant="secondary"
             onClick={handleSubmit}
-            disabled={!selectedMethod}
+            disabled={!selectedMethod || (selectedMethod === "quick_contact" && isSubmitting)}
           >
             {selectedMethod === "quick_contact" 
-              ? (isEditMode ? "Update" : "Create")
+              ? (
+                isSubmitting ? (
+                  <>
+                    <CircularProgress size={16} color="inherit" sx={{ mr: 1 }} />
+                    {isEditMode ? "Updating..." : "Creating..."}
+                  </>
+                ) : (
+                  isEditMode ? "Update" : "Create"
+                )
+              )
               : "Next"}
           </Button>
         </Stack>

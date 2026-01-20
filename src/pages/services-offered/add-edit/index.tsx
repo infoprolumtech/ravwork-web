@@ -429,6 +429,7 @@ export default function AddEditServicePage(): JSX.Element {
               onSelect={handleContactMethodSelect}
               onCreate={handleQuickContactSubmitDirectly}
               isEditMode={isEditMode}
+              isSubmitting={isSubmittingService}
             />
           )}
 

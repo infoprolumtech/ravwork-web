@@ -148,11 +148,12 @@ export default function ClientPage(): JSX.Element {
     if (!selectedService || !username) return;
     setContactDetails(data);
     try {
+      const email = data.email?.trim();
       await createBooking({
         username,
         body: {
           clientName: data.fullName,
-          clientEmail: data.email,
+          ...(email ? { clientEmail: email } : {}),
           clientCountryCode: profile?.countryCode || "+1",
           clientPhone: data.phoneNumber,
           serviceId: selectedService.id,
@@ -175,6 +176,7 @@ export default function ClientPage(): JSX.Element {
     if (!selectedService || !username) return;
     setContactDetails(data);
     try {
+      const email = data.email?.trim();
       // Convert formFieldValues to responses array
       // Filter out empty values and ensure value is not null/undefined
       const responses: FormFieldResponse[] = Object.entries(formFieldValues)
@@ -261,7 +263,7 @@ export default function ClientPage(): JSX.Element {
         username,
         body: {
           clientName: data.fullName,
-          clientEmail: data.email,
+          ...(email ? { clientEmail: email } : {}),
           clientCountryCode: profile?.countryCode || "+1",
           clientPhone: data.phoneNumber,
           serviceId: selectedService.id,
@@ -285,11 +287,12 @@ export default function ClientPage(): JSX.Element {
     if (!username) return;
     setContactDetails(data);
     try {
+      const email = data.email?.trim();
       await createBooking({
         username,
         body: {
           clientName: data.fullName,
-          clientEmail: data.email,
+          ...(email ? { clientEmail: email } : {}),
           clientCountryCode: profile?.countryCode || "+1",
           clientPhone: data.phoneNumber,
           type: "inquiry",
