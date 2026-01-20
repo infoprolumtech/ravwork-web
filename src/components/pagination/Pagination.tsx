@@ -108,7 +108,7 @@ export default function Pagination({
             display: { xs: "none", sm: "inline" },
           }}
         >
-          Previous
+        Previous
         </Box>
       </Button>
 
@@ -216,9 +216,9 @@ export default function Pagination({
           component="span"
           sx={{
             display: { xs: "none", sm: "inline" },
-          }}
-        >
-          Next
+        }}
+      >
+        Next
         </Box>
         <KeyboardArrowRight sx={{ fontSize: { xs: 16, sm: 18 }, ml: { xs: 0, sm: 0.5 } }} />
       </Button>

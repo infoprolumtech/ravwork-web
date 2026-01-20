@@ -1,5 +1,6 @@
 import { useEffect, useState, type JSX } from "react";
-import { Stack, Button, Typography } from "@mui/material";
+import { Box, Stack, Button, Typography, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -100,23 +101,81 @@ export default function ForgotPassword(): JSX.Element {
       <GlobalDialog
         open={showCheckMailPopup}
         handleClose={() => setShowCheckMailPopup(false)}
+        hideWarningLine={true}
         component={
-          <Stack spacing={2} sx={{ p: 4, alignItems: "center", textAlign: "center" }}>
-            <img src="/assets/icons/mail.svg" alt="Email" style={{ width: 60, height: 60 }} />
-            <Typography variant="h5" fontWeight={600}>Please check your mail</Typography>
-            <Typography variant="body2" color="#6C737F">
-              A reset password link has been sent to{" "}
-              <Typography component="span" fontWeight={600} color="#111927">{userEmail}</Typography>
-            </Typography>
-            <Stack spacing={2} width="100%" sx={{ mt: 2 }}>
-              <Button fullWidth variant="secondary" onClick={handleResendLink} disabled={isResending} sx={{ borderRadius: "50px", textTransform: "none" }}>
-                {isResending ? "Resending..." : "Resend Link"}
-              </Button>
-              <Button fullWidth variant="outlined" onClick={() => navigate("/login")} sx={{ borderRadius: "50px", textTransform: "none" }}>
-                Back to Login
-              </Button>
+          <Box
+            sx={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              width: "100%",
+              height: "100%",
+              minHeight: 0,
+            }}
+          >
+            <IconButton
+              onClick={() => setShowCheckMailPopup(false)}
+              aria-label="close"
+              sx={{ position: "absolute", top: { xs: 6, sm: 8 }, right: { xs: 6, sm: 8 } }}
+            >
+              <CloseIcon />
+            </IconButton>
+
+            <Stack
+              spacing={1.5}
+              sx={{
+                p: { xs: 2.5, sm: 4 },
+                alignItems: "flex-start",
+                textAlign: "left",
+                flex: 1,
+                minHeight: 0,
+              }}
+            >
+              <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: "18px", sm: "24px" } }}>
+                Please check your mail
+              </Typography>
+              <Typography variant="body2" color="#6C737F" sx={{ fontSize: { xs: "13px", sm: "14px" } }}>
+                A reset password link has been sent to{" "}
+                <Box component="span" sx={{ fontWeight: 500, color: "#111927" }}>
+                  {userEmail}
+                </Box>
+              </Typography>
+
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={2}
+                width="100%"
+                sx={{
+                  mt: "auto",
+                  pt: { xs: 2, sm: 3 },
+                  justifyContent: { xs: "stretch", sm: "flex-end" },
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/login")}
+                  sx={{
+                    borderRadius: "50px",
+                    textTransform: "none",
+                    color: "#111927",
+                    borderColor: "#E5E7EB",
+                    width: { xs: "100%", sm: "auto" },
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleResendLink}
+                  disabled={isResending}
+                  sx={{ borderRadius: "50px", textTransform: "none", width: { xs: "100%", sm: "auto" } }}
+                >
+                  {isResending ? "Resending..." : "Resend Verification Link"}
+                </Button>
+              </Stack>
             </Stack>
-          </Stack>
+          </Box>
         }
       />
     </>

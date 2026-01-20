@@ -333,7 +333,7 @@ export default function MyProfilePage(): JSX.Element {
                       />
                       <Box component="span" sx={{ fontWeight: 600 }}>
                         Copy Link
-                      </Box>
+                    </Box>
                     </Button>
                     <Box
                       onClick={handleShareClick}
