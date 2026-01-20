@@ -190,6 +190,16 @@ export default function MyJobsPage(): JSX.Element {
             pb: 2,
             mb: 2,
             boxSizing: "border-box",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: -50,
+              left: 0,
+              right: 0,
+              height: 50,
+              backgroundColor: "#FFFFFF",
+              zIndex: -1,
+            },
           }}
         >
           <Tabs
