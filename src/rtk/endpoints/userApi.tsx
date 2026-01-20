@@ -110,6 +110,18 @@ export interface GetDashboardRequestsParams {
 
 export type DashboardRequestsListResponse = PaginatedData<DashboardRequest>;
 
+// Dashboard Stats Types
+export interface DashboardStatsBucket {
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+}
+
+export interface DashboardStatsData {
+  clicks: DashboardStatsBucket;
+  bookings: DashboardStatsBucket;
+}
+
 // Earnings Types
 export interface EarningsItem {
   id: string;
@@ -212,6 +224,17 @@ const userApi = api.injectEndpoints({
       providesTags: ["DashboardRequests"],
     }),
 
+    // GET /api/v1/user/dashboard/stats - Get dashboard stats
+    getDashboardStats: builder.query<DashboardStatsData, void>({
+      query: () => ({
+        url: "/user/dashboard/stats",
+        method: "GET",
+      }),
+      transformResponse: (response: ApiResponse<DashboardStatsData>): DashboardStatsData => {
+        return response.data;
+      },
+    }),
+
     // PATCH /api/v1/user/jobs/{id} - Update job status
     updateJobStatus: builder.mutation<UpdateJobStatusResponse, { id: string; body: UpdateJobStatusRequest }>({
       query: ({ id, body }) => ({
@@ -262,6 +285,8 @@ export const {
   useLazyGetJobByIdQuery,
   useGetDashboardRequestsQuery,
   useLazyGetDashboardRequestsQuery,
+  useGetDashboardStatsQuery,
+  useLazyGetDashboardStatsQuery,
   useUpdateJobStatusMutation,
   useGetEarningsQuery,
   useLazyGetEarningsQuery,
