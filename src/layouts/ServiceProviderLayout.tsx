@@ -410,57 +410,56 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               </Stack>
             </Stack>
 
-            {/* Progress Card */}
-            <Box
-              sx={{
-                backgroundColor: "#F7F9FB",
-                borderRadius: "14px",
-                px: 2,
-                py: 1.5,
-                width: "100%",
-              }}
-            >
-              <Typography
+            {/* Progress Card - hidden once completion reaches 100% */}
+            {profileComplete < 100 && (
+              <Box
                 sx={{
-                  fontSize: "11px",
-                  color: "#6C737F",
-                  fontWeight: 500,
-
+                  backgroundColor: "#F7F9FB",
+                  borderRadius: "14px",
+                  px: 2,
+                  py: 1.5,
+                  width: "100%",
                 }}
               >
-                Get More Clients with a complete Profile
-              </Typography>
-
-              <Stack direction="row" alignItems="center" spacing={1} >
-                <LinearProgress
-                  variant="determinate"
-                  value={profileComplete}
-                  sx={{
-                    flex: 1,
-                    height: 6,
-                    borderRadius: 6,
-                    backgroundColor: "#E5E7EB",
-                    "& .MuiLinearProgress-bar": {
-                      backgroundColor: "#12B76A",
-                      borderRadius: 6,
-                    },
-                  }}
-                />
-
                 <Typography
                   sx={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#111927",
-                    minWidth: "36px",
-                    textAlign: "right",
+                    fontSize: "11px",
+                    color: "#6C737F",
+                    fontWeight: 500,
                   }}
                 >
-                  {profileComplete}%
+                  Get More Clients with a complete Profile
                 </Typography>
-              </Stack>
 
-              {profileComplete < 100 && (
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={profileComplete}
+                    sx={{
+                      flex: 1,
+                      height: 6,
+                      borderRadius: 6,
+                      backgroundColor: "#E5E7EB",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#12B76A",
+                        borderRadius: 6,
+                      },
+                    }}
+                  />
+
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#111927",
+                      minWidth: "36px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {profileComplete}%
+                  </Typography>
+                </Stack>
+
                 <Button
                   variant="contained"
                   onClick={handleCompleteSetup}
@@ -482,8 +481,8 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
                 >
                   {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
                 </Button>
-              )}
-            </Box>
+              </Box>
+            )}
           </Box>
 
 
