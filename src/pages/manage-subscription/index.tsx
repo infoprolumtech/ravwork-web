@@ -407,8 +407,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
+              // Shift the dropdown to the left of the button
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
               PaperProps={{
                 sx: {
                   mt: 1,

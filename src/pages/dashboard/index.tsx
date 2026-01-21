@@ -192,11 +192,9 @@ export default function Dashboard() {
               {/* Body */}
               <Box display="flex" alignItems="center" gap={2}>
                 <Avatar
-                  
+                  {...(profilePhotoUrl && { src: profilePhotoUrl })}
                   sx={{ width: 74, height: 74 }}
-                >
-                  {!profilePhotoUrl}
-                </Avatar>
+                />
 
                 <Box flex={1} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                   <Typography fontWeight={600} fontSize={18} color="#111927">

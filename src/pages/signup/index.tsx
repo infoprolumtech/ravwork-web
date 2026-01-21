@@ -12,6 +12,7 @@ import { useCreateSubscriptionCheckoutMutation, useGetSubscriptionPlansQuery, us
 import { showAlert } from "../../rtk/feature/alertSlice";
 import { setSignupToken, clearSignupToken, logoutUser, loginUser, setSubscriptionStatus } from "../../rtk/feature/authSlice";
 import { extractErrorMessage } from "../../utils/helper";
+import { calculateProfileComplete } from "../../utils/helper";
 
 interface LocationState {
   resumeStep?: number;
@@ -66,6 +67,26 @@ export default function SignUpPage(): JSX.Element {
     dispatch(setSubscriptionStatus(status));
     return status;
   }, [dispatch, getSubscriptionStatus]);
+
+  const navigateAfterSignup = useCallback(
+    (userData: import("../../types").User) => {
+      const completion = calculateProfileComplete(
+        {
+          displayName: userData.displayName ?? "",
+          profilePhoto: userData.profilePhoto ?? "",
+          businessDescription: userData.businessDescription ?? "",
+        },
+        false // user won't have services at this point
+      );
+
+      if (completion >= 50) {
+        navigate("/services-offered", { replace: true });
+      } else {
+        navigate("/my-profile", { replace: true });
+      }
+    },
+    [navigate]
+  );
 
   // Only load plans when we actually reach Step 2 (after Step 1 completes).
   const {
@@ -140,9 +161,10 @@ export default function SignUpPage(): JSX.Element {
 
   useEffect(() => {
     if (isLoggedIn && user?.profileStep && user.profileStep >= 3) {
-      navigate("/dashboard", { replace: true });
+      // Signup complete; route based on profile completion rule (not dashboard)
+      navigateAfterSignup(user);
     }
-  }, [isLoggedIn, user?.profileStep, navigate]);
+  }, [isLoggedIn, user, navigateAfterSignup]);
 
   const [step1Data, setStep1Data] = useState<Step1FormInputs | null>(null);
   const [step2Data, setStep2Data] = useState<Step2FormInputs | null>(null);
@@ -277,7 +299,7 @@ export default function SignUpPage(): JSX.Element {
     setStep1Data(null);
     setStep2Data(null);
     setStep4Data(null);
-    navigate("/dashboard", { replace: true });
+    navigateAfterSignup(finalUserData);
   };
 
   const handleStep4Submit = async (data: Step4FormInputs) => {
@@ -296,7 +318,7 @@ export default function SignUpPage(): JSX.Element {
       if (isLoggedIn) {
         dispatch(clearSignupToken());
         dispatch(showAlert({ message: "Profile updated successfully.", severity: "success" }));
-        navigate("/dashboard", { replace: true });
+        navigateAfterSignup(user || {});
         return;
       }
 
@@ -324,7 +346,7 @@ export default function SignUpPage(): JSX.Element {
       if (isLoggedIn) {
         dispatch(clearSignupToken());
         dispatch(showAlert({ message: "You can complete your profile later.", severity: "success" }));
-        navigate("/dashboard", { replace: true });
+        navigateAfterSignup(user || {});
         return;
       }
 
