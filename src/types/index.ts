@@ -27,6 +27,7 @@ export interface AuthState {
   isLogin: boolean;
   user: User | null;
   signupToken: string | null; // Temporary token during signup flow (before login)
+  subscriptionStatus: import("./subscription").SubscriptionStatusResponse | null;
 }
 
 // Alert types

@@ -53,7 +53,8 @@ export default function OTPVerificationPage(): JSX.Element {
       dispatch(showAlert({ message: "OTP verified successfully", severity: "success" }));
       localStorage.removeItem("loginToken");
       localStorage.removeItem("userEmail");
-      navigate("/dashboard");
+      // Route based on profile completion rule (not dashboard)
+      navigate("/my-profile");
     }
   }, [isVerifySuccess, dispatch, navigate]);
 

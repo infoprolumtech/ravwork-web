@@ -192,11 +192,9 @@ export default function Dashboard() {
               {/* Body */}
               <Box display="flex" alignItems="center" gap={2}>
                 <Avatar
-                  src={profilePhotoUrl || "./assets/images/avatar.png"}
+                  {...(profilePhotoUrl && { src: profilePhotoUrl })}
                   sx={{ width: 74, height: 74 }}
-                >
-                  {!profilePhotoUrl && profile?.username?.[0]?.toUpperCase()}
-                </Avatar>
+                />
 
                 <Box flex={1} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
                   <Typography fontWeight={600} fontSize={18} color="#111927">
@@ -368,15 +366,15 @@ export default function Dashboard() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 {/* Icon */}
                 <Avatar
-                  src={profilePhotoUrl || "./assets/images/avatar.png"}
+                  src={profilePhotoUrl }
                   sx={{
                     width: 44,
                     height: 44,
-                    bgcolor: "#F9FAFB",
+                   
                     display: { xs: "none", sm: "flex" },
                   }}
                 >
-                  {!profilePhotoUrl && profile?.username?.[0]?.toUpperCase()}
+                  
                 </Avatar>
 
                 {/* Content */}

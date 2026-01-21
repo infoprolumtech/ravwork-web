@@ -11,7 +11,7 @@ import { loginUser } from "../../rtk/feature/authSlice";
 import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import PasswordField from "../../components/shared/PasswordField";
 import AuthPageWrapper from "../../components/shared/AuthPageWrapper";
-import { extractErrorMessage } from "../../utils/helper";
+import { calculateProfileComplete, extractErrorMessage } from "../../utils/helper";
 
 interface LoginFormInputs {
   email: string;
@@ -54,7 +54,21 @@ export default function LoginPage(): JSX.Element {
       if (profileStep < 3) {
         navigate("/signup", { state: { resumeStep: profileStep + 1 } });
       } else {
-        navigate("/dashboard");
+        // After login, route based on profile completion %
+        const completion = calculateProfileComplete(
+          {
+            displayName: result.user?.displayName ?? "",
+            profilePhoto: result.user?.profilePhoto ?? "",
+            businessDescription: result.user?.businessDescription ?? "",
+          },
+          false
+        );
+
+        if (completion >= 50) {
+          navigate("/services-offered");
+        } else {
+          navigate("/my-profile");
+        }
       }
     } catch (error: unknown) {
       dispatch(showAlert({

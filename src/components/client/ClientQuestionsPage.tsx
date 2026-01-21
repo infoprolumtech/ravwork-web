@@ -744,23 +744,23 @@ export default function ClientQuestionsPage({
                                 },
                               },
                               "& .MuiDialogActions-root": {
-          padding: "16px",
-        },
+                                padding: "16px",
+                              },
 
-        "& .MuiDialogActions-root .MuiButton-root": {
-          color: "#000000", // BLACK text
-          fontWeight: 500,
-        },
+                              "& .MuiDialogActions-root .MuiButton-root": {
+                                color: "#000000", // BLACK text
+                                fontWeight: 500,
+                              },
 
-        "& .MuiDialogActions-root .MuiButton-root:hover": {
-          backgroundColor: "rgba(0, 0, 0, 0.04)",
-        },
+                              "& .MuiDialogActions-root .MuiButton-root:hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.04)",
+                              },
                             },
                           },
                         }}
                       />
 
-                      
+
 
                       {/* Time Picker */}
                       <TimePicker
@@ -784,38 +784,38 @@ export default function ClientQuestionsPage({
                           },
                           dialog: {
                             sx: {
-                              
+
 
                               "& .MuiDialogActions-root": {
-          padding: "16px",
-        },"& .MuiDialogActions-root .MuiButton-root": {
-          color: "#000000", // BLACK text
-          fontWeight: 500,
-        },
+                                padding: "16px",
+                              }, "& .MuiDialogActions-root .MuiButton-root": {
+                                color: "#000000", // BLACK text
+                                fontWeight: 500,
+                              },
 
-        "& .MuiDialogActions-root .MuiButton-root:hover": {
-          backgroundColor: "rgba(0, 0, 0, 0.04)",
-        },
+                              "& .MuiDialogActions-root .MuiButton-root:hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.04)",
+                              },
                             },
                           },
                           popper: {
-                            
-                            sx: {
-                              
-                              "& .MuiDialogActions-root": {
-          padding: "16px",
-        },"& .MuiDialogActions-root .MuiButton-root": {
-          color: "#000000", // BLACK text
-          fontWeight: 500,
-        },
 
-        "& .MuiDialogActions-root .MuiButton-root:hover": {
-          backgroundColor: "rgba(0, 0, 0, 0.04)",
-        },
+                            sx: {
+
+                              "& .MuiDialogActions-root": {
+                                padding: "16px",
+                              }, "& .MuiDialogActions-root .MuiButton-root": {
+                                color: "#000000", // BLACK text
+                                fontWeight: 500,
+                              },
+
+                              "& .MuiDialogActions-root .MuiButton-root:hover": {
+                                backgroundColor: "rgba(0, 0, 0, 0.04)",
+                              },
                             },
                           },
                         }}
-                       
+
                       />
                     </Stack>
 

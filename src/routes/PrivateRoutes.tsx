@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import type { JSX } from "react";
 import { useAppSelector } from "../rtk/store";
 import type { RootState } from "../rtk/store";
+import { calculateProfileComplete } from "../utils/helper";
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
@@ -22,7 +23,15 @@ export default function PrivateRoute({
 
   // Logged in but role is not allowed → redirect to dashboard
   if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    const completion = calculateProfileComplete(
+      {
+        displayName: user?.displayName ?? "",
+        profilePhoto: user?.profilePhoto ?? "",
+        businessDescription: user?.businessDescription ?? "",
+      },
+      false
+    );
+    return <Navigate to={completion >= 50 ? "/services-offered" : "/my-profile"} replace />;
   }
 
   return children;

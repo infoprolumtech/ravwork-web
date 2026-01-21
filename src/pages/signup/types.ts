@@ -11,10 +11,7 @@ export interface Step2FormInputs {
 }
 
 export interface Step3FormInputs {
-  paymentMethod: string;
-  cardNumber?: string;
-  expiryDate?: string;
-  securityCode?: string;
+  paymentProvider: "stripe" | string;
 }
 
 export interface Step4FormInputs {

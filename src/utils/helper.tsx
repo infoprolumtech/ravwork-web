@@ -56,6 +56,15 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     padding: "12px 16px",
     borderRadius: "100px",
+    // Light color text selection
+    "&::selection": {
+      backgroundColor: "#E3F0F8", // Light blue background
+      color: colors["Base-Dark"], // Dark text
+    },
+    "&::-moz-selection": {
+      backgroundColor: "#E3F0F8", // Light blue background
+      color: colors["Base-Dark"], // Dark text
+    },
     // Override browser autofill styling - only affects the input field itself
     "&:-webkit-autofill": {
       WebkitBoxShadow: `0 0 0 1000px ${theme.palette.primary.light} inset !important`,

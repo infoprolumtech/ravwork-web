@@ -26,6 +26,7 @@ interface Step4Props {
 export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = false, isSkipping = false }: Step4Props) => {
   const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const [activeAction, setActiveAction] = useState<"skip" | "next" | null>(null);
   const dispatch = useAppDispatch();
   const [generatePresignedUrl] = useGeneratePresignedUrlMutation();
 
@@ -51,6 +52,13 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
       }
     }
   }, [initialData, form]);
+
+  // Reset which button shows loader when network calls finish.
+  useEffect(() => {
+    if (!isSubmitting && !isSkipping) {
+      setActiveAction(null);
+    }
+  }, [isSubmitting, isSkipping]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -137,12 +145,18 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
   };
 
   const handleSubmit = async (data: Step4FormInputs) => {
+    setActiveAction("next");
     // Validate form before submitting (only when clicking Next)
     const isValid = await form.trigger();
     if (!isValid) {
       return; // Don't submit if validation fails
     }
     onNext(data);
+  };
+
+  const handleSkip = () => {
+    setActiveAction("skip");
+    onSkip();
   };
 
   const handleBackClick = () => {
@@ -494,7 +508,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
           <Button
             fullWidth
             variant="outlined"
-            onClick={onSkip}
+            onClick={handleSkip}
             disabled={isSkipping || isSubmitting}
             sx={{
               borderColor: "#D1D5DB",
@@ -510,7 +524,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
               }
             }}
           >
-            {isSkipping ? (
+            {isSkipping && activeAction === "skip" ? (
               <CircularProgress size={24} sx={{ color: colors["Base-Dark"] }} />
             ) : (
               "Skip"
@@ -526,7 +540,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
               height: { xs: "44px", sm: "48px" },
             }}
           >
-            {isSubmitting ? (
+            {isSubmitting && activeAction === "next" ? (
               <CircularProgress size={24} sx={{ color: "#fff" }} />
             ) : (
               "Next"
