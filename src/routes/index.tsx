@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { useRoutes, Navigate } from "react-router-dom";
 
 // Auth & Common Pages
 import LoginPage from "../pages/login";
@@ -176,14 +176,20 @@ export default function AppRoutes() {
   ),
 },
 
-    // Notifications
+    // Email and SMS
     {
-      path: "/notifications",
+      path: "/email-and-sms",
       element: (
         <PrivateRoute>
           <Notifications />
         </PrivateRoute>
       ),
+    },
+
+    // Backward compatible route (old path)
+    {
+      path: "/notifications",
+      element: <Navigate to="/email-and-sms" replace />,
     },
 
     // Manage Subscription

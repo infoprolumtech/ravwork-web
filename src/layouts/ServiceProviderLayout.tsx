@@ -75,10 +75,10 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     path: "/my-profile",
   },
   {
-    segment: "notifications",
+    segment: "email-and-sms",
     title: "Email and SMS",
     icon: "/assets/icons/sidebar_menu_icon/bell.svg",
-    path: "/notifications",
+    path: "/email-and-sms",
   },
   {
     segment: "manage-subscription",
