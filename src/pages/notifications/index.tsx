@@ -53,9 +53,9 @@ export default function NotificationsPage(): JSX.Element {
             <Typography sx={{ fontSize: "24px", fontWeight: 600, color: "#111927" }}>
               Email and SMS
             </Typography>
-            <Typography sx={{ fontSize: "16px", color: "#6C737F", mt: 0.5 }}>
+            {/* <Typography sx={{ fontSize: "16px", color: "#6C737F", mt: 0.5 }}>
               Enable how you want to receive notifications.
-            </Typography>
+            </Typography> */}
           </Box>
 
           <Stack spacing={0} sx={{ px: { xs: 2, md: 2.5 }, py: 1 }}>
@@ -68,12 +68,12 @@ export default function NotificationsPage(): JSX.Element {
               }}
             >
               <Box>
-                <Typography sx={{ fontSize: "16px", fontWeight: 600, color: "#111927" }}>
+                <Typography sx={{ fontSize: "16px", fontWeight: 500, color: "#111927" }}>
                   Email
                 </Typography>
-                <Typography sx={{ fontSize: "14px", color: "#6C737F" }}>
+                {/* <Typography sx={{ fontSize: "14px", color: "#6C737F" }}>
                   Booking updates, reminders, and account notifications.
-                </Typography>
+                </Typography> */}
               </Box>
               <Switch
                 checked={emailEnabled}
@@ -92,12 +92,12 @@ export default function NotificationsPage(): JSX.Element {
               }}
             >
               <Box>
-                <Typography sx={{ fontSize: "16px", fontWeight: 600, color: "#111927" }}>
+                <Typography sx={{ fontSize: "16px", fontWeight: 500, color: "#111927" }}>
                   SMS
                 </Typography>
-                <Typography sx={{ fontSize: "14px", color: "#6C737F" }}>
+                {/* <Typography sx={{ fontSize: "14px", color: "#6C737F" }}>
                   Time-sensitive alerts via text message.
-                </Typography>
+                </Typography> */}
               </Box>
               <Switch
                 checked={smsEnabled}
