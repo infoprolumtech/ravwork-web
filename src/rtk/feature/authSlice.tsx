@@ -28,7 +28,7 @@ const authSlice = createSlice({
     },
     clearSignupToken: (state) => {
       state.signupToken = null;
-    },
+  },
     setSubscriptionStatus: (state, action: PayloadAction<AuthState["subscriptionStatus"]>) => {
       state.subscriptionStatus = action.payload;
     },

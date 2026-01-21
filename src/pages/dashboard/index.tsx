@@ -366,12 +366,12 @@ export default function Dashboard() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 {/* Icon */}
                 <Avatar
-                  src={profilePhotoUrl }
+                  src={profilePhotoUrl}
                   sx={{
                     width: 44,
                     height: 44,
-                   
-                    display: { xs: "none", sm: "flex" },
+                    display: "flex",
+                    flexShrink: 0,
                   }}
                 >
                   

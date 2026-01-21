@@ -258,7 +258,7 @@ export default function SignUpPage(): JSX.Element {
   const handleStep2Submit = async (data: Step2FormInputs) => {
     // Step 2: Create Stripe checkout session and redirect to Stripe
     try {
-      setStep2Data(data);
+    setStep2Data(data);
 
       if (!hasAuthToken) {
         dispatch(showAlert({ message: "Please login to continue.", severity: "error" }));
@@ -292,7 +292,7 @@ export default function SignUpPage(): JSX.Element {
       const message = extractErrorMessage(error, "Failed to start checkout. Please try again.");
       if (typeof message === "string" && message.toLowerCase().includes("active subscription")) {
         dispatch(showAlert({ message: "You already have an active subscription. Let’s finish setting up your profile.", severity: "success" }));
-        setCurrentStep(4);
+    setCurrentStep(4);
         navigate("/signup", { replace: true, state: { resumeStep: 4 } });
         return;
       }
