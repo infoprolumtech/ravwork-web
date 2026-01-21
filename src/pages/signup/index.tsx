@@ -13,6 +13,7 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import { setSignupToken, clearSignupToken, logoutUser, loginUser, setSubscriptionStatus } from "../../rtk/feature/authSlice";
 import { extractErrorMessage } from "../../utils/helper";
 import { calculateProfileComplete } from "../../utils/helper";
+import serviceApi from "../../rtk/endpoints/serviceApi";
 
 interface LocationState {
   resumeStep?: number;
@@ -69,23 +70,34 @@ export default function SignUpPage(): JSX.Element {
   }, [dispatch, getSubscriptionStatus]);
 
   const navigateAfterSignup = useCallback(
-    (userData: import("../../types").User) => {
+    async (userData: import("../../types").User) => {
+      // Profile completion = up to 50 from profile fields + 50 if services exist
+      let hasServices = false;
+      try {
+        const servicesResult = await dispatch(
+          serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 })
+        ).unwrap();
+        hasServices = Array.isArray(servicesResult)
+          ? servicesResult.length > 0
+          : Array.isArray((servicesResult as any)?.data)
+            ? (servicesResult as any).data.length > 0
+            : false;
+      } catch {
+        // If service fetch fails, fall back to profile-fields-only completion
+      }
+
       const completion = calculateProfileComplete(
         {
           displayName: userData.displayName ?? "",
           profilePhoto: userData.profilePhoto ?? "",
           businessDescription: userData.businessDescription ?? "",
         },
-        false // user won't have services at this point
+        hasServices
       );
 
-      if (completion >= 50) {
-        navigate("/services-offered", { replace: true });
-      } else {
-        navigate("/my-profile", { replace: true });
-      }
+      navigate(completion >= 50 ? "/services-offered" : "/my-profile", { replace: true });
     },
-    [navigate]
+    [dispatch, navigate]
   );
 
   // Only load plans when we actually reach Step 2 (after Step 1 completes).

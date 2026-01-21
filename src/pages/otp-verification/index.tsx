@@ -1,17 +1,11 @@
 import { useEffect, useState, type JSX } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, Button, Typography, IconButton } from "@mui/material";
 import SignupLayout from "../../layouts/SignupLayout";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // OTP verification is not part of the current API flow - this page may need to be updated
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import OTPInput from "../../components/Otp";
-
 
 export default function OTPVerificationPage(): JSX.Element {
   const [searchParams] = useSearchParams();
@@ -53,7 +47,6 @@ export default function OTPVerificationPage(): JSX.Element {
       dispatch(showAlert({ message: "OTP verified successfully", severity: "success" }));
       localStorage.removeItem("loginToken");
       localStorage.removeItem("userEmail");
-      // Route based on profile completion rule (not dashboard)
       navigate("/my-profile");
     }
   }, [isVerifySuccess, dispatch, navigate]);
@@ -135,44 +128,40 @@ export default function OTPVerificationPage(): JSX.Element {
           <OTPInput otp={otp} setOtp={setOtp} inputLength={6} />
         </Box>
 
+        {/* Verify Button */}
+        <Button
+          fullWidth
+          variant="secondary"
+          disabled={!isOtpComplete}
+          onClick={handleVerifyOtp}
+          sx={{ height: 48, mb: 2 }}
+        >
+          Verify
+        </Button>
+
         {/* Resend OTP */}
         <Typography
           variant="body2"
           textAlign="center"
-          mb={3}
-          sx={{
-            color: "#6C737F",
-            cursor: "pointer",
-            "&:hover": {
-              textDecoration: "underline",
-            },
-          }}
-          onClick={handleResendOtp}
+          sx={{ color: "#6C737F" }}
         >
-          Didn't receive the code? <span style={{ color: "#111927", fontWeight: 600 }}>Resend</span>
-        </Typography>
-
-        <Box
-          sx={{
-            width: "100%",
-            position: { xs: "fixed", sm: "static" },
-            bottom: { xs: 0, sm: "auto" },
-            left: { xs: 0, sm: "auto" },
-            p: { xs: 2, sm: 0 },
-            backgroundColor: { xs: "#fff", sm: "transparent" },
-            zIndex: { xs: 10, sm: "auto" },
-          }}
-        >
-          <Button
-            fullWidth
-            variant="secondary"
-            onClick={handleVerifyOtp}
-            disabled={!isOtpComplete}
+          Didn&apos;t receive code?{" "}
+          <Typography
+            component="span"
+            sx={{
+              fontWeight: 600,
+              color: "#111927",
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" },
+            }}
+            onClick={handleResendOtp}
           >
-            Verify OTP
-          </Button>
-        </Box>
+            Resend
+          </Typography>
+        </Typography>
       </Box>
     </SignupLayout>
   );
 }
+
+

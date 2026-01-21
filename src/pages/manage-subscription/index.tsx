@@ -521,6 +521,8 @@ export default function ManageSubscriptionPage(): JSX.Element {
         <DialogContent
           sx={{
             p: { xs: 2, sm: 3 },
+            // On mobile, add safe-area padding so the header isn't hidden under the status bar/browser UI
+            pt: { xs: "calc(env(safe-area-inset-top, 0px) + 50px)", sm: 3 },
             height: { xs: "100%", sm: "auto" },
             minHeight: { xs: "100%", sm: "auto" },
             overflowY: "auto",
