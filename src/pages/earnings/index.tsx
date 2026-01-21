@@ -244,7 +244,9 @@ export default function EarningsPage(): JSX.Element {
               label="From"
               value={fromDate}
               onChange={handleFromDateChange}
+              closeOnSelect={false}
               slotProps={{
+                actionBar: { actions: ["clear", "cancel", "accept"] },
                 textField: {
                   sx: {
                     ...pickerTextFieldStyles,
@@ -302,6 +304,16 @@ export default function EarningsPage(): JSX.Element {
                                   "&:hover": {
                                     backgroundColor: "#F3F4F6",
                                   },
+                                },
+                              },
+                              "& .MuiPickersLayout-actionBar": {
+                                padding: "16px",
+                                "& .MuiButton-root": {
+                                  color: "#000000",
+                                  fontWeight: 500,
+                                },
+                                "& .MuiButton-root:hover": {
+                                  backgroundColor: "rgba(0, 0, 0, 0.04)",
                                 },
                               },
                             },
@@ -362,7 +374,9 @@ export default function EarningsPage(): JSX.Element {
               value={toDate}
               onChange={handleToDateChange}
               minDate={fromDate || undefined}
+              closeOnSelect={false}
               slotProps={{
+                actionBar: { actions: ["clear", "cancel", "accept"] },
                 textField: {
                   sx: {
                     ...pickerTextFieldStyles,
@@ -421,6 +435,16 @@ export default function EarningsPage(): JSX.Element {
                                   "&:hover": {
                                     backgroundColor: "#F3F4F6",
                                   },
+                                },
+                              },
+                              "& .MuiPickersLayout-actionBar": {
+                                padding: "16px",
+                                "& .MuiButton-root": {
+                                  color: "#000000",
+                                  fontWeight: 500,
+                                },
+                                "& .MuiButton-root:hover": {
+                                  backgroundColor: "rgba(0, 0, 0, 0.04)",
                                 },
                               },
                             },

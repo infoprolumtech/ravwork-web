@@ -38,6 +38,25 @@ const formatPrice = (price: number, currency: string) => {
   }
 };
 
+const formatDisplayDate = (value?: string | Date | null): string => {
+  if (!value) return "N/A";
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "N/A";
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).formatToParts(d);
+
+  const month = parts.find((p) => p.type === "month")?.value ?? "";
+  const day = parts.find((p) => p.type === "day")?.value ?? "";
+  const year = parts.find((p) => p.type === "year")?.value ?? "";
+
+  // Match requested format: `Jan 21, 2017`
+  return `${month} ${day}, ${year}`.trim();
+};
+
 export default function ManageSubscriptionPage(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -81,7 +100,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
         changePlan({ priceId: upgradePriceId })
           .unwrap()
           .then(() => {
-            dispatch(showAlert({ message: "Plan upgrade scheduled successfully!", severity: "success" }));
+            dispatch(showAlert({ message: "Plan upgraded successfully", severity: "success" }));
             refetch();
           })
           .catch((error: unknown) => {
@@ -185,14 +204,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
       setChangePlanDialogOpen(false);
       setSelectedPlanData(null);
       
-      // Show success message indicating upgrade will start after current plan expires
-      const currentPeriodEnd = subscription?.currentPeriodEnd 
-        ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
-        : "current billing period";
-      dispatch(showAlert({ 
-        message: `Upgrade scheduled successfully! Your plan will upgrade to ${selectedPlan.name} after your current plan expires on ${currentPeriodEnd}.`, 
-        severity: "success" 
-      }));
+      dispatch(showAlert({ message: "Plan upgraded successfully", severity: "success" }));
       
       // Refresh subscription status
       refetch();
@@ -259,9 +271,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
   const priceText = plan
     ? `${formatPrice(plan.price, plan.currency)} / ${plan.interval === "month" ? "Month" : "Year"}`
     : "N/A";
-  const renewalDate = subscription.renewsOn || subscription.currentPeriodEnd
-    ? (subscription.renewsOn || (subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }) : "N/A"))
-    : "N/A";
+  const renewalDate = formatDisplayDate(subscription.renewsOn || subscription.currentPeriodEnd);
 
 
   return (

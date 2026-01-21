@@ -412,53 +412,53 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
 
             {/* Progress Card - hidden once completion reaches 100% */}
             {profileComplete < 100 && (
-              <Box
+            <Box
+              sx={{
+                backgroundColor: "#F7F9FB",
+                borderRadius: "14px",
+                px: 2,
+                py: 1.5,
+                width: "100%",
+              }}
+            >
+              <Typography
                 sx={{
-                  backgroundColor: "#F7F9FB",
-                  borderRadius: "14px",
-                  px: 2,
-                  py: 1.5,
-                  width: "100%",
+                  fontSize: "11px",
+                  color: "#6C737F",
+                  fontWeight: 500,
                 }}
               >
-                <Typography
-                  sx={{
-                    fontSize: "11px",
-                    color: "#6C737F",
-                    fontWeight: 500,
-                  }}
-                >
-                  Get More Clients with a complete Profile
-                </Typography>
+                Get More Clients with a complete Profile
+              </Typography>
 
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={profileComplete}
-                    sx={{
-                      flex: 1,
-                      height: 6,
+                <LinearProgress
+                  variant="determinate"
+                  value={profileComplete}
+                  sx={{
+                    flex: 1,
+                    height: 6,
+                    borderRadius: 6,
+                    backgroundColor: "#E5E7EB",
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: "#12B76A",
                       borderRadius: 6,
-                      backgroundColor: "#E5E7EB",
-                      "& .MuiLinearProgress-bar": {
-                        backgroundColor: "#12B76A",
-                        borderRadius: 6,
-                      },
-                    }}
-                  />
+                    },
+                  }}
+                />
 
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      color: "#111927",
-                      minWidth: "36px",
-                      textAlign: "right",
-                    }}
-                  >
-                    {profileComplete}%
-                  </Typography>
-                </Stack>
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#111927",
+                    minWidth: "36px",
+                    textAlign: "right",
+                  }}
+                >
+                  {profileComplete}%
+                </Typography>
+              </Stack>
 
                 <Button
                   variant="contained"
@@ -482,7 +482,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
                   {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
                 </Button>
               </Box>
-            )}
+              )}
           </Box>
 
 
