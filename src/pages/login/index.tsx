@@ -12,6 +12,7 @@ import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import PasswordField from "../../components/shared/PasswordField";
 import AuthPageWrapper from "../../components/shared/AuthPageWrapper";
 import { calculateProfileComplete, extractErrorMessage } from "../../utils/helper";
+import serviceApi from "../../rtk/endpoints/serviceApi";
 
 interface LoginFormInputs {
   email: string;
@@ -54,21 +55,31 @@ export default function LoginPage(): JSX.Element {
       if (profileStep < 3) {
         navigate("/signup", { state: { resumeStep: profileStep + 1 } });
       } else {
-        // After login, route based on profile completion %
+        // After login, route based on profile completion % (profile fields + hasServices)
+        let hasServices = false;
+        try {
+          const servicesResult = await dispatch(
+            serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 })
+          ).unwrap();
+          hasServices = Array.isArray(servicesResult)
+            ? servicesResult.length > 0
+            : Array.isArray((servicesResult as any)?.data)
+              ? (servicesResult as any).data.length > 0
+              : false;
+        } catch {
+          // If service fetch fails, fall back to profile-fields-only completion
+        }
+
         const completion = calculateProfileComplete(
           {
             displayName: result.user?.displayName ?? "",
             profilePhoto: result.user?.profilePhoto ?? "",
             businessDescription: result.user?.businessDescription ?? "",
           },
-          false
+          hasServices
         );
 
-        if (completion >= 50) {
-          navigate("/services-offered");
-        } else {
-          navigate("/my-profile");
-        }
+        navigate(completion >= 50 ? "/services-offered" : "/my-profile");
       }
     } catch (error: unknown) {
       dispatch(showAlert({
