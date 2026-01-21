@@ -1,40 +1,144 @@
-import { useEffect, useState, type JSX } from "react";
-import { Box, Typography, Card, Stack, Switch } from "@mui/material";
+import { useEffect, useState, useRef, type JSX } from "react";
+import { Box, Typography, Card, Stack, Switch, styled } from "@mui/material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
+import {
+  useGetNotificationPreferencesQuery,
+  useUpdateNotificationPreferencesMutation,
+} from "../../rtk/endpoints/userApi";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import { extractErrorMessage } from "../../utils/helper";
+import NotificationsSkeleton from "../../components/skeletons/NotificationsSkeleton";
+
+// Styled Switch components with isolated styles - prevent any color changes
+const EmailSwitch = styled(Switch)({
+  "& .MuiSwitch-switchBase": {
+    color: "#9CA3AF", // Gray when unchecked
+    "&.Mui-checked": {
+      color: "#111927 !important", // Black when checked - force with !important
+    },
+    "&.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "#111927 !important", // Black track when checked
+    },
+  },
+  "& .MuiSwitch-track": {
+    backgroundColor: "#D1D5DB", // Gray track when unchecked
+  },
+  // Prevent any hover/focus color changes
+  "& .MuiSwitch-switchBase:hover": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiSwitch-switchBase.Mui-checked:hover": {
+    backgroundColor: "transparent",
+    color: "#111927 !important",
+  },
+});
+
+const SmsSwitch = styled(Switch)({
+  "& .MuiSwitch-switchBase": {
+    color: "#9CA3AF", // Gray when unchecked
+    "&.Mui-checked": {
+      color: "#111927 !important", // Black when checked - force with !important
+    },
+    "&.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "#111927 !important", // Black track when checked
+    },
+  },
+  "& .MuiSwitch-track": {
+    backgroundColor: "#D1D5DB", // Gray track when unchecked
+  },
+  // Prevent any hover/focus color changes
+  "& .MuiSwitch-switchBase:hover": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiSwitch-switchBase.Mui-checked:hover": {
+    backgroundColor: "transparent",
+    color: "#111927 !important",
+  },
+});
 
 export default function NotificationsPage(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const { data: preferences, isLoading, error } = useGetNotificationPreferencesQuery();
+  const [updatePreferences, { isLoading: isUpdating }] = useUpdateNotificationPreferencesMutation();
+
   const [emailEnabled, setEmailEnabled] = useState<boolean>(true);
   const [smsEnabled, setSmsEnabled] = useState<boolean>(true);
-  // Match the toggle used in service custom questions (Required toggle)
-  const requiredToggleSx = {
-    "& .MuiSwitch-switchBase.Mui-checked": {
-      color: "#111927",
-    },
-    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-      backgroundColor: "#111927",
-    },
-  } as const;
 
-  // Local-only persistence until backend preferences are available.
+  // Sync state with API data when it loads (only on initial load, not on updates)
+  const isInitialLoad = useRef(true);
   useEffect(() => {
-    try {
-      const storedEmail = localStorage.getItem("notifications.emailEnabled");
-      const storedSms = localStorage.getItem("notifications.smsEnabled");
-      if (storedEmail !== null) setEmailEnabled(storedEmail === "true");
-      if (storedSms !== null) setSmsEnabled(storedSms === "true");
-    } catch {
-      // ignore storage errors
+    if (preferences && isInitialLoad.current) {
+      setEmailEnabled(preferences.emailEnabled);
+      setSmsEnabled(preferences.smsEnabled);
+      isInitialLoad.current = false;
     }
-  }, []);
+  }, [preferences]);
 
-  useEffect(() => {
+  // Handle email toggle change
+  const handleEmailToggle = async (checked: boolean) => {
+    setEmailEnabled(checked);
     try {
-      localStorage.setItem("notifications.emailEnabled", String(emailEnabled));
-      localStorage.setItem("notifications.smsEnabled", String(smsEnabled));
-    } catch {
-      // ignore storage errors
+      const result = await updatePreferences({ emailEnabled: checked }).unwrap();
+      // Only update email state from API response, don't touch SMS
+      if (result.emailEnabled !== undefined) {
+        setEmailEnabled(result.emailEnabled);
+      }
+      dispatch(showAlert({ message: "Email notification preference updated", severity: "success" }));
+    } catch (error: unknown) {
+      // Revert on error
+      setEmailEnabled(!checked);
+      dispatch(showAlert({ message: extractErrorMessage(error, "Failed to update email preference"), severity: "error" }));
     }
-  }, [emailEnabled, smsEnabled]);
+  };
+
+  // Handle SMS toggle change
+  const handleSmsToggle = async (checked: boolean) => {
+    setSmsEnabled(checked);
+    try {
+      const result = await updatePreferences({ smsEnabled: checked }).unwrap();
+      // Only update SMS state from API response, don't touch email
+      if (result.smsEnabled !== undefined) {
+        setSmsEnabled(result.smsEnabled);
+      }
+      dispatch(showAlert({ message: "SMS notification preference updated", severity: "success" }));
+    } catch (error: unknown) {
+      // Revert on error
+      setSmsEnabled(!checked);
+      dispatch(showAlert({ message: extractErrorMessage(error, "Failed to update SMS preference"), severity: "error" }));
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <ServiceProviderLayout>
+        <NotificationsSkeleton />
+      </ServiceProviderLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <ServiceProviderLayout>
+        <Box sx={{ p: { xs: 1.5, md: 3 }, width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+          <Card
+            elevation={0}
+            sx={{
+              mt: 2,
+              border: "1px solid #E5E7EB",
+              borderRadius: "14px",
+              p: 3,
+              textAlign: "center",
+            }}
+          >
+            <Typography sx={{ fontSize: "16px", color: "#F97066" }}>
+              Failed to load notification preferences. Please try again.
+            </Typography>
+          </Card>
+        </Box>
+      </ServiceProviderLayout>
+    );
+  }
 
   return (
     <ServiceProviderLayout>
@@ -60,6 +164,7 @@ export default function NotificationsPage(): JSX.Element {
 
           <Stack spacing={0} sx={{ px: { xs: 2, md: 2.5 }, py: 1 }}>
             <Box
+              id="email-toggle-container"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -75,15 +180,16 @@ export default function NotificationsPage(): JSX.Element {
                   Booking updates, reminders, and account notifications.
                 </Typography> */}
               </Box>
-              <Switch
+              <EmailSwitch
                 checked={emailEnabled}
-                onChange={(e) => setEmailEnabled(e.target.checked)}
+                onChange={(e) => handleEmailToggle(e.target.checked)}
+                disabled={isUpdating}
                 inputProps={{ "aria-label": "Enable email notifications" }}
-                sx={requiredToggleSx}
               />
             </Box>
 
             <Box
+              id="sms-toggle-container"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -99,11 +205,11 @@ export default function NotificationsPage(): JSX.Element {
                   Time-sensitive alerts via text message.
                 </Typography> */}
               </Box>
-              <Switch
+              <SmsSwitch
                 checked={smsEnabled}
-                onChange={(e) => setSmsEnabled(e.target.checked)}
+                onChange={(e) => handleSmsToggle(e.target.checked)}
+                disabled={isUpdating}
                 inputProps={{ "aria-label": "Enable SMS notifications" }}
-                sx={requiredToggleSx}
               />
             </Box>
           </Stack>

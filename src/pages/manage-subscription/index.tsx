@@ -9,7 +9,6 @@ import {
   Menu,
   MenuItem,
   Typography,
-  CircularProgress,
   Dialog,
   DialogContent,
 } from "@mui/material";
@@ -29,6 +28,7 @@ import { showAlert } from "../../rtk/feature/alertSlice";
 import { extractErrorMessage } from "../../utils/helper";
 import { Step2 } from "../../components/signup/Step2";
 import type { Step2FormInputs } from "../../pages/signup/types";
+import ManageSubscriptionSkeleton from "../../components/skeletons/ManageSubscriptionSkeleton";
 
 const formatPrice = (price: number, currency: string) => {
   try {
@@ -219,19 +219,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
   if (isLoading) {
     return (
       <ServiceProviderLayout>
-        <Box
-          sx={{
-            p: { xs: 1.5, md: 3 },
-            width: "100%",
-            boxSizing: "border-box",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "400px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
+        <ManageSubscriptionSkeleton />
       </ServiceProviderLayout>
     );
   }
