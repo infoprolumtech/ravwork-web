@@ -73,6 +73,35 @@ export default function SignUpPage(): JSX.Element {
     isLoading: isPlansLoading,
   } = useGetSubscriptionPlansQuery(undefined, { skip: currentStep !== 2 });
 
+  // Check subscription status on mount/after login to skip to Step 4 if subscription is active
+  useEffect(() => {
+    // If we already have an active subscription in redux, skip to Step 4
+    if (isActiveOrTrialing(storedSubscriptionStatus)) {
+      if (currentStep === 2) {
+        setCurrentStep(4);
+      }
+      return;
+    }
+
+    // Only check if user is logged in and has auth token
+    if (!hasAuthToken || !isLoggedIn) return;
+
+    // Check subscription status when component mounts or user logs in
+    (async () => {
+      try {
+        const freshStatus = await fetchAndStoreSubscriptionStatus();
+        if (isActiveOrTrialing(freshStatus)) {
+          // If subscription is active and we're on step 2, go to step 4
+          if (currentStep === 2) {
+            setCurrentStep(4);
+          }
+        }
+      } catch {
+        // If status can't be fetched, keep user on current step
+      }
+    })();
+  }, [isLoggedIn, hasAuthToken, currentStep, fetchAndStoreSubscriptionStatus, isActiveOrTrialing, storedSubscriptionStatus]);
+
   // If the user already has an active subscription, skip Step 2 (plan selection) and go straight to Step 4.
   // We check both persisted redux state and the backend status endpoint (using signupToken/accessToken).
   useEffect(() => {
@@ -329,9 +358,15 @@ export default function SignUpPage(): JSX.Element {
 
   useEffect(() => {
     if (normalizedResumeStep > 1 && normalizedResumeStep <= 4) {
-      setCurrentStep(normalizedResumeStep);
+      // Before setting step, check if user has active subscription
+      // If they do, skip to step 4 regardless of resumeStep
+      if (isActiveOrTrialing(storedSubscriptionStatus)) {
+        setCurrentStep(4);
+      } else {
+        setCurrentStep(normalizedResumeStep);
+      }
     }
-  }, [normalizedResumeStep]);
+  }, [normalizedResumeStep, isActiveOrTrialing, storedSubscriptionStatus]);
 
   const isSignupCompleted = !!signupToken || (isLoggedIn && (user?.profileStep || 0) >= 1);
 

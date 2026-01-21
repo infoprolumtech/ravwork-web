@@ -46,4 +46,32 @@ export interface CreateSubscriptionCheckoutResponse {
   checkoutUrl: string;
 }
 
+// Cancel Subscription
+export interface CancelSubscriptionResponse {
+  message: string;
+  cancelAt: string;
+}
+
+// Resume Subscription
+export interface ResumeSubscriptionResponse {
+  message: string;
+}
+
+// Change Plan
+export interface ChangePlanRequest {
+  priceId: string;
+}
+
+export interface ChangePlanResponse {
+  message: string;
+}
+
+// Update Payment Method
+export interface UpdatePaymentMethodRequest {
+  paymentMethodId: string;
+}
+
+export interface UpdatePaymentMethodResponse {
+  message: string;
+}
 

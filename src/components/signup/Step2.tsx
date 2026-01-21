@@ -18,6 +18,15 @@ interface Step2Props {
   onBack?: () => void;
   isLoading?: boolean;
   plans?: SubscriptionPlan[];
+  // For Manage Subscription flow
+  title?: string;
+  hideBackIcon?: boolean;
+  hideProgressIndicator?: boolean;
+  hideTopIcon?: boolean;
+  hideTitle?: boolean; // Hide title when rendered in modal (title shown in modal header instead)
+  currentPlanId?: string; // ID of the current plan to disable
+  currentPlanInterval?: "month" | "year"; // Current plan interval to prevent downgrades
+  buttonText?: string;
 }
 
 const formatPrice = (price: number, currency: string) => {
@@ -29,7 +38,21 @@ const formatPrice = (price: number, currency: string) => {
   }
 };
 
-export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = [] }: Step2Props) => {
+export const Step2 = ({ 
+  onNext, 
+  initialData, 
+  onBack, 
+  isLoading = false, 
+  plans = [],
+  title,
+  hideBackIcon = false,
+  hideProgressIndicator = false,
+  hideTopIcon = false,
+  hideTitle = false,
+  currentPlanId,
+  currentPlanInterval,
+  buttonText = "Next",
+}: Step2Props) => {
   const form = useForm<Step2FormInputs>({
     resolver: yupResolver(step2Schema),
     defaultValues: initialData || { plan: "" },
@@ -87,24 +110,55 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
   const monthlyPlanId = monthlyPlan?.id;
   const yearlyPlanId = yearlyPlan?.id;
 
+  const isCurrentPlan = (planId: string | undefined) => Boolean(currentPlanId && planId === currentPlanId);
+  
+  // Prevent downgrades: if current plan is yearly, disable monthly (downgrade)
+  const isDowngrade = (planInterval: "month" | "year" | undefined) => {
+    if (!currentPlanInterval) return false;
+    // If current is yearly and trying to select monthly, that's a downgrade
+    return currentPlanInterval === "year" && planInterval === "month";
+  };
+  
+  const isMonthlyDisabled = Boolean(isCurrentPlan(monthlyPlanId) || isDowngrade("month"));
+  const isYearlyDisabled = Boolean(isCurrentPlan(yearlyPlanId));
+
+  // Check if selected plan is a downgrade or current plan
+  const selectedPlanId = form.watch("plan");
+  const selectedPlan = plans.find((p) => p.id === selectedPlanId);
+  const isSelectedPlanDowngrade = selectedPlan ? isDowngrade(selectedPlan.interval) : false;
+  const isSelectedPlanCurrent = Boolean(selectedPlanId && isCurrentPlan(selectedPlanId));
+  const isButtonDisabled = form.formState.isSubmitting || isLoading || !selectedPlanId || isSelectedPlanDowngrade || isSelectedPlanCurrent;
+
   return (
     <Box width="100%" maxWidth={{ xs: "100%", sm: "527px" }} component="form" onSubmit={form.handleSubmit(handleSubmit)} sx={{ mx: "auto", position: "relative" }}>
       {/* Back Icon - Above progress bar for large screens */}
-      <Box sx={backIconButtonSx}>
-        <IconButton onClick={handleBackClick} sx={iconButtonSx}>
-          <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24} />
-        </IconButton>
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
-        <ProgressIndicator currentStep={2} />
-      </Box>
+      {!hideBackIcon && (
+        <Box sx={backIconButtonSx}>
+          <IconButton onClick={handleBackClick} sx={iconButtonSx}>
+            <Icon src="/assets/icons/back-arrow.svg" alt="back-arrow" size={24} />
+          </IconButton>
+        </Box>
+      )}
+      {!hideProgressIndicator && (
+        <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 2, sm: 3 } }}>
+          <ProgressIndicator currentStep={2} />
+        </Box>
+      )}
 
       {/* Icon above title */}
-      <PageIcon iconSrc="/assets/icons/plan_icon.svg" iconAlt="icon" />
+      {!hideTopIcon && <PageIcon iconSrc="/assets/icons/plan_icon.svg" iconAlt="icon" />}
 
-      <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
-        Select plan to activate<br />your booking link.
-      </Typography>
+      {!hideTitle && (
+        <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
+          {title ? (
+            <span dangerouslySetInnerHTML={{ __html: title }} />
+          ) : (
+            <>
+              Select plan to activate<br />your booking link.
+            </>
+          )}
+        </Typography>
+      )}
 
       <Stack spacing={1} sx={{ mb: { xs: 2, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.75, sm: 1 } }}>
@@ -134,13 +188,44 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
               <FormControlLabel
                 value={monthlyPlanId || "monthly"}
                 control={<Box sx={{ display: "none" }} />}
-                onClick={() => monthlyPlanId && field.onChange(monthlyPlanId)}
+                onClick={() => monthlyPlanId && !isMonthlyDisabled && field.onChange(monthlyPlanId)}
+                disabled={isMonthlyDisabled}
                 label={
-                  <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", gap: 2 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", gap: 2, opacity: isMonthlyDisabled ? 0.6 : 1 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                      <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
-                        {monthlyPlan?.name || "Monthly"}
-                      </Typography>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
+                          {monthlyPlan?.name || "Monthly"}
+                        </Typography>
+                        {isCurrentPlan(monthlyPlanId) && (
+                          <Chip
+                            label="Current Plan"
+                            size="small"
+                            sx={{
+                              backgroundColor: colors["Gray-900"],
+                              borderRadius: "68px",
+                              color: colors["Base-White"],
+                              fontWeight: 600,
+                              fontSize: { xs: "9px", sm: "10px" },
+                              height: { xs: "18px", sm: "20px" },
+                            }}
+                          />
+                        )}
+                        {!isCurrentPlan(monthlyPlanId) && isDowngrade("month") && (
+                          <Chip
+                            label="Downgrade not allowed"
+                            size="small"
+                            sx={{
+                              backgroundColor: colors["Gray-700"],
+                              borderRadius: "68px",
+                              color: colors["Base-White"],
+                              fontWeight: 600,
+                              fontSize: { xs: "9px", sm: "10px" },
+                              height: { xs: "18px", sm: "20px" },
+                            }}
+                          />
+                        )}
+                      </Box>
                       <Box sx={{ display: "flex", mt: -1 }}>
                         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                       </Box>
@@ -148,20 +233,20 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
                         {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)} / Month` : "Loading..."}
                       </Typography>
                     </Box>
-                    <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId} />
+                    <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId && !isMonthlyDisabled} />
                   </Box>
                 }
                 sx={{
-                  border: "1px solid #D1D5DB",
+                  border: isMonthlyDisabled ? "1px solid #9CA3AF" : "1px solid #D1D5DB",
                   borderRadius: { xs: "12px", sm: "17px" },
                   p: { xs: 1.5, sm: 2 },
                   width: "100%",
                   minHeight: { xs: "80px", sm: "91px" },
                   height: "auto",
                   margin: 0,
-                  backgroundColor: "#E5ECF6",
-                  "&:hover": { backgroundColor: "#E5ECF6" },
-                  cursor: "pointer",
+                  backgroundColor: isMonthlyDisabled ? "#F3F4F6" : "#E5ECF6",
+                  "&:hover": { backgroundColor: isMonthlyDisabled ? "#F3F4F6" : "#E5ECF6" },
+                  cursor: isMonthlyDisabled ? "not-allowed" : "pointer",
                   "& .MuiFormControlLabel-label": {
                     marginLeft: 0,
                     width: "100%",
@@ -172,30 +257,49 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
               <FormControlLabel
                 value={yearlyPlanId || "yearly"}
                 control={<Box sx={{ display: "none" }} />}
-                onClick={() => yearlyPlanId && field.onChange(yearlyPlanId)}
+                onClick={() => yearlyPlanId && !isYearlyDisabled && field.onChange(yearlyPlanId)}
+                disabled={isYearlyDisabled}
                 label={
-                  <Box sx={{ position: "relative", width: "100%" }}>
-                    <Chip
-                      label="Save 20%"
-                      size="small"
-                      sx={{
-                        position: "absolute",
-                        top: { xs: -25, sm: -30 },
-                        right: 0,
-                        backgroundColor: "#BAEDBD",
-                        borderRadius: "68px",
-                        color: colors["Base-Dark"],
-                        fontWeight: 600,
-                        fontSize: { xs: "9px", sm: "10px" },
-                        height: { xs: "18px", sm: "20px" },
-                        zIndex: 1,
-                      }}
-                    />
+                  <Box sx={{ position: "relative", width: "100%", opacity: isYearlyDisabled ? 0.6 : 1 }}>
+                    {!isYearlyDisabled && (
+                      <Chip
+                        label="Save 31%"
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: { xs: -25, sm: -30 },
+                          right: 0,
+                          backgroundColor: "#BAEDBD",
+                          borderRadius: "68px",
+                          color: colors["Base-Dark"],
+                          fontWeight: 600,
+                          fontSize: { xs: "9px", sm: "10px" },
+                          height: { xs: "18px", sm: "20px" },
+                          zIndex: 1,
+                        }}
+                      />
+                    )}
                     <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", mt: 1, gap: 2 }}>
                       <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
-                          {yearlyPlan?.name || "Yearly"}
-                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
+                            {yearlyPlan?.name || "Yearly"}
+                          </Typography>
+                          {isCurrentPlan(yearlyPlanId) && (
+                            <Chip
+                              label="Current Plan"
+                              size="small"
+                              sx={{
+                                backgroundColor: colors["Gray-900"],
+                                borderRadius: "68px",
+                                color: colors["Base-White"],
+                                fontWeight: 600,
+                                fontSize: { xs: "9px", sm: "10px" },
+                                height: { xs: "18px", sm: "20px" },
+                              }}
+                            />
+                          )}
+                        </Box>
                         <Box sx={{ display: "flex", mt: -1 }}>
                           <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                         </Box>
@@ -206,21 +310,21 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
                           </Typography>
                         </Typography>
                       </Box>
-                      <CheckboxIcon checked={Boolean(yearlyPlanId) && field.value === yearlyPlanId} />
+                      <CheckboxIcon checked={Boolean(yearlyPlanId) && field.value === yearlyPlanId && !isYearlyDisabled} />
                     </Box>
                   </Box>
                 }
                 sx={{
-                  border: "1px solid #D1D5DB",
+                  border: isYearlyDisabled ? "1px solid #9CA3AF" : "1px solid #D1D5DB",
                   borderRadius: { xs: "12px", sm: "17px" },
                   p: { xs: 1.5, sm: 2 },
                   width: "100%",
                   minHeight: { xs: "80px", sm: "91px" },
                   height: "auto",
                   margin: 0,
-                  backgroundColor: "#E3F5FF",
-                  "&:hover": { backgroundColor: "#E3F5FF" },
-                  cursor: "pointer",
+                  backgroundColor: isYearlyDisabled ? "#F3F4F6" : "#E3F5FF",
+                  "&:hover": { backgroundColor: isYearlyDisabled ? "#F3F4F6" : "#E3F5FF" },
+                  cursor: isYearlyDisabled ? "not-allowed" : "pointer",
                   "& .MuiFormControlLabel-label": {
                     marginLeft: 0,
                     width: "100%",
@@ -246,9 +350,9 @@ export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = 
             mt: { xs: 0, sm: 3 },
             height: { xs: "44px", sm: "48px" },
           }}
-          disabled={form.formState.isSubmitting || isLoading}
+          disabled={isButtonDisabled}
         >
-          {isLoading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Next"}
+          {isLoading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : buttonText}
         </Button>
       </Box>
     </Box>

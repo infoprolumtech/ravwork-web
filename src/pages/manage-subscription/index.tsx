@@ -1,4 +1,5 @@
-import { type JSX, useState } from "react";
+import { type JSX, useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -9,9 +10,25 @@ import {
   MenuItem,
   Typography,
   CircularProgress,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
-import { useGetSubscriptionStatusQuery } from "../../rtk/endpoints/subscriptionApi";
+import {
+  useGetSubscriptionStatusQuery,
+  useCancelSubscriptionMutation,
+  useResumeSubscriptionMutation,
+  useGetSubscriptionPlansQuery,
+  useChangePlanMutation,
+} from "../../rtk/endpoints/subscriptionApi";
+import GlobalDialog from "../../components/dialog";
+import CommonDialog from "../../components/dialog/dialog-content/CommonDialog";
+import { useAppDispatch } from "../../rtk/store";
+import { showAlert } from "../../rtk/feature/alertSlice";
+import { extractErrorMessage } from "../../utils/helper";
+import { Step2 } from "../../components/signup/Step2";
+import type { Step2FormInputs } from "../../pages/signup/types";
 
 const formatPrice = (price: number, currency: string) => {
   try {
@@ -22,8 +39,20 @@ const formatPrice = (price: number, currency: string) => {
 };
 
 export default function ManageSubscriptionPage(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const { data: subscriptionStatus, isLoading, isError } = useGetSubscriptionStatusQuery();
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [resumeDialogOpen, setResumeDialogOpen] = useState(false);
+  const [changePlanDialogOpen, setChangePlanDialogOpen] = useState(false);
+  const [selectedPlanData, setSelectedPlanData] = useState<Step2FormInputs | null>(null);
+
+  const { data: subscriptionStatus, isLoading, isError, refetch } = useGetSubscriptionStatusQuery();
+  const { data: availablePlans = [] } = useGetSubscriptionPlansQuery();
+  const [cancelSubscription, { isLoading: isCancelling }] = useCancelSubscriptionMutation();
+  const [resumeSubscription, { isLoading: isResuming }] = useResumeSubscriptionMutation();
+  const [changePlan, { isLoading: isChangingPlan }] = useChangePlanMutation();
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,6 +65,144 @@ export default function ManageSubscriptionPage(): JSX.Element {
   const subscription = subscriptionStatus?.subscription;
   const plan = subscription?.plan;
   const hasSubscription = subscriptionStatus?.hasSubscription && subscription;
+  const canCancel = hasSubscription && !subscription.cancelAtPeriodEnd && (subscription.status === "active" || subscription.status === "past_due");
+  const canResume = hasSubscription && subscription.cancelAtPeriodEnd;
+  const canChangePlan = hasSubscription && subscription.status === "active" && !subscription.cancelAtPeriodEnd;
+
+  // Handle Stripe redirect after payment
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const subscriptionStatus = searchParams.get("subscription");
+    const upgradePriceId = searchParams.get("upgradePriceId");
+
+    if (subscriptionStatus === "success") {
+      // After Stripe success, apply/schedule plan change
+      if (upgradePriceId) {
+        changePlan({ priceId: upgradePriceId })
+          .unwrap()
+          .then(() => {
+            dispatch(showAlert({ message: "Plan upgrade scheduled successfully!", severity: "success" }));
+            refetch();
+          })
+          .catch((error: unknown) => {
+            dispatch(showAlert({ message: extractErrorMessage(error, "Failed to apply plan change. Please try again."), severity: "error" }));
+          })
+          .finally(() => {
+            // Clean up URL
+            navigate("/manage-subscription", { replace: true });
+          });
+      } else {
+        // If for some reason we don't have upgradePriceId, just refetch
+        dispatch(showAlert({ message: "Payment completed. Refreshing subscription status...", severity: "success" }));
+        refetch();
+        navigate("/manage-subscription", { replace: true });
+      }
+    } else if (subscriptionStatus === "cancel") {
+      dispatch(showAlert({ message: "Plan change was cancelled.", severity: "info" }));
+      // Clean up URL
+      navigate("/manage-subscription", { replace: true });
+    }
+  }, [location.search, dispatch, navigate, refetch, changePlan]);
+
+  const handleCancelClick = () => {
+    handleClose();
+    setCancelDialogOpen(true);
+  };
+
+  const handleResumeClick = () => {
+    handleClose();
+    setResumeDialogOpen(true);
+  };
+
+  const handleChangePlanClick = () => {
+    handleClose();
+    setChangePlanDialogOpen(true);
+    // Don't pre-select current plan - it will be disabled
+    setSelectedPlanData(null);
+  };
+
+  const handleCancelConfirm = async () => {
+    try {
+      await cancelSubscription(undefined).unwrap();
+      dispatch(showAlert({ message: "Subscription will be cancelled at the end of the current billing period.", severity: "success" }));
+      setCancelDialogOpen(false);
+      refetch();
+    } catch (error: unknown) {
+      dispatch(showAlert({ message: extractErrorMessage(error, "Failed to cancel subscription. Please try again."), severity: "error" }));
+    }
+  };
+
+  const handleResumeConfirm = async () => {
+    try {
+      await resumeSubscription(undefined).unwrap();
+      dispatch(showAlert({ message: "Subscription has been resumed successfully.", severity: "success" }));
+      setResumeDialogOpen(false);
+      refetch();
+    } catch (error: unknown) {
+      dispatch(showAlert({ message: extractErrorMessage(error, "Failed to resume subscription. Please try again."), severity: "error" }));
+    }
+  };
+
+  const handleChangePlanSubmit = async (data: Step2FormInputs) => {
+    if (!data.plan) {
+      dispatch(showAlert({ message: "Please select a plan.", severity: "error" }));
+      return;
+    }
+
+    // Don't allow selecting the current plan
+    if (data.plan === plan?.id) {
+      dispatch(showAlert({ message: "This is your current plan. Please select a different plan.", severity: "error" }));
+      return;
+    }
+
+    // Find the selected plan to get its backend plan UUID (for checkout API)
+    const selectedPlan = availablePlans.find((p) => p.id === data.plan);
+    if (!selectedPlan) {
+      dispatch(showAlert({ message: "Invalid plan selected. Please try again.", severity: "error" }));
+      return;
+    }
+
+    // Prevent downgrades: if current plan is yearly, don't allow selecting monthly
+    if (plan?.interval === "year" && selectedPlan.interval === "month") {
+      dispatch(showAlert({ message: "Downgrades are not allowed. You can only upgrade your plan.", severity: "error" }));
+      return;
+    }
+
+    // Verify this is an upgrade (monthly -> yearly)
+    const isUpgrade = plan?.interval === "month" && selectedPlan.interval === "year";
+    if (!isUpgrade && plan?.interval === selectedPlan.interval) {
+      dispatch(showAlert({ message: "Please select a different plan to upgrade.", severity: "error" }));
+      return;
+    }
+
+    try {
+      // Directly call changePlan endpoint for upgrades
+      await changePlan({
+        priceId: selectedPlan.stripePriceId, // Use Stripe price ID for change-plan endpoint
+      }).unwrap();
+
+      // Close modal after successful upgrade scheduling
+      setChangePlanDialogOpen(false);
+      setSelectedPlanData(null);
+      
+      // Show success message indicating upgrade will start after current plan expires
+      const currentPeriodEnd = subscription?.currentPeriodEnd 
+        ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
+        : "current billing period";
+      dispatch(showAlert({ 
+        message: `Upgrade scheduled successfully! Your plan will upgrade to ${selectedPlan.name} after your current plan expires on ${currentPeriodEnd}.`, 
+        severity: "success" 
+      }));
+      
+      // Refresh subscription status
+      refetch();
+    } catch (error: unknown) {
+      dispatch(showAlert({ 
+        message: extractErrorMessage(error, "Failed to schedule upgrade. Please try again."), 
+        severity: "error" 
+      }));
+    }
+  };
 
   if (isLoading) {
     return (
@@ -95,6 +262,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
   const renewalDate = subscription.renewsOn || subscription.currentPeriodEnd
     ? (subscription.renewsOn || (subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" }) : "N/A"))
     : "N/A";
+
 
   return (
     <ServiceProviderLayout>
@@ -249,29 +417,186 @@ export default function ManageSubscriptionPage(): JSX.Element {
                 },
               }}
             >
-              <MenuItem
-                onClick={handleClose}
-                sx={{
-                  fontWeight: 400,
-                  fontSize: "16px",
-                }}
-              >
-                Change Plan
-              </MenuItem>
-
-              <MenuItem
-                onClick={handleClose}
-                sx={{
-                  fontWeight: 400,
-                  fontSize: "16px",
-                }}
-              >
-                Cancel Subscription
-              </MenuItem>
+              {canChangePlan && (
+                <MenuItem
+                  onClick={handleChangePlanClick}
+                  sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                  }}
+                >
+                  Change Plan
+                </MenuItem>
+              )}
+              {canResume && (
+                <MenuItem
+                  onClick={handleResumeClick}
+                  sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                  }}
+                >
+                  Resume Subscription
+                </MenuItem>
+              )}
+              {canCancel && (
+                <MenuItem
+                  onClick={handleCancelClick}
+                  sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                    color: "#F97066",
+                  }}
+                >
+                  Cancel Subscription
+                </MenuItem>
+              )}
             </Menu>
           </Box>
         </Card>
       </Box>
+
+      {/* Cancel Subscription Dialog */}
+      <GlobalDialog
+        open={cancelDialogOpen}
+        handleClose={() => setCancelDialogOpen(false)}
+        component={
+          <CommonDialog
+            handleCancel={() => setCancelDialogOpen(false)}
+            handleConfirm={handleCancelConfirm}
+            title="Cancel Subscription"
+            subTitle="Are you sure you want to cancel your subscription? It will remain active until the end of the current billing period."
+            confirmText="Yes, Cancel"
+            cancelText="No, Keep Subscription"
+            confirmDisabled={isCancelling}
+          />
+        }
+      />
+
+      {/* Resume Subscription Dialog */}
+      <GlobalDialog
+        open={resumeDialogOpen}
+        handleClose={() => setResumeDialogOpen(false)}
+        component={
+          <CommonDialog
+            handleCancel={() => setResumeDialogOpen(false)}
+            handleConfirm={handleResumeConfirm}
+            title="Resume Subscription"
+            subTitle="Are you sure you want to resume your subscription? It will continue after the current billing period."
+            confirmText="Yes, Resume"
+            cancelText="No, Cancel"
+            confirmDisabled={isResuming}
+          />
+        }
+      />
+
+      {/* Change Plan Dialog - Using Step2 Component */}
+      <Dialog
+        open={changePlanDialogOpen}
+        onClose={() => {
+          setChangePlanDialogOpen(false);
+          setSelectedPlanData(null);
+        }}
+        maxWidth="md"
+        fullWidth
+        fullScreen={false}
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: 0, sm: "32px" },
+            maxWidth: { xs: "100%", sm: "600px", md: "600px", lg: "600px", xl: "600px" },
+            width: { xs: "100%", sm: "600px", md: "600px", lg: "600px", xl: "600px" },
+            maxHeight: { xs: "100vh", sm: "90vh" },
+            height: { xs: "100vh", sm: "auto" },
+            m: { xs: 0, sm: "auto" },
+            margin: { xs: 0, sm: "auto" },
+          },
+        }}
+        sx={{
+          "& .MuiBackdrop-root": {
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          },
+        }}
+      >
+        <DialogContent
+          sx={{
+            p: { xs: 2, sm: 3 },
+            height: { xs: "100%", sm: "auto" },
+            minHeight: { xs: "100%", sm: "auto" },
+            overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none",
+          }}
+        >
+          <Box sx={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+            {/* Header with title and close button in same row */}
+            <Box 
+              sx={{ 
+                display: "flex", 
+                justifyContent: "space-between", 
+                alignItems: { xs: "flex-start", sm: "center" },
+                mb: { xs: 1.5, sm: 2 },
+                gap: { xs: 1, sm: 2 },
+                flexWrap: "nowrap",
+              }}
+            >
+              <Typography 
+                variant="h5" 
+                fontWeight={600} 
+                sx={{ 
+                  fontSize: { xs: "18px", sm: "24px" }, 
+                  color: "#111927",
+                  flex: 1,
+                  minWidth: 0,
+                  lineHeight: { xs: 1.3, sm: 1.2 },
+                  pr: { xs: 1, sm: 0 },
+                }}
+              >
+                Change your subscription plan
+              </Typography>
+              <IconButton
+                onClick={() => {
+                  setChangePlanDialogOpen(false);
+                  setSelectedPlanData(null);
+                }}
+                sx={{
+                  color: "#6C737F",
+                  flexShrink: 0,
+                  p: { xs: 0.75, sm: 1 },
+                  "&:hover": { backgroundColor: "#F9FAFB" },
+                }}
+                size="small"
+              >
+                <Close sx={{ fontSize: { xs: "20px", sm: "24px" } }} />
+              </IconButton>
+            </Box>
+
+            {/* Step2 Component adapted for modal */}
+            <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: { xs: "flex-start", sm: "center" }, minHeight: 0, overflowY: "auto" }}>
+              <Step2
+                onNext={handleChangePlanSubmit}
+                initialData={selectedPlanData}
+                onBack={() => {
+                  setChangePlanDialogOpen(false);
+                  setSelectedPlanData(null);
+                }}
+                isLoading={isChangingPlan}
+                plans={availablePlans}
+                hideBackIcon={true}
+                hideProgressIndicator={true}
+                hideTopIcon={true}
+                hideTitle={true}
+                currentPlanId={plan?.id}
+                currentPlanInterval={plan?.interval}
+                buttonText="Continue to Checkout"
+              />
+            </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </ServiceProviderLayout>
   );
 }
