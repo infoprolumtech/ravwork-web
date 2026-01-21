@@ -160,6 +160,17 @@ export interface ExportEarningsResponse {
   message: string;
 }
 
+// Notification Preferences Types
+export interface NotificationPreferences {
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+}
+
+export interface UpdateNotificationPreferencesRequest {
+  emailEnabled?: boolean;
+  smsEnabled?: boolean;
+}
+
 const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // GET /api/v1/user/profile - Get user profile
@@ -272,6 +283,31 @@ const userApi = api.injectEndpoints({
         return response.data;
       },
     }),
+
+    // GET /api/v1/user/notification-preferences - Get notification preferences
+    getNotificationPreferences: builder.query<NotificationPreferences, void>({
+      query: () => ({
+        url: "/user/notification-preferences",
+        method: "GET",
+      }),
+      transformResponse: (response: ApiResponse<NotificationPreferences>): NotificationPreferences => {
+        return response.data;
+      },
+      providesTags: ["UserProfile"],
+    }),
+
+    // PUT /api/v1/user/notification-preferences - Update notification preferences
+    updateNotificationPreferences: builder.mutation<NotificationPreferences, UpdateNotificationPreferencesRequest>({
+      query: (body) => ({
+        url: "/user/notification-preferences",
+        method: "PUT",
+        body,
+      }),
+      transformResponse: (response: ApiResponse<NotificationPreferences>): NotificationPreferences => {
+        return response.data;
+      },
+      invalidatesTags: ["UserProfile"],
+    }),
   }),
 });
 
@@ -291,4 +327,6 @@ export const {
   useGetEarningsQuery,
   useLazyGetEarningsQuery,
   useExportEarningsMutation,
+  useGetNotificationPreferencesQuery,
+  useUpdateNotificationPreferencesMutation,
 } = userApi;
