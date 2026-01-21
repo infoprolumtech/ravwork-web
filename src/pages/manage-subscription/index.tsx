@@ -100,7 +100,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
         changePlan({ priceId: upgradePriceId })
           .unwrap()
           .then(() => {
-            dispatch(showAlert({ message: "Plan upgrade scheduled successfully!", severity: "success" }));
+            dispatch(showAlert({ message: "Plan upgraded successfully", severity: "success" }));
             refetch();
           })
           .catch((error: unknown) => {
@@ -204,14 +204,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
       setChangePlanDialogOpen(false);
       setSelectedPlanData(null);
       
-      // Show success message indicating upgrade will start after current plan expires
-      const currentPeriodEnd = subscription?.currentPeriodEnd
-        ? formatDisplayDate(subscription.currentPeriodEnd)
-        : "current billing period";
-      dispatch(showAlert({ 
-        message: `Upgrade scheduled successfully! Your plan will upgrade to ${selectedPlan.name} after your current plan expires on ${currentPeriodEnd}.`, 
-        severity: "success" 
-      }));
+      dispatch(showAlert({ message: "Plan upgraded successfully", severity: "success" }));
       
       // Refresh subscription status
       refetch();
