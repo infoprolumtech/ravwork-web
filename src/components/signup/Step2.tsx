@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Stack, Chip, IconButton } from "@mui/material";
+import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Stack, Chip, IconButton, CircularProgress } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { colors } from "../../utils/constants";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { step2Schema } from "../../pages/signup/validationSchemas";
 import type { Step2FormInputs } from "../../pages/signup/types";
+import type { SubscriptionPlan } from "../../types/subscription";
 import CheckboxIcon from "../shared/CheckboxIcon";
 import PageIcon from "../shared/PageIcon";
 import Icon from "../shared/Icon";
@@ -15,9 +16,20 @@ interface Step2Props {
   onNext: (data: Step2FormInputs) => void;
   initialData?: Step2FormInputs | null;
   onBack?: () => void;
+  isLoading?: boolean;
+  plans?: SubscriptionPlan[];
 }
 
-export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
+const formatPrice = (price: number, currency: string) => {
+  try {
+    // Plans API returns price in major currency units (e.g., 29 USD)
+    return new Intl.NumberFormat(undefined, { style: "currency", currency: currency.toUpperCase() }).format(price);
+  } catch {
+    return `${price} ${currency}`;
+  }
+};
+
+export const Step2 = ({ onNext, initialData, onBack, isLoading = false, plans = [] }: Step2Props) => {
   const form = useForm<Step2FormInputs>({
     resolver: yupResolver(step2Schema),
     defaultValues: initialData || { plan: "" },
@@ -30,6 +42,35 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
     }
   }, [initialData, form]);
 
+  // Backward compatibility: older persisted state used "monthly"/"yearly".
+  // Once plans are loaded, map those to backend plan UUIDs.
+  // Also, if we previously stored a Stripe price id ("price_..."), map it to the corresponding plan UUID.
+  useEffect(() => {
+    const current = form.getValues("plan");
+    if (!current) return;
+
+    const monthlyPlan = plans.find((p) => p.interval === "month");
+    const yearlyPlan = plans.find((p) => p.interval === "year");
+
+    // slug values
+    if (current === "monthly" && monthlyPlan?.id) {
+      form.setValue("plan", monthlyPlan.id, { shouldValidate: true });
+      return;
+    }
+    if (current === "yearly" && yearlyPlan?.id) {
+      form.setValue("plan", yearlyPlan.id, { shouldValidate: true });
+      return;
+    }
+
+    // stripe price id values
+    if (current.startsWith("price_")) {
+      const matched = plans.find((p) => p.stripePriceId === current);
+      if (matched?.id) {
+        form.setValue("plan", matched.id, { shouldValidate: true });
+      }
+    }
+  }, [plans, form]);
+
   const handleSubmit = (data: Step2FormInputs) => {
     onNext(data);
   };
@@ -40,6 +81,11 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
       onBack();
     }
   };
+
+  const monthlyPlan = plans.find((p) => p.interval === "month");
+  const yearlyPlan = plans.find((p) => p.interval === "year");
+  const monthlyPlanId = monthlyPlan?.id;
+  const yearlyPlanId = yearlyPlan?.id;
 
   return (
     <Box width="100%" maxWidth={{ xs: "100%", sm: "527px" }} component="form" onSubmit={form.handleSubmit(handleSubmit)} sx={{ mx: "auto", position: "relative" }}>
@@ -86,19 +132,23 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
           <FormControl fullWidth error={Boolean(form.formState.errors.plan)}>
             <RadioGroup {...field} sx={{ gap: 2 }}>
               <FormControlLabel
-                value="monthly"
+                value={monthlyPlanId || "monthly"}
                 control={<Box sx={{ display: "none" }} />}
-                onClick={() => field.onChange("monthly")}
+                onClick={() => monthlyPlanId && field.onChange(monthlyPlanId)}
                 label={
                   <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", gap: 2 }}>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                      <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>Monthly</Typography>
+                      <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
+                        {monthlyPlan?.name || "Monthly"}
+                      </Typography>
                       <Box sx={{ display: "flex", mt: -1 }}>
                         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                       </Box>
-                      <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>$15/ Month</Typography>
+                      <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
+                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)} / Month` : "Loading..."}
+                      </Typography>
                     </Box>
-                    <CheckboxIcon checked={field.value === "monthly"} />
+                    <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId} />
                   </Box>
                 }
                 sx={{
@@ -120,9 +170,9 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
               />
 
               <FormControlLabel
-                value="yearly"
+                value={yearlyPlanId || "yearly"}
                 control={<Box sx={{ display: "none" }} />}
-                onClick={() => field.onChange("yearly")}
+                onClick={() => yearlyPlanId && field.onChange(yearlyPlanId)}
                 label={
                   <Box sx={{ position: "relative", width: "100%" }}>
                     <Chip
@@ -143,18 +193,20 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
                     />
                     <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center", mt: 1, gap: 2 }}>
                       <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-                        <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>Yearly</Typography>
+                        <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
+                          {yearlyPlan?.name || "Yearly"}
+                        </Typography>
                         <Box sx={{ display: "flex", mt: -1 }}>
                           <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                         </Box>
                         <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                          $12/ Month{" "}
+                          {yearlyPlan ? `${formatPrice(yearlyPlan.price, yearlyPlan.currency)} / Year ` : "Loading... "}
                           <Typography component="span" sx={{ fontSize: { xs: "12px", sm: "14px" }, fontWeight: 400, color: "#6C737F" }}>
                             Billed Annually.
                           </Typography>
                         </Typography>
                       </Box>
-                      <CheckboxIcon checked={field.value === "yearly"} />
+                      <CheckboxIcon checked={Boolean(yearlyPlanId) && field.value === yearlyPlanId} />
                     </Box>
                   </Box>
                 }
@@ -194,9 +246,9 @@ export const Step2 = ({ onNext, initialData, onBack }: Step2Props) => {
             mt: { xs: 0, sm: 3 },
             height: { xs: "44px", sm: "48px" },
           }}
-          disabled={form.formState.isSubmitting}
+          disabled={form.formState.isSubmitting || isLoading}
         >
-          Next
+          {isLoading ? <CircularProgress size={24} sx={{ color: "#fff" }} /> : "Next"}
         </Button>
       </Box>
     </Box>

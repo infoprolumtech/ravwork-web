@@ -5,6 +5,7 @@ const initialState: AuthState = {
   isLogin: false,
   user: null,
   signupToken: null,
+  subscriptionStatus: null,
 };
 
 const authSlice = createSlice({
@@ -20,15 +21,19 @@ const authSlice = createSlice({
       state.isLogin = false;
       state.user = null;
       state.signupToken = null;
+      state.subscriptionStatus = null;
     },
     setSignupToken: (state, action: PayloadAction<string>) => {
       state.signupToken = action.payload;
     },
     clearSignupToken: (state) => {
       state.signupToken = null;
-  },
+    },
+    setSubscriptionStatus: (state, action: PayloadAction<AuthState["subscriptionStatus"]>) => {
+      state.subscriptionStatus = action.payload;
+    },
   },
 });
 
-export const { loginUser, logoutUser, setSignupToken, clearSignupToken } = authSlice.actions;
+export const { loginUser, logoutUser, setSignupToken, clearSignupToken, setSubscriptionStatus } = authSlice.actions;
 export default authSlice;
