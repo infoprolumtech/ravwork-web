@@ -235,7 +235,7 @@ export default function MyProfilePage(): JSX.Element {
                   width: 74,
                   height: 74,
                   border: "4px solid #FFFFFF",
-                  bgcolor: "#FFFFFF"
+                  
                 }}
                 imgProps={{
                   onError: (e) => {
