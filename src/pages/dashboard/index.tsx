@@ -193,7 +193,7 @@ export default function Dashboard() {
               <Box display="flex" alignItems="center" gap={2}>
                 <Avatar
                   {...(profilePhotoUrl && { src: profilePhotoUrl })}
-                  sx={{ width: 74, height: 74 }}
+                  sx={{ width: 74, height: 74, display: { xs: "none", sm: "flex" } }}
                 />
 
                 <Box flex={1} sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
@@ -370,7 +370,7 @@ export default function Dashboard() {
                   sx={{
                     width: 44,
                     height: 44,
-                    display: "flex",
+                    display: { xs: "none", sm: "flex" },
                     flexShrink: 0,
                   }}
                 >
