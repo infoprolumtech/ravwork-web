@@ -12,16 +12,17 @@ export type JobCardProps = {
   onViewDetails?: () => void;
 };
 
-const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
+const InfoItem = ({ icon, value, label }: any) => {
   const displayValue = value && value.trim() !== "" ? value : "N/A";
   
   return (
     <Stack 
       spacing={0.5} 
       sx={{ 
-        ...(fixedWidth ? { width: fixedWidth, minWidth: { xs: 0, sm: "140px" } } : { width: { xs: "100%", sm: "auto" }, minWidth: 0 }),
-        flex: { xs: "1 1 auto", sm: "0 0 auto" },
-        maxWidth: { xs: "100%", sm: "none" },
+        flex: { xs: "1 1 0", sm: "1 1 0", md: "1 1 0" },
+        minWidth: 0,
+        maxWidth: { xs: "100%", sm: "100%", md: "none" },
+        width: { xs: "100%", sm: "100%", md: "auto" },
       }}
     >
       <Stack 
@@ -31,6 +32,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
         sx={{ 
           minWidth: 0,
           width: "100%",
+          minHeight: { xs: 24, sm: 28 },
         }}
       >
     <Box
@@ -44,9 +46,10 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
         justifyContent: "center",
             flexShrink: 0,
             flexGrow: 0,
+            position: "relative",
       }}
     >
-          <img src={icon} width={14} height={14} alt="" />
+          <img src={icon} width={14} height={14} alt="" style={{ display: "block" }} />
     </Box>
 
         <Typography
@@ -62,6 +65,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
             lineHeight: 1.2,
             display: "flex",
             alignItems: "center",
+            minHeight: { xs: "20px", sm: "22px" },
           }}
         >
           {displayValue}
@@ -75,6 +79,7 @@ const InfoItem = ({ icon, value, label, fixedWidth }: any) => {
         sx={{ 
           pl: { xs: 3.5, sm: 4 },
           lineHeight: 1.2,
+          minHeight: { xs: "16px", sm: "18px" },
         }}
       >
         {label}
@@ -210,8 +215,8 @@ export default function JobCard({
       >
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          alignItems={{ xs: "flex-start", sm: "flex-start" }}
-          justifyContent={{ xs: "flex-start", sm: "space-between" }}
+          alignItems={{ xs: "flex-start", sm: "flex-start", md: "flex-start" }}
+          justifyContent={{ xs: "flex-start", sm: "space-between", md: "space-between" }}
           spacing={{ xs: 2, sm: 1.5, md: 2 }}
           sx={{
             flexWrap: { xs: "nowrap", sm: "wrap", md: "nowrap" },
@@ -222,48 +227,55 @@ export default function JobCard({
             icon="/assets/icons/personalcard.svg"
           value={clientName}
           label="Client Name"
-            fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
         />
 
         <InfoItem
             icon="/assets/icons/mail.svg"
           value={clientEmail}
           label="Client Email"
-            fixedWidth={{ xs: "100%", sm: "180px", md: "200px", lg: "220px" }}
         />
 
         <InfoItem
             icon="/assets/icons/phone.svg"
           value={clientPhone}
           label="Client Phone"
-            fixedWidth={{ xs: "100%", sm: "160px", md: "180px", lg: "200px" }}
           />
 
-          <Box sx={{ display: { xs: "none", sm: "block" }, flex: 1, minWidth: { sm: "20px", md: "40px" } }} />
-
-          <Button
-            size="small"
-            onClick={onViewDetails}
+          <Box
             sx={{
-              bgcolor: "#FFFFFF",
-              color: "#6C737F",
-              border: "1px solid #D1D5DB",
-              px: { xs: 2, sm: 2.5 },
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: { xs: 12, sm: 14 },
-              whiteSpace: "nowrap",
-              alignSelf: { xs: "flex-start", sm: "flex-start" },
-              mt: { xs: 0, sm: 0 },
-              width: { xs: "100%", sm: "auto" },
-              "&:hover": {
-                bgcolor: "#F9FAFB",
-                borderColor: "#9CA3AF",
-              },
+              display: "flex",
+              alignItems: "center",
+              flex: { xs: "1 1 100%", sm: "1 1 calc(50% - 6px)", md: "0 0 auto" },
+              minWidth: { xs: "100%", sm: "calc(50% - 6px)", md: "auto" },
+              maxWidth: { xs: "100%", sm: "calc(50% - 6px)", md: "none" },
+              justifyContent: { xs: "flex-start", sm: "flex-start", md: "flex-end" },
+              width: { xs: "100%", sm: "auto", md: "auto" },
             }}
           >
-            View Details
-          </Button>
+            <Button
+              size="small"
+              onClick={onViewDetails}
+              sx={{
+                bgcolor: "#FFFFFF",
+                color: "#6C737F",
+                border: "1px solid #D1D5DB",
+                px: { xs: 1.5, sm: 1.5, md: 1.5 },
+                py: { xs: 0.75, sm: 0.75, md: 0.75 },
+                textTransform: "none",
+                fontWeight: 500,
+                fontSize: { xs: 11, sm: 12, md: 12 },
+                whiteSpace: "nowrap",
+                minWidth: "auto",
+                width: { xs: "100%", sm: "auto", md: "auto" },
+                "&:hover": {
+                  bgcolor: "#F9FAFB",
+                  borderColor: "#9CA3AF",
+                },
+              }}
+            >
+              View Details
+            </Button>
+          </Box>
         </Stack>
         </Box>
     </Card>
