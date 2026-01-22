@@ -40,9 +40,8 @@ export default function EarningsCard({
         p: 2,
         borderRadius: 3,
         backgroundColor: backgroundColor || THEME_COLORS[theme].cardBg,
-        width: { xs: "140px", sm: 150, md: 260 },
-        maxWidth: 376,
-        flexGrow: 1,
+        width: "100%",
+        height: "100%",
       }}
     >
       <Stack spacing={2}>
