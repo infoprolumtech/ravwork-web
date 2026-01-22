@@ -257,7 +257,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
   }
 
   const priceText = plan
-    ? `${formatPrice(plan.price, plan.currency)} / ${plan.interval === "month" ? "Month" : "Year"}`
+    ? plan.interval === "year"
+      ? `${formatPrice(plan.price / 12, plan.currency)}/month (${formatPrice(plan.price, plan.currency)} Billed Annually.)`
+      : `${formatPrice(plan.price, plan.currency)}/month`
     : "N/A";
   const renewalDate = formatDisplayDate(subscription.renewsOn || subscription.currentPeriodEnd);
 
