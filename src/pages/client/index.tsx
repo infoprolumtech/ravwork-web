@@ -317,7 +317,7 @@ export default function ClientPage(): JSX.Element {
                 display: { xs: "none", sm: "flex" },
               }}
               src={profilePhotoUrl}
-              alt={profile.displayName || profile.username}
+             
 
             />
 
@@ -416,7 +416,7 @@ export default function ClientPage(): JSX.Element {
                       display: { xs: "flex", sm: "none" },
                     }}
                     src={profilePhotoUrl}
-                    alt={profile.displayName || profile.username}
+                    
                   />
 
                   <Button
