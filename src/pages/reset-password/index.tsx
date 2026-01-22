@@ -161,7 +161,7 @@ export default function ResetPasswordPage(): JSX.Element {
               <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: "18px", sm: "24px" } }}>
                 Congratulation!!
               </Typography>
-              <Typography variant="body2" color="#6C737F" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: "13px", sm: "14px" } }}>
+              <Typography variant="body2" color="#6C737F" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: "16px", sm: "16px" } }}>
                 Your Password has been Successfully changed
               </Typography>
 

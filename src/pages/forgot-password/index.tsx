@@ -135,7 +135,7 @@ export default function ForgotPassword(): JSX.Element {
               <Typography variant="h5" fontWeight={600} sx={{ fontSize: { xs: "18px", sm: "24px" } }}>
                 Please check your mail
               </Typography>
-              <Typography variant="body2" color="#6C737F" sx={{ fontSize: { xs: "13px", sm: "14px" } }}>
+              <Typography variant="body2" color="#6C737F" sx={{ fontSize: { xs: "16px", sm: "16px" } }}>
                 A reset password link has been sent to{" "}
                 <Box component="span" sx={{ fontWeight: 500, color: "#111927" }}>
                   {userEmail}
