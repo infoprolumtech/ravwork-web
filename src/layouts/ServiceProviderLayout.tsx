@@ -279,13 +279,27 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
 
   // Memoize current page info for breadcrumb
   const currentPageInfo = React.useMemo(() => {
+    // Handle special pages: Privacy Policy and Terms & Conditions
+    if (location.pathname === "/privacy-policy") {
+      return {
+        title: "Privacy Policy",
+        icon: "/assets/icons/sidebar_menu_icon/bell.svg", // Default icon, can be changed if needed
+      };
+    }
+    if (location.pathname === "/terms-and-conditions") {
+      return {
+        title: "Terms & Conditions",
+        icon: "/assets/icons/sidebar_menu_icon/bell.svg", // Default icon, can be changed if needed
+      };
+    }
+    
     const currentSegment = pathParts[0] || "dashboard";
     const navItem = NAVIGATION_ITEMS.find((item) => item.segment === currentSegment);
     return {
       title: navItem?.title || "Dashboard",
       icon: navItem?.icon || "/assets/icons/sidebar_menu_icon/ChartPieSlice.svg",
     };
-  }, [pathParts]);
+  }, [pathParts, location.pathname]);
 
   // Memoize user info - use username and displayName from API
   const userInfo = React.useMemo(
@@ -704,12 +718,15 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
               <MenuIcon />
             </IconButton>
             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 }, minWidth: 0 }}>
-              <Box
-                component="img"
-                src={currentPageInfo.icon}
-                alt={currentPageInfo.title}
-                sx={{ width: "20px", height: "20px", flexShrink: 0 }}
-              />
+              {/* Hide icon on Privacy Policy and Terms & Conditions pages */}
+              {location.pathname !== "/privacy-policy" && location.pathname !== "/terms-and-conditions" && (
+                <Box
+                  component="img"
+                  src={currentPageInfo.icon}
+                  alt={currentPageInfo.title}
+                  sx={{ width: "20px", height: "20px", flexShrink: 0 }}
+                />
+              )}
               <Typography
                 variant="body2"
                 sx={{
@@ -726,26 +743,28 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
             </Box>
           </Box>
 
-          {/* Right side - Logo */}
-          <Box sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: { xs: 0.5, md: 1 },
-            flexShrink: 0,
-          }}>
-            <Box
-              component="img"
-              src="/assets/icons/ravwork_logo_icon.svg"
-              alt="Ravwork Icon"
-              sx={{ height: "35px", width: "26px", maxWidth: "100%" }}
-            />
-            <Box
-              component="img"
-              src="/assets/icons/ravwork_logo_text.svg"
-              alt="Ravwork"
-              sx={{ width: "69px", height: "20px", maxWidth: "100%" }}
-            />
-          </Box>
+          {/* Right side - Logo (hidden on Privacy Policy and Terms & Conditions) */}
+          {location.pathname !== "/privacy-policy" && location.pathname !== "/terms-and-conditions" && (
+            <Box sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 0.5, md: 1 },
+              flexShrink: 0,
+            }}>
+              <Box
+                component="img"
+                src="/assets/icons/ravwork_logo_icon.svg"
+                alt="Ravwork Icon"
+                sx={{ height: "35px", width: "26px", maxWidth: "100%" }}
+              />
+              <Box
+                component="img"
+                src="/assets/icons/ravwork_logo_text.svg"
+                alt="Ravwork"
+                sx={{ width: "69px", height: "20px", maxWidth: "100%" }}
+              />
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
 

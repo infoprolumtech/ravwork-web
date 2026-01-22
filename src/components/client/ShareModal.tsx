@@ -36,39 +36,93 @@ export default function ShareModal({
   const handleSocialShare = (platform: string) => {
     const encodedUrl = encodeURIComponent(profileUrl);
     const encodedTitle = encodeURIComponent(profileName);
+    const shareText = `${profileName} ${profileUrl}`;
+    const encodedShareText = encodeURIComponent(shareText);
 
     let shareUrl = "";
     switch (platform) {
       case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        // Facebook: Include title and URL
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`;
         break;
       case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+        // Twitter: Include business name and URL
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodedShareText}`;
         break;
       case "instagram":
-        // Instagram doesn't support direct URL sharing, so copy to clipboard
-        navigator.clipboard.writeText(profileUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        // Instagram doesn't support direct URL sharing via web
+        // Try Web Share API first (works on mobile), then fallback to clipboard
+        if (navigator.share) {
+          // Try to include logo image if available
+          const shareData: any = {
+            title: profileName,
+            text: shareText,
+            url: profileUrl,
+          };
+          
+          // Use Ravwork logo for sharing
+          const ravworkLogoUrl = "/assets/icons/ravwork_logo_icon.svg";
+          fetch(ravworkLogoUrl)
+            .then((res) => {
+              if (!res.ok) throw new Error("Failed to fetch image");
+              return res.blob();
+            })
+            .then((blob) => {
+              const file = new File([blob], "ravwork-logo.png", { type: blob.type || "image/svg+xml" });
+              shareData.files = [file];
+              return navigator.share(shareData);
+            })
+            .catch(() => {
+              // If image fetch fails, share without image
+              navigator.share(shareData).catch(() => {
+                navigator.clipboard.writeText(shareText);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              });
+            });
+        } else {
+          // Desktop fallback: copy to clipboard with business name and link
+          navigator.clipboard.writeText(shareText);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }
         return;
       case "whatsapp":
-        shareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
+        // WhatsApp: Include business name and URL
+        shareUrl = `https://wa.me/?text=${encodedShareText}`;
         break;
       case "message":
         // Use Web Share API if available, otherwise fallback to SMS protocol
         if (navigator.share) {
-          navigator.share({
+          // Try to include logo image if available
+          const shareData: any = {
             title: profileName,
-            text: `Check out ${profileName}: ${profileUrl}`,
+            text: shareText,
             url: profileUrl,
-          }).catch(() => {
-            // Fallback to SMS if share fails
-            const smsUrl = `sms:?body=${encodedTitle}%20${encodedUrl}`;
-            window.location.href = smsUrl;
-          });
+          };
+          
+          // Use Ravwork logo for sharing
+          const ravworkLogoUrl = "/assets/icons/ravwork_logo_icon.svg";
+          fetch(ravworkLogoUrl)
+            .then((res) => {
+              if (!res.ok) throw new Error("Failed to fetch image");
+              return res.blob();
+            })
+            .then((blob) => {
+              const file = new File([blob], "ravwork-logo.png", { type: blob.type || "image/svg+xml" });
+              shareData.files = [file];
+              return navigator.share(shareData);
+            })
+            .catch(() => {
+              // If image fetch fails, share without image
+              navigator.share(shareData).catch(() => {
+                const smsUrl = `sms:?body=${encodedShareText}`;
+                window.location.href = smsUrl;
+              });
+            });
         } else {
           // Fallback to SMS protocol
-          const smsUrl = `sms:?body=${encodedTitle}%20${encodedUrl}`;
+          const smsUrl = `sms:?body=${encodedShareText}`;
           window.location.href = smsUrl;
         }
         return;
