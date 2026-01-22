@@ -12,10 +12,13 @@ import {
   Alert,
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@mui/material";
-import { useGetPublicProfileQuery, useCreateBookingMutation, type PublicService, type FormFieldResponse } from "../../rtk/endpoints/publicApi";
+import CloseIcon from "@mui/icons-material/Close";
+import { useGetPublicProfileQuery, useCreateBookingMutation, type PublicService } from "../../rtk/endpoints/publicApi";
 import { getCloudFrontUrl } from "../../utils/helper";
 import { colors } from "../../utils/constants";
+import { transformFormResponses } from "../../utils/formHelpers";
 import { useAppDispatch } from "../../rtk/store";
 import { showAlert } from "../../rtk/feature/alertSlice";
 import ClientContactInfoPage from "../../components/client/ClientContactInfoPage";
@@ -79,6 +82,7 @@ export default function ClientPage(): JSX.Element {
   const [questionsDialogOpen, setQuestionsDialogOpen] = useState(false);
   const [inquiryDialogOpen, setInquiryDialogOpen] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [phoneNumberDialogOpen, setPhoneNumberDialogOpen] = useState(false);
   const [contactDetails, setContactDetails] = useState<ContactDetails>({
     fullName: "",
     email: "",
@@ -178,87 +182,8 @@ export default function ClientPage(): JSX.Element {
     setContactDetails(data);
     try {
       const email = data.email?.trim();
-      // Convert formFieldValues to responses array
-      // Filter out empty values and ensure value is not null/undefined
-      const responses: FormFieldResponse[] = Object.entries(formFieldValues)
-        .filter(([fieldId, value]) => {
-          // Filter out empty strings, null, undefined, and empty arrays
-          if (value === null || value === undefined) return false;
-          if (typeof value === "string" && value.trim() === "") return false;
-          if (Array.isArray(value) && value.length === 0) return false;
-          // For date_time fields, check if at least one value is present (for non-required fields)
-          // or both are present (for required fields)
-          if (typeof value === "object" && !Array.isArray(value)) {
-            const dateTimeValue = value as { date?: string; time?: string };
-            const field = selectedService?.formFields?.find(f => f.id === fieldId);
-            // If field is required, both date and time must be present
-            if (field?.isRequired) {
-              return dateTimeValue.date && dateTimeValue.time && dateTimeValue.date !== "" && dateTimeValue.time !== "";
-            }
-            // If field is not required, allow if at least one is present
-            return (dateTimeValue.date && dateTimeValue.date !== "") || (dateTimeValue.time && dateTimeValue.time !== "");
-          }
-          return true;
-        })
-        .map(([fieldId, value]) => {
-          // Check if this is a date field (which now includes both date and time)
-          const field = selectedService?.formFields?.find(f => f.id === fieldId);
-          if (field?.fieldType === "date" && typeof value === "object" && !Array.isArray(value)) {
-            const dateTimeValue = value as { date?: string; time?: string };
-            // If both date and time are present, combine them
-            if (dateTimeValue.date && dateTimeValue.time) {
-              const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
-              return {
-                fieldId,
-                value: combinedValue,
-              };
-            }
-            // If only date is present, return date only
-            if (dateTimeValue.date) {
-              return {
-                fieldId,
-                value: dateTimeValue.date,
-              };
-            }
-            // If only time is present, return time only
-            if (dateTimeValue.time) {
-              return {
-                fieldId,
-                value: dateTimeValue.time,
-              };
-            }
-          }
-          // Also handle date_time for backward compatibility
-          if (field?.fieldType === "date_time" && typeof value === "object" && !Array.isArray(value)) {
-            const dateTimeValue = value as { date?: string; time?: string };
-            // If both date and time are present, combine them
-            if (dateTimeValue.date && dateTimeValue.time) {
-              const combinedValue = `${dateTimeValue.date}T${dateTimeValue.time}:00`;
-              return {
-                fieldId,
-                value: combinedValue,
-              };
-            }
-            // If only date is present, return date only
-            if (dateTimeValue.date) {
-              return {
-                fieldId,
-                value: dateTimeValue.date,
-              };
-            }
-            // If only time is present, return time only
-            if (dateTimeValue.time) {
-              return {
-                fieldId,
-                value: dateTimeValue.time,
-              };
-            }
-          }
-          return {
-            fieldId,
-            value: value as string | string[],
-          };
-        });
+      // Convert formFieldValues to responses array using helper
+      const responses = transformFormResponses(formFieldValues, selectedService);
 
       await createBooking({
         username,
@@ -392,7 +317,7 @@ export default function ClientPage(): JSX.Element {
                 display: { xs: "none", sm: "flex" },
               }}
               src={profilePhotoUrl}
-            // alt={profile.displayName || profile.username}
+              alt={profile.displayName || profile.username}
 
             />
 
@@ -491,7 +416,7 @@ export default function ClientPage(): JSX.Element {
                       display: { xs: "flex", sm: "none" },
                     }}
                     src={profilePhotoUrl}
-                  // alt={profile.displayName || profile.username}
+                    alt={profile.displayName || profile.username}
                   />
 
                   <Button
@@ -887,7 +812,7 @@ export default function ClientPage(): JSX.Element {
               }
               onClick={() => {
                 if (profile?.phoneNumber) {
-                  window.location.href = `tel:${profile.countryCode}${profile.phoneNumber}`;
+                  setPhoneNumberDialogOpen(true);
                 }
               }}
             >
@@ -921,7 +846,7 @@ export default function ClientPage(): JSX.Element {
               }
               onClick={() => {
                 if (profile?.phoneNumber) {
-                  window.location.href = `sms:${profile.countryCode}${profile.phoneNumber}`;
+                  setPhoneNumberDialogOpen(true);
                 }
               }}
             >
@@ -1196,6 +1121,97 @@ export default function ClientPage(): JSX.Element {
         profileUrl={window.location.href}
         profileName={profile?.displayName || profile?.username || ""}
       />
+
+      {/* Phone Number Dialog */}
+      <Dialog
+        open={phoneNumberDialogOpen}
+        onClose={() => setPhoneNumberDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: { xs: "16px 16px 0 0", sm: "16px" },
+            m: { xs: 0, sm: 2 },
+            maxHeight: { xs: "90vh", sm: "auto" },
+            position: { xs: "fixed", sm: "relative" },
+            bottom: { xs: 0, sm: "auto" },
+            width: { xs: "100%", sm: "auto" },
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            pb: 1,
+            px: { xs: 2, sm: 3 },
+            pt: { xs: 2, sm: 3 },
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: { xs: "18px", sm: "20px" },
+              fontWeight: 600,
+              color: "#111927",
+            }}
+          >
+            Contact Number
+          </Typography>
+          <IconButton
+            onClick={() => setPhoneNumberDialogOpen(false)}
+            sx={{
+              color: "#6C737F",
+              p: 0.5,
+              "&:hover": {
+                backgroundColor: "#F9FAFB",
+              },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            px: { xs: 2, sm: 3 },
+            pb: { xs: 3, sm: 3 },
+            pt: 0,
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              py: 2,
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: "16px",
+                color: "#6C737F",
+                textAlign: "center",
+              }}
+            >
+              Phone Number
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: "20px", sm: "24px" },
+                fontWeight: 600,
+                color: "#111927",
+                textAlign: "center",
+                wordBreak: "break-all",
+              }}
+            >
+              {profile?.countryCode && profile?.phoneNumber
+                ? `${profile.countryCode} ${profile.phoneNumber}`
+                : profile?.phoneNumber || "Not available"}
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

@@ -205,7 +205,7 @@ export default function EarningsPage(): JSX.Element {
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Total Earnings"
-              value={!summary || isFetching ? null : formatCurrency(summary.totalEarnings).replace("$", "")}
+              value={!summary || isFetching ? null : formatCurrency(summary.totalEarnings)}
               percentage={!summary || isFetching ? undefined : formatPercentage(summary.totalChange)}
               theme="theme1"
               backgroundColor="#E3F5FF"
@@ -214,7 +214,7 @@ export default function EarningsPage(): JSX.Element {
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Week"
-              value={!summary || isFetching ? null : formatCurrency(summary.weekEarnings).replace("$", "")}
+              value={!summary || isFetching ? null : formatCurrency(summary.weekEarnings)}
               percentage={!summary || isFetching ? undefined : formatPercentage(summary.weekChange)}
               theme="theme2"
               backgroundColor="#E3F5FF"
@@ -223,7 +223,7 @@ export default function EarningsPage(): JSX.Element {
             <EarningsCard
               icon="/assets/icons/IconText.svg"
               label="Earnings this Month"
-              value={!summary || isFetching ? null : formatCurrency(summary.monthEarnings).replace("$", "")}
+              value={!summary || isFetching ? null : formatCurrency(summary.monthEarnings)}
               percentage={!summary || isFetching ? undefined : formatPercentage(summary.monthChange)}
               theme="theme1"
               backgroundColor="#E3F5FF"
@@ -273,98 +273,98 @@ export default function EarningsPage(): JSX.Element {
                     },
                   },
                 },
-                 popper: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                borderRadius: "12px",
-                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                "& .MuiPickersCalendarHeader-root": {
-                                  padding: "16px",
-                                },
-                                "& .MuiDayCalendar-weekContainer": {
-                                  margin: "8px 0",
-                                },
-                                "& .MuiPickersDay-root": {
-                                  fontSize: "16px",
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "8px",
-                                  "&.Mui-selected": {
-                                    backgroundColor: "#111927",
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                      backgroundColor: "#384250",
-                                      color: "#FFFFFF",
-                                    },
-                                    "&:focus": {
-                                      backgroundColor: "#111927",
-                                      color: "#FFFFFF",
-                                    },
-                                  },
-                                  "&:hover": {
-                                    backgroundColor: "#F3F4F6",
-                                  },
-                                },
-                              },
-                              "& .MuiPickersLayout-actionBar": {
-                                padding: "16px",
-                                "& .MuiButton-root": {
-                                  color: "#000000",
-                                  fontWeight: 500,
-                                },
-                                "& .MuiButton-root:hover": {
-                                  backgroundColor: "rgba(0, 0, 0, 0.04)",
-                                },
-                              },
-                            },
+                popper: {
+                  sx: {
+                    "& .MuiPaper-root": {
+                      borderRadius: "12px",
+                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                      "& .MuiPickersCalendarHeader-root": {
+                        padding: "16px",
+                      },
+                      "& .MuiDayCalendar-weekContainer": {
+                        margin: "8px 0",
+                      },
+                      "& .MuiPickersDay-root": {
+                        fontSize: "16px",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "8px",
+                        "&.Mui-selected": {
+                          backgroundColor: "#111927",
+                          color: "#FFFFFF",
+                          "&:hover": {
+                            backgroundColor: "#384250",
+                            color: "#FFFFFF",
                           },
-                          dialog: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                borderRadius: "12px",
-                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                "& .MuiPickersCalendarHeader-root": {
-                                  padding: "16px",
-                                },
-                                "& .MuiDayCalendar-weekContainer": {
-                                  margin: "8px 0",
-                                },
-                                "& .MuiPickersDay-root": {
-                                  fontSize: "16px",
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "8px",
-                                  "&.Mui-selected": {
-                                    backgroundColor: "#111927",
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                      backgroundColor: "#384250",
-                                      color: "#FFFFFF",
-                                    },
-                                    "&:focus": {
-                                      backgroundColor: "#111927",
-                                      color: "#FFFFFF",
-                                    },
-                                  },
-                                  "&:hover": {
-                                    backgroundColor: "#F3F4F6",
-                                  },
-                                },
-                              },
-                              "& .MuiDialogActions-root": {
-                                padding: "16px",
-                              },
-
-                              "& .MuiDialogActions-root .MuiButton-root": {
-                                color: "#000000", // BLACK text
-                                fontWeight: 500,
-                              },
-
-                              "& .MuiDialogActions-root .MuiButton-root:hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.04)",
-                              },
-                            },
+                          "&:focus": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
                           },
+                        },
+                        "&:hover": {
+                          backgroundColor: "#F3F4F6",
+                        },
+                      },
+                    },
+                    "& .MuiPickersLayout-actionBar": {
+                      padding: "16px",
+                      "& .MuiButton-root": {
+                        color: "#000000",
+                        fontWeight: 500,
+                      },
+                      "& .MuiButton-root:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.04)",
+                      },
+                    },
+                  },
+                },
+                dialog: {
+                  sx: {
+                    "& .MuiPaper-root": {
+                      borderRadius: "12px",
+                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                      "& .MuiPickersCalendarHeader-root": {
+                        padding: "16px",
+                      },
+                      "& .MuiDayCalendar-weekContainer": {
+                        margin: "8px 0",
+                      },
+                      "& .MuiPickersDay-root": {
+                        fontSize: "16px",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "8px",
+                        "&.Mui-selected": {
+                          backgroundColor: "#111927",
+                          color: "#FFFFFF",
+                          "&:hover": {
+                            backgroundColor: "#384250",
+                            color: "#FFFFFF",
+                          },
+                          "&:focus": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
+                          },
+                        },
+                        "&:hover": {
+                          backgroundColor: "#F3F4F6",
+                        },
+                      },
+                    },
+                    "& .MuiDialogActions-root": {
+                      padding: "16px",
+                    },
+
+                    "& .MuiDialogActions-root .MuiButton-root": {
+                      color: "#000000", // BLACK text
+                      fontWeight: 500,
+                    },
+
+                    "& .MuiDialogActions-root .MuiButton-root:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.04)",
+                    },
+                  },
+                },
               }}
             />
 
@@ -384,7 +384,7 @@ export default function EarningsPage(): JSX.Element {
                       xs: "147.49px",
                       sm: "499.99px",
                     },
-                    
+
                   },
                   InputProps: {
                     sx: {
@@ -404,98 +404,98 @@ export default function EarningsPage(): JSX.Element {
                     },
                   },
                 },
-                 popper: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                borderRadius: "12px",
-                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                "& .MuiPickersCalendarHeader-root": {
-                                  padding: "16px",
-                                },
-                                "& .MuiDayCalendar-weekContainer": {
-                                  margin: "8px 0",
-                                },
-                                "& .MuiPickersDay-root": {
-                                  fontSize: "16px",
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "8px",
-                                  "&.Mui-selected": {
-                                    backgroundColor: "#111927",
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                      backgroundColor: "#384250",
-                                      color: "#FFFFFF",
-                                    },
-                                    "&:focus": {
-                                      backgroundColor: "#111927",
-                                      color: "#FFFFFF",
-                                    },
-                                  },
-                                  "&:hover": {
-                                    backgroundColor: "#F3F4F6",
-                                  },
-                                },
-                              },
-                              "& .MuiPickersLayout-actionBar": {
-                                padding: "16px",
-                                "& .MuiButton-root": {
-                                  color: "#000000",
-                                  fontWeight: 500,
-                                },
-                                "& .MuiButton-root:hover": {
-                                  backgroundColor: "rgba(0, 0, 0, 0.04)",
-                                },
-                              },
-                            },
+                popper: {
+                  sx: {
+                    "& .MuiPaper-root": {
+                      borderRadius: "12px",
+                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                      "& .MuiPickersCalendarHeader-root": {
+                        padding: "16px",
+                      },
+                      "& .MuiDayCalendar-weekContainer": {
+                        margin: "8px 0",
+                      },
+                      "& .MuiPickersDay-root": {
+                        fontSize: "16px",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "8px",
+                        "&.Mui-selected": {
+                          backgroundColor: "#111927",
+                          color: "#FFFFFF",
+                          "&:hover": {
+                            backgroundColor: "#384250",
+                            color: "#FFFFFF",
                           },
-                          dialog: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                borderRadius: "12px",
-                                boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                                "& .MuiPickersCalendarHeader-root": {
-                                  padding: "16px",
-                                },
-                                "& .MuiDayCalendar-weekContainer": {
-                                  margin: "8px 0",
-                                },
-                                "& .MuiPickersDay-root": {
-                                  fontSize: "16px",
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "8px",
-                                  "&.Mui-selected": {
-                                    backgroundColor: "#111927",
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                      backgroundColor: "#384250",
-                                      color: "#FFFFFF",
-                                    },
-                                    "&:focus": {
-                                      backgroundColor: "#111927",
-                                      color: "#FFFFFF",
-                                    },
-                                  },
-                                  "&:hover": {
-                                    backgroundColor: "#F3F4F6",
-                                  },
-                                },
-                              },
-                              "& .MuiDialogActions-root": {
-                                padding: "16px",
-                              },
-
-                              "& .MuiDialogActions-root .MuiButton-root": {
-                                color: "#000000", // BLACK text
-                                fontWeight: 500,
-                              },
-
-                              "& .MuiDialogActions-root .MuiButton-root:hover": {
-                                backgroundColor: "rgba(0, 0, 0, 0.04)",
-                              },
-                            },
+                          "&:focus": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
                           },
+                        },
+                        "&:hover": {
+                          backgroundColor: "#F3F4F6",
+                        },
+                      },
+                    },
+                    "& .MuiPickersLayout-actionBar": {
+                      padding: "16px",
+                      "& .MuiButton-root": {
+                        color: "#000000",
+                        fontWeight: 500,
+                      },
+                      "& .MuiButton-root:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.04)",
+                      },
+                    },
+                  },
+                },
+                dialog: {
+                  sx: {
+                    "& .MuiPaper-root": {
+                      borderRadius: "12px",
+                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                      "& .MuiPickersCalendarHeader-root": {
+                        padding: "16px",
+                      },
+                      "& .MuiDayCalendar-weekContainer": {
+                        margin: "8px 0",
+                      },
+                      "& .MuiPickersDay-root": {
+                        fontSize: "16px",
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "8px",
+                        "&.Mui-selected": {
+                          backgroundColor: "#111927",
+                          color: "#FFFFFF",
+                          "&:hover": {
+                            backgroundColor: "#384250",
+                            color: "#FFFFFF",
+                          },
+                          "&:focus": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
+                          },
+                        },
+                        "&:hover": {
+                          backgroundColor: "#F3F4F6",
+                        },
+                      },
+                    },
+                    "& .MuiDialogActions-root": {
+                      padding: "16px",
+                    },
+
+                    "& .MuiDialogActions-root .MuiButton-root": {
+                      color: "#000000", // BLACK text
+                      fontWeight: 500,
+                    },
+
+                    "& .MuiDialogActions-root .MuiButton-root:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.04)",
+                    },
+                  },
+                },
               }}
             />
 

@@ -26,6 +26,7 @@ import TermsAndConditions from "../pages/terms-and-conditions";
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function AppRoutes() {
   const routes = useRoutes([
@@ -107,7 +108,9 @@ export default function AppRoutes() {
       path: "/dashboard",
       element: (
         <PrivateRoute>
-          <Dashboard />
+          <ErrorBoundary>
+            <Dashboard />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -117,7 +120,9 @@ export default function AppRoutes() {
       path: "/my-jobs",
       element: (
         <PrivateRoute>
-          <MyJobs />
+          <ErrorBoundary>
+            <MyJobs />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -127,7 +132,9 @@ export default function AppRoutes() {
       path: "/services-offered",
       element: (
         <PrivateRoute>
-          <ServicesOffered />
+          <ErrorBoundary>
+            <ServicesOffered />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -135,7 +142,9 @@ export default function AppRoutes() {
       path: "/services-offered/add-new-service",
       element: (
         <PrivateRoute>
-          <AddEditServicePage />
+          <ErrorBoundary>
+            <AddEditServicePage />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -143,7 +152,9 @@ export default function AppRoutes() {
       path: "/services-offered/edit/:id",
       element: (
         <PrivateRoute>
-          <AddEditServicePage />
+          <ErrorBoundary>
+            <AddEditServicePage />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -153,7 +164,9 @@ export default function AppRoutes() {
       path: "/earnings",
       element: (
         <PrivateRoute>
-          <Earnings />
+          <ErrorBoundary>
+            <Earnings />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -163,25 +176,31 @@ export default function AppRoutes() {
       path: "/my-profile",
       element: (
         <PrivateRoute>
-          <MyProfile />
+          <ErrorBoundary>
+            <MyProfile />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
     {
-  path: "/my-profile/:id",
-  element: (
-    <PrivateRoute>
-      <EditProfile />
-    </PrivateRoute>
-  ),
-},
+      path: "/my-profile/:id",
+      element: (
+        <PrivateRoute>
+          <ErrorBoundary>
+            <EditProfile />
+          </ErrorBoundary>
+        </PrivateRoute>
+      ),
+    },
 
     // Email and SMS
     {
       path: "/email-and-sms",
       element: (
         <PrivateRoute>
-          <Notifications />
+          <ErrorBoundary>
+            <Notifications />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -197,7 +216,9 @@ export default function AppRoutes() {
       path: "/manage-subscription",
       element: (
         <PrivateRoute>
-          <ManageSubscription />
+          <ErrorBoundary>
+            <ManageSubscription />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -207,7 +228,9 @@ export default function AppRoutes() {
       path: "/privacy-policy",
       element: (
         <PrivateRoute>
-          <PrivacyPolicy />
+          <ErrorBoundary>
+            <PrivacyPolicy />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -217,7 +240,9 @@ export default function AppRoutes() {
       path: "/terms-and-conditions",
       element: (
         <PrivateRoute>
-          <TermsAndConditions />
+          <ErrorBoundary>
+            <TermsAndConditions />
+          </ErrorBoundary>
         </PrivateRoute>
       ),
     },
@@ -226,7 +251,9 @@ export default function AppRoutes() {
     {
       path: "/landing-page",
       element: (
-        <LandingPage />
+        <ErrorBoundary>
+          <LandingPage />
+        </ErrorBoundary>
       ),
     },
 
@@ -234,7 +261,11 @@ export default function AppRoutes() {
     // This must be at the end to avoid catching other routes
     {
       path: "/:username",
-      element: <ClientPage />,
+      element: (
+        <ErrorBoundary>
+          <ClientPage />
+        </ErrorBoundary>
+      ),
     },
   ]);
 

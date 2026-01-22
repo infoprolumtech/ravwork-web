@@ -9,7 +9,7 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { Close, Twitter, WhatsApp } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { StyledTextField } from "../../utils/helper";
 
 interface ShareModalProps {
@@ -54,6 +54,24 @@ export default function ShareModal({
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`;
         break;
+      case "message":
+        // Use Web Share API if available, otherwise fallback to SMS protocol
+        if (navigator.share) {
+          navigator.share({
+            title: profileName,
+            text: `Check out ${profileName}: ${profileUrl}`,
+            url: profileUrl,
+          }).catch(() => {
+            // Fallback to SMS if share fails
+            const smsUrl = `sms:?body=${encodedTitle}%20${encodedUrl}`;
+            window.location.href = smsUrl;
+          });
+        } else {
+          // Fallback to SMS protocol
+          const smsUrl = `sms:?body=${encodedTitle}%20${encodedUrl}`;
+          window.location.href = smsUrl;
+        }
+        return;
       default:
         return;
     }
@@ -123,38 +141,53 @@ export default function ShareModal({
 
           {/* Top Section: Logo, Business Name, Social Icons */}
           <Stack
-            direction="row"
-            alignItems="center"
+            direction={{ xs: "column", sm: "row" }}
+            alignItems={{ xs: "flex-start", sm: "center" }}
             spacing={2}
             sx={{ width: "100%" }}
           >
-            {/* Ravwork Logo */}
-            <Box
-              component="img"
-              src="/assets/icons/ravwork_logo_icon.svg"
-              alt="Ravwork"
-              sx={{
-                width: { xs: 40, sm: 48 },
-                height: { xs: 40, sm: 48 },
-                objectFit: "contain",
-              }}
-            />
-
-            {/* Business Name */}
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: { xs: "16px", sm: "18px" },
-                fontWeight: 500,
-                color: "#111927",
-                flex: 1,
-              }}
+            {/* Logo and Business Name Row */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              sx={{ width: { xs: "100%", sm: "auto" }, flex: { xs: "none", sm: 1 } }}
             >
-              {profileName || "Business Name"}
-            </Typography>
+              {/* Ravwork Logo */}
+              <Box
+                component="img"
+                src="/assets/icons/ravwork_logo_icon.svg"
+                alt="Ravwork"
+                sx={{
+                  width: { xs: 40, sm: 48 },
+                  height: { xs: 40, sm: 48 },
+                  objectFit: "contain",
+                }}
+              />
+
+              {/* Business Name */}
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: { xs: "16px", sm: "18px" },
+                  fontWeight: 500,
+                  color: "#111927",
+                  flex: 1,
+                }}
+              >
+                {profileName || "Business Name"}
+              </Typography>
+            </Stack>
 
             {/* Social Share Icons */}
-            <Stack direction="row" spacing={1}>
+            <Stack 
+              direction="row" 
+              spacing={1}
+              sx={{ 
+                width: { xs: "100%", sm: "auto" },
+                justifyContent: { xs: "flex-start", sm: "flex-end" }
+              }}
+            >
               <IconButton
                 onClick={() => handleSocialShare("facebook")}
                 sx={{
@@ -180,7 +213,12 @@ export default function ShareModal({
                   minWidth: { xs: 32, sm: 40 },
                 }}
               >
-                <Twitter sx={{ fontSize: { xs: 20, sm: 24 }, color: "#1DA1F2", width: "100%", height: "100%" }} />
+                <Box
+                  component="img"
+                  src="/assets/icons/x_img.svg"
+                  alt="Twitter"
+                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
               </IconButton>
               <IconButton
                 onClick={() => handleSocialShare("instagram")}
@@ -207,7 +245,28 @@ export default function ShareModal({
                   minWidth: { xs: 32, sm: 40 },
                 }}
               >
-                <WhatsApp sx={{ fontSize: { xs: 20, sm: 24 }, color: "#25D366", width: "100%", height: "100%" }} />
+                <Box
+                  component="img"
+                  src="/assets/icons/apple_whatapp.svg"
+                  alt="WhatsApp"
+                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              </IconButton>
+              <IconButton
+                onClick={() => handleSocialShare("message")}
+                sx={{
+                  width: { xs: 32, sm: 40 },
+                  height: { xs: 32, sm: 40 },
+                  p: 0,
+                  minWidth: { xs: 32, sm: 40 },
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/assets/icons/apple_message.svg"
+                  alt="Message"
+                  sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
               </IconButton>
             </Stack>
           </Stack>

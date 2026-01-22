@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Stack, Chip, IconButton, CircularProgress } from "@mui/material";
+import { Box, Button, Typography, FormControl, FormControlLabel, RadioGroup, Chip, IconButton, CircularProgress } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { colors } from "../../utils/constants";
@@ -32,17 +32,22 @@ interface Step2Props {
 const formatPrice = (price: number, currency: string) => {
   try {
     // Plans API returns price in major currency units (e.g., 29 USD)
-    return new Intl.NumberFormat(undefined, { style: "currency", currency: currency.toUpperCase() }).format(price);
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currency.toUpperCase(),
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(price);
   } catch {
     return `${price} ${currency}`;
   }
 };
 
-export const Step2 = ({ 
-  onNext, 
-  initialData, 
-  onBack, 
-  isLoading = false, 
+export const Step2 = ({
+  onNext,
+  initialData,
+  onBack,
+  isLoading = false,
   plans = [],
   title,
   hideBackIcon = false,
@@ -111,14 +116,14 @@ export const Step2 = ({
   const yearlyPlanId = yearlyPlan?.id;
 
   const isCurrentPlan = (planId: string | undefined) => Boolean(currentPlanId && planId === currentPlanId);
-  
+
   // Prevent downgrades: if current plan is yearly, disable monthly (downgrade)
   const isDowngrade = (planInterval: "month" | "year" | undefined) => {
     if (!currentPlanInterval) return false;
     // If current is yearly and trying to select monthly, that's a downgrade
     return currentPlanInterval === "year" && planInterval === "month";
   };
-  
+
   const isMonthlyDisabled = Boolean(isCurrentPlan(monthlyPlanId) || isDowngrade("month"));
   const isYearlyDisabled = Boolean(isCurrentPlan(yearlyPlanId));
 
@@ -149,7 +154,7 @@ export const Step2 = ({
       {!hideTopIcon && <PageIcon iconSrc="/assets/icons/plan_icon.svg" iconAlt="icon" />}
 
       {!hideTitle && (
-        <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
+        <Typography variant="h5" textAlign="center" mb={{ xs: 5, sm: 5 }} sx={pageTitleSx}>
           {title ? (
             <span dangerouslySetInnerHTML={{ __html: title }} />
           ) : (
@@ -160,7 +165,7 @@ export const Step2 = ({
         </Typography>
       )}
 
-      <Stack spacing={1} sx={{ mb: { xs: 2, sm: 3 } }}>
+      {/* <Stack spacing={1} sx={{ mb: { xs: 2, sm: 3 } }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.75, sm: 1 } }}>
           <Icon src="/assets/icons/Check icon.svg" alt="check" size={20} />
           <Typography variant="body2" sx={{ color: "#384250", fontSize: { xs: "14px", sm: "16px" } }}>
@@ -177,7 +182,7 @@ export const Step2 = ({
 
       <Box sx={{ display: "flex", mt: -1.5, mb: { xs: 2, sm: 3 } }}>
         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
-      </Box>
+      </Box> */}
 
       <Controller
         name="plan"
@@ -230,7 +235,7 @@ export const Step2 = ({
                         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                       </Box>
                       <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)} / Month` : "Loading..."}
+                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)}/Month` : "Loading..."}
                       </Typography>
                     </Box>
                     <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId && !isMonthlyDisabled} />
@@ -304,9 +309,13 @@ export const Step2 = ({
                           <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                         </Box>
                         <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                          {yearlyPlan ? `${formatPrice(yearlyPlan.price, yearlyPlan.currency)} / Year ` : "Loading... "}
+                          {yearlyPlan
+                            ? `${formatPrice(yearlyPlan.price / 12, yearlyPlan.currency)}/month `
+                            : "Loading... "}
                           <Typography component="span" sx={{ fontSize: { xs: "12px", sm: "14px" }, fontWeight: 400, color: "#6C737F" }}>
-                            Billed Annually.
+                            {yearlyPlan
+                              ? `(${formatPrice(yearlyPlan.price, yearlyPlan.currency)} Billed Annually.)`
+                              : ""}
                           </Typography>
                         </Typography>
                       </Box>

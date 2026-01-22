@@ -1473,6 +1473,7 @@ export default function ClientQuestionsPage({
                               />
                               <IconButton
                                 onClick={() => handleRemoveImage(index)}
+                                aria-label="Remove image"
                                 sx={{
                                   position: "absolute",
                                   top: 4,
@@ -1576,6 +1577,7 @@ export default function ClientQuestionsPage({
         <IconButton
           onClick={onClose}
           size="small"
+          aria-label="Close"
           sx={{
             p: 0.5,
             "&:hover": { backgroundColor: "transparent" }
