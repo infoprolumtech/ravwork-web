@@ -10,8 +10,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Grid,
-  Stack,
   IconButton,
   CircularProgress,
   Typography,
@@ -197,64 +195,71 @@ export default function EarningsPage(): JSX.Element {
             boxSizing: "border-box",
           }}
         >
-          <Grid
-            container
-            spacing={{ xs: "8px", sm: "12px" }}
-            sx={{ mb: { xs: "28px", sm: "20px" } }}
-          >
-            <EarningsCard
-              icon="/assets/icons/IconText.svg"
-              label="Total Earnings"
-              value={!summary || isFetching ? null : formatCurrency(summary.totalEarnings)}
-              percentage={!summary || isFetching ? undefined : formatPercentage(summary.totalChange)}
-              theme="theme1"
-              backgroundColor="#E3F5FF"
-              isLoading={!summary || isFetching}
-            />
-            <EarningsCard
-              icon="/assets/icons/IconText.svg"
-              label="Earnings this Week"
-              value={!summary || isFetching ? null : formatCurrency(summary.weekEarnings)}
-              percentage={!summary || isFetching ? undefined : formatPercentage(summary.weekChange)}
-              theme="theme2"
-              backgroundColor="#E3F5FF"
-              isLoading={!summary || isFetching}
-            />
-            <EarningsCard
-              icon="/assets/icons/IconText.svg"
-              label="Earnings this Month"
-              value={!summary || isFetching ? null : formatCurrency(summary.monthEarnings)}
-              percentage={!summary || isFetching ? undefined : formatPercentage(summary.monthChange)}
-              theme="theme1"
-              backgroundColor="#E3F5FF"
-              isLoading={!summary || isFetching}
-            />
-          </Grid>
-
-          <Stack
+          <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
-              gap: 1,
-              mb: "26px",
-              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: "8px", sm: "12px" },
+              mb: { xs: "28px", sm: "20px" },
             }}
           >
-            <DatePicker
-              label="From"
-              value={fromDate}
-              onChange={handleFromDateChange}
-              closeOnSelect={false}
-              slotProps={{
-                actionBar: { actions: ["clear", "cancel", "accept"] },
-                textField: {
-                  sx: {
-                    ...pickerTextFieldStyles,
-                    width: {
-                      xs: "147.49px",
-                      sm: "499.99px",
+            <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
+              <EarningsCard
+                icon="/assets/icons/IconText.svg"
+                label="Total Earnings"
+                value={!summary || isFetching ? null : formatCurrency(summary.totalEarnings)}
+                percentage={!summary || isFetching ? undefined : formatPercentage(summary.totalChange)}
+                theme="theme1"
+                backgroundColor="#E3F5FF"
+                isLoading={!summary || isFetching}
+              />
+            </Box>
+            <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
+              <EarningsCard
+                icon="/assets/icons/IconText.svg"
+                label="Earnings this Week"
+                value={!summary || isFetching ? null : formatCurrency(summary.weekEarnings)}
+                percentage={!summary || isFetching ? undefined : formatPercentage(summary.weekChange)}
+                theme="theme2"
+                backgroundColor="#E3F5FF"
+                isLoading={!summary || isFetching}
+              />
+            </Box>
+            <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
+              <EarningsCard
+                icon="/assets/icons/IconText.svg"
+                label="Earnings this Month"
+                value={!summary || isFetching ? null : formatCurrency(summary.monthEarnings)}
+                percentage={!summary || isFetching ? undefined : formatPercentage(summary.monthChange)}
+                theme="theme1"
+                backgroundColor="#E3F5FF"
+                isLoading={!summary || isFetching}
+              />
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: "8px", sm: "12px" },
+              mb: "26px",
+              alignItems: { xs: "stretch", sm: "center" },
+            }}
+          >
+            <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
+              <DatePicker
+                label="From"
+                value={fromDate}
+                onChange={handleFromDateChange}
+                closeOnSelect={false}
+                slotProps={{
+                  actionBar: { actions: ["clear", "cancel", "accept"] },
+                  textField: {
+                    sx: {
+                      ...pickerTextFieldStyles,
+                      width: "100%",
                     },
-                  },
                   InputProps: {
                     sx: {
                       height: "56px",
@@ -367,25 +372,23 @@ export default function EarningsPage(): JSX.Element {
                 },
               }}
             />
+            </Box>
 
             {/* TO */}
-            <DatePicker
-              label="To"
-              value={toDate}
-              onChange={handleToDateChange}
-              minDate={fromDate || undefined}
-              closeOnSelect={false}
-              slotProps={{
-                actionBar: { actions: ["clear", "cancel", "accept"] },
-                textField: {
-                  sx: {
-                    ...pickerTextFieldStyles,
-                    width: {
-                      xs: "147.49px",
-                      sm: "499.99px",
+            <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
+              <DatePicker
+                label="To"
+                value={toDate}
+                onChange={handleToDateChange}
+                minDate={fromDate || undefined}
+                closeOnSelect={false}
+                slotProps={{
+                  actionBar: { actions: ["clear", "cancel", "accept"] },
+                  textField: {
+                    sx: {
+                      ...pickerTextFieldStyles,
+                      width: "100%",
                     },
-
-                  },
                   InputProps: {
                     sx: {
                       height: "56px",
@@ -497,8 +500,10 @@ export default function EarningsPage(): JSX.Element {
                   },
                 },
               }}
-            />
+              />
+            </Box>
 
+            <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
             <IconButton
               onClick={handleExport}
               disabled={isExporting || !fromDateString || !toDateString}
@@ -539,7 +544,8 @@ export default function EarningsPage(): JSX.Element {
                 </>
               )}
             </IconButton>
-          </Stack>
+            </Box>
+          </Box>
 
           {/* Recent Activity Table */}
           <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
