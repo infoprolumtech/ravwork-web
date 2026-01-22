@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import { colors } from "./utils/constants";
-// @ts-ignore
+// @ts-expect-error - Module types might be missing
 import '@fontsource/inter';
 
 
@@ -383,11 +383,12 @@ const theme = createTheme({
     MuiTextField: {
       variants: [
         {
+          // @ts-expect-error - Custom variant 'datePicker' defined in mui.d.ts but not picked up by createTheme types yet
           props: { variant: "datePicker" },
           style: {
-            width: {
-              xs: "147.49px",
-              sm: "499.99px",
+            width: "148px",
+            "@media (min-width: 600px)": {
+              width: "500px",
             },
             height: "56px",
             "& .MuiInputBase-root": {
@@ -406,7 +407,7 @@ const theme = createTheme({
           },
         },
       ],
-    } as any,
+    },
     MuiCssBaseline: {
       styleOverrides: {
         body: {

@@ -44,7 +44,7 @@ export default function ClientContactInfoPage({
   isFromCustomQuestions = false,
 }: ClientContactInfoPageProps): JSX.Element {
   const schema = isInquiry ? inquirySchema : contactInfoSchema;
-  
+
   const form = useForm<ContactFormInputs>({
     resolver: yupResolver(schema) as any,
     mode: "onChange",
@@ -104,10 +104,11 @@ export default function ClientContactInfoPage({
         >
           {isInquiry ? "Have a question? Provide your contact info." : "Enter your details to request this service."}
         </Typography>
-        <IconButton 
-          onClick={onClose} 
+        <IconButton
+          onClick={onClose}
           size="small"
-          sx={{ 
+          aria-label="Close"
+          sx={{
             p: 0.5,
             "&:hover": { backgroundColor: "transparent" }
           }}
@@ -214,9 +215,9 @@ export default function ClientContactInfoPage({
       </form>
 
       {/* Action Buttons */}
-      <Stack 
-        direction="row" 
-        justifyContent="flex-end" 
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
         spacing={{ xs: 1.5, sm: 2 }}
         sx={{
           width: "100%",
