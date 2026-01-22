@@ -1223,7 +1223,7 @@ export default function ClientPage(): JSX.Element {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: { xs: "16px 16px 0 0", sm: "16px" },
+            borderRadius: { sm: "16px" },
             m: { xs: 0, sm: 2 },
             maxHeight: { xs: "100vh", sm: "90vh" },
             position: { xs: "fixed", sm: "relative" },
@@ -1248,6 +1248,7 @@ export default function ClientPage(): JSX.Element {
               fontSize: { xs: "18px", sm: "20px" },
               fontWeight: 600,
               color: "#111927",
+              mt: "10px",
             }}
           >
             Privacy Policy – Ravwork Link
