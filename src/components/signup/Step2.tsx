@@ -235,7 +235,7 @@ export const Step2 = ({
                         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                       </Box>
                       <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)}/Month` : "Loading..."}
+                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)}/month` : "Loading..."}
                       </Typography>
                     </Box>
                     <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId && !isMonthlyDisabled} />
