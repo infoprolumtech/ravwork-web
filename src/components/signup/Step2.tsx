@@ -235,7 +235,7 @@ export const Step2 = ({
                         <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                       </Box>
                       <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)} / Month` : "Loading..."}
+                        {monthlyPlan ? `${formatPrice(monthlyPlan.price, monthlyPlan.currency)}/Month` : "Loading..."}
                       </Typography>
                     </Box>
                     <CheckboxIcon checked={Boolean(monthlyPlanId) && field.value === monthlyPlanId && !isMonthlyDisabled} />
@@ -309,9 +309,13 @@ export const Step2 = ({
                           <Icon src="/assets/icons/line2.svg" alt="divider" sx={{ width: "23px" }} />
                         </Box>
                         <Typography sx={{ fontSize: { xs: "14px", sm: "16px" }, fontWeight: 600, color: "#6C737F" }}>
-                          {yearlyPlan ? `${formatPrice(yearlyPlan.price, yearlyPlan.currency)} / Year ` : "Loading... "}
+                          {yearlyPlan
+                            ? `${formatPrice(yearlyPlan.price / 12, yearlyPlan.currency)}/month `
+                            : "Loading... "}
                           <Typography component="span" sx={{ fontSize: { xs: "12px", sm: "14px" }, fontWeight: 400, color: "#6C737F" }}>
-                            Billed Annually.
+                            {yearlyPlan
+                              ? `(${formatPrice(yearlyPlan.price, yearlyPlan.currency)} Billed Annually.)`
+                              : ""}
                           </Typography>
                         </Typography>
                       </Box>

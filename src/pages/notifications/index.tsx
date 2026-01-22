@@ -200,7 +200,7 @@ export default function NotificationsPage(): JSX.Element {
               <Box>
                 <Typography sx={{ fontSize: "16px", fontWeight: 500, color: "#111927" }}>
                   SMS
-                </Typography>
+        </Typography>
                 {/* <Typography sx={{ fontSize: "14px", color: "#6C737F" }}>
                   Time-sensitive alerts via text message.
                 </Typography> */}

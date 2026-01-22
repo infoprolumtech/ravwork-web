@@ -323,55 +323,55 @@ export default function ManageSubscriptionPage(): JSX.Element {
                 // Fallback to default features if API doesn't provide them
                 <>
                   <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
                       Personalized booking link
-                    </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
                       Full access to features
-                    </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
                       Unlimited leads
-                    </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
                       Unlimited custom questions
-                    </Typography>
-                  </Box>
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <Box
+                  component="img"
+                  src="/assets/icons/check_icon_box.svg"
+                  sx={{ width: 20, height: 20, mr: 1.5 }}
+                />
+                <Typography fontSize={14} color="#595959">
                       Lead management dashboard
-                    </Typography>
-                  </Box>
+                </Typography>
+              </Box>
                 </>
               )}
             </Box>
@@ -417,23 +417,23 @@ export default function ManageSubscriptionPage(): JSX.Element {
               }}
             >
               {canChangePlan && (
-                <MenuItem
+              <MenuItem
                   onClick={handleChangePlanClick}
-                  sx={{
-                    fontWeight: 400,
-                    fontSize: "16px",
-                  }}
-                >
-                  Change Plan
-                </MenuItem>
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "16px",
+                }}
+              >
+                Change Plan
+              </MenuItem>
               )}
               {canResume && (
-                <MenuItem
+              <MenuItem
                   onClick={handleResumeClick}
-                  sx={{
-                    fontWeight: 400,
-                    fontSize: "16px",
-                  }}
+                sx={{
+                  fontWeight: 400,
+                  fontSize: "16px",
+                }}
                 >
                   Resume Subscription
                 </MenuItem>
@@ -446,9 +446,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
                     fontSize: "16px",
                     color: "#F97066",
                   }}
-                >
-                  Cancel Subscription
-                </MenuItem>
+              >
+                Cancel Subscription
+              </MenuItem>
               )}
             </Menu>
           </Box>
