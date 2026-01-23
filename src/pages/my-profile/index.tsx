@@ -196,35 +196,38 @@ export default function MyProfilePage(): JSX.Element {
             </Box>
 
             {/* Profile Completion Button */}
-            <Button
-              onClick={handleCompleteSetup}
-              sx={{
-                display: "flex",
-                padding: "3px 4px",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "8px",
-                position: "absolute",
-                left: "80px",
-                top: "55px",
-                borderRadius: "68px",
-                background: "#BAEDBD",
-                boxShadow: "0 4px 26px 0 rgba(0, 0, 0, 0.04)",
-                textTransform: "none",
-                color: "#111927",
-                fontSize: "12px",
-                fontWeight: 600,
-                minWidth: "unset",
-                border: "none",
-                cursor: "pointer",
-                zIndex: 10,
-                "&:hover": {
-                  background: "#A9DCA9",
-                },
-              }}
-            >
-              {profileComplete}%
-            </Button>
+            {/* Profile Completion Button */}
+            {profileComplete < 100 && (
+              <Button
+                onClick={handleCompleteSetup}
+                sx={{
+                  display: "flex",
+                  padding: "3px 4px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "8px",
+                  position: "absolute",
+                  left: "80px",
+                  top: "55px",
+                  borderRadius: "68px",
+                  background: "#BAEDBD",
+                  boxShadow: "0 4px 26px 0 rgba(0, 0, 0, 0.04)",
+                  textTransform: "none",
+                  color: "#111927",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  minWidth: "unset",
+                  border: "none",
+                  cursor: "pointer",
+                  zIndex: 10,
+                  "&:hover": {
+                    background: "#A9DCA9",
+                  },
+                }}
+              >
+                {profileComplete}%
+              </Button>
+            )}
 
             {/* Body */}
             <Box gap={2}>
@@ -235,7 +238,7 @@ export default function MyProfilePage(): JSX.Element {
                   width: 74,
                   height: 74,
                   border: "4px solid #FFFFFF",
-                  
+
                 }}
                 imgProps={{
                   onError: (e) => {
