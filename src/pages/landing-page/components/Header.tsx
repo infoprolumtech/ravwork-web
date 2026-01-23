@@ -64,6 +64,7 @@ export default function Header(): JSX.Element {
                         py: 1.5,
                         borderRadius: '24px',
                         fontSize: '18px',
+                        background: colors.secondary,
                     }}
                 >
                     Sign In
@@ -172,6 +173,8 @@ export default function Header(): JSX.Element {
                                 borderRadius: '24px',
                                 fontSize: '16px',
                                 fontWeight: 400,
+                                background: colors.secondary,
+
                             }}
                         >
                             Sign In

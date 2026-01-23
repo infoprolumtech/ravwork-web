@@ -12,6 +12,7 @@ export const colors = {
   border: '#334155',
   gradientStart: '#3B82F6',
   gradientEnd: '#8B5CF6',
+  secondary: "#10161D"
 };
 
 export const spacing = {
@@ -49,6 +50,8 @@ export const primaryButton = {
   background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDark} 100%)`,
   color: colors.textPrimary,
   padding: '14px 32px',
+  border: `0.5px solid ${colors.border}`,
+
   borderRadius: '12px',
   fontSize: '16px',
   fontWeight: 600,
@@ -56,9 +59,11 @@ export const primaryButton = {
   boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: `linear-gradient(135deg, ${colors.accentDark} 0%, ${colors.accent} 100%)`,
     boxShadow: '0 6px 30px rgba(59, 130, 246, 0.5)',
     transform: 'translateY(-2px)',
+    borderColor: colors.accent,
+
+
   },
 };
 

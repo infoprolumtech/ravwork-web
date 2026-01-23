@@ -34,7 +34,7 @@ export default function HeroSection(): JSX.Element {
                 {/* Headline */}
                 <Typography
                     sx={{
-                        fontSize: { xs: '32px', sm: '48px', md: '72px' },
+                        fontSize: { xs: '32px', sm: '44px' },
                         fontWeight: 700,
                         color: '#FFFFFF',
                         lineHeight: 1.1,
@@ -77,7 +77,7 @@ export default function HeroSection(): JSX.Element {
                     }}
                 >
                     <Button
-                        href="/claim"
+                        href="/login"
                         sx={{
                             background: '#FFFFFF',
                             color: '#000000',

@@ -34,9 +34,9 @@ export default function AppRoutes() {
     {
       path: "/",
       element: (
-        <PublicRoute>
-          <SignUpPage />
-        </PublicRoute>
+        <ErrorBoundary>
+          <LandingPage />
+        </ErrorBoundary>
       ),
     },
     // Signup route - not wrapped in PublicRoute to allow resuming incomplete signup
