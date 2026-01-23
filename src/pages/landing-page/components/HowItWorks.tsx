@@ -71,7 +71,7 @@ export default function HowItWorks(): JSX.Element {
                 </Box>
 
                 {/* Steps */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2 } }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 8, md: 12 } }}>
                     {steps.map((step, index) => (
                         <Box
                             key={index}
@@ -89,7 +89,7 @@ export default function HowItWorks(): JSX.Element {
                             <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
                                 <Typography
                                     sx={{
-                                        fontSize: { xs: '24px', md: '36px' },
+                                        fontSize: { xs: '28px', md: '36px' },
                                         fontWeight: 700,
                                         mb: 2,
                                         lineHeight: 1.2,
@@ -100,7 +100,7 @@ export default function HowItWorks(): JSX.Element {
                                 <Typography
                                     sx={{
                                         fontSize: { xs: '16px', md: '20px' },
-                                        color: colors.textSecondary,
+                                        color: 'rgba(255, 255, 255, 0.7)',
                                         lineHeight: 1.6,
                                         maxWidth: '500px',
                                         mx: { xs: 'auto', md: 0 },
@@ -118,6 +118,7 @@ export default function HowItWorks(): JSX.Element {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     position: 'relative',
+                                    width: '100%',
                                 }}
                             >
                                 {/* Visual Glow Effect behind image (matching Figma) */}
@@ -137,7 +138,7 @@ export default function HowItWorks(): JSX.Element {
                                     sx={{
                                         width: '100%',
                                         height: 'auto',
-                                        maxWidth: '800px',
+                                        maxWidth: { xs: '100%', md: '800px' },
                                         borderRadius: '16px',
                                         position: 'relative',
                                         zIndex: 1,

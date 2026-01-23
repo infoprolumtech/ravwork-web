@@ -1,6 +1,7 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 import Header from './Header';
+import CallMadeIcon from '@mui/icons-material/CallMade';
 
 export default function HeroSection(): JSX.Element {
     return (
@@ -10,6 +11,8 @@ export default function HeroSection(): JSX.Element {
                 minHeight: '100vh',
                 position: 'relative',
                 overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
             }}
         >
             {/* Navigation Bar */}
@@ -23,20 +26,21 @@ export default function HeroSection(): JSX.Element {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: 'calc(100vh - 80px)',
-                    py: { xs: 6, md: 8 },
+                    flex: 1,
+                    py: { xs: 4, md: 8 },
                     textAlign: 'center',
                 }}
             >
                 {/* Headline */}
                 <Typography
                     sx={{
-                        fontSize: { xs: '36px', sm: '44px' },
+                        fontSize: { xs: '32px', sm: '48px', md: '72px' },
                         fontWeight: 700,
                         color: '#FFFFFF',
-                        lineHeight: 1.2,
-                        mb: 3,
-                        maxWidth: '900px',
+                        lineHeight: 1.1,
+                        mb: 2,
+                        maxWidth: '1000px',
+                        px: { xs: 2, md: 0 },
                     }}
                 >
                     Run Your Business Like
@@ -47,13 +51,13 @@ export default function HeroSection(): JSX.Element {
                 {/* Subheadline */}
                 <Typography
                     sx={{
-                        fontSize: { xs: '16px', sm: '18px', md: '20px' },
+                        fontSize: { xs: '14px', sm: '18px', md: '20px' },
                         fontWeight: 400,
-                        color: '#FFFFFF',
-                        lineHeight: 1.6,
-                        mb: 5,
-                        maxWidth: '700px',
-                        opacity: 0.9,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        lineHeight: 1.5,
+                        mb: 4,
+                        maxWidth: '750px',
+                        px: { xs: 3, md: 0 },
                     }}
                 >
                     Collect client info, automate questions, and manage all leads in one place
@@ -64,10 +68,12 @@ export default function HeroSection(): JSX.Element {
                 <Box
                     sx={{
                         display: 'flex',
-                        gap: 2,
-                        mb: 0,
-                        flexWrap: 'wrap',
+                        flexDirection: 'row',
+                        gap: { xs: 1.5, sm: 2 },
+                        mb: { xs: 6, md: 8 },
                         justifyContent: 'center',
+                        width: '100%',
+                        px: { xs: 1, sm: 0 },
                     }}
                 >
                     <Button
@@ -76,35 +82,41 @@ export default function HeroSection(): JSX.Element {
                             background: '#FFFFFF',
                             color: '#000000',
                             textTransform: 'none',
-                            fontSize: '16px',
-                            fontWeight: 500,
-                            padding: '12px 32px',
-                            borderRadius: '8px',
+                            fontSize: { xs: '13px', sm: '18px' },
+                            fontWeight: 600,
+                            padding: { xs: '10px 16px', sm: '16px 40px' },
+                            borderRadius: '12px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 1,
+                            gap: 0.5,
+                            whiteSpace: 'nowrap',
                             '&:hover': {
                                 background: '#F0F0F0',
+                                transform: 'translateY(-2px)',
                             },
+                            transition: 'all 0.2s ease',
                         }}
                     >
                         Claim Your Link
-                        <Box component="span" sx={{ fontSize: '18px' }}>→</Box>
+                        <CallMadeIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
                     </Button>
                     <Button
                         href="#how-it-works"
                         sx={{
-                            background: 'rgba(255, 255, 255, 0.1)',
+                            background: 'rgba(15, 23, 42, 0.6)',
                             color: '#FFFFFF',
                             textTransform: 'none',
-                            fontSize: '16px',
+                            fontSize: { xs: '13px', sm: '18px' },
                             fontWeight: 500,
-                            padding: '12px 32px',
-                            borderRadius: '8px',
+                            padding: { xs: '10px 16px', sm: '16px 40px' },
+                            borderRadius: '12px',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
+                            whiteSpace: 'nowrap',
                             '&:hover': {
-                                background: 'rgba(255, 255, 255, 0.15)',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                transform: 'translateY(-2px)',
                             },
+                            transition: 'all 0.2s ease',
                         }}
                     >
                         See How It Works
@@ -119,9 +131,20 @@ export default function HeroSection(): JSX.Element {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        // mt: -12
+                        position: 'relative',
+                        mt: { xs: 2, md: 0 },
                     }}
                 >
+                    {/* Visual Glow behind image */}
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            width: '90%',
+                            height: '90%',
+                            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
+                            zIndex: 0,
+                        }}
+                    />
                     <Box
                         component="img"
                         src="/assets/landing-page/hero.png"
@@ -130,7 +153,9 @@ export default function HeroSection(): JSX.Element {
                             width: '100%',
                             height: 'auto',
                             borderRadius: '12px',
-
+                            position: 'relative',
+                            zIndex: 1,
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
                         }}
                     />
                 </Box>
@@ -138,22 +163,14 @@ export default function HeroSection(): JSX.Element {
                 {/* Scroll Down Indicator */}
                 <Box
                     sx={{
-                        position: 'absolute',
-                        bottom: 40,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        cursor: 'pointer',
+                        mt: { xs: 4, md: 6 },
+                        display: 'flex',
+                        justifyContent: 'center',
                         animation: 'bounce 2s infinite',
+                        cursor: 'pointer',
                         '@keyframes bounce': {
-                            '0%, 100%': {
-                                transform: 'translateX(-50%) translateY(0)',
-                            },
-                            '50%': {
-                                transform: 'translateX(-50%) translateY(8px)',
-                            },
-                        },
-                        '&:hover': {
-                            opacity: 0.7,
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(10px)' },
                         },
                     }}
                     onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })}
@@ -163,8 +180,8 @@ export default function HeroSection(): JSX.Element {
                         src="/assets/landing-page/arrow.png"
                         alt="Scroll down"
                         sx={{
-                            width: '48px',
-                            height: '48px',
+                            width: '40px',
+                            height: '40px',
                         }}
                     />
                 </Box>
