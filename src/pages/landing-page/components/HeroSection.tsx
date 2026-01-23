@@ -119,7 +119,7 @@ export default function HeroSection(): JSX.Element {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        mt: -12
+                        // mt: -12
                     }}
                 >
                     <Box

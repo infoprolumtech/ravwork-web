@@ -70,7 +70,7 @@ export default function PricingSection(): JSX.Element {
                     sx={{
                         position: 'relative',
                         width: '100%',
-                        maxWidth: '850px',
+                        maxWidth: '700px',
                         mx: 'auto',
                         borderRadius: '24px',
                         overflow: 'hidden',
