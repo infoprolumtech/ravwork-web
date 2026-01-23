@@ -1,36 +1,54 @@
 import { type JSX } from "react";
-import { Box, Typography, Container } from "@mui/material";
+import { Box } from "@mui/material";
+import HeroSection from "./components/HeroSection";
+import ProblemsSection from "./components/ProblemsSection";
+import GridFeatures from "./components/GridFeatures";
+import HowItWorks from "./components/HowItWorks";
+import ExponentialGrowth from "./components/ExponentialGrowth";
+import FAQSection from "./components/FAQSection";
+import PricingSection from "./components/PricingSection";
+import CTASection from "./components/CTASection";
 
 export default function LandingPage(): JSX.Element {
   return (
-    <Container
-      maxWidth="lg"
+    <Box
       sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        background: "#000000",
         minHeight: "100vh",
-        py: 4,
+        scrollBehavior: "smooth",
       }}
     >
-      <Box
-        sx={{
-          textAlign: "center",
-        }}
-      >
-        <Typography
-          variant="h2"
-          sx={{
-            fontWeight: 700,
-            color: "#111927",
-            fontSize: { xs: "32px", sm: "38px", md: "38px" },
-            mb: 2,
-          }}
-        >
-          Coming soon
-        </Typography>
-      </Box>
-    </Container>
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* Problems Section */}
+      <ProblemsSection />
+
+      {/* Look Professional Section */}
+      <GridFeatures />
+
+      {/* How It Works Section (Figma Design) */}
+      <HowItWorks />
+
+
+      {/* Exponential Growth Section */}
+      <ExponentialGrowth />
+
+      {/* Pricing Section */}
+      <PricingSection />
+
+      {/* FAQ Section */}
+      <FAQSection />
+
+
+
+      {/* CTA Section */}
+      <CTASection />
+
+
+    </Box>
   );
 }
+
+
 
