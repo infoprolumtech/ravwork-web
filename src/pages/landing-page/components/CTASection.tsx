@@ -8,7 +8,7 @@ export default function CTASection(): JSX.Element {
             id="cta"
             sx={{
                 background: '#000000',
-                padding: { xs: '40px 20px', md: spacing.sectionPadding },
+                padding: { xs: '40px 0px', md: spacing.sectionPadding },
                 textAlign: 'center',
             }}
         >
@@ -28,37 +28,70 @@ export default function CTASection(): JSX.Element {
                     role="img"
                     aria-label="Ready to look more professional? Create Your Link Now. Quick to set up. Simple to use."
                 >
-                    <Box
-                        component="img"
-                        src="/assets/landing-page/footer.png"
-                        alt=""
-                        sx={{
-                            width: '100%',
-                            height: 'auto',
-                            display: 'block',
-                        }}
-                    />
+                    {/* Desktop View */}
+                    <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', position: 'relative' }}>
+                        <Box
+                            component="img"
+                            src="/assets/landing-page/footer.png"
+                            alt=""
+                            sx={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                            }}
+                        />
+                        <Button
+                            href="/signup"
+                            sx={{
+                                position: 'absolute',
+                                top: '63%',
+                                left: '50.5%',
+                                transform: 'translate(-50%, -50%)',
+                                width: '23%',
+                                height: '20%',
+                                minHeight: '44px',
+                                background: 'transparent',
+                                borderRadius: '12px',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                },
+                            }}
+                            aria-label="Create Your Link Now"
+                        />
+                    </Box>
 
-                    {/* Interactive overlay button positioned over the design's button */}
-                    <Button
-                        href="/signup"
-                        sx={{
-                            position: 'absolute',
-                            // These percentages align with the button area in footer.png
-                            top: '63%',
-                            left: '50.5%',
-                            transform: 'translate(-50%, -50%)',
-                            width: { xs: '60%', sm: '40%', md: '23%' },
-                            height: { xs: '15%', md: '20%' },
-                            minHeight: '44px',
-                            background: 'transparent',
-                            borderRadius: '12px',
-                            '&:hover': {
-                                background: 'rgba(255, 255, 255, 0.1)',
-                            },
-                        }}
-                        aria-label="Create Your Link Now"
-                    />
+                    {/* Mobile View */}
+                    <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', position: 'relative' }}>
+                        <Box
+                            component="img"
+                            src="/assets/landing-page/mobile-footer.png"
+                            alt=""
+                            sx={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                            }}
+                        />
+                        <Button
+                            href="/signup"
+                            sx={{
+                                position: 'absolute',
+                                // Adjusted for typical mobile-footer layout
+                                top: '65%',
+                                left: '50.5%',
+                                transform: 'translate(-50%, -50%)',
+                                width: '80%',
+                                height: '25%',
+                                minHeight: '44px',
+                                background: 'transparent',
+                                borderRadius: '12px',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                },
+                            }}
+                            aria-label="Create Your Link Now"
+                        />
+                    </Box>
                 </Box>
             </Container>
         </Box>

@@ -33,7 +33,7 @@ export default function FAQSection(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: spacing.sectionPadding,
+                padding: { xs: '60px 20px', sm: spacing.sectionPadding },
             }}
         >
             <Container maxWidth="md">
@@ -41,12 +41,24 @@ export default function FAQSection(): JSX.Element {
                     sx={{
                         ...sectionTitleStyle,
                         textAlign: 'center',
-                        mb: 8,
-                        fontSize: { xs: '28px', md: '36px' },
+                        mb: 1.5,
+                        fontSize: { xs: '24px', md: '44px' },
                         color: '#FFFFFF',
                     }}
                 >
                     Frequently Asked Questions
+                </Typography>
+                <Typography
+                    sx={{
+                        ...sectionTitleStyle,
+                        textAlign: 'center',
+                        mb: 8,
+                        fontSize: { xs: '14px', sm: '18px', md: '20px' },
+                        fontWeight: 400,
+                        color: '#FFFFFF',
+                    }}
+                >
+                    Got questions? We've got answers. Find everything you need to know about using our platform, plans, and features.
                 </Typography>
 
                 <Box>

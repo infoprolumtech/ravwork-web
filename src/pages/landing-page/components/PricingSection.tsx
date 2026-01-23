@@ -81,37 +81,69 @@ export default function PricingSection(): JSX.Element {
                     role="img"
                     aria-label="Pricing: $20/month billed annually. Includes personalized booking link, full access to features, unlimited leads, unlimited custom questions, and lead management dashboard."
                 >
-                    <Box
-                        component="img"
-                        src="/assets/landing-page/pricing.png"
-                        alt=""
-                        sx={{
-                            width: '100%',
-                            height: 'auto',
-                            display: 'block',
-                        }}
-                    />
+                    {/* Desktop View */}
+                    <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', position: 'relative' }}>
+                        <Box
+                            component="img"
+                            src="/assets/landing-page/pricing.png"
+                            alt=""
+                            sx={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                            }}
+                        />
+                        <Button
+                            href="/signup"
+                            sx={{
+                                position: 'absolute',
+                                bottom: '10%',
+                                left: '50.5%',
+                                transform: 'translateX(-50%)',
+                                width: '22%',
+                                height: '10%',
+                                minHeight: '44px',
+                                background: 'transparent',
+                                borderRadius: '12px',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                },
+                            }}
+                            aria-label="Claim Your Link Now"
+                        />
+                    </Box>
 
-                    {/* Interactive overlay button positioned over 'Claim Your Link' area */}
-                    <Button
-                        href="/signup"
-                        sx={{
-                            position: 'absolute',
-                            // These percentages align with the button area in pricing.png
-                            bottom: '10%',
-                            left: '50.5%',
-                            transform: 'translateX(-50%)',
-                            width: { xs: '60%', sm: '40%', md: '22%' },
-                            height: { xs: '8%', md: '10%' },
-                            minHeight: '44px',
-                            background: 'transparent',
-                            borderRadius: '12px',
-                            '&:hover': {
-                                background: 'rgba(255, 255, 255, 0.1)',
-                            },
-                        }}
-                        aria-label="Claim Your Link Now"
-                    />
+                    {/* Mobile View */}
+                    <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', position: 'relative' }}>
+                        <Box
+                            component="img"
+                            src="/assets/landing-page/mobile-pricing.png"
+                            alt=""
+                            sx={{
+                                width: '100%',
+                                height: 'auto',
+                                display: 'block',
+                            }}
+                        />
+                        <Button
+                            href="/signup"
+                            sx={{
+                                position: 'absolute',
+                                bottom: '10%',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                width: '85%',
+                                height: '14%',
+                                minHeight: '44px',
+                                background: 'transparent',
+                                borderRadius: '12px',
+                                '&:hover': {
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                },
+                            }}
+                            aria-label="Claim Your Link Now"
+                        />
+                    </Box>
                 </Box>
             </Container>
         </Box>

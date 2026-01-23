@@ -7,8 +7,9 @@ export default function ExponentialGrowth(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: spacing.sectionPadding,
+                padding: { xs: '60px 0px', md: spacing.sectionPadding },
                 textAlign: 'center',
+                paddingTop: { xs: 0, md: spacing.sectionPadding },
             }}
         >
             <Container maxWidth="lg">
@@ -27,10 +28,12 @@ export default function ExponentialGrowth(): JSX.Element {
                 <Typography
                     sx={{
                         color: 'rgba(255, 255, 255, 0.7)',
-                        fontSize: { xs: '16px', md: '20px' },
-                        mb: { xs: 8, md: 10 },
+                        fontSize: { xs: '14px', md: '20px' },
+                        mb: { xs: 0, md: 10 },
                         maxWidth: '800px',
                         mx: 'auto',
+                        lineHeight: 1.5,
+                        px: { xs: 2, md: 0 },
                     }}
                 >
                     Watch how fast your business spreads when people share your link
@@ -42,12 +45,13 @@ export default function ExponentialGrowth(): JSX.Element {
                         width: '100%',
                         maxWidth: '1200px',
                         mx: 'auto',
-                        mb: { xs: 8, md: 12 },
+                        mb: { xs: 4, md: 12 },
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}
                 >
+                    {/* Desktop Graphic */}
                     <Box
                         component="img"
                         src="/assets/landing-page/exponential-growth/first.png"
@@ -55,11 +59,22 @@ export default function ExponentialGrowth(): JSX.Element {
                         sx={{
                             width: '100%',
                             height: 'auto',
+                            display: { xs: 'none', md: 'block' },
                         }}
                     />
 
-                    {/* Labels (If not clearly visible in the image, we can add them here, but the user image suggests they are part of the design. 
-                        In first.png they seem to be present but small. I'll stick to the image for now as requested.) */}
+                    {/* Mobile Graphic */}
+                    <Box
+                        component="img"
+                        src="/assets/landing-page/exponential-growth/mobile-first.png"
+                        alt="Exponential Growth Sequence"
+                        sx={{
+                            width: '100%',
+                            height: 'auto',
+                            maxWidth: '350px',
+                            display: { xs: 'block', md: 'none' },
+                        }}
+                    />
                 </Box>
 
                 {/* Viral Growth CTA Box */}
@@ -70,8 +85,10 @@ export default function ExponentialGrowth(): JSX.Element {
                         mx: 'auto',
                         display: 'flex',
                         justifyContent: 'center',
+                        mt: { xs: 4, md: 0 },
                     }}
                 >
+                    {/* Desktop CTA Image */}
                     <Box
                         component="img"
                         src="/assets/landing-page/exponential-growth/Link.png"
@@ -81,6 +98,21 @@ export default function ExponentialGrowth(): JSX.Element {
                             height: 'auto',
                             borderRadius: '24px',
                             boxShadow: '0 0 50px rgba(59, 130, 246, 0.2)',
+                            display: { xs: 'none', md: 'block' },
+                        }}
+                    />
+
+                    {/* Mobile CTA Image */}
+                    <Box
+                        component="img"
+                        src="/assets/landing-page/exponential-growth/mobile-link.png"
+                        alt="50x Viral Growth"
+                        sx={{
+                            width: '100%',
+                            height: 'auto',
+                            borderRadius: '24px',
+                            boxShadow: '0 0 30px rgba(59, 130, 246, 0.1)',
+                            display: { xs: 'block', md: 'none' },
                         }}
                     />
                 </Box>
