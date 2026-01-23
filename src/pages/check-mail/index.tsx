@@ -35,7 +35,7 @@ export default function CheckMailPage(): JSX.Element {
         </Typography>
 
         {/* Message */}
-        <Typography variant="body2" mb={3} textAlign="center" sx={{ color: "#6C737F", fontSize: { xs: "16px", sm: "16px" } }}>
+        <Typography variant="body2" mb={3} textAlign="center" sx={{ color: "#6C737F", fontSize: { xs: "16px", sm: "18px" } }}>
           A reset password link has been sent to your email address. Please check your inbox and follow the instructions to reset your password.
         </Typography>
 

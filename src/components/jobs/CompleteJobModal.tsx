@@ -100,7 +100,7 @@ export default function CompleteJobModal({
             marginTop: "20px",
           }}
         >
-          How Much Was Charged for this service?
+          How much was charged for this service?
         </Typography>
         <IconButton
           onClick={onClose}
