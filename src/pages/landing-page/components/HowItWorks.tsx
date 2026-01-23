@@ -75,7 +75,7 @@ export default function HowItWorks(): JSX.Element {
                 </Box>
 
                 {/* Steps */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 8, md: 12 } }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 0 } }}>
                     {steps.map((step, index) => (
                         <Box
                             key={index}
@@ -86,7 +86,7 @@ export default function HowItWorks(): JSX.Element {
                                     xs: 'column',
                                     md: step.reverse ? 'row-reverse' : 'row',
                                 },
-                                gap: { xs: 4, md: 10 },
+                                gap: { xs: 4, md: 16 },
 
                             }}
                         >
