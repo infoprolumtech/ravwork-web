@@ -38,6 +38,7 @@ const steps = [
 export default function HowItWorks(): JSX.Element {
     return (
         <Box
+            id="how-it-works"
             sx={{
                 background: '#000000',
                 padding: spacing.sectionPadding,
