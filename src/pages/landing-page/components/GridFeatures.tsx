@@ -7,8 +7,9 @@ export default function GridFeatures(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: spacing.sectionPadding,
-                paddingBottom: "0 !important",
+                padding: { xs: '60px 0px', md: spacing.sectionPadding },
+                paddingBottom: { xs: '20px', md: '0 !important' },
+                paddingTop: { xs: '20px', md: '60px' },
                 textAlign: 'center',
             }}
         >
@@ -17,14 +18,16 @@ export default function GridFeatures(): JSX.Element {
                     sx={{
                         ...sectionTitleStyle,
                         textAlign: 'center',
-                        mb: { xs: 2 },
+                        mb: { xs: 6, md: 8 },
                         fontSize: { xs: '32px', sm: '44px' },
                         color: '#FFFFFF',
                         fontWeight: 700,
                         lineHeight: 1.2,
                     }}
                 >
-                    Look Professional. Stay Organized.<br />Get More Clients.
+                    Look Professional. Stay Organized.
+                    <br />
+                    Get More Clients.
                 </Typography>
 
                 <Box
@@ -37,6 +40,7 @@ export default function GridFeatures(): JSX.Element {
                         alignItems: 'center',
                     }}
                 >
+                    {/* Desktop Image */}
                     <Box
                         component="img"
                         src="/assets/landing-page/grid-features.png"
@@ -45,6 +49,21 @@ export default function GridFeatures(): JSX.Element {
                             width: '100%',
                             height: 'auto',
                             borderRadius: '12px',
+                            display: { xs: 'none', md: 'block' },
+                        }}
+                    />
+
+                    {/* Mobile Image */}
+                    <Box
+                        component="img"
+                        src="/assets/landing-page/grid-features-mobile.png"
+                        alt="RavworkLink Features"
+                        sx={{
+                            width: '100%',
+                            height: 'auto',
+                            maxWidth: '400px',
+                            borderRadius: '12px',
+                            display: { xs: 'block', md: 'none' },
                         }}
                     />
                 </Box>

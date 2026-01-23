@@ -46,7 +46,11 @@ export default function HowItWorks(): JSX.Element {
         >
             <Container maxWidth="lg">
                 {/* Header */}
-                <Box sx={{ textAlign: 'center', mb: { xs: 0 } }}>
+                <Box sx={{
+                    textAlign: 'center', mb: { xs: 0 },
+                    padding: { xs: '0px 20px', sm: "0px" },
+
+                }}>
                     <Typography
                         sx={{
                             ...sectionTitleStyle,
@@ -83,10 +87,14 @@ export default function HowItWorks(): JSX.Element {
                                     md: step.reverse ? 'row-reverse' : 'row',
                                 },
                                 gap: { xs: 4, md: 10 },
+
                             }}
                         >
                             {/* Text Side */}
-                            <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
+                            <Box sx={{
+                                flex: 1, textAlign: { xs: 'center', md: 'left' },
+                                padding: { xs: '0px 20px', sm: "0px" },
+                            }}>
                                 <Typography
                                     sx={{
                                         fontSize: { xs: '28px', md: '36px' },
