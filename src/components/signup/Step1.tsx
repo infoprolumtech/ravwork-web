@@ -92,7 +92,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
       <PageIcon iconSrc="/assets/icons/sigup_icon.svg" iconAlt="email-icon" />
 
       <Typography variant="h5" textAlign="center" mb={{ xs: 2, sm: 3 }} sx={pageTitleSx}>
-        Let's help client book<br />you instantly.
+        Let's help clients book<br />you instantly.
       </Typography>
 
       <Box sx={{ position: "relative", mb: 0 }}>

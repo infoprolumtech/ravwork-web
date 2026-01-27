@@ -194,7 +194,7 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
 
       {/* Title - Centered */}
       <Typography variant="h5" textAlign="center" mb={{ xs: 1.5, sm: 2 }} sx={pageTitleSx}>
-        Profile Set Up
+        Profile Setup
       </Typography>
 
       {/* Profile Icon - Centered below title */}

@@ -159,7 +159,7 @@ export const Step2 = ({
             <span dangerouslySetInnerHTML={{ __html: title }} />
           ) : (
             <>
-              Select plan to activate<br />your booking link.
+              Select a plan to activate<br />your booking link.
             </>
           )}
         </Typography>
