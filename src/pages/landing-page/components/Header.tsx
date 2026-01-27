@@ -3,17 +3,21 @@ import { Box, AppBar, Toolbar, Button, IconButton, Drawer, List, ListItem, ListI
 import CloseIcon from '@mui/icons-material/Close';
 import { colors, primaryButton } from '../styles';
 
-export default function Header(): JSX.Element {
+interface HeaderProps {
+    onTermsClick: () => void;
+}
+
+export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    const navLinks = [
-        { title: 'Home', href: '#home' },
+    const navLinks: { title: string; href: string; isAction?: boolean }[] = [
+        { title: 'Home', href: '/' },
         { title: 'Pricing', href: '#pricing' },
-        { title: 'Terms & Conditions', href: '#terms' },
+        { title: 'Terms & Conditions', href: '#terms', isAction: true },
     ];
 
     const drawer = (
@@ -128,7 +132,12 @@ export default function Header(): JSX.Element {
                         {navLinks.map((link) => (
                             <Button
                                 key={link.title}
-                                href={link.href}
+                                href={!link.isAction ? link.href : undefined}
+                                onClick={() => {
+                                    if (link.isAction && link.title === 'Terms & Conditions') {
+                                        onTermsClick();
+                                    }
+                                }}
                                 sx={{
                                     color: colors.textPrimary,
                                     textTransform: 'none',

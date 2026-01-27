@@ -24,6 +24,7 @@ export default function CTASection(): JSX.Element {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                        backgroundColor: 'transparent',
                     }}
                     role="img"
                     aria-label="Ready to look more professional? Create Your Link Now. Quick to set up. Simple to use."
@@ -53,7 +54,7 @@ export default function CTASection(): JSX.Element {
                                 background: 'transparent',
                                 borderRadius: '12px',
                                 '&:hover': {
-                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    // background: 'rgba(255, 255, 255, 0.1)',
                                 },
                             }}
                             aria-label="Create Your Link Now"
@@ -86,7 +87,7 @@ export default function CTASection(): JSX.Element {
                                 background: 'transparent',
                                 borderRadius: '12px',
                                 '&:hover': {
-                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    // background: 'rgba(255, 255, 255, 0.1)',
                                 },
                             }}
                             aria-label="Create Your Link Now"
