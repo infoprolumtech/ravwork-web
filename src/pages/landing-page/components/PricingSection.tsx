@@ -72,6 +72,7 @@ export default function PricingSection(): JSX.Element {
                     transition={{ duration: 0.6 }}
                     sx={{
                         fontSize: { xs: '32px', md: '48px' },
+                        lineHeight: { xs: '1.3', md: '1.2' },
                         fontWeight: 700,
                         color: '#FFFFFF',
                         mb: 4,
@@ -103,7 +104,9 @@ export default function PricingSection(): JSX.Element {
                             fontSize: '16px',
                             fontWeight: !isAnnual ? 600 : 400,
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease'
+                            transition: 'all 0.3s ease',
+                            width: '70px',
+                            textAlign: 'right',
                         }}
                     >
                         Monthly
@@ -116,50 +119,44 @@ export default function PricingSection(): JSX.Element {
                     />
 
                     <Typography
+                        component="div"
                         onClick={() => setIsAnnual(true)}
                         sx={{
                             color: isAnnual ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
                             fontSize: '16px',
                             fontWeight: isAnnual ? 600 : 400,
                             cursor: 'pointer',
-                            transition: 'all 0.3s ease'
+                            transition: 'all 0.3s ease',
+                            width: '70px',
+                            textAlign: 'left',
+                            position: 'relative',
+                            display: 'flex',
+                            alignItems: 'center',
                         }}
                     >
                         Annual
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                left: '100%',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                marginLeft: '12px',
+                                background: 'rgba(34, 197, 94, 0.2)',
+                                color: '#22C55E',
+                                padding: '4px 12px',
+                                borderRadius: '100px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                opacity: isAnnual ? 1 : 0,
+                                visibility: isAnnual ? 'visible' : 'hidden',
+                                transition: 'all 0.3s ease',
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            Save 31%
+                        </Box>
                     </Typography>
-
-                    {/* Discount Badge - Only visible when NOT monthly (i.e. Yearly is active?) 
-                        The user said: "Save 31% will hide when switched montly".
-                        This implies when Monthly IS selected, it hides. When Annual IS selected, it shows.
-                        Wait, typically "Save 31%" is a permanent label next to "Annual" to entice the click. 
-                        But the user explicitly said "hide when switched montly". 
-                        I will follow usage: hide if isAnnual is false? Or maybe the user means hide it if the toggle is set to monthly mode?
-                        Usually these badges are ALWAYS visible to encourage clicking Annual.
-                        However, complying with "hide when switched montly":
-                        If (isAnnual) -> Show. If (!isAnnual) -> Hide.
-                        Let's verify interpretation: "Save 31% will hide when switched montly"
-                        Scenario A: User is viewing Monthly. Badge is hidden.
-                        Scenario B: User toggles to Annual. Badge appears.
-                        
-                        Alternative interpretation: The badge is part of the "Annual" label and should always be there to show *why* you should switch?
-                        But user instruction is specific. I will hide it when `!isAnnual`.
-                    */}
-                    <Box
-                        sx={{
-                            background: 'rgba(34, 197, 94, 0.2)',
-                            color: '#22C55E',
-                            padding: '4px 12px',
-                            borderRadius: '100px',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            opacity: isAnnual ? 1 : 0, // Fade out instead of unmount to keep layout stable or just hide?
-                            visibility: isAnnual ? 'visible' : 'hidden',
-                            transition: 'all 0.3s ease',
-                            transform: isAnnual ? 'translateX(0)' : 'translateX(-10px)',
-                        }}
-                    >
-                        Save 31%
-                    </Box>
                 </Box>
 
                 {/* Pricing Card */}

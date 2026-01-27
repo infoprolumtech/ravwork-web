@@ -88,7 +88,7 @@ export default function HeroSection(): JSX.Element {
                     }}
                 >
                     <Button
-                        href="/login"
+                        href="/signup"
                         sx={{
                             background: '#FFFFFF',
                             color: '#000000',

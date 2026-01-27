@@ -75,13 +75,15 @@ export default function SignUpPage(): JSX.Element {
       let hasServices = false;
       try {
         const servicesResult = await dispatch(
-          serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 })
+          serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 }, { forceRefetch: true })
         ).unwrap();
         hasServices = Array.isArray(servicesResult)
           ? servicesResult.length > 0
           : Array.isArray((servicesResult as any)?.data)
-            ? (servicesResult as any).data.length > 0
-            : false;
+            ? (servicesResult as any).data.length > 0 // Ensure data array has items
+            : (servicesResult as any)?.items // Check for 'items' if 'data' is missing (some APIs use items)
+              ? (servicesResult as any).items.length > 0
+              : false;
       } catch {
         // If service fetch fails, fall back to profile-fields-only completion
       }
@@ -95,7 +97,13 @@ export default function SignUpPage(): JSX.Element {
         hasServices
       );
 
-      navigate(completion >= 50 ? "/services-offered" : "/my-profile", { replace: true });
+      if (completion === 100) {
+        navigate("/dashboard", { replace: true });
+      } else if (completion >= 50) {
+        navigate("/services-offered", { replace: true });
+      } else {
+        navigate("/my-profile", { replace: true });
+      }
     },
     [dispatch, navigate]
   );
@@ -205,7 +213,7 @@ export default function SignUpPage(): JSX.Element {
             const value = subscription.plan?.price || (subscription.plan?.interval === 'month' ? 29.99 : 240);
             const currency = subscription.plan?.currency?.toUpperCase() || 'USD';
             const eventId = `sub_${subscription.id || user?.id || Date.now()}`;
-            
+
             window.fbq('track', 'Subscribe', {
               value: value,
               currency: currency,
@@ -272,7 +280,7 @@ export default function SignUpPage(): JSX.Element {
   const handleStep2Submit = async (data: Step2FormInputs) => {
     // Step 2: Create Stripe checkout session and redirect to Stripe
     try {
-    setStep2Data(data);
+      setStep2Data(data);
 
       if (!hasAuthToken) {
         dispatch(showAlert({ message: "Please login to continue.", severity: "error" }));
@@ -306,7 +314,7 @@ export default function SignUpPage(): JSX.Element {
       const message = extractErrorMessage(error, "Failed to start checkout. Please try again.");
       if (typeof message === "string" && message.toLowerCase().includes("active subscription")) {
         dispatch(showAlert({ message: "You already have an active subscription. Let’s finish setting up your profile.", severity: "success" }));
-    setCurrentStep(4);
+        setCurrentStep(4);
         navigate("/signup", { replace: true, state: { resumeStep: 4 } });
         return;
       }
@@ -331,7 +339,7 @@ export default function SignUpPage(): JSX.Element {
   const handleStep4Submit = async (data: Step4FormInputs) => {
     try {
       setStep4Data(data);
-      await updateProfile({
+      const updatedProfile = await updateProfile({
         displayName: data.businessName || undefined,
         businessDescription: data.businessDescription || undefined,
         profilePhoto: data.profilePhoto || undefined,
@@ -344,7 +352,9 @@ export default function SignUpPage(): JSX.Element {
       if (isLoggedIn) {
         dispatch(clearSignupToken());
         dispatch(showAlert({ message: "Profile updated successfully.", severity: "success" }));
-        navigateAfterSignup(user || {});
+        // Merge existing user state with updated profile data to ensure navigation logic uses fresh data
+        const updatedUser = { ...user, ...updatedProfile };
+        navigateAfterSignup(updatedUser);
         return;
       }
 
