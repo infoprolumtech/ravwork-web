@@ -17,7 +17,7 @@ import AddEditServicePage from "../pages/services-offered/add-edit";
 import Earnings from "../pages/earnings";
 import MyProfile from "../pages/my-profile";
 import Notifications from "../pages/notifications";
-import ManageSubscription from "../pages/manage-subscription";
+import ManageSubscription from "../pages/subscription-services";
 import EditProfile from "../pages/my-profile/[id]";
 import ClientPage from "../pages/client";
 import LandingPage from "../pages/landing-page";
@@ -211,9 +211,9 @@ export default function AppRoutes() {
       element: <Navigate to="/email-and-sms" replace />,
     },
 
-    // Manage Subscription
+    // Subscription Services (Renamed from Manage Subscription)
     {
-      path: "/manage-subscription",
+      path: "/subscription-services",
       element: (
         <PrivateRoute>
           <ErrorBoundary>

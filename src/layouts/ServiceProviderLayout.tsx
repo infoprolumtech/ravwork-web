@@ -81,10 +81,10 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     path: "/email-and-sms",
   },
   {
-    segment: "manage-subscription",
-    title: "Manage Subscription",
+    segment: "subscription-services",
+    title: "Subscription Services",
     icon: "/assets/icons/sidebar_menu_icon/crown.svg",
-    path: "/manage-subscription",
+    path: "/subscription-services",
   },
 ];
 
@@ -292,7 +292,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
         icon: "/assets/icons/sidebar_menu_icon/bell.svg", // Default icon, can be changed if needed
       };
     }
-    
+
     const currentSegment = pathParts[0] || "dashboard";
     const navItem = NAVIGATION_ITEMS.find((item) => item.segment === currentSegment);
     return {
@@ -426,53 +426,53 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
 
             {/* Progress Card - hidden once completion reaches 100% */}
             {profileComplete < 100 && (
-            <Box
-              sx={{
-                backgroundColor: "#F7F9FB",
-                borderRadius: "14px",
-                px: 2,
-                py: 1.5,
-                width: "100%",
-              }}
-            >
-              <Typography
+              <Box
                 sx={{
-                  fontSize: "11px",
-                  color: "#6C737F",
-                  fontWeight: 500,
+                  backgroundColor: "#F7F9FB",
+                  borderRadius: "14px",
+                  px: 2,
+                  py: 1.5,
+                  width: "100%",
                 }}
               >
-                Get More Clients with a complete Profile
-              </Typography>
-
-                <Stack direction="row" alignItems="center" spacing={1}>
-                <LinearProgress
-                  variant="determinate"
-                  value={profileComplete}
-                  sx={{
-                    flex: 1,
-                    height: 6,
-                    borderRadius: 6,
-                    backgroundColor: "#E5E7EB",
-                    "& .MuiLinearProgress-bar": {
-                      backgroundColor: "#12B76A",
-                      borderRadius: 6,
-                    },
-                  }}
-                />
-
                 <Typography
                   sx={{
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#111927",
-                    minWidth: "36px",
-                    textAlign: "right",
+                    fontSize: "11px",
+                    color: "#6C737F",
+                    fontWeight: 500,
                   }}
                 >
-                  {profileComplete}%
+                  Get More Clients with a complete Profile
                 </Typography>
-              </Stack>
+
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={profileComplete}
+                    sx={{
+                      flex: 1,
+                      height: 6,
+                      borderRadius: 6,
+                      backgroundColor: "#E5E7EB",
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#12B76A",
+                        borderRadius: 6,
+                      },
+                    }}
+                  />
+
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#111927",
+                      minWidth: "36px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {profileComplete}%
+                  </Typography>
+                </Stack>
 
                 <Button
                   variant="contained"
@@ -496,7 +496,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
                   {profileComplete >= 50 ? "Complete Setup" : "Complete profile"}
                 </Button>
               </Box>
-              )}
+            )}
           </Box>
 
 

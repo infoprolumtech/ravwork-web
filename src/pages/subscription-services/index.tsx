@@ -108,18 +108,18 @@ export default function ManageSubscriptionPage(): JSX.Element {
           })
           .finally(() => {
             // Clean up URL
-            navigate("/manage-subscription", { replace: true });
+            navigate("/subscription-services", { replace: true });
           });
       } else {
         // If for some reason we don't have upgradePriceId, just refetch
         dispatch(showAlert({ message: "Payment completed. Refreshing subscription status...", severity: "success" }));
         refetch();
-        navigate("/manage-subscription", { replace: true });
+        navigate("/subscription-services", { replace: true });
       }
     } else if (subscriptionStatus === "cancel") {
       dispatch(showAlert({ message: "Plan change was cancelled.", severity: "info" }));
       // Clean up URL
-      navigate("/manage-subscription", { replace: true });
+      navigate("/subscription-services", { replace: true });
     }
   }, [location.search, dispatch, navigate, refetch, changePlan]);
 
@@ -203,15 +203,15 @@ export default function ManageSubscriptionPage(): JSX.Element {
       // Close modal after successful upgrade scheduling
       setChangePlanDialogOpen(false);
       setSelectedPlanData(null);
-      
+
       dispatch(showAlert({ message: "Plan upgraded successfully", severity: "success" }));
-      
+
       // Refresh subscription status
       refetch();
     } catch (error: unknown) {
-      dispatch(showAlert({ 
-        message: extractErrorMessage(error, "Failed to schedule upgrade. Please try again."), 
-        severity: "error" 
+      dispatch(showAlert({
+        message: extractErrorMessage(error, "Failed to schedule upgrade. Please try again."),
+        severity: "error"
       }));
     }
   };
@@ -308,74 +308,25 @@ export default function ManageSubscriptionPage(): JSX.Element {
             )}
 
             <Box mt={2}>
-              {plan?.features && plan.features.length > 0 ? (
-                plan.features.map((feature, index) => (
-                  <Box key={index} display="flex" alignItems="center">
-                    <Box
-                      component="img"
-                      src="/assets/icons/check_icon_box.svg"
-                      sx={{ width: 20, height: 20, mr: 1.5 }}
-                    />
-                    <Typography fontSize={14} color="#595959">
-                      {feature}
-                    </Typography>
-                  </Box>
-                ))
-              ) : (
-                // Fallback to default features if API doesn't provide them
-                <>
-                  <Box display="flex" alignItems="center">
-                <Box
-                  component="img"
-                  src="/assets/icons/check_icon_box.svg"
-                  sx={{ width: 20, height: 20, mr: 1.5 }}
-                />
-                <Typography fontSize={14} color="#595959">
-                      Personalized booking link
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Box
-                  component="img"
-                  src="/assets/icons/check_icon_box.svg"
-                  sx={{ width: 20, height: 20, mr: 1.5 }}
-                />
-                <Typography fontSize={14} color="#595959">
-                      Full access to features
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Box
-                  component="img"
-                  src="/assets/icons/check_icon_box.svg"
-                  sx={{ width: 20, height: 20, mr: 1.5 }}
-                />
-                <Typography fontSize={14} color="#595959">
-                      Unlimited leads
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Box
-                  component="img"
-                  src="/assets/icons/check_icon_box.svg"
-                  sx={{ width: 20, height: 20, mr: 1.5 }}
-                />
-                <Typography fontSize={14} color="#595959">
-                      Unlimited custom questions
-                </Typography>
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Box
-                  component="img"
-                  src="/assets/icons/check_icon_box.svg"
-                  sx={{ width: 20, height: 20, mr: 1.5 }}
-                />
-                <Typography fontSize={14} color="#595959">
-                      Lead management dashboard
-                </Typography>
-              </Box>
-                </>
-              )}
+              {/* Static features list as requested */}
+              {[
+                "Personalized booking link",
+                "Full access to features",
+                "Unlimited leads",
+                "Unlimited custom questions",
+                "Lead management dashboard"
+              ].map((feature, index) => (
+                <Box key={index} display="flex" alignItems="center" mb={1}>
+                  <Box
+                    component="img"
+                    src="/assets/icons/check_icon_box.svg"
+                    sx={{ width: 20, height: 20, mr: 1.5 }}
+                  />
+                  <Typography fontSize={14} color="#595959">
+                    {feature}
+                  </Typography>
+                </Box>
+              ))}
             </Box>
           </CardContent>
 
@@ -388,13 +339,14 @@ export default function ManageSubscriptionPage(): JSX.Element {
             }}
           >
             <Button
-              variant="secondary"
+              variant="outlined"
               onClick={handleOpen}
               sx={{
                 backgroundColor: "#fff",
                 color: "#000",
                 width: 147,
                 height: 44,
+                borderColor: "#D0D5DD", // Optional: Add border color to match typical outlined style if needed
               }}
             >
               <IconButton size="small" disableRipple>
@@ -419,23 +371,23 @@ export default function ManageSubscriptionPage(): JSX.Element {
               }}
             >
               {canChangePlan && (
-              <MenuItem
+                <MenuItem
                   onClick={handleChangePlanClick}
-                sx={{
-                  fontWeight: 400,
-                  fontSize: "16px",
-                }}
-              >
-                Change Plan
-              </MenuItem>
+                  sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                  }}
+                >
+                  Change Plan
+                </MenuItem>
               )}
               {canResume && (
-              <MenuItem
+                <MenuItem
                   onClick={handleResumeClick}
-                sx={{
-                  fontWeight: 400,
-                  fontSize: "16px",
-                }}
+                  sx={{
+                    fontWeight: 400,
+                    fontSize: "16px",
+                  }}
                 >
                   Resume Subscription
                 </MenuItem>
@@ -448,9 +400,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
                     fontSize: "16px",
                     color: "#F97066",
                   }}
-              >
-                Cancel Subscription
-              </MenuItem>
+                >
+                  Cancel Subscription
+                </MenuItem>
               )}
             </Menu>
           </Box>
@@ -536,21 +488,21 @@ export default function ManageSubscriptionPage(): JSX.Element {
         >
           <Box sx={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
             {/* Header with title and close button in same row */}
-            <Box 
-              sx={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
                 alignItems: { xs: "flex-start", sm: "center" },
                 mb: { xs: 1.5, sm: 2 },
                 gap: { xs: 1, sm: 2 },
                 flexWrap: "nowrap",
               }}
             >
-              <Typography 
-                variant="h5" 
-                fontWeight={600} 
-                sx={{ 
-                  fontSize: { xs: "18px", sm: "24px" }, 
+              <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{
+                  fontSize: { xs: "18px", sm: "24px" },
                   color: "#111927",
                   flex: 1,
                   minWidth: 0,
