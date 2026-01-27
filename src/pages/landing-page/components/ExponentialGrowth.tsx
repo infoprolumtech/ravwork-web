@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { sectionTitleStyle, spacing } from '../styles';
 
 export default function ExponentialGrowth(): JSX.Element {
@@ -15,6 +16,11 @@ export default function ExponentialGrowth(): JSX.Element {
             <Container maxWidth="lg">
                 {/* Title and Subtitle */}
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
                     sx={{
                         ...sectionTitleStyle,
                         mb: 2,
@@ -26,6 +32,11 @@ export default function ExponentialGrowth(): JSX.Element {
                     Exponential Growth
                 </Typography>
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
                     sx={{
                         color: 'rgba(255, 255, 255, 0.7)',
                         fontSize: { xs: '14px', md: '20px' },
@@ -41,6 +52,11 @@ export default function ExponentialGrowth(): JSX.Element {
 
                 {/* Main Growth Graphic */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
                     sx={{
                         width: '100%',
                         maxWidth: '1200px',
@@ -79,6 +95,11 @@ export default function ExponentialGrowth(): JSX.Element {
 
                 {/* Viral Growth CTA Box */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
                     sx={{
                         width: '100%',
                         maxWidth: '700px',

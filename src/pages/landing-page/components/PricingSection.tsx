@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
+import { motion } from 'framer-motion';
 import { spacing } from '../styles';
 
 export default function PricingSection(): JSX.Element {
@@ -15,6 +16,11 @@ export default function PricingSection(): JSX.Element {
             <Container maxWidth="lg">
                 {/* Title */}
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
                     sx={{
                         fontSize: { xs: '32px', md: '48px' },
                         fontWeight: 700,
@@ -28,6 +34,11 @@ export default function PricingSection(): JSX.Element {
 
                 {/* Toggle Section */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
@@ -67,6 +78,11 @@ export default function PricingSection(): JSX.Element {
 
                 {/* Pricing Card */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
                     sx={{
                         position: 'relative',
                         width: '100%',

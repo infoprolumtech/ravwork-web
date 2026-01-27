@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { sectionTitleStyle, spacing } from '../styles';
 
 export default function GridFeatures(): JSX.Element {
@@ -15,6 +16,11 @@ export default function GridFeatures(): JSX.Element {
         >
             <Container maxWidth="lg">
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
                     sx={{
                         ...sectionTitleStyle,
                         textAlign: 'center',
@@ -31,6 +37,11 @@ export default function GridFeatures(): JSX.Element {
                 </Typography>
 
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
                     sx={{
                         width: '100%',
                         maxWidth: '1200px',

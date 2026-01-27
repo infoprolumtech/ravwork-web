@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { sectionTitleStyle, spacing } from '../styles';
 
 const problems = [
@@ -32,6 +33,11 @@ export default function ProblemsSection(): JSX.Element {
         >
             <Container maxWidth="md">
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
                     sx={{
                         ...sectionTitleStyle,
                         mb: 6,
@@ -47,6 +53,11 @@ export default function ProblemsSection(): JSX.Element {
                     {problems.map((problem, index) => (
                         <Box
                             key={index}
+                            component={motion.div}
+                            initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
                             sx={{
                                 background: 'rgba(15, 23, 42, 0.6)',
                                 border: '1px solid rgba(59, 130, 246, 0.2)',
@@ -57,7 +68,7 @@ export default function ProblemsSection(): JSX.Element {
                                 gap: 3,
                                 width: '100%',
                                 maxWidth: '700px',
-                                transition: 'all 0.3s ease',
+                                transition: 'background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease', // Keeping hover transition separte from entrance
                                 '&:hover': {
                                     transform: 'translateY(-4px)',
                                     borderColor: 'rgba(59, 130, 246, 0.4)',

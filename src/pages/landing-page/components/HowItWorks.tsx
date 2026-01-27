@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { colors, sectionTitleStyle, spacing } from '../styles';
 
 const steps = [
@@ -53,6 +54,11 @@ export default function HowItWorks(): JSX.Element {
 
                 }}>
                     <Typography
+                        component={motion.div}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
                         sx={{
                             ...sectionTitleStyle,
                             mb: 2,
@@ -63,6 +69,11 @@ export default function HowItWorks(): JSX.Element {
                         How it works
                     </Typography>
                     <Typography
+                        component={motion.div}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
                         sx={{
                             color: colors.textSecondary,
                             fontSize: { xs: '16px', md: '20px' },
@@ -80,6 +91,11 @@ export default function HowItWorks(): JSX.Element {
                     {steps.map((step, index) => (
                         <Box
                             key={index}
+                            component={motion.div}
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8 }}
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',

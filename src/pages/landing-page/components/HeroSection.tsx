@@ -1,5 +1,6 @@
 import { type JSX } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
+import { motion } from 'framer-motion';
 import Header from './Header';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 
@@ -33,6 +34,10 @@ export default function HeroSection(): JSX.Element {
             >
                 {/* Headline */}
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                     sx={{
                         fontSize: { xs: '32px', sm: '44px' },
                         fontWeight: 700,
@@ -50,6 +55,10 @@ export default function HeroSection(): JSX.Element {
 
                 {/* Subheadline */}
                 <Typography
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                     sx={{
                         fontSize: { xs: '14px', sm: '18px', md: '20px' },
                         fontWeight: 400,
@@ -66,6 +75,10 @@ export default function HeroSection(): JSX.Element {
 
                 {/* CTA Buttons */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                     sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -137,6 +150,10 @@ export default function HeroSection(): JSX.Element {
                 >
                     {/* Visual Glow behind image */}
                     <Box
+                        component={motion.div}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 1, delay: 0.2 }}
                         sx={{
                             position: 'absolute',
                             width: '90%',
@@ -146,7 +163,10 @@ export default function HeroSection(): JSX.Element {
                         }}
                     />
                     <Box
-                        component="img"
+                        component={motion.img}
+                        initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
                         src="/assets/landing-page/hero.png"
                         alt="RavworkLink Dashboard"
                         sx={{
@@ -162,6 +182,10 @@ export default function HeroSection(): JSX.Element {
 
                 {/* Scroll Down Indicator */}
                 <Box
+                    component={motion.div}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.5, duration: 1 }}
                     sx={{
                         mt: { xs: 4, md: 6 },
                         display: 'flex',
