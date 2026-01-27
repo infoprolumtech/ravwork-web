@@ -198,6 +198,20 @@ export default function SignUpPage(): JSX.Element {
             return;
           }
 
+
+          // Track Subscribe event after payment confirmation
+          if (typeof window.fbq === 'function' && status?.subscription) {
+            const subscription = status.subscription;
+            const value = subscription.plan?.price || (subscription.plan?.interval === 'month' ? 29.99 : 240);
+            const currency = subscription.plan?.currency?.toUpperCase() || 'USD';
+            const eventId = `sub_${subscription.id || user?.id || Date.now()}`;
+            
+            window.fbq('track', 'Subscribe', {
+              value: value,
+              currency: currency,
+              event_id: eventId,
+            });
+          }
           dispatch(showAlert({ message: "Subscription activated. Let’s finish setting up your profile.", severity: "success" }));
           setCurrentStep(4);
           navigate("/signup", { replace: true, state: { resumeStep: 4 } });

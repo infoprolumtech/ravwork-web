@@ -100,6 +100,16 @@ export const Step2 = ({
   }, [plans, form]);
 
   const handleSubmit = (data: Step2FormInputs) => {
+    // Track AddToCart event when user selects a plan
+    if (typeof window.fbq === 'function') {
+      const selectedPlan = plans.find((p) => p.id === data.plan);
+      const planValue = selectedPlan?.interval === 'month' ? 'monthly_29' : 'annual_240';
+
+      window.fbq('track', 'AddToCart', {
+        plan: planValue,
+      });
+    }
+
     onNext(data);
   };
 

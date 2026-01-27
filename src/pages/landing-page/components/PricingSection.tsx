@@ -188,7 +188,7 @@ export default function PricingSection(): JSX.Element {
                     <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', position: 'relative' }}>
                         <Box
                             component="img"
-                            src={isAnnual ? "/assets/landing-page/pricing_yearly.png" : "/assets/landing-page/pricing.png"}
+                            src={isAnnual ? "/assets/landing-page/pricing_yearly_web.png" : "/assets/landing-page/pricing_monthly_web.png"}
                             alt="Pricing Plan"
                             sx={{
                                 width: '100%',
@@ -220,7 +220,7 @@ export default function PricingSection(): JSX.Element {
                     <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', position: 'relative' }}>
                         <Box
                             component="img"
-                            src={isAnnual ? "/assets/landing-page/pricing_yearly.png" : "/assets/landing-page/mobile-pricing.png"}
+                            src={isAnnual ? "/assets/landing-page/pricing_yearly_mobile.png" : "/assets/landing-page/pricing_monthly_mobile.png"}
                             alt="Pricing Plan"
                             sx={{
                                 width: '100%',
