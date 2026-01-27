@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { StyledHeaderTypography } from "../../utils/helper";
+
 
 export default function PrivacyPolicy() {
   return (
