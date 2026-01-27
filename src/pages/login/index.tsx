@@ -51,35 +51,46 @@ export default function LoginPage(): JSX.Element {
       dispatch(loginUser(userData));
       dispatch(showAlert({ message: "Login successful", severity: "success" }));
 
+      // Always fetch services to determine true completion state
+      let hasServices = false;
+      try {
+        const servicesResult = await dispatch(
+          serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 }, { forceRefetch: true })
+        ).unwrap();
+        hasServices = Array.isArray(servicesResult)
+          ? servicesResult.length > 0
+          : Array.isArray((servicesResult as any)?.data)
+            ? (servicesResult as any).data.length > 0
+            : (servicesResult as any)?.items
+              ? (servicesResult as any).items.length > 0
+              : false;
+      } catch {
+        // If service fetch fails, fall back to profile-fields-only completion
+      }
+
+      const completion = calculateProfileComplete(
+        {
+          displayName: result.user?.displayName ?? "",
+          profilePhoto: result.user?.profilePhoto ?? "",
+          businessDescription: result.user?.businessDescription ?? "",
+        },
+        hasServices
+      );
+
+      // If profile is fully complete (fields + services), go to dashboard immediately
+      // This overrides profileStep check, fixing issues where profileStep might lag behind
+      if (completion === 100) {
+        navigate("/dashboard");
+        return;
+      }
+
       const profileStep = result.user?.profileStep || 0;
       if (profileStep < 3) {
         navigate("/signup", { state: { resumeStep: profileStep + 1 } });
+      } else if (completion >= 50) {
+        navigate("/services-offered");
       } else {
-        // After login, route based on profile completion % (profile fields + hasServices)
-        let hasServices = false;
-        try {
-          const servicesResult = await dispatch(
-            serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 })
-          ).unwrap();
-          hasServices = Array.isArray(servicesResult)
-            ? servicesResult.length > 0
-            : Array.isArray((servicesResult as any)?.data)
-              ? (servicesResult as any).data.length > 0
-              : false;
-        } catch {
-          // If service fetch fails, fall back to profile-fields-only completion
-        }
-
-        const completion = calculateProfileComplete(
-          {
-            displayName: result.user?.displayName ?? "",
-            profilePhoto: result.user?.profilePhoto ?? "",
-            businessDescription: result.user?.businessDescription ?? "",
-          },
-          hasServices
-        );
-
-        navigate(completion >= 50 ? "/services-offered" : "/my-profile");
+        navigate("/my-profile");
       }
     } catch (error: unknown) {
       dispatch(showAlert({
@@ -109,7 +120,7 @@ export default function LoginPage(): JSX.Element {
           cursor: "pointer",
           "&:hover": { textDecoration: "underline" }
         }}
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/signup")}
       >
         Sign Up
       </Typography>
