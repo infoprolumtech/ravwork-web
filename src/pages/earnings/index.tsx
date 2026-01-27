@@ -241,10 +241,10 @@ export default function EarningsPage(): JSX.Element {
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
+              flexDirection: "row",
               gap: { xs: "8px", sm: "12px" },
               mb: "26px",
-              alignItems: { xs: "stretch", sm: "center" },
+              alignItems: "center",
             }}
           >
             <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
@@ -260,118 +260,118 @@ export default function EarningsPage(): JSX.Element {
                       ...pickerTextFieldStyles,
                       width: "100%",
                     },
-                  InputProps: {
-                    sx: {
-                      height: "56px",
-                      borderRadius: "100px",
-                      "& fieldset": {
+                    InputProps: {
+                      sx: {
+                        height: "56px",
                         borderRadius: "100px",
+                        "& fieldset": {
+                          borderRadius: "100px",
+                        },
                       },
                     },
-                  },
-                  InputLabelProps: {
-                    sx: {
-                      fontWeight: 400,
-                      fontSize: "16px",
-                      lineHeight: "24px",
-                      letterSpacing: "0%",
-                    },
-                  },
-                },
-                popper: {
-                  sx: {
-                    "& .MuiPaper-root": {
-                      borderRadius: "12px",
-                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                      "& .MuiPickersCalendarHeader-root": {
-                        padding: "16px",
-                      },
-                      "& .MuiDayCalendar-weekContainer": {
-                        margin: "8px 0",
-                      },
-                      "& .MuiPickersDay-root": {
+                    InputLabelProps: {
+                      sx: {
+                        fontWeight: 400,
                         fontSize: "16px",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        "&.Mui-selected": {
-                          backgroundColor: "#111927",
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: "#384250",
-                            color: "#FFFFFF",
-                          },
-                          "&:focus": {
+                        lineHeight: "24px",
+                        letterSpacing: "0%",
+                      },
+                    },
+                  },
+                  popper: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "12px",
+                        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                        "& .MuiPickersCalendarHeader-root": {
+                          padding: "16px",
+                        },
+                        "& .MuiDayCalendar-weekContainer": {
+                          margin: "8px 0",
+                        },
+                        "& .MuiPickersDay-root": {
+                          fontSize: "16px",
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "8px",
+                          "&.Mui-selected": {
                             backgroundColor: "#111927",
                             color: "#FFFFFF",
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                              color: "#FFFFFF",
+                            },
+                            "&:focus": {
+                              backgroundColor: "#111927",
+                              color: "#FFFFFF",
+                            },
+                          },
+                          "&:hover": {
+                            backgroundColor: "#F3F4F6",
                           },
                         },
-                        "&:hover": {
-                          backgroundColor: "#F3F4F6",
+                      },
+                      "& .MuiPickersLayout-actionBar": {
+                        padding: "16px",
+                        "& .MuiButton-root": {
+                          color: "#000000",
+                          fontWeight: 500,
+                        },
+                        "& .MuiButton-root:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.04)",
                         },
                       },
                     },
-                    "& .MuiPickersLayout-actionBar": {
-                      padding: "16px",
-                      "& .MuiButton-root": {
-                        color: "#000000",
+                  },
+                  dialog: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "12px",
+                        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                        "& .MuiPickersCalendarHeader-root": {
+                          padding: "16px",
+                        },
+                        "& .MuiDayCalendar-weekContainer": {
+                          margin: "8px 0",
+                        },
+                        "& .MuiPickersDay-root": {
+                          fontSize: "16px",
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "8px",
+                          "&.Mui-selected": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                              color: "#FFFFFF",
+                            },
+                            "&:focus": {
+                              backgroundColor: "#111927",
+                              color: "#FFFFFF",
+                            },
+                          },
+                          "&:hover": {
+                            backgroundColor: "#F3F4F6",
+                          },
+                        },
+                      },
+                      "& .MuiDialogActions-root": {
+                        padding: "16px",
+                      },
+
+                      "& .MuiDialogActions-root .MuiButton-root": {
+                        color: "#000000", // BLACK text
                         fontWeight: 500,
                       },
-                      "& .MuiButton-root:hover": {
+
+                      "& .MuiDialogActions-root .MuiButton-root:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
                     },
                   },
-                },
-                dialog: {
-                  sx: {
-                    "& .MuiPaper-root": {
-                      borderRadius: "12px",
-                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                      "& .MuiPickersCalendarHeader-root": {
-                        padding: "16px",
-                      },
-                      "& .MuiDayCalendar-weekContainer": {
-                        margin: "8px 0",
-                      },
-                      "& .MuiPickersDay-root": {
-                        fontSize: "16px",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        "&.Mui-selected": {
-                          backgroundColor: "#111927",
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: "#384250",
-                            color: "#FFFFFF",
-                          },
-                          "&:focus": {
-                            backgroundColor: "#111927",
-                            color: "#FFFFFF",
-                          },
-                        },
-                        "&:hover": {
-                          backgroundColor: "#F3F4F6",
-                        },
-                      },
-                    },
-                    "& .MuiDialogActions-root": {
-                      padding: "16px",
-                    },
-
-                    "& .MuiDialogActions-root .MuiButton-root": {
-                      color: "#000000", // BLACK text
-                      fontWeight: 500,
-                    },
-
-                    "& .MuiDialogActions-root .MuiButton-root:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
-                    },
-                  },
-                },
-              }}
-            />
+                }}
+              />
             </Box>
 
             {/* TO */}
@@ -389,161 +389,161 @@ export default function EarningsPage(): JSX.Element {
                       ...pickerTextFieldStyles,
                       width: "100%",
                     },
-                  InputProps: {
-                    sx: {
-                      height: "56px",
-                      borderRadius: "100px",
-                      "& fieldset": {
+                    InputProps: {
+                      sx: {
+                        height: "56px",
                         borderRadius: "100px",
+                        "& fieldset": {
+                          borderRadius: "100px",
+                        },
                       },
                     },
-                  },
-                  InputLabelProps: {
-                    sx: {
-                      fontWeight: 400,
-                      fontSize: "16px",
-                      lineHeight: "24px",
-                      letterSpacing: "0%",
-                    },
-                  },
-                },
-                popper: {
-                  sx: {
-                    "& .MuiPaper-root": {
-                      borderRadius: "12px",
-                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                      "& .MuiPickersCalendarHeader-root": {
-                        padding: "16px",
-                      },
-                      "& .MuiDayCalendar-weekContainer": {
-                        margin: "8px 0",
-                      },
-                      "& .MuiPickersDay-root": {
+                    InputLabelProps: {
+                      sx: {
+                        fontWeight: 400,
                         fontSize: "16px",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        "&.Mui-selected": {
-                          backgroundColor: "#111927",
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: "#384250",
-                            color: "#FFFFFF",
-                          },
-                          "&:focus": {
+                        lineHeight: "24px",
+                        letterSpacing: "0%",
+                      },
+                    },
+                  },
+                  popper: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "12px",
+                        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                        "& .MuiPickersCalendarHeader-root": {
+                          padding: "16px",
+                        },
+                        "& .MuiDayCalendar-weekContainer": {
+                          margin: "8px 0",
+                        },
+                        "& .MuiPickersDay-root": {
+                          fontSize: "16px",
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "8px",
+                          "&.Mui-selected": {
                             backgroundColor: "#111927",
                             color: "#FFFFFF",
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                              color: "#FFFFFF",
+                            },
+                            "&:focus": {
+                              backgroundColor: "#111927",
+                              color: "#FFFFFF",
+                            },
+                          },
+                          "&:hover": {
+                            backgroundColor: "#F3F4F6",
                           },
                         },
-                        "&:hover": {
-                          backgroundColor: "#F3F4F6",
+                      },
+                      "& .MuiPickersLayout-actionBar": {
+                        padding: "16px",
+                        "& .MuiButton-root": {
+                          color: "#000000",
+                          fontWeight: 500,
+                        },
+                        "& .MuiButton-root:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.04)",
                         },
                       },
                     },
-                    "& .MuiPickersLayout-actionBar": {
-                      padding: "16px",
-                      "& .MuiButton-root": {
-                        color: "#000000",
+                  },
+                  dialog: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "12px",
+                        boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
+                        "& .MuiPickersCalendarHeader-root": {
+                          padding: "16px",
+                        },
+                        "& .MuiDayCalendar-weekContainer": {
+                          margin: "8px 0",
+                        },
+                        "& .MuiPickersDay-root": {
+                          fontSize: "16px",
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "8px",
+                          "&.Mui-selected": {
+                            backgroundColor: "#111927",
+                            color: "#FFFFFF",
+                            "&:hover": {
+                              backgroundColor: "#384250",
+                              color: "#FFFFFF",
+                            },
+                            "&:focus": {
+                              backgroundColor: "#111927",
+                              color: "#FFFFFF",
+                            },
+                          },
+                          "&:hover": {
+                            backgroundColor: "#F3F4F6",
+                          },
+                        },
+                      },
+                      "& .MuiDialogActions-root": {
+                        padding: "16px",
+                      },
+
+                      "& .MuiDialogActions-root .MuiButton-root": {
+                        color: "#000000", // BLACK text
                         fontWeight: 500,
                       },
-                      "& .MuiButton-root:hover": {
+
+                      "& .MuiDialogActions-root .MuiButton-root:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
                     },
                   },
-                },
-                dialog: {
-                  sx: {
-                    "& .MuiPaper-root": {
-                      borderRadius: "12px",
-                      boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
-                      "& .MuiPickersCalendarHeader-root": {
-                        padding: "16px",
-                      },
-                      "& .MuiDayCalendar-weekContainer": {
-                        margin: "8px 0",
-                      },
-                      "& .MuiPickersDay-root": {
-                        fontSize: "16px",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        "&.Mui-selected": {
-                          backgroundColor: "#111927",
-                          color: "#FFFFFF",
-                          "&:hover": {
-                            backgroundColor: "#384250",
-                            color: "#FFFFFF",
-                          },
-                          "&:focus": {
-                            backgroundColor: "#111927",
-                            color: "#FFFFFF",
-                          },
-                        },
-                        "&:hover": {
-                          backgroundColor: "#F3F4F6",
-                        },
-                      },
-                    },
-                    "& .MuiDialogActions-root": {
-                      padding: "16px",
-                    },
-
-                    "& .MuiDialogActions-root .MuiButton-root": {
-                      color: "#000000", // BLACK text
-                      fontWeight: 500,
-                    },
-
-                    "& .MuiDialogActions-root .MuiButton-root:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
-                    },
-                  },
-                },
-              }}
+                }}
               />
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-            <IconButton
-              onClick={handleExport}
-              disabled={isExporting || !fromDateString || !toDateString}
-              sx={{
-                width: "40px",
-                height: "40px",
-                bgcolor: "#E3F5FF",
-                borderRadius: 50,
-                "&:disabled": {
-                  opacity: 0.5,
-                },
-              }}
-            >
-              {isExporting ? (
-                <CircularProgress size={20} />
-              ) : (
-                <>
-                  <Box
-                    component="img"
-                    src="/assets/icons/mail.svg"
-                    alt="mail"
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      display: { xs: "none", sm: "block" },
-                    }}
-                  />
-                  <Box
-                    component="img"
-                    src="/assets/icons/download.svg"
-                    alt="download"
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      display: { xs: "block", sm: "none" },
-                    }}
-                  />
-                </>
-              )}
-            </IconButton>
+              <IconButton
+                onClick={handleExport}
+                disabled={isExporting || !fromDateString || !toDateString}
+                sx={{
+                  width: "40px",
+                  height: "40px",
+                  bgcolor: "#E3F5FF",
+                  borderRadius: 50,
+                  "&:disabled": {
+                    opacity: 0.5,
+                  },
+                }}
+              >
+                {isExporting ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <>
+                    <Box
+                      component="img"
+                      src="/assets/icons/mail.svg"
+                      alt="mail"
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        display: { xs: "none", sm: "block" },
+                      }}
+                    />
+                    <Box
+                      component="img"
+                      src="/assets/icons/download.svg"
+                      alt="download"
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        display: { xs: "block", sm: "none" },
+                      }}
+                    />
+                  </>
+                )}
+              </IconButton>
             </Box>
           </Box>
 
