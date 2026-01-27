@@ -20,6 +20,7 @@ const steps = [
         title: "Custom Questions",
         description: "Ask exactly what you need to know to quote clients faster.",
         image: "/assets/landing-page/how-it-works/third.png",
+        mobileImage: "/assets/landing-page/how-it-works/third_mobile.png",
         reverse: false,
     },
     {
@@ -156,11 +157,13 @@ export default function HowItWorks(): JSX.Element {
                                         zIndex: 0,
                                     }}
                                 />
+                                {/* Desktop Image */}
                                 <Box
                                     component="img"
                                     src={step.image}
                                     alt={step.title}
                                     sx={{
+                                        display: { xs: step.mobileImage ? 'none' : 'block', md: 'block' },
                                         width: '100%',
                                         height: 'auto',
                                         maxWidth: { xs: '100%', md: '800px' },
@@ -169,6 +172,24 @@ export default function HowItWorks(): JSX.Element {
                                         zIndex: 1,
                                     }}
                                 />
+                                {/* Mobile Image - only if mobileImage exists */}
+                                {step.mobileImage && (
+                                    <Box
+                                        component="img"
+                                        src={step.mobileImage}
+                                        alt={step.title}
+                                        sx={{
+                                            display: { xs: 'block', md: 'none' },
+                                            width: '100%',
+                                            height: 'auto',
+                                            maxWidth: '85%',
+                                            mx: 'auto',
+                                            borderRadius: '16px',
+                                            position: 'relative',
+                                            zIndex: 1,
+                                        }}
+                                    />
+                                )}
                             </Box>
                         </Box>
                     ))}
