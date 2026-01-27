@@ -151,11 +151,27 @@ export const Step4 = ({ onNext, onSkip, initialData, onBack, isSubmitting = fals
     if (!isValid) {
       return; // Don't submit if validation fails
     }
+
+    // Track CompleteRegistration event when user completes profile setup
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'CompleteRegistration', {
+        status: 'profile_completed',
+      });
+    }
+
     onNext(data);
   };
 
   const handleSkip = () => {
     setActiveAction("skip");
+
+    // Track CompleteRegistration event when user skips profile setup
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'CompleteRegistration', {
+        status: 'profile_skipped',
+      });
+    }
+
     onSkip();
   };
 
