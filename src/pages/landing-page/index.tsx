@@ -8,6 +8,7 @@ import ExponentialGrowth from "./components/ExponentialGrowth";
 import FAQSection from "./components/FAQSection";
 import PricingSection from "./components/PricingSection";
 import CTASection from "./components/CTASection";
+import Header from "./components/Header";
 
 export default function LandingPage(): JSX.Element {
   return (
@@ -18,6 +19,9 @@ export default function LandingPage(): JSX.Element {
         scrollBehavior: "smooth",
       }}
     >
+      {/* Header Section */}
+      <Header />
+
       {/* Hero Section */}
       <HeroSection />
 

@@ -5,20 +5,24 @@ import { colors, sectionTitleStyle, spacing } from '../styles';
 
 const faqs = [
     {
-        question: "How does the link work?",
-        answer: "It's a simple, professional page that clients use to book your services and stay updated on their active projects."
+        question: "Do I need a website?",
+        answer: "Nope. Your personalized link replaces one."
     },
     {
-        question: "Is there a free trial?",
-        answer: "Yes, we offer a 14-day free trial on all paid plans. No credit card required to start."
+        question: "How long does setup take?",
+        answer: "Less than 5 minutes."
     },
     {
-        question: "Can I use my own domain?",
-        answer: "Absolutely! You can connect your custom domain to your RavworkLink profile on our Pro and Enterprise plans."
+        question: "Can I customize my questions?",
+        answer: "Yes — unlimited custom questions."
     },
     {
-        question: "What support do you offer?",
-        answer: "We provide email support for all users, with priority support and dedicated account managers for our larger plans."
+        question: "Is there a contract?",
+        answer: "No. Cancel anytime."
+    },
+    {
+        question: "Does it work for my specific service?",
+        answer: "Yes. It works for any service provider."
     },
 ];
 
