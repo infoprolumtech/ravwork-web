@@ -1,7 +1,7 @@
 import { type JSX, useState } from 'react';
 import { Box, Container, Typography, Button, Switch, styled } from '@mui/material';
 import { motion } from 'framer-motion';
-import { spacing, colors } from '../styles';
+import { spacing } from '../styles';
 
 // Custom Styled Switch
 // Custom Styled Switch matching the provided design (Neon Blue, Black Track)
