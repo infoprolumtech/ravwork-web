@@ -13,6 +13,7 @@ import PasswordField from "../../components/shared/PasswordField";
 import AuthPageWrapper from "../../components/shared/AuthPageWrapper";
 import { calculateProfileComplete, extractErrorMessage } from "../../utils/helper";
 import serviceApi from "../../rtk/endpoints/serviceApi";
+import userApi from "../../rtk/endpoints/userApi";
 
 interface LoginFormInputs {
   email: string;
@@ -51,7 +52,6 @@ export default function LoginPage(): JSX.Element {
       dispatch(loginUser(userData));
       dispatch(showAlert({ message: "Login successful", severity: "success" }));
 
-      // Always fetch services to determine true completion state
       let hasServices = false;
       try {
         const servicesResult = await dispatch(
@@ -65,20 +65,28 @@ export default function LoginPage(): JSX.Element {
               ? (servicesResult as any).items.length > 0
               : false;
       } catch {
-        // If service fetch fails, fall back to profile-fields-only completion
+      }
+
+      let profileData = result.user;
+      try {
+        const profileResult = await dispatch(
+          userApi.endpoints.getUserProfile.initiate(undefined, { forceRefetch: true })
+        ).unwrap();
+        if (profileResult) {
+          profileData = { ...profileData, ...profileResult };
+        }
+      } catch {
       }
 
       const completion = calculateProfileComplete(
         {
-          displayName: result.user?.displayName ?? "",
-          profilePhoto: result.user?.profilePhoto ?? "",
-          businessDescription: result.user?.businessDescription ?? "",
+          displayName: profileData?.displayName ?? "",
+          profilePhoto: profileData?.profilePhoto ?? "",
+          businessDescription: profileData?.businessDescription ?? "",
         },
         hasServices
       );
 
-      // If profile is fully complete (fields + services), go to dashboard immediately
-      // This overrides profileStep check, fixing issues where profileStep might lag behind
       if (completion === 100) {
         navigate("/dashboard");
         return;

@@ -330,3 +330,5 @@ export const {
   useGetNotificationPreferencesQuery,
   useUpdateNotificationPreferencesMutation,
 } = userApi;
+
+export default userApi;
