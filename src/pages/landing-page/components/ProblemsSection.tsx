@@ -62,7 +62,7 @@ export default function ProblemsSection(): JSX.Element {
                                 background: 'rgba(15, 23, 42, 0.6)',
                                 border: '1px solid rgba(59, 130, 246, 0.2)',
                                 borderRadius: '24px',
-                                padding: '24px 32px',
+                                padding: { xs: '20px', md: '24px 32px' },
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 3,

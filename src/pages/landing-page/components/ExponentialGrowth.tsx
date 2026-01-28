@@ -8,9 +8,8 @@ export default function ExponentialGrowth(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: { xs: '60px 0px', md: spacing.sectionPadding },
+                padding: spacing.sectionPadding,
                 textAlign: 'center',
-                paddingTop: { xs: 0, md: spacing.sectionPadding },
             }}
         >
             <Container maxWidth="lg">
@@ -44,7 +43,6 @@ export default function ExponentialGrowth(): JSX.Element {
                         maxWidth: '800px',
                         mx: 'auto',
                         lineHeight: 1.5,
-                        px: { xs: 2, md: 0 },
                     }}
                 >
                     Watch how fast your business spreads when people share your link
@@ -87,7 +85,7 @@ export default function ExponentialGrowth(): JSX.Element {
                         sx={{
                             width: '100%',
                             height: 'auto',
-                            maxWidth: '350px',
+                            maxWidth: '100%',
                             display: { xs: 'block', md: 'none' },
                         }}
                     />

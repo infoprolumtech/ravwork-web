@@ -84,12 +84,17 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
             sx={{
                 background: '#000000',
                 paddingTop: "12px",
-                maxWidth: "1200px",
-                mx: "auto",
+                width: "100%",
                 zIndex: (theme) => theme.zIndex.drawer + 1,
             }}
         >
-            <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+            <Toolbar sx={{
+                justifyContent: 'space-between',
+                py: 1,
+                width: '100%',
+                maxWidth: "1200px",
+                mx: "auto"
+            }}>
                 {/* Logo */}
                 <Box
                     component="img"

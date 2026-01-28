@@ -8,7 +8,7 @@ export default function CTASection(): JSX.Element {
             id="cta"
             sx={{
                 background: '#000000',
-                padding: { xs: '40px 0px', md: spacing.sectionPadding },
+                padding: spacing.sectionPadding,
                 textAlign: 'center',
             }}
         >
