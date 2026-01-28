@@ -3,7 +3,7 @@ pipeline {
     agent { label 'MacNode'}
  
     environment {
-        GIT_APP_REPO_URL = 'git@github.com:TechAhead-Inc/ravworklink-webapp.git
+        GIT_APP_REPO_URL = 'git@github.com:TechAhead-Inc/ravworklink-webapp.git'
         GIT_APP_BRANCH = 'dev'
         AWS_PROFILE = 'RavWork'
         AWS_REGION = 'us-west-1'
