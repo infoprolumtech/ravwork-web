@@ -34,6 +34,18 @@ pipeline {
             }
         }
 
+   stage('Download env file') {
+    steps {
+        sh '''
+          echo "Downloading environment file from S3..."
+          aws s3 cp s3://ravwork-webapp-env/prod-env .env --profile ${AWS_PROFILE} --region ${AWS_REGION}
+          echo "Environment file downloaded and renamed to .env"
+          cat .env
+          ls -la
+        '''
+    }
+}
+
       stage('Install react.js dependency') {
             steps {
                  sh '''
