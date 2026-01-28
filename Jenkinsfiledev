@@ -32,6 +32,18 @@ pipeline {
                 git credentialsId: "${GIT_CREDENTIALS}", url: "${env.GIT_APP_REPO_URL}", branch: "${env.GIT_APP_BRANCH}"
             }
         }
+  stage('Download env file') {
+    steps {
+        sh '''
+          echo "Downloading environment file from S3..."
+          aws s3 cp s3://ravwork-webapp-env/dev-env .env --profile ${AWS_PROFILE} --region ${AWS_REGION}
+          echo "Environment file downloaded and renamed to .env"
+          cat .env
+          ls -la
+        '''
+    }
+}
+
 
       stage('Install react.js dependency') {
             steps {
