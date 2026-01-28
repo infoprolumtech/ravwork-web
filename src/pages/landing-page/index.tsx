@@ -1,5 +1,7 @@
-import { type JSX, useState } from "react";
+import { type JSX, useState, useEffect } from "react";
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../rtk/store";
 import CloseIcon from "@mui/icons-material/Close";
 import HeroSection from "./components/HeroSection";
 import ProblemsSection from "./components/ProblemsSection";
@@ -14,6 +16,14 @@ import TermCondition from "../../components/client/termCondition";
 
 export default function LandingPage(): JSX.Element {
   const [termsOpen, setTermsOpen] = useState(false);
+  const { isLogin } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/dashboard");
+    }
+  }, [isLogin, navigate]);
 
   return (
     <Box
