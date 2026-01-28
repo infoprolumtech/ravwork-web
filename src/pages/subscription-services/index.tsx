@@ -287,7 +287,7 @@ export default function ManageSubscriptionPage(): JSX.Element {
           }}
         >
           <CardContent sx={{ py: 2 }}>
-            <Typography fontWeight={600} fontSize={32} color="#111927">
+            <Typography fontWeight={600} fontSize={32} color="#111927" mb={4}>
               {plan?.name || "N/A"}
             </Typography>
             <Typography fontWeight={600} fontSize={16} color="#6C737F" mt={1}>
@@ -344,8 +344,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
               sx={{
                 backgroundColor: "#fff",
                 color: "#000",
-                width: 147,
-                height: 44,
+                borderRadius: 10,
+                width: { xs: 120, md: 147 },
+                height: { xs: 44, md: 44 },
                 borderColor: "#D0D5DD", // Optional: Add border color to match typical outlined style if needed
               }}
             >

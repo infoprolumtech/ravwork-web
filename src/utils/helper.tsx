@@ -28,9 +28,14 @@ export const calculateProfileComplete = (profile: Partial<UserProfile> | null, h
   // Check if all core fields are filled
   const coreFieldsFilled = coreFields.filter((field) => typeof field === 'string' && field.trim() !== "").length;
 
-  // Each core field contributes roughly 16.67% to the first 50%
-  // 3 core fields * 16.67 = 50%
-  let percentage = Math.round((coreFieldsFilled / 3) * 50);
+  // Calculate core fields percentage (max 50%)
+  // 3 fields => each is 16.66%
+  let percentage = 0;
+  if (coreFieldsFilled === 3) {
+    percentage = 50;
+  } else {
+    percentage = Math.round((coreFieldsFilled / 3) * 50);
+  }
 
   // Creating a service contributes the other 50%
   if (hasServices) {

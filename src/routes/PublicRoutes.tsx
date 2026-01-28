@@ -2,7 +2,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import type { JSX } from "react";
 import { useAppSelector } from "../rtk/store";
 import type { RootState } from "../rtk/store";
-import { calculateProfileComplete } from "../utils/helper";
+
 
 interface PublicRouteProps {
   children: JSX.Element;
@@ -16,7 +16,7 @@ export default function PublicRoute({ children }: PublicRouteProps) {
   // If logged in, check if signup flow is complete
   if (isLogin) {
     const profileStep = user?.profileStep || 0;
-    
+
     // If signup is incomplete (profileStep < 3), allow access to these pages
     // to continue the signup flow or allow login page to navigate
     // profileStep 3 = signup complete
@@ -28,22 +28,14 @@ export default function PublicRoute({ children }: PublicRouteProps) {
       }
       return children;
     }
-    
+
     // Allow landing page for all logged-in users
     if (location.pathname === "/landing") {
       return children;
     }
-    
-    // Otherwise redirect based on profile completion rule (not dashboard)
-    const completion = calculateProfileComplete(
-      {
-        displayName: user?.displayName ?? "",
-        profilePhoto: user?.profilePhoto ?? "",
-        businessDescription: user?.businessDescription ?? "",
-      },
-      false
-    );
-    return <Navigate to={completion >= 50 ? "/services-offered" : "/my-profile"} replace />;
+
+    // Simple redirect to dashboard for any other public route attempt if logged in
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

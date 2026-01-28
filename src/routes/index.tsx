@@ -1,28 +1,30 @@
+import { lazy, Suspense } from "react";
 import { useRoutes, Navigate } from "react-router-dom";
+import SuspenseLoader from "../components/SuspenseLoader";
 
 // Auth & Common Pages
-import LoginPage from "../pages/login";
-import SignUpPage from "../pages/signup";
-import ForgotPassword from "../pages/forgot-password";
-import CheckMail from "../pages/check-mail";
-import ResetPasswordPage from "../pages/reset-password";
-import ChangePasswordPage from "../pages/change-password";
-import OTPVerificationPage from "../pages/otp-verification";
+const LoginPage = lazy(() => import("../pages/login"));
+const SignUpPage = lazy(() => import("../pages/signup"));
+const ForgotPassword = lazy(() => import("../pages/forgot-password"));
+const CheckMail = lazy(() => import("../pages/check-mail"));
+const ResetPasswordPage = lazy(() => import("../pages/reset-password"));
+const ChangePasswordPage = lazy(() => import("../pages/change-password"));
+const OTPVerificationPage = lazy(() => import("../pages/otp-verification"));
 
 // Main App Pages (7 menu items)
-import Dashboard from "../pages/dashboard";
-import MyJobs from "../pages/my-jobs";
-import ServicesOffered from "../pages/services-offered";
-import AddEditServicePage from "../pages/services-offered/add-edit";
-import Earnings from "../pages/earnings";
-import MyProfile from "../pages/my-profile";
-import Notifications from "../pages/notifications";
-import ManageSubscription from "../pages/subscription-services";
-import EditProfile from "../pages/my-profile/[id]";
-import ClientPage from "../pages/client";
-import LandingPage from "../pages/landing-page";
-import PrivacyPolicy from "../pages/privacy-policy";
-import TermsAndConditions from "../pages/terms-and-conditions";
+const Dashboard = lazy(() => import("../pages/dashboard"));
+const MyJobs = lazy(() => import("../pages/my-jobs"));
+const ServicesOffered = lazy(() => import("../pages/services-offered"));
+const AddEditServicePage = lazy(() => import("../pages/services-offered/add-edit"));
+const Earnings = lazy(() => import("../pages/earnings"));
+const MyProfile = lazy(() => import("../pages/my-profile"));
+const Notifications = lazy(() => import("../pages/notifications"));
+const ManageSubscription = lazy(() => import("../pages/subscription-services"));
+const EditProfile = lazy(() => import("../pages/my-profile/[id]"));
+const ClientPage = lazy(() => import("../pages/client"));
+const LandingPage = lazy(() => import("../pages/landing-page"));
+const PrivacyPolicy = lazy(() => import("../pages/privacy-policy"));
+const TermsAndConditions = lazy(() => import("../pages/terms-and-conditions"));
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -269,5 +271,5 @@ export default function AppRoutes() {
     },
   ]);
 
-  return routes;
+  return <Suspense fallback={<SuspenseLoader />}>{routes}</Suspense>;
 }
