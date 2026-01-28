@@ -100,6 +100,7 @@ export default function SignUpPage(): JSX.Element {
       if (completion === 100) {
         navigate("/dashboard", { replace: true });
       } else if (completion >= 50) {
+        // If profile fields are filled (step 4 complete), go to services, not back to profile
         navigate("/services-offered", { replace: true });
       } else {
         navigate("/my-profile", { replace: true });
