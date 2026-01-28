@@ -37,7 +37,7 @@ export default function FAQSection(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: { xs: '60px 20px', sm: spacing.sectionPadding },
+                padding: spacing.sectionPadding,
             }}
         >
             <Container maxWidth="md">

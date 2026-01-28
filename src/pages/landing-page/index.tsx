@@ -21,10 +21,11 @@ export default function LandingPage(): JSX.Element {
         background: "#000000",
         minHeight: "100vh",
         scrollBehavior: "smooth",
+        overflowX: "hidden", // Prevent horizontal scroll
       }}
     >
       {/* Header Section */}
-      <Header onTermsClick={() => setTermsOpen(true)} />
+      < Header onTermsClick={() => setTermsOpen(true)} />
 
       {/* Hero Section */}
       <HeroSection />
@@ -120,7 +121,7 @@ export default function LandingPage(): JSX.Element {
         </DialogContent>
       </Dialog>
 
-    </Box>
+    </Box >
   );
 }
 

@@ -8,7 +8,7 @@ export default function HeroSection(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                minHeight: '100vh',
+                minHeight: '100dvh',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
@@ -37,13 +37,13 @@ export default function HeroSection(): JSX.Element {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     sx={{
-                        fontSize: { xs: '32px', sm: '44px' },
+                        fontSize: { xs: '24px', sm: '44px' },
                         fontWeight: 700,
                         color: '#FFFFFF',
-                        lineHeight: 1.1,
+                        lineHeight: 1.2,
                         mb: 2,
-                        maxWidth: '1000px',
-                        px: { xs: 2, md: 0 },
+                        maxWidth: '100%',
+                        px: { xs: 1, md: 0 },
                     }}
                 >
                     Run Your Business Like

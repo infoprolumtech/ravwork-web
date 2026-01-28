@@ -50,9 +50,8 @@ export default function HowItWorks(): JSX.Element {
             <Container maxWidth="lg">
                 {/* Header */}
                 <Box sx={{
-                    textAlign: 'center', mb: { xs: 0 },
-                    padding: { xs: '0px 20px', sm: "0px" },
-
+                    textAlign: 'center',
+                    mb: { xs: 6, md: 8 },
                 }}>
                     <Typography
                         component={motion.div}
@@ -88,7 +87,7 @@ export default function HowItWorks(): JSX.Element {
                 </Box>
 
                 {/* Steps */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, md: 0 } }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 8, md: 0 } }}>
                     {steps.map((step, index) => (
                         <Box
                             key={index}
@@ -111,7 +110,6 @@ export default function HowItWorks(): JSX.Element {
                             {/* Text Side */}
                             <Box sx={{
                                 flex: 1, textAlign: { xs: 'center', md: 'left' },
-                                padding: { xs: '0px 20px', sm: "0px" },
                             }}>
                                 <Typography
                                     sx={{

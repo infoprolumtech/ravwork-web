@@ -8,9 +8,7 @@ export default function GridFeatures(): JSX.Element {
         <Box
             sx={{
                 background: '#000000',
-                padding: { xs: '60px 0px', md: spacing.sectionPadding },
-                paddingBottom: { xs: '20px', md: '0 !important' },
-                paddingTop: { xs: '20px', md: '60px' },
+                padding: spacing.sectionPadding,
                 textAlign: 'center',
             }}
         >
