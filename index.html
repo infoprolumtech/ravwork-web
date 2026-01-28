@@ -25,8 +25,8 @@
       s.parentNode.insertBefore(t, s)
     }(window, document, 'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1976802713254720');
-    fbq('track', 'PageView');
+    fbq('init', '%VITE_APP_META_PIXEL_ID%');
+    fbq('track', 'PageView'); 
   </script>
   <!-- End Meta Pixel Code -->
 </head>
@@ -34,7 +34,7 @@
 <body>
   <!-- Meta Pixel Code (noscript fallback) -->
   <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1976802713254720&ev=PageView&noscript=1" /></noscript>
+      src="https://www.facebook.com/tr?id=%VITE_APP_META_PIXEL_ID%&ev=PageView&noscript=1" /></noscript>
   <!-- End Meta Pixel Code -->
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
