@@ -208,13 +208,13 @@ export default function SignUpPage(): JSX.Element {
 
 
           // Track Subscribe event after payment confirmation
-          if (typeof window.fbq === 'function' && status?.subscription) {
+          if (typeof (window as any).fbq === 'function' && status?.subscription) {
             const subscription = status.subscription;
             const value = subscription.plan?.price || (subscription.plan?.interval === 'month' ? 29.99 : 240);
             const currency = subscription.plan?.currency?.toUpperCase() || 'USD';
             const eventId = `sub_${subscription.id || user?.id || Date.now()}`;
 
-            window.fbq('track', 'Subscribe', {
+            (window as any).fbq('track', 'Subscribe', {
               value: value,
               currency: currency,
               event_id: eventId,
@@ -266,6 +266,11 @@ export default function SignUpPage(): JSX.Element {
 
       const accessToken = result.tokens?.accessToken || result.accessToken || result.user?.accessToken;
       if (accessToken) {
+        // Track InitiateCheckout - Step 1 Complete
+        if (typeof (window as any).fbq === 'function') {
+          (window as any).fbq('track', 'InitiateCheckout');
+        }
+
         dispatch(setSignupToken(accessToken));
         setCurrentStep(2);
       }
@@ -305,6 +310,20 @@ export default function SignUpPage(): JSX.Element {
       }).unwrap();
 
       if (checkout?.checkoutUrl) {
+        // Track AddToCart - Step 2 Plan Selection
+        // Assuming subscriptionPlans is available in scope or we search for the selected plan
+        const selectedPlan = subscriptionPlans.find((p: any) => p.id === data.plan);
+        if (typeof (window as any).fbq === 'function' && selectedPlan) {
+          const value = selectedPlan.price;
+          const currency = selectedPlan.currency.toUpperCase();
+          (window as any).fbq('track', 'AddToCart', {
+            content_ids: [selectedPlan.id],
+            content_type: 'product',
+            value: value,
+            currency: currency,
+          });
+        }
+
         window.location.href = checkout.checkoutUrl;
       } else {
         dispatch(showAlert({ message: "Failed to start checkout. Please try again.", severity: "error" }));
