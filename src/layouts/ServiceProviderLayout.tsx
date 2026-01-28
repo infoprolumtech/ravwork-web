@@ -31,7 +31,7 @@ import { useLogoutMutation } from "../rtk/endpoints/authApi";
 import { useGetUserProfileQuery } from "../rtk/endpoints/userApi";
 import { useGetServicesQuery } from "../rtk/endpoints/serviceApi";
 import { decryptAES, getCloudFrontUrl, calculateProfileComplete } from "../utils/helper";
-import { getNextRoute } from "../utils/routeGuard";
+
 import { Menu as MenuIcon, ChevronRight, Close } from "@mui/icons-material";
 import SidebarSkeleton from "../components/skeletons/SidebarSkeleton";
 
@@ -269,43 +269,15 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
   }, [servicesData]);
 
   // Enforce post-signup navigation flow logic
+  // Post-signup navigation flow is handled at login-time only, or by specific checks. 
+  // We no longer strictly enforce blocking routes here to allow user freedom.
   React.useEffect(() => {
-    // Wait for data loading to complete before enforcing rules
-    if (isLoadingProfile || isLoadingServices) return;
-
-    const currentPath = location.pathname;
-
-    // Public/Utility pages that should not be blocked
-    const allowedPaths = ['/privacy-policy', '/terms-and-conditions'];
-    if (allowedPaths.some(path => currentPath === path)) return;
-
-    const targetRoute = getNextRoute(userProfile || null, hasServices);
-
-    // Logic to determine if we need to redirect
-    // We want to force users to the target route if they are "behind" in the flow.
-    // i.e., If target is /my-profile, they can ONLY be on /my-profile.
-    // If target is /services-offered, they can be on /my-profile OR /services-offered (to allowing editing profile).
-    // If target is /dashboard, they can be anywhere.
-
-    if (targetRoute === "/my-profile") {
-      if (currentPath !== "/my-profile") {
-        navigate("/my-profile", { replace: true });
-      }
-    } else if (targetRoute === "/services-offered") {
-      // Allow them to be on profile (to fix things) or services (to add things)
-      // Also allow sub-routes of services-offered
-      const isAllowed = currentPath === "/my-profile" || currentPath.startsWith("/services-offered");
-      if (!isAllowed) {
-        navigate("/services-offered", { replace: true });
-      }
-    } else if (targetRoute === "/dashboard") {
-      // If usage flow is complete, but they hit the landing page/root, send them in.
-      if (currentPath === "/") {
-        navigate("/dashboard", { replace: true });
-      }
+    // If usage flow is complete, but they hit the landing page/root (while logged in), send them in to dashboard.
+    // This is a convenience redirect, not a restriction.
+    if (location.pathname === "/") {
+      navigate("/dashboard", { replace: true });
     }
-
-  }, [isLoadingProfile, isLoadingServices, userProfile, hasServices, location.pathname, navigate]);
+  }, [location.pathname, navigate]);
 
   const profileComplete = React.useMemo(() => calculateProfileComplete(userProfile || null, hasServices), [userProfile, hasServices]);
 
