@@ -32,6 +32,15 @@ pipeline {
                 git credentialsId: "${GIT_CREDENTIALS}", url: "${env.GIT_APP_REPO_URL}", branch: "${env.GIT_APP_BRANCH}"
             }
         }
+
+      stage('Install react.js dependency') {
+            steps {
+                 sh '''
+                   npm install
+                
+                '''
+            }
+        }
  
         stage('build react.js project') {
             steps {
