@@ -54,7 +54,8 @@ pipeline {
      stage('Deploy react.js project') {
             steps {
                  sh '''
-                   npm run build
+                 aws s3 rm s3://${S3_BUCKET} --recursive --profile ${AWS_PROFILE}
+                 aws s3 cp dist s3://${S3_BUCKET} --recursive --profile ${AWS_PROFILE}
                 
                 '''
             }
