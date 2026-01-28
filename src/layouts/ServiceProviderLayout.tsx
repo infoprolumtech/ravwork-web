@@ -218,7 +218,7 @@ export default function ServiceProviderLayout(props: ServiceProviderLayoutProps)
     refetchOnMountOrArgChange: true,
   });
 
-  const { data: servicesData, isLoading: isLoadingServices } = useGetServicesQuery();
+  const { data: servicesData } = useGetServicesQuery();
 
   const handleDrawerToggle = React.useCallback(() => {
     setMobileOpen((prev: boolean) => !prev);
