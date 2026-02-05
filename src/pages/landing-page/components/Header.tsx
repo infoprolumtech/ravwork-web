@@ -16,8 +16,7 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
 
     const navLinks: { title: string; href: string; isAction?: boolean }[] = [
         { title: 'Home', href: '/' },
-        { title: 'Pricing', href: '#pricing' },
-        { title: 'Terms & Conditions', href: '#terms', isAction: true },
+        { title: 'How It Works', href: '#how-it-works' },
     ];
 
     const drawer = (

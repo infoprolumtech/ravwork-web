@@ -82,7 +82,7 @@ export default function HowItWorks(): JSX.Element {
                             opacity: 0.8,
                         }}
                     >
-                        Book trusted local help in just a few taps — no calls, no confusion.
+                        Set it up in minutes. Use it everywhere.
                     </Typography>
                 </Box>
 
