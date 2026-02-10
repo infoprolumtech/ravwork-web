@@ -46,9 +46,9 @@ export default function HeroSection(): JSX.Element {
                         px: { xs: 1, md: 0 },
                     }}
                 >
-                    Run Your Business Like
+                    The Booking Link Built 
                     <br />
-                    It's Going Somewhere
+                    for Service Businesses
                 </Typography>
 
                 {/* Subheadline */}
@@ -95,9 +95,11 @@ export default function HeroSection(): JSX.Element {
                             textTransform: 'none',
                             fontSize: { xs: '13px', sm: '18px' },
                             fontWeight: 600,
-                            padding: { xs: '10px 16px', sm: '16px 40px' },
+                            padding: { xs: '10px 16px', sm: '16px 0' },
+                            width: { xs: '140px', sm: '220px' },
                             borderRadius: '12px',
                             display: 'flex',
+                            justifyContent: 'center',
                             alignItems: 'center',
                             gap: 0.5,
                             whiteSpace: 'nowrap',
@@ -112,14 +114,15 @@ export default function HeroSection(): JSX.Element {
                         <CallMadeIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
                     </Button>
                     <Button
-                        href="#how-it-works"
+                        href="#pricing"
                         sx={{
                             background: 'rgba(15, 23, 42, 0.6)',
                             color: '#FFFFFF',
                             textTransform: 'none',
                             fontSize: { xs: '13px', sm: '18px' },
-                            fontWeight: 500,
-                            padding: { xs: '10px 16px', sm: '16px 40px' },
+                            fontWeight: 600,
+                            padding: { xs: '10px 16px', sm: '16px 0' },
+                            width: { xs: '140px', sm: '220px' },
                             borderRadius: '12px',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             whiteSpace: 'nowrap',
@@ -130,7 +133,7 @@ export default function HeroSection(): JSX.Element {
                             transition: 'all 0.2s ease',
                         }}
                     >
-                        See How It Works
+                        Pricing
                     </Button>
                 </Box>
 
