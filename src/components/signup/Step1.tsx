@@ -71,12 +71,7 @@ export const Step1 = ({ onNext, initialData, isLoading }: Step1Props) => {
   }, [initialData, form]);
 
   const handleSubmit = (data: Step1FormInputs) => {
-    // Track InitiateCheckout event when user begins signup
-    if (typeof window.fbq === 'function') {
-      window.fbq('track', 'InitiateCheckout', {
-        funnel: 'subscription_signup',
-      });
-    }
+
 
     // Always call onNext - parent component will handle whether to call API or not
     onNext(data);

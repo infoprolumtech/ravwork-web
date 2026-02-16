@@ -103,11 +103,26 @@ export const Step2 = ({
     // Track AddToCart event when user selects a plan
     if (typeof window.fbq === 'function') {
       const selectedPlan = plans.find((p) => p.id === data.plan);
-      const planValue = selectedPlan?.interval === 'month' ? 'monthly_29' : 'annual_240';
 
-      window.fbq('track', 'AddToCart', {
-        plan: planValue,
-      });
+      // Only fire if the monthly plan is selected, or use dynamic values that match expectations
+      if (selectedPlan?.interval === 'month') {
+        window.fbq('track', 'AddToCart', {
+          value: 29.00,
+          currency: 'USD',
+          content_name: 'Monthly Plan',
+          content_ids: ['monthly_29'],
+          content_type: 'product'
+        });
+      } else if (selectedPlan) {
+        // Fallback for annual plan if needed, but strictly following the request for monthly
+        window.fbq('track', 'AddToCart', {
+          value: selectedPlan.price,
+          currency: selectedPlan.currency.toUpperCase(),
+          content_name: selectedPlan.name,
+          content_ids: [selectedPlan.interval === 'year' ? 'annual_240' : selectedPlan.id],
+          content_type: 'product'
+        });
+      }
     }
 
     onNext(data);
