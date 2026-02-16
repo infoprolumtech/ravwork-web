@@ -112,7 +112,7 @@ export const Step2 = ({
           content_name: 'Monthly Plan',
           content_ids: ['monthly_29'],
           content_type: 'product'
-        });
+        } as any);
       } else if (selectedPlan) {
         // Fallback for annual plan if needed, but strictly following the request for monthly
         window.fbq('track', 'AddToCart', {
@@ -121,7 +121,7 @@ export const Step2 = ({
           content_name: selectedPlan.name,
           content_ids: [selectedPlan.interval === 'year' ? 'annual_240' : selectedPlan.id],
           content_type: 'product'
-        });
+        } as any);
       }
     }
 
