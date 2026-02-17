@@ -221,7 +221,7 @@ export default function Dashboard() {
                         color: "#111927",
                       }}
                     >
-                      {profileUrl || "https://www.ravwork.link/p/username"}
+                      {profileUrl || "https://rawwork.com/p/username"}
                     </Typography>
 
                     <Box display="flex" gap={1} alignItems="center">

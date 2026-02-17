@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useGetPublicProfileQuery, useCreateBookingMutation, type PublicService } from "../../rtk/endpoints/publicApi";
-import { getCloudFrontUrl, getProfileUrl } from "../../utils/helper";
+import { getCloudFrontUrl } from "../../utils/helper";
 import { colors } from "../../utils/constants";
 import { transformFormResponses } from "../../utils/formHelpers";
 import { useAppDispatch } from "../../rtk/store";
@@ -1122,7 +1122,7 @@ export default function ClientPage(): JSX.Element {
       <ShareModal
         open={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        profileUrl={getProfileUrl(username || "")}
+        profileUrl={window.location.href}
         profileName={profile?.displayName || profile?.username || ""}
       />
 

@@ -275,12 +275,7 @@ export function decryptAES(cipherHex: string | null | undefined): string {
 
 // Helper function to get profile URL dynamically
 export const getProfileUrl = (username: string) => {
-  const origin = window.location.origin;
-  // If we are on any ravwork.link domain (http/https, www/no-www), force the canonical www.ravwork.link
-  if (origin.includes("ravwork.link")) {
-    return `https://www.ravwork.link/${username}`;
-  }
-  return `${origin}/${username}`;
+  return `${window.location.origin}/${username}`;
 };
 
 /**

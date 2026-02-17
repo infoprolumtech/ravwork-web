@@ -3,7 +3,9 @@ import AppRoutes from './routes';
 import GlobalAlert from './components/alert/GlobalAlert';
 import ErrorBoundary from "./components/ErrorBoundary";
 
-function App() {
+
+const App = () => {
+
   return (
     <ErrorBoundary>
       <BrowserRouter>
