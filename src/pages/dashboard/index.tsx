@@ -221,7 +221,7 @@ export default function Dashboard() {
                         color: "#111927",
                       }}
                     >
-                      {profileUrl || "https://rawwork.com/p/username"}
+                      {profileUrl || "https://www.ravwork.link/p/username"}
                     </Typography>
 
                     <Box display="flex" gap={1} alignItems="center">
@@ -374,7 +374,7 @@ export default function Dashboard() {
                     flexShrink: 0,
                   }}
                 >
-                  
+
                 </Avatar>
 
                 {/* Content */}

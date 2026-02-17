@@ -14,16 +14,13 @@ import ServiceProviderLayout from "../../layouts/ServiceProviderLayout";
 import { useNavigate } from "react-router-dom";
 import { useGetUserProfileQuery } from "../../rtk/endpoints/userApi";
 import { useGetServicesQuery } from "../../rtk/endpoints/serviceApi";
-import { getCloudFrontUrl, calculateProfileComplete } from "../../utils/helper";
+import { getCloudFrontUrl, calculateProfileComplete, getProfileUrl } from "../../utils/helper";
 import { colors } from "../../utils/constants";
 import ShareModal from "../../components/client/ShareModal";
 import { ProfileViewSkeleton } from "../../components/skeletons/ProfileSkeleton";
 
 
-// Helper function to get profile URL dynamically (same as client page)
-const getProfileUrl = (username: string) => {
-  return `${window.location.origin}/${username}`;
-};
+
 
 export default function MyProfilePage(): JSX.Element {
   const navigate = useNavigate();
