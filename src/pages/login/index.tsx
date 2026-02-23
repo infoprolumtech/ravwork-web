@@ -44,6 +44,13 @@ export default function LoginPage(): JSX.Element {
       const accessToken = result.tokens?.accessToken || result.accessToken || result.user?.accessToken;
       const refreshToken = result.tokens?.refreshToken || result.refreshToken || result.user?.refreshToken;
 
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('init', import.meta.env.VITE_APP_META_PIXEL_ID, {
+          em: data.email.toLowerCase(),
+          ...(result.user?.phoneNumber ? { ph: result.user.phoneNumber.replace(/\D/g, '') } : {})
+        });
+      }
+
       const userData = {
         ...result.user,
         accessToken,
