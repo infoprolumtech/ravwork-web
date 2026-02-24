@@ -279,13 +279,6 @@ export default function SignUpPage(): JSX.Element {
 
       const accessToken = result.tokens?.accessToken || result.accessToken || result.user?.accessToken;
       if (accessToken) {
-
-        if (typeof window !== 'undefined' && (window as any).fbq) {
-          (window as any).fbq('init', import.meta.env.VITE_APP_META_PIXEL_ID, {
-            em: data.email.toLowerCase(),
-            ph: `${data.countryCode || ''}${data.phoneNumber || ''}`.replace(/\D/g, '')
-          });
-        }
         dispatch(setSignupToken(accessToken));
         setCurrentStep(2);
       }

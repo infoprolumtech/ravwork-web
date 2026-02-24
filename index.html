@@ -48,7 +48,7 @@
     }
   </script>
 
-  <!-- Meta Pixel Code -->
+  <!-- Meta Pixel Code: script load only; init + PageView run from app with optional advanced matching -->
   <script>
     !function (f, b, e, v, n, t, s) {
       if (f.fbq) return; n = f.fbq = function () {
@@ -61,8 +61,6 @@
       s.parentNode.insertBefore(t, s)
     }(window, document, 'script',
       'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '%VITE_APP_META_PIXEL_ID%');
-    fbq('track', 'PageView'); 
   </script>
   <!-- End Meta Pixel Code -->
 </head>
