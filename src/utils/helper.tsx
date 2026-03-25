@@ -222,7 +222,7 @@ export function encryptAES(plaintext: string): string {
 export function getCloudFrontUrl(s3Url: string | null | undefined): string {
   if (!s3Url) return "";
 
-  const cloudFrontDomain = import.meta.env.VITE_CLOUDFRONT_DOMAIN || "https://dea8d2sq2agcg.cloudfront.net";
+  const cloudFrontDomain = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
 
   try {
     // Check if it's already a CloudFront URL

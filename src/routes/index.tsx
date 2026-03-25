@@ -25,6 +25,7 @@ const ClientPage = lazy(() => import("../pages/client"));
 const LandingPage = lazy(() => import("../pages/landing-page"));
 const PrivacyPolicy = lazy(() => import("../pages/privacy-policy"));
 const TermsAndConditions = lazy(() => import("../pages/terms-and-conditions"));
+const TryDemo = lazy(() => import("../pages/try-demo"));
 
 import PublicRoute from "./PublicRoutes";
 import PrivateRoute from "./PrivateRoutes";
@@ -255,6 +256,16 @@ export default function AppRoutes() {
       element: (
         <ErrorBoundary>
           <LandingPage />
+        </ErrorBoundary>
+      ),
+    },
+
+    // Try Demo
+    {
+      path: "/try-demo",
+      element: (
+        <ErrorBoundary>
+          <TryDemo />
         </ErrorBoundary>
       ),
     },

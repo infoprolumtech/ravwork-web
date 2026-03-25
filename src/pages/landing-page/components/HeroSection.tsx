@@ -114,7 +114,7 @@ export default function HeroSection(): JSX.Element {
                         <CallMadeIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
                     </Button>
                     <Button
-                        href="#pricing"
+                        href="/try-demo"
                         sx={{
                             background: 'rgba(15, 23, 42, 0.6)',
                             color: '#FFFFFF',
@@ -133,7 +133,7 @@ export default function HeroSection(): JSX.Element {
                             transition: 'all 0.2s ease',
                         }}
                     >
-                        Pricing
+                        Try Demo
                     </Button>
                 </Box>
 
