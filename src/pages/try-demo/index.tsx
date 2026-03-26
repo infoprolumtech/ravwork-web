@@ -1,4 +1,4 @@
-import { type JSX, useState } from "react";
+import { type JSX, useState, useCallback } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,22 +11,19 @@ import ReceiveLeads from "./components/ReceiveLeads";
 import DashboardPreview from "./components/DashboardPreview";
 import GrowthEngine from "./components/GrowthEngine";
 
+const stepAnimation = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -20 },
+  transition: { duration: 0.4, ease: "easeInOut" as const },
+};
+
 export default function TryDemo(): JSX.Element {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
-  const handleNextToReachOut = () => setStep(2);
-  const handleNextToCustom = () => setStep(3);
-  const handleNextToPreview = () => setStep(4);
-  const handleNextToLeads = () => setStep(5);
-  const handleNextToDashboard = () => setStep(6);
-  const handleNextToGrowth = () => setStep(7);
-  const handleBackToService = () => setStep(1);
-  const handleBackToReachOut = () => setStep(2);
-  const handleBackToCustom = () => setStep(3);
-  const handleBackToPreview = () => setStep(4);
-  const handleBackToLeads = () => setStep(5);
-  const handleFinish = () => navigate("/signup");
+  const goToStep = useCallback((s: number) => setStep(s), []);
+  const handleFinish = useCallback(() => navigate("/signup"), [navigate]);
 
   return (
     <Box
@@ -40,7 +37,7 @@ export default function TryDemo(): JSX.Element {
     >
       <Header onTermsClick={() => {}} />
 
-      {/* Optional nice gradient background effect */}
+      {/* Gradient background effect */}
       <Box
         sx={{
           position: "absolute",
@@ -64,46 +61,34 @@ export default function TryDemo(): JSX.Element {
           alignItems: 'center',
           pt: { xs: 8, md: 12 },
           pb: 8,
-          px: 3,
+          px: { xs: 1.5, sm: 3 },
         }}
       >
-        {/* Step Indicators Removed for Design Fidelity */}
-
         <AnimatePresence mode="wait">
           {step === 1 && (
-            <Box 
-               key="step1" 
-               component={motion.div}
-               initial={{ opacity: 0, x: -20 }}
-               animate={{ opacity: 1, x: 0 }}
-               exit={{ opacity: 0, x: -20 }}
-               transition={{ duration: 0.4, ease: "easeInOut" }}
-               sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}
-            >
-               <ServiceDetails onNext={handleNextToReachOut} />
+            <Box key="step1" component={motion.div} {...stepAnimation} sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+               <ServiceDetails onNext={() => goToStep(2)} />
             </Box>
           )}
           {step === 2 && (
-            <ReachOut key="step2" onBack={handleBackToService} onNext={handleNextToCustom} onFinish={handleFinish} />
+            <ReachOut key="step2" onBack={() => goToStep(1)} onNext={() => goToStep(3)} onFinish={handleFinish} />
           )}
           {step === 3 && (
-            <CustomQuestions key="step3" onBack={handleBackToReachOut} onNext={handleNextToPreview} />
+            <CustomQuestions key="step3" onBack={() => goToStep(2)} onNext={() => goToStep(4)} />
           )}
           {step === 4 && (
-            <ClientPreview key="step4" onBack={handleBackToCustom} onNext={handleNextToLeads} onFinish={handleFinish} />
+            <ClientPreview key="step4" onBack={() => goToStep(3)} onNext={() => goToStep(5)} onFinish={handleFinish} />
           )}
           {step === 5 && (
-            <ReceiveLeads key="step5" onBack={handleBackToPreview} onNext={handleNextToDashboard} onFinish={handleFinish} />
+            <ReceiveLeads key="step5" onBack={() => goToStep(4)} onNext={() => goToStep(6)} onFinish={handleFinish} />
           )}
           {step === 6 && (
-            <DashboardPreview key="step6" onBack={handleBackToLeads} onNext={handleNextToGrowth} />
+            <DashboardPreview key="step6" onBack={() => goToStep(5)} onNext={() => goToStep(7)} />
           )}
           {step === 7 && (
             <GrowthEngine key="step7" onFinish={handleFinish} />
           )}
         </AnimatePresence>
-
-        {/* Success / Final state handles in Finish redirecting to signup */}
       </Box>
     </Box>
   );

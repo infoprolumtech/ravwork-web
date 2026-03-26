@@ -2,8 +2,10 @@ import { type JSX } from 'react';
 import { Box, Container, Typography, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import CallMadeIcon from '@mui/icons-material/CallMade';
+import { useNavigate } from 'react-router-dom';
 
 export default function HeroSection(): JSX.Element {
+    const navigate = useNavigate();
     return (
         <Box
             sx={{
@@ -114,7 +116,7 @@ export default function HeroSection(): JSX.Element {
                         <CallMadeIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
                     </Button>
                     <Button
-                        href="/try-demo"
+                        onClick={() => navigate('/try-demo')}
                         sx={{
                             background: 'rgba(15, 23, 42, 0.6)',
                             color: '#FFFFFF',
