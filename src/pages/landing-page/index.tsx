@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import HeroSection from "./components/HeroSection";
 import ProblemsSection from "./components/ProblemsSection";
 import GridFeatures from "./components/GridFeatures";
-import HowItWorks from "./components/HowItWorks";
+// import HowItWorks from "./components/HowItWorks";
 import ExponentialGrowth from "./components/ExponentialGrowth";
 import FAQSection from "./components/FAQSection";
 import PricingSection from "./components/PricingSection";
@@ -66,7 +66,7 @@ export default function LandingPage(): JSX.Element {
       <GridFeatures />
 
       {/* How It Works Section (Figma Design) */}
-      <HowItWorks />
+      {/* <HowItWorks /> */}
 
 
       {/* Exponential Growth Section */}
