@@ -227,6 +227,20 @@ export const Step2 = ({
                         <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 600 }}>
                           {monthlyPlan?.name || "Monthly"}
                         </Typography>
+                        {!isMonthlyDisabled && !isCurrentPlan(monthlyPlanId) && (
+                          <Chip
+                            label="7-day free trial"
+                            size="small"
+                            sx={{
+                              backgroundColor: "#BAEDBD",
+                              borderRadius: "68px",
+                              color: colors["Base-Dark"],
+                              fontWeight: 600,
+                              fontSize: { xs: "9px", sm: "10px" },
+                              height: { xs: "18px", sm: "20px" },
+                            }}
+                          />
+                        )}
                         {isCurrentPlan(monthlyPlanId) && (
                           <Chip
                             label="Current Plan"

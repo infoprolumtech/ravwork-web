@@ -199,13 +199,35 @@ export default function SignUpPage(): JSX.Element {
     if (subscriptionStatus === "success") {
       (async () => {
         try {
-          const status = await fetchAndStoreSubscriptionStatus();
+          // Add polling to wait for webhook to update DB
+          let status = null;
+          let retries = 0;
+          const MAX_RETRIES = 5;
+
+          dispatch(showAlert({ message: "Verifying your subscription, please wait...", severity: "info" }));
+
+          while (retries < MAX_RETRIES) {
+            status = await fetchAndStoreSubscriptionStatus();
+            if (isActiveOrTrialing(status)) break;
+
+            // Wait 2 seconds before retrying
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            retries++;
+          }
+
           if (!isActiveOrTrialing(status)) {
-            dispatch(showAlert({ message: "Payment received, but subscription is not active yet. Please try again.", severity: "warning" }));
+            dispatch(
+              showAlert({
+                message: "Payment received, but we're still waiting for activation. You can refresh or contact support if it takes too long.",
+                severity: "warning",
+              })
+            );
             setCurrentStep(2);
             navigate("/signup", { replace: true, state: { resumeStep: 2 } });
             return;
           }
+
+          // Track Purchase event (Critical for Deduplication)
 
 
 

@@ -84,9 +84,9 @@ export default function ManageSubscriptionPage(): JSX.Element {
   const subscription = subscriptionStatus?.subscription;
   const plan = subscription?.plan;
   const hasSubscription = subscriptionStatus?.hasSubscription && subscription;
-  const canCancel = hasSubscription && !subscription.cancelAtPeriodEnd && (subscription.status === "active" || subscription.status === "past_due");
+  const canCancel = hasSubscription && !subscription.cancelAtPeriodEnd && (subscription.status === "active" ||subscription.status === "trialing"|| subscription.status === "past_due");
   const canResume = hasSubscription && subscription.cancelAtPeriodEnd;
-  const canChangePlan = hasSubscription && subscription.status === "active" && !subscription.cancelAtPeriodEnd;
+  const canChangePlan = hasSubscription && (subscription.status === "active" || subscription.status === "trialing") && !subscription.cancelAtPeriodEnd;
 
   // Handle Stripe redirect after payment
   useEffect(() => {

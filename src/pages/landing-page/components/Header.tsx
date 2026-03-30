@@ -1,4 +1,5 @@
 import { type JSX, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, AppBar, Toolbar, Button, IconButton, Drawer, List, ListItem, ListItemText, ListItemButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { colors, primaryButton } from '../styles';
@@ -9,6 +10,8 @@ interface HeaderProps {
 
 export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -16,9 +19,26 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
 
     const navLinks: { title: string; href: string; isAction?: boolean }[] = [
         { title: 'Home', href: '/' },
-        { title: 'How It Works', href: '#how-it-works' },
-        { title: 'Pricing', href: '#pricing' },
+        { title: 'How It Works', href: '/#how-it-works' },
+        { title: 'Pricing', href: '/#pricing' },
     ];
+
+    const handleNavClick = (href: string) => {
+        if (href.startsWith('/#')) {
+            const hash = href.split('#')[1];
+            if (location.pathname === '/') {
+                const element = document.getElementById(hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                navigate(href);
+            }
+        } else {
+            navigate(href);
+        }
+        setMobileOpen(false);
+    };
 
     const drawer = (
         <Box sx={{ p: 3, background: '#000000', height: '100%', color: '#FFFFFF' }}>
@@ -32,8 +52,7 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
                 {navLinks.map((link) => (
                     <ListItem key={link.title} disablePadding>
                         <ListItemButton
-                            href={link.href}
-                            onClick={handleDrawerToggle}
+                            onClick={() => handleNavClick(link.href)}
                             sx={{ py: 2 }}
                         >
                             <ListItemText
@@ -105,7 +124,7 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
                         width: 'auto',
                         cursor: 'pointer',
                     }}
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => navigate('/')}
                 />
 
                 {/* Hamburger Menu Icon (Mobile) */}
@@ -141,6 +160,8 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
                                 onClick={() => {
                                     if (link.isAction && link.title === 'Terms & Conditions') {
                                         onTermsClick();
+                                    } else {
+                                        handleNavClick(link.href);
                                     }
                                 }}
                                 sx={{

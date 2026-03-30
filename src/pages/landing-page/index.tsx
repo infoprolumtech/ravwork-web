@@ -1,6 +1,6 @@
-import { type JSX, useState, useEffect } from "react";
+import { type JSX, useState, useEffect, useRef } from "react";
 import { Box, Dialog, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../rtk/store";
 import CloseIcon from "@mui/icons-material/Close";
 import HeroSection from "./components/HeroSection";
@@ -21,12 +21,28 @@ export default function LandingPage(): JSX.Element {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const { isLogin } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasScrolledRef = useRef(false);
 
   useEffect(() => {
     if (isLogin) {
       navigate("/dashboard");
     }
   }, [isLogin, navigate]);
+
+  useEffect(() => {
+    if (location.hash && !hasScrolledRef.current) {
+      const id = location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        // Small delay to ensure everything is rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth" });
+          hasScrolledRef.current = true;
+        }, 300);
+      }
+    }
+  }, [location]);
 
   return (
     <Box

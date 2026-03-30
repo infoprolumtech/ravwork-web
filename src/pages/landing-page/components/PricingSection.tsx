@@ -2,8 +2,9 @@ import { type JSX, useState } from 'react';
 import { Box, Container, Typography, Button, Switch, styled } from '@mui/material';
 import { motion } from 'framer-motion';
 import { spacing } from '../styles';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import CheckIcon from '@mui/icons-material/Check';
 
-// Custom Styled Switch
 // Custom Styled Switch matching the provided design (Neon Blue, Black Track)
 const AntSwitch = styled(Switch)(() => ({
     width: 50,
@@ -50,6 +51,14 @@ const AntSwitch = styled(Switch)(() => ({
     },
 }));
 
+const features = [
+    'Personalized booking link',
+    'Full access to features',
+    'Unlimited leads',
+    'Unlimited custom questions',
+    'Lead management dashboard',
+];
+
 export default function PricingSection(): JSX.Element {
     const [isAnnual, setIsAnnual] = useState(false);
 
@@ -60,6 +69,8 @@ export default function PricingSection(): JSX.Element {
                 background: '#000000',
                 padding: spacing.sectionPadding,
                 textAlign: 'center',
+                overflow: 'hidden',
+                position: 'relative'
             }}
         >
             <Container maxWidth="lg">
@@ -159,90 +170,148 @@ export default function PricingSection(): JSX.Element {
                     </Typography>
                 </Box>
 
-                {/* Pricing Card */}
-                <Box
-                    component={motion.div}
-                    initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    key={isAnnual ? 'annual' : 'monthly'} // Key change triggers re-animation which might be nice
-                    sx={{
-                        position: 'relative',
-                        width: '100%',
-                        maxWidth: '700px',
-                        mx: 'auto',
-                        borderRadius: '24px',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                    role="img"
-                    aria-label={`Pricing: ${isAnnual ? 'Yearly' : 'Monthly'} plan.`}
-                >
-                    {/* Desktop View */}
-                    <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', position: 'relative' }}>
-                        <Box
-                            component="img"
-                            src={isAnnual ? "/assets/landing-page/pricing_yearly_web.png" : "/assets/landing-page/pricing_monthly_web.png"}
-                            alt="Pricing Plan"
-                            sx={{
-                                width: '100%',
-                                height: 'auto',
-                                display: 'block',
-                            }}
-                        />
-                        <Button
-                            href="/signup"
-                            sx={{
-                                position: 'absolute',
-                                bottom: '10%',
-                                left: '50.5%',
-                                transform: 'translateX(-50%)',
-                                width: '22%',
-                                height: '10%',
-                                minHeight: '44px',
-                                background: 'transparent',
-                                borderRadius: '12px',
-                                '&:hover': {
-                                    background: 'rgba(255, 255, 255, 0.1)',
-                                },
-                            }}
-                            aria-label="Claim Your Link Now"
-                        />
+                {/* Pricing Card Section */}
+                <Box sx={{ position: 'relative', width: '100%', maxWidth: '757px', mx: 'auto' }}>
+                    
+                    {/* Bottom Glow Effect (Matching SVG filter layers) */}
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            bottom: '-20px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: '80%',
+                            height: '100px',
+                            zIndex: 0,
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        {/* Ellipse 1: Core Blue Glow */}
+                        <Box sx={{ 
+                            position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+                            width: '100%', height: '40px', borderRadius: '50%', bgcolor: '#1C23E7',
+                            filter: 'blur(40px)', opacity: 0.6
+                        }} />
+                        {/* Ellipse 2: Cyan Middle Glow */}
+                        <Box sx={{ 
+                            position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
+                            width: '60%', height: '30px', borderRadius: '50%', bgcolor: '#96FFFF',
+                            filter: 'blur(30px)', opacity: 0.4
+                        }} />
+                        {/* Ellipse 3: Aqua Top Glow */}
+                        <Box sx={{ 
+                            position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+                            width: '40%', height: '20px', borderRadius: '50%', bgcolor: '#45FFD7',
+                            filter: 'blur(20px)', opacity: 0.5
+                        }} />
                     </Box>
 
-                    {/* Mobile View */}
-                    <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', position: 'relative' }}>
-                        <Box
-                            component="img"
-                            src={isAnnual ? "/assets/landing-page/pricing_yearly_mobile.png" : "/assets/landing-page/pricing_monthly_mobile.png"}
-                            alt="Pricing Plan"
-                            sx={{
-                                width: '100%',
-                                height: 'auto',
-                                display: 'block',
-                            }}
+                    {/* Main Card */}
+                    <Box
+                        component={motion.div}
+                        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        key={isAnnual ? 'annual' : 'monthly'}
+                        sx={{
+                            position: 'relative',
+                            zIndex: 1,
+                            width: '100%',
+                            minHeight: '519px',
+                            borderRadius: '18.5px',
+                            overflow: 'hidden',
+                            // Background Gradient from paint2
+                            background: 'linear-gradient(180deg, rgba(0, 47, 232, 0.25) 0%, #020219 100%)',
+                            // Border from paint3 (approximation using radial border or box shadow)
+                            border: '3px solid rgba(28, 14, 232, 0.4)',
+                            boxShadow: '0 0 40px rgba(28, 14, 232, 0.15)',
+                            backdropFilter: 'blur(20px)',
+                            padding: { xs: '40px 24px', md: '60px 80px' },
+                            textAlign: 'left',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        {/* Price Section */}
+                        <Box sx={{ mb: 4 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+                                <Typography sx={{ fontSize: { xs: '48px', md: '64px' }, fontWeight: 700, color: '#FFFFFF' }}>
+                                    ${isAnnual ? '20' : '29'}
+                                </Typography>
+                                <Typography sx={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                                    /month
+                                </Typography>
+                            </Box>
+                            {isAnnual && (
+                                <Typography sx={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.6)', mt: -0.5 }}>
+                                    ($240 Billed Annually)
+                                </Typography>
+                            )}
+                        </Box>
+
+                        {/* Divider from paint4 */}
+                        <Box 
+                            sx={{ 
+                                width: '100%', 
+                                height: '1px', 
+                                background: 'linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%)',
+                                mb: 6
+                            }} 
                         />
-                        <Button
-                            href="/signup"
-                            sx={{
-                                position: 'absolute',
-                                bottom: '10%',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                width: '85%',
-                                height: '14%',
-                                minHeight: '44px',
-                                background: 'transparent',
-                                borderRadius: '12px',
-                                '&:hover': {
-                                    background: 'rgba(255, 255, 255, 0.1)',
-                                },
-                            }}
-                            aria-label="Claim Your Link Now"
-                        />
+
+                        {/* Features Section */}
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Typography sx={{ fontSize: '16px', fontWeight: 600, color: '#FFFFFF', mb: 3 }}>
+                                What's included
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                                {features.map((feature, index) => (
+                                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                        <Box sx={{ 
+                                            width: 22, height: 22, bgcolor: '#1C0EE8', borderRadius: '50%', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            flexShrink: 0
+                                        }}>
+                                            <CheckIcon sx={{ color: '#FFFFFF', fontSize: '14px', stroke: '#FFFFFF', strokeWidth: 1 }} />
+                                        </Box>
+                                        <Typography sx={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.85)' }}>
+                                            {feature}
+                                        </Typography>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Box>
+
+                        {/* CTA Section */}
+                        <Box sx={{ mt: 6 }}>
+                            <Button
+                                href="/signup"
+                                fullWidth
+                                sx={{
+                                    background: '#FFFFFF',
+                                    color: '#000000',
+                                    textTransform: 'none',
+                                    fontSize: '18px',
+                                    fontWeight: 700,
+                                    borderRadius: '12px',
+                                    padding: '18px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: 1.5,
+                                    '&:hover': {
+                                        background: '#F0F0F0',
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
+                                    },
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                {isAnnual ? 'Claim Your Link' : 'Start Free Trial'}
+                                <CallMadeIcon sx={{ fontSize: 24 }} />
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
             </Container>

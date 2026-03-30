@@ -22,7 +22,7 @@ const leads = [
     { title: "Exterior Wash", desc: "Hand wash, wheel/tire cleaning, and a spray...", client: "Al Miller", email: "allen2001@gmail.com", phone: "6462743111" }
 ];
 
-export default function ReceiveLeads({ onBack, onNext, onFinish }: ReceiveLeadsProps): JSX.Element {
+export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX.Element {
     const [showHint, setShowHint] = useState(false);
 
     useEffect(() => {
