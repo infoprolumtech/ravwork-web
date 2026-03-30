@@ -170,7 +170,7 @@ export default function HeroSection(): JSX.Element {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-            src="/assets/landing-page/hero.png"
+            src="/assets/landing-page/hero-new.png"
             alt="RavworkLink Dashboard"
             sx={{
               width: "100%",
