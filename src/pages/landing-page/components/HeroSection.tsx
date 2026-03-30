@@ -26,8 +26,9 @@ export default function HeroSection(): JSX.Element {
           alignItems: "center",
           justifyContent: "center",
           flex: 1,
-          py: { xs: 4, md: 8 },
           textAlign: "center",
+          pt: { xs: 4, md: 8 },
+          pb: { xs: 0, md: 0 },
         }}
       >
         {/* Headline */}
@@ -82,7 +83,7 @@ export default function HeroSection(): JSX.Element {
             display: "flex",
             flexDirection: "row",
             gap: { xs: 1.5, sm: 2 },
-            mb: { xs: 6, md: 8 },
+            // mb: { xs: 6, md: 8 },
             justifyContent: "center",
             width: "100%",
             px: { xs: 1, sm: 0 },
@@ -151,7 +152,7 @@ export default function HeroSection(): JSX.Element {
           }}
         >
           {/* Visual Glow behind image */}
-          <Box
+          {/* <Box
             component={motion.div}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -164,7 +165,7 @@ export default function HeroSection(): JSX.Element {
                 "radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)",
               zIndex: 0,
             }}
-          />
+          /> */}
           <Box
             component={motion.img}
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -173,7 +174,7 @@ export default function HeroSection(): JSX.Element {
             src="/assets/landing-page/hero-new.png"
             alt="RavworkLink Dashboard"
             sx={{
-              width: "100%",
+              width: "95%",
               height: "auto",
               borderRadius: "12px",
               position: "relative",
