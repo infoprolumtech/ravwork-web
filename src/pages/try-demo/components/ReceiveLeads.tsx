@@ -1,5 +1,6 @@
 import { type JSX, useState, useEffect } from "react";
 import { Box, Typography, Button, Paper, Divider } from "@mui/material";
+import GoBackButton from "./shared/GoBackButton";
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
@@ -168,6 +169,7 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                 </Paper>
             </Box>
 
+            <GoBackButton onClick={onBack} />
         </Box>
     );
 }
