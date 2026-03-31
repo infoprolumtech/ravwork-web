@@ -59,7 +59,7 @@ export default function TryDemo(): JSX.Element {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          pt: { xs: 8, md: 12 },
+          pt: { xs: 3, md: 12 },
           pb: 8,
           px: { xs: 1.5, sm: 3 },
         }}

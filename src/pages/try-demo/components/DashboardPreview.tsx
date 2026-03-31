@@ -105,7 +105,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                     <Box sx={{ flex: 1, backgroundColor: '#FFFFFF', p: { xs: 2, sm: 3, md: 5 }, overflow: 'hidden' }}>
 
                         {/* Header Details */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 3 }, flexWrap: 'wrap', gap: 1 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <GridViewIcon sx={{ color: '#4B5563', fontSize: '18px' }} />
                                 <Typography sx={{ fontSize: '13px', color: '#9CA3AF' }}>Dashboards</Typography>
@@ -121,7 +121,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                         <Divider sx={{ mb: 4 }} />
 
                         {/* Welcome Banner */}
-                        <Box sx={{ backgroundColor: '#DBEAFE', borderRadius: '16px', p: { xs: 2, sm: 3 }, mb: 4 }}>
+                        <Box sx={{ backgroundColor: '#DBEAFE', borderRadius: '16px', p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 4 } }}>
                             <Typography sx={{ fontWeight: 600, fontSize: '14px', color: '#1E3A8A', mb: 2 }}>Welcome back!</Typography>
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'center', sm: 'center' }, gap: 2 }}>
                                 <Box sx={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #FFFFFF', flexShrink: 0 }}>
@@ -172,7 +172,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 2 }}>
                             {metricsTop.map((m, i) => <MetricCard key={i} metric={m} bgColor="#E0F2FE" />)}
                         </Box>
-                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 4 }}>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: { xs: 2, sm: 4 } }}>
                             {metricsBottom.map((m, i) => <MetricCard key={i} metric={m} bgColor="#F3F4F6" />)}
                         </Box>
 

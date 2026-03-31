@@ -32,7 +32,7 @@ export default function ServiceDetails({ onNext }: ServiceDetailsProps): JSX.Ele
 
             <GlowingCard>
                 {/* Top Row: Green Icon & Close Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 2, sm: 3 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <Box sx={greenBarSx} />
                         <Box sx={greenIconBadgeSx}>
@@ -50,23 +50,11 @@ export default function ServiceDetails({ onNext }: ServiceDetailsProps): JSX.Ele
                 </Typography>
 
                 {/* Form Fields */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <Box>
-                        <Typography sx={{ color: '#4B5563', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>Service title</Typography>
-                        <TextField fullWidth defaultValue="Exterior Wash" variant="outlined" size="small" sx={textFieldSx} />
-                    </Box>
-                    <Box>
-                        <Typography sx={{ color: '#4B5563', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>What's Included?</Typography>
-                        <TextField fullWidth defaultValue="Hand wash, wheel/tire cleaning, and a spray wax for a quick shine." variant="outlined" size="small" sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
-                    </Box>
-                    <Box>
-                        <Typography sx={{ color: '#4B5563', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>Service price</Typography>
-                        <TextField fullWidth defaultValue="$150" variant="outlined" size="small" sx={textFieldSx} />
-                    </Box>
-                    <Box>
-                        <Typography sx={{ color: '#4B5563', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>Response time</Typography>
-                        <TextField fullWidth defaultValue="Select" variant="outlined" size="small" sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#9CA3AF' } }} />
-                    </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
+                    <TextField fullWidth label="Service title" defaultValue="Exterior Wash" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
+                    <TextField fullWidth label="What's Included?" defaultValue="Hand wash, wheel/tire cleaning, and a spray wax for a quick shine." variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
+                    <TextField fullWidth label="Service price" defaultValue="$150" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
+                    <TextField fullWidth label="Response time" defaultValue="Select" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#9CA3AF' } }} />
                 </Box>
 
                 {/* Bottom Buttons */}

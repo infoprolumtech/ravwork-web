@@ -100,14 +100,14 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                         <Divider sx={{ mb: 4 }} />
 
                         {/* Top Filters */}
-                        <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3 }, mb: 4, flexWrap: 'wrap' }}>
+                        <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 4 }, flexWrap: 'wrap' }}>
                             <Box sx={{ backgroundColor: '#DBEAFE', color: '#1E3A8A', px: 3, py: 0.75, borderRadius: '20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Leads</Box>
                             <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#111827' } }}>Completed</Box>
                             <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#111827' } }}>Declined</Box>
                         </Box>
 
                         {/* Lead Cards */}
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
                             {leads.map((lead, idx) => (
                                 <Box key={idx} sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: { xs: 2, sm: 3 }, border: '1px solid #F3F4F6' }}>
 

@@ -57,7 +57,7 @@ export default function GrowthEngine({ onFinish }: GrowthEngineProps): JSX.Eleme
             </Box>
 
             {/* Headline Section */}
-            <Box sx={{ mb: { xs: 5, sm: 8 }, maxWidth: '600px' }}>
+            <Box sx={{ mb: { xs: 3, sm: 8 }, maxWidth: '600px' }}>
                 <Typography variant="h2" sx={{ fontWeight: 800, fontSize: { xs: '32px', sm: '44px', md: '56px' }, lineHeight: 1.1, mb: 3 }}>
                     Your link is a <br />
                     <Box component="span" sx={{
@@ -74,7 +74,7 @@ export default function GrowthEngine({ onFinish }: GrowthEngineProps): JSX.Eleme
             </Box>
 
             {/* Diagram Section */}
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'space-between', mb: { xs: 5, sm: 8 }, gap: { xs: 3, sm: 4 } }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'space-between', mb: { xs: 3, sm: 8 }, gap: { xs: 2, sm: 4 } }}>
 
                 {/* Visualizer 1 (Your Link) */}
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: { xs: 2, sm: 4 } }}>
@@ -138,7 +138,7 @@ export default function GrowthEngine({ onFinish }: GrowthEngineProps): JSX.Eleme
             </Box>
 
             {/* Down Arrow separator */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 4, sm: 6 } }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: { xs: 2, sm: 6 } }}>
                 <Box sx={{ width: '40px', height: '40px', borderRadius: '50%', border: '2px solid #A78BFA', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ArrowDownwardIcon sx={{ color: '#A78BFA' }} />
                 </Box>
@@ -155,7 +155,7 @@ export default function GrowthEngine({ onFinish }: GrowthEngineProps): JSX.Eleme
                         borderRadius: '24px',
                         overflow: 'hidden',
                         position: 'relative',
-                        p: { xs: 3, sm: 4, md: 6 },
+                        p: { xs: 2, sm: 4, md: 6 },
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         textAlign: 'center',
                         display: 'flex',
@@ -205,7 +205,7 @@ export default function GrowthEngine({ onFinish }: GrowthEngineProps): JSX.Eleme
                         SIGN UP TODAY
                     </Button>
 
-                    <Box sx={{ display: 'flex', gap: { xs: 2, sm: 4 }, mt: { xs: 3, sm: 5 }, position: 'relative', zIndex: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Box sx={{ display: 'flex', gap: { xs: 2, sm: 4 }, mt: { xs: 2, sm: 5 }, position: 'relative', zIndex: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
                         {['One job pays for it', 'Cancel in one click'].map((text) => (
                             <Box key={text} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <CheckIcon sx={{ color: '#3B82F6', fontSize: '18px' }} />
