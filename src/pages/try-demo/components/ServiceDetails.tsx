@@ -39,7 +39,7 @@ export default function ServiceDetails({ onNext }: ServiceDetailsProps): JSX.Ele
                             <ElectricBoltIcon fontSize="small" />
                         </Box>
                     </Box>
-                    <IconButton sx={{ backgroundColor: '#F3F4F6', '&:hover': { backgroundColor: '#E5E7EB' } }} onClick={() => navigate('/')}>
+                    <IconButton sx={{ backgroundColor: '#F3F4F6', pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#F3F4F6' } }}>
                         <CloseIcon sx={{ color: '#111827', fontSize: '20px' }} />
                     </IconButton>
                 </Box>

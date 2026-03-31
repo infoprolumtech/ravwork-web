@@ -51,7 +51,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                             <ForumIcon fontSize="small" />
                         </Box>
                     </Box>
-                    <IconButton sx={{ backgroundColor: '#F3F4F6', '&:hover': { backgroundColor: '#E5E7EB' } }} onClick={() => navigate('/')}>
+                    <IconButton sx={{ backgroundColor: '#F3F4F6', pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#F3F4F6' } }}>
                         <CloseIcon sx={{ color: '#111827', fontSize: '20px' }} />
                     </IconButton>
                 </Box>
@@ -92,7 +92,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                             {/* Option 1 */}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <TextField fullWidth defaultValue="Basic Clean (thorough vacuum cleaning, wipe down, spotless windows/trims)" variant="outlined" size="small" sx={textFieldSxGray} />
-                                <IconButton size="small" sx={{ color: '#F87171', '&:hover': { backgroundColor: 'rgba(248, 113, 113, 0.1)' } }}>
+                                <IconButton size="small" sx={{ color: '#F87171', pointerEvents: 'none', cursor: 'default' }}>
                                     <DeleteOutlineIcon fontSize="small" />
                                 </IconButton>
                             </Box>
@@ -100,7 +100,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                             {/* Option 2 */}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <TextField fullWidth defaultValue="Deep Clean (Deep cleaning of all surfaces, including shampooing carpets/seats, steam cleaning for stains, and leather conditioning to prevent cracking.)" variant="outlined" size="small" multiline sx={{ ...textFieldSxGray, '& .MuiOutlinedInput-root': { ...textFieldSxGray['& .MuiOutlinedInput-root'], py: 1 } }} />
-                                <IconButton size="small" sx={{ color: '#F87171', '&:hover': { backgroundColor: 'rgba(248, 113, 113, 0.1)' } }}>
+                                <IconButton size="small" sx={{ color: '#F87171', pointerEvents: 'none', cursor: 'default' }}>
                                     <DeleteOutlineIcon fontSize="small" />
                                 </IconButton>
                             </Box>
@@ -109,7 +109,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                                 <Button
                                     variant="text"
                                     disableRipple
-                                    sx={{ color: '#111827', textTransform: 'none', fontWeight: 700, fontSize: '13px', '&:hover': { backgroundColor: 'transparent', opacity: 0.8 } }}
+                                    sx={{ color: '#111827', textTransform: 'none', fontWeight: 700, fontSize: '13px', pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: 'transparent' } }}
                                     startIcon={<AddIcon sx={{ fontSize: '18px !important' }} />}
                                 >
                                     Add Options
@@ -122,7 +122,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                     <Box sx={{ display: 'flex', mt: 1 }}>
                         <Button
                             variant="contained"
-                            sx={{ backgroundColor: '#EFF6FF', color: '#1E3A8A', boxShadow: 'none', textTransform: 'none', fontWeight: 600, fontSize: '13px', borderRadius: '16px', py: 0.5, px: 2, '&:hover': { backgroundColor: '#DBEAFE', boxShadow: 'none' } }}
+                            sx={{ backgroundColor: '#EFF6FF', color: '#1E3A8A', boxShadow: 'none', textTransform: 'none', fontWeight: 600, fontSize: '13px', borderRadius: '16px', py: 0.5, px: 2, pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#EFF6FF', boxShadow: 'none' } }}
                             startIcon={<AddIcon sx={{ fontSize: '16px !important', color: '#1E3A8A' }} />}
                         >
                             Add Questions

@@ -111,7 +111,9 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                                     fontWeight: 600,
                                     py: 0.5,
                                     alignSelf: { xs: 'center', sm: 'auto' },
-                                    '&:hover': { backgroundColor: '#374151' }
+                                    pointerEvents: 'none',
+                                    cursor: 'default',
+                                    '&:hover': { backgroundColor: '#111827' }
                                 }}
                             >
                                 Share
@@ -183,7 +185,7 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{ fontWeight: 700, fontSize: '24px', color: '#111827' }}>$110</Typography>
-                            <Button onClick={onNext} variant="contained" sx={{ backgroundColor: '#000000', color: '#FFFFFF', borderRadius: '20px', textTransform: 'none', px: 3, '&:hover': { backgroundColor: '#1F2937' } }}>
+                            <Button variant="contained" sx={{ backgroundColor: '#000000', color: '#FFFFFF', borderRadius: '20px', textTransform: 'none', px: 3, pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#000000' } }}>
                                 Book Now
                             </Button>
                         </Box>
@@ -199,7 +201,7 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                         <Typography sx={{ fontWeight: 700, color: '#111827', mb: 0.5 }}>Have a question?</Typography>
                         <Typography sx={{ color: '#6B7280', fontSize: '13px' }}>Provide your contact info.</Typography>
                     </Box>
-                    <Button onClick={onFinish} variant="contained" sx={{ backgroundColor: '#000000', color: '#FFFFFF', borderRadius: '20px', textTransform: 'none', px: 4, '&:hover': { backgroundColor: '#1F2937' } }}>
+                    <Button variant="contained" sx={{ backgroundColor: '#000000', color: '#FFFFFF', borderRadius: '20px', textTransform: 'none', px: 4, pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#000000' } }}>
                         Request
                     </Button>
                 </Box>

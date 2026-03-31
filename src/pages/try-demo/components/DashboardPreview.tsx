@@ -10,7 +10,6 @@ import MouseOutlinedIcon from '@mui/icons-material/MouseOutlined';
 import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
 import { motion } from "framer-motion";
 import StepHeader from "./shared/StepHeader";
-import GoBackButton from "./shared/GoBackButton";
 import HandHint from "./shared/HandHint";
 import DashboardSidebar from "./shared/DashboardSidebar";
 
@@ -99,13 +98,13 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                     }}
                 >
                     {/* Sidebar */}
-                    <DashboardSidebar activeItem="Dashboard" showFooterExtras />
+                    <DashboardSidebar activeItem="Dashboard" showFooterExtras onBack={onBack} />
 
                     {/* Main Workspace Content */}
                     <Box sx={{ flex: 1, backgroundColor: '#FFFFFF', p: { xs: 2, sm: 3, md: 5 }, overflow: 'hidden' }}>
 
-                        {/* Header Details */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 3 }, flexWrap: 'wrap', gap: 1 }}>
+                        {/* Header Details — hidden on mobile (sidebar topbar handles it) */}
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 3 }, flexWrap: 'wrap', gap: 1 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <GridViewIcon sx={{ color: '#4B5563', fontSize: '18px' }} />
                                 <Typography sx={{ fontSize: '13px', color: '#9CA3AF' }}>Dashboards</Typography>
@@ -118,7 +117,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                             </Box>
                         </Box>
 
-                        <Divider sx={{ mb: 4 }} />
+                        <Divider sx={{ mb: { xs: 2, md: 4 }, display: { xs: 'none', md: 'block' } }} />
 
                         {/* Welcome Banner */}
                         <Box sx={{ backgroundColor: '#DBEAFE', borderRadius: '16px', p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 4 } }}>
@@ -133,7 +132,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                                         <Typography sx={{ fontSize: { xs: '11px', sm: '13px' }, color: '#6B7280', wordBreak: 'break-all' }}>https://ravwork.link/martiecarspa</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, position: 'relative' }}>
-                                            <Box sx={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', '&:hover': { backgroundColor: '#F3F4F6' } }}>
+                                            <Box sx={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', pointerEvents: 'none' }}>
                                                 <ContentCopyIcon sx={{ fontSize: '12px', color: '#4B5563' }} />
                                             </Box>
                                             <Box
@@ -201,15 +200,15 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
 
                             {/* Pagination */}
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderTop: '1px solid #E5E7EB' }}>
-                                <Button startIcon={<ArrowBackIcon fontSize="small" />} sx={{ color: '#9CA3AF', textTransform: 'none', fontWeight: 500, fontSize: { xs: '12px', sm: '14px' } }}>
+                                <Button startIcon={<ArrowBackIcon fontSize="small" />} sx={{ color: '#9CA3AF', textTransform: 'none', fontWeight: 500, fontSize: { xs: '12px', sm: '14px' }, pointerEvents: 'none', cursor: 'default' }}>
                                     Previous
                                 </Button>
                                 <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 0.5 }}>
                                     {[1, 2, 3, '...', 8, 9, 10].map((page, i) => (
-                                        <Box key={i} sx={{ width: '28px', height: '28px', backgroundColor: page === 1 ? '#F9FAFB' : 'transparent', color: page === 1 ? '#111827' : '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', fontSize: '13px', fontWeight: page === 1 ? 600 : 400, cursor: typeof page === 'number' ? 'pointer' : 'default', '&:hover': typeof page === 'number' ? { backgroundColor: '#F9FAFB' } : {} }}>{page}</Box>
+                                        <Box key={i} sx={{ width: '28px', height: '28px', backgroundColor: page === 1 ? '#F9FAFB' : 'transparent', color: page === 1 ? '#111827' : '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', fontSize: '13px', fontWeight: page === 1 ? 600 : 400, cursor: 'default', pointerEvents: 'none' }}>{page}</Box>
                                     ))}
                                 </Box>
-                                <Button endIcon={<ArrowForwardIcon fontSize="small" />} sx={{ color: '#6B7280', textTransform: 'none', fontWeight: 500, fontSize: { xs: '12px', sm: '14px' }, '&:hover': { color: '#111827' } }}>
+                                <Button endIcon={<ArrowForwardIcon fontSize="small" />} sx={{ color: '#6B7280', textTransform: 'none', fontWeight: 500, fontSize: { xs: '12px', sm: '14px' }, pointerEvents: 'none', cursor: 'default', '&:hover': { color: '#6B7280' } }}>
                                     Next
                                 </Button>
                             </Box>
@@ -218,7 +217,6 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                 </Paper>
             </Box>
 
-            <GoBackButton onClick={onBack} />
         </Box>
     );
 }

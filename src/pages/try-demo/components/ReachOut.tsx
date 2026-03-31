@@ -63,7 +63,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
                             <HeadsetMicIcon fontSize="small" />
                         </Box>
                     </Box>
-                    <IconButton sx={{ backgroundColor: '#F3F4F6', '&:hover': { backgroundColor: '#E5E7EB' } }} onClick={() => navigate('/')}>
+                    <IconButton sx={{ backgroundColor: '#F3F4F6', pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#F3F4F6' } }}>
                         <CloseIcon sx={{ color: '#111827', fontSize: '20px' }} />
                     </IconButton>
                 </Box>
@@ -82,7 +82,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
 
                     {/* Quick Contact Option */}
-                    <Box onClick={onFinish} sx={optionBoxSx}>
+                    <Box sx={{ ...optionBoxSx, cursor: 'default', pointerEvents: 'none', '&:hover': { backgroundColor: '#F3F4F6', transform: 'none' } }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                             <Typography sx={{ fontWeight: 700, color: '#111827', fontSize: '15px' }}>
                                 Quick Contact

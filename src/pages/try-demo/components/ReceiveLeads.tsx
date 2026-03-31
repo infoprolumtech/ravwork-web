@@ -6,8 +6,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import { motion } from "framer-motion";
 import StepHeader from "./shared/StepHeader";
-import GoBackButton from "./shared/GoBackButton";
-import HandHint from "./shared/HandHint";
+
 import DashboardSidebar from "./shared/DashboardSidebar";
 
 interface ReceiveLeadsProps {
@@ -70,23 +69,22 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                         overflow: 'hidden',
                         display: 'flex',
                         flexDirection: { xs: 'column', md: 'row' },
-                        minHeight: { xs: 'auto', md: '600px' }
+                        minHeight: { xs: 'auto', md: '600px' },
                     }}
                 >
-                    {/* Sidebar with hand hint pointing up at Dashboard */}
-                    <Box sx={{ position: 'relative' }}>
-                        <HandHint show={showHint} direction="down" sx={{ left: { xs: '30px', md: '130px' }, top: { xs: '260px', md: '310px' } }} />
-                        <DashboardSidebar
-                            activeItem="My Jobs"
-                            onItemClick={(text) => { if (text === "Dashboard") onNext(); }}
-                        />
-                    </Box>
+                    <DashboardSidebar
+                        activeItem="My Jobs"
+                        clickableItem="Dashboard"
+                        onItemClick={(text) => { if (text === "Dashboard") onNext(); }}
+                        onBack={onBack}
+                        showHint={showHint}
+                    />
 
                     {/* Main Workspace Content */}
                     <Box sx={{ flex: 1, backgroundColor: '#FFFFFF', p: { xs: 2, sm: 3, md: 5 } }}>
 
-                        {/* Header Details */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
+                        {/* Header Details — hidden on mobile (sidebar topbar handles it) */}
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <WorkOutlineIcon sx={{ color: '#4B5563' }} />
                                 <Typography sx={{ fontSize: '18px', fontWeight: 600, color: '#4B5563' }}>My Jobs</Typography>
@@ -97,13 +95,13 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                             </Box>
                         </Box>
 
-                        <Divider sx={{ mb: 4 }} />
+                        <Divider sx={{ mb: { xs: 2, md: 4 } }} />
 
                         {/* Top Filters */}
                         <Box sx={{ display: 'flex', gap: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 4 }, flexWrap: 'wrap' }}>
-                            <Box sx={{ backgroundColor: '#DBEAFE', color: '#1E3A8A', px: 3, py: 0.75, borderRadius: '20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Leads</Box>
-                            <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#111827' } }}>Completed</Box>
-                            <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'pointer', '&:hover': { color: '#111827' } }}>Declined</Box>
+                            <Box sx={{ backgroundColor: '#DBEAFE', color: '#1E3A8A', px: 3, py: 0.75, borderRadius: '20px', fontSize: '14px', fontWeight: 600, cursor: 'default', pointerEvents: 'none' }}>Leads</Box>
+                            <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'default', pointerEvents: 'none' }}>Completed</Box>
+                            <Box sx={{ color: '#6B7280', px: 2, py: 0.75, fontSize: '14px', fontWeight: 600, cursor: 'default', pointerEvents: 'none' }}>Declined</Box>
                         </Box>
 
                         {/* Lead Cards */}
@@ -124,10 +122,10 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                                         </Box>
 
                                         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                            <Button sx={{ backgroundColor: '#D1FAE5', color: '#065F46', textTransform: 'none', fontWeight: 600, borderRadius: '20px', px: { xs: 2, sm: 3 }, fontSize: { xs: '12px', sm: '14px' }, '&:hover': { backgroundColor: '#A7F3D0' } }}>
+                                            <Button sx={{ backgroundColor: '#D1FAE5', color: '#065F46', textTransform: 'none', fontWeight: 600, borderRadius: '20px', px: { xs: 2, sm: 3 }, fontSize: { xs: '12px', sm: '14px' }, pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: '#D1FAE5' } }}>
                                                 Mark as Complete
                                             </Button>
-                                            <Button variant="outlined" sx={{ borderColor: 'transparent', color: '#EF4444', textTransform: 'none', fontWeight: 600, fontSize: { xs: '12px', sm: '14px' }, '&:hover': { backgroundColor: '#FEE2E2', borderColor: 'transparent' } }}>
+                                            <Button variant="outlined" sx={{ borderColor: 'transparent', color: '#EF4444', textTransform: 'none', fontWeight: 600, fontSize: { xs: '12px', sm: '14px' }, pointerEvents: 'none', cursor: 'default', '&:hover': { backgroundColor: 'transparent', borderColor: 'transparent' } }}>
                                                 Decline
                                             </Button>
                                         </Box>
@@ -159,7 +157,7 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                                             </Box>
                                         </Box>
 
-                                        <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#4B5563', cursor: 'pointer', '&:hover': { color: '#000000', textDecoration: 'underline' } }}>
+                                        <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#4B5563', cursor: 'default', pointerEvents: 'none' }}>
                                             View Details
                                         </Typography>
                                     </Box>
@@ -170,7 +168,6 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                 </Paper>
             </Box>
 
-            <GoBackButton onClick={onBack} />
         </Box>
     );
 }

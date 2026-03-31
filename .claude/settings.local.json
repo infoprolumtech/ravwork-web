@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett/src/**/*.tsx)",
+      "Bash(git -C /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett log --oneline -15)",
+      "Bash(grep -c \"\\\\.query\\\\|\\\\.mutation\" /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett/src/rtk/endpoints/*.tsx)",
+      "Bash(xargs basename:*)",
+      "Bash(grep -h \"useGet\\\\|useMutation\" /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett/src/rtk/endpoints/*.tsx)",
+      "Bash(wc -l /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett/src/**/*.tsx /c/client/ravwork/ravworklink-webapp/.claude/worktrees/peaceful-haslett/src/**/*.ts)",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
