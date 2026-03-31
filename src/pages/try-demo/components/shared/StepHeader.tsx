@@ -8,7 +8,7 @@ interface StepHeaderProps {
 
 export default function StepHeader({ title, subtitle }: StepHeaderProps): JSX.Element {
     return (
-        <Box sx={{ mb: { xs: 4, sm: 6 }, textAlign: 'center' }}>
+        <Box sx={{ mb: { xs: 2, sm: 6 }, textAlign: 'center' }}>
             <Typography variant="h2" sx={{ fontWeight: 700, mb: 2, color: '#FFFFFF', fontSize: { xs: '26px', sm: '36px', md: '48px' } }}>
                 {title}
             </Typography>

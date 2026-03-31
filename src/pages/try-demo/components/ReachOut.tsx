@@ -30,7 +30,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
     const optionBoxSx = {
         backgroundColor: '#F3F4F6',
         borderRadius: '16px',
-        p: 3,
+        p: { xs: 2, sm: 3 },
         position: 'relative' as const,
         cursor: 'pointer',
         transition: 'all 0.2s',
@@ -56,7 +56,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
 
             <GlowingCard>
                 {/* Top Row: Green Icon & Close Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 2, sm: 3 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <Box sx={greenBarSx} />
                         <Box sx={greenIconBadgeSx}>
@@ -69,7 +69,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
                 </Box>
 
                 {/* Card Heading */}
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: { xs: 2, sm: 4 } }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827', mb: 1 }}>
                         How Should Clients Reach Out?
                     </Typography>
@@ -79,7 +79,7 @@ export default function ReachOut({ onBack, onNext, onFinish }: ReachOutProps): J
                 </Box>
 
                 {/* Option Boxes */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
 
                     {/* Quick Contact Option */}
                     <Box onClick={onFinish} sx={optionBoxSx}>

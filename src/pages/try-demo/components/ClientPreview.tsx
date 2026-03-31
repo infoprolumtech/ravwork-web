@@ -131,10 +131,10 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                 </Box>
 
                 {/* Services Grid */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 2, sm: 3 } }}>
 
                     {/* Exterior Wash Card */}
-                    <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: 3, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: { xs: 2, sm: 3 }, display: 'flex', flexDirection: 'column' }}>
                         <Box sx={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669', mb: 2 }}>
                             <ElectricBoltIcon sx={{ fontSize: '16px' }} />
                         </Box>
@@ -173,7 +173,7 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                     </Box>
 
                     {/* Interior Clean Card */}
-                    <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: 3, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: { xs: 2, sm: 3 }, display: 'flex', flexDirection: 'column' }}>
                         <Box sx={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#DBEAFE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB', mb: 2 }}>
                             <DescriptionOutlinedIcon sx={{ fontSize: '16px' }} />
                         </Box>
@@ -191,7 +191,7 @@ export default function ClientPreview({ onBack, onNext, onFinish }: ClientPrevie
                 </Box>
 
                 {/* Question Card */}
-                <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: 3, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}>
+                <Box sx={{ backgroundColor: '#F9FAFB', borderRadius: '16px', p: { xs: 2, sm: 3 }, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}>
                     <Box>
                         <Box sx={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#FEF08A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A16207', mb: 2 }}>
                             <ChatBubbleOutlineIcon sx={{ fontSize: '16px' }} />

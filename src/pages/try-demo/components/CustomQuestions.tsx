@@ -44,7 +44,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
 
             <GlowingCard>
                 {/* Top Row: Green Icon & Close Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: { xs: 2, sm: 3 } }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <Box sx={greenBarSx} />
                         <Box sx={greenIconBadgeSx}>
@@ -57,7 +57,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                 </Box>
 
                 {/* Card Heading */}
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: { xs: 2, sm: 4 } }}>
                     <Typography variant="h5" sx={{ fontWeight: 700, color: '#111827', mb: 1 }}>Custom Questions</Typography>
                     <Typography sx={{ color: '#9CA3AF', fontSize: '13px', fontWeight: 500 }}>
                         Create Questions that will be asked to all clients during service booking
@@ -65,28 +65,24 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                 </Box>
 
                 {/* Form Fields */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
 
                     {/* Question Field */}
-                    <Box>
-                        <Typography sx={{ color: '#111827', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>Question</Typography>
-                        <TextField fullWidth defaultValue="Select an interior service" variant="outlined" size="small" sx={textFieldSx} />
-                    </Box>
+                    <TextField fullWidth label="Question" defaultValue="Select an interior service" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
 
                     {/* Answer Type Field */}
-                    <Box>
-                        <Typography sx={{ color: '#9CA3AF', fontSize: '13px', fontWeight: 600, mb: 0.5, ml: 1 }}>Answer Type</Typography>
-                        <Box sx={{ position: 'relative' }}>
-                            <TextField
-                                fullWidth
-                                defaultValue="Single Choice Dropdown"
-                                variant="outlined"
-                                size="small"
-                                InputProps={{ readOnly: true }}
-                                sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], cursor: 'pointer', color: '#4B5563' } }}
-                            />
-                            <KeyboardArrowDownIcon sx={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6B7280', pointerEvents: 'none' }} />
-                        </Box>
+                    <Box sx={{ position: 'relative' }}>
+                        <TextField
+                            fullWidth
+                            label="Answer Type"
+                            defaultValue="Single Choice Dropdown"
+                            variant="outlined"
+                            size="small"
+                            InputProps={{ readOnly: true }}
+                            InputLabelProps={{ shrink: true }}
+                            sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], cursor: 'pointer', color: '#4B5563' } }}
+                        />
+                        <KeyboardArrowDownIcon sx={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6B7280', pointerEvents: 'none' }} />
                     </Box>
 
                     {/* Options Section */}
@@ -135,7 +131,7 @@ export default function CustomQuestions({ onBack, onNext }: CustomQuestionsProps
                 </Box>
 
                 {/* Bottom Buttons */}
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4, pt: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: { xs: 2, sm: 4 }, pt: 2 }}>
                     <Button
                         variant="text"
                         onClick={onBack}

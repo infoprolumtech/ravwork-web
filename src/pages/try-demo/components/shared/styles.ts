@@ -7,7 +7,9 @@ export const textFieldSx = {
         '&.Mui-focused fieldset': { borderColor: '#3B82F6', borderWidth: '1px' },
         color: '#111827',
         fontWeight: 500
-    }
+    },
+    '& .MuiInputLabel-root': { color: '#4B5563', fontWeight: 600, fontSize: '13px' },
+    '& .MuiInputLabel-root.Mui-focused': { color: '#3B82F6' },
 };
 
 export const textFieldSxGray = {

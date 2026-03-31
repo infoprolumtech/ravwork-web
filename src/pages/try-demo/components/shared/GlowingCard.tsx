@@ -35,7 +35,7 @@ export default function GlowingCard({ children, overflow = 'visible', paperSx = 
                     backgroundColor: '#FFFFFF',
                     borderRadius: '24px',
                     overflow,
-                    p: { xs: 3, sm: 5 },
+                    p: { xs: 2, sm: 5 },
                     display: 'flex',
                     flexDirection: 'column',
                     ...paperSx,
