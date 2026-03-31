@@ -6,8 +6,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import { motion } from "framer-motion";
 import StepHeader from "./shared/StepHeader";
-import GoBackButton from "./shared/GoBackButton";
-import HandHint from "./shared/HandHint";
+
 import DashboardSidebar from "./shared/DashboardSidebar";
 
 interface ReceiveLeadsProps {
@@ -73,12 +72,12 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                         minHeight: { xs: 'auto', md: '600px' },
                     }}
                 >
-                    {/* Sidebar with hand hint pointing at hamburger (mobile) or Dashboard (desktop) */}
-                    <HandHint show={showHint} direction="down" sx={{ left: { xs: '8px', md: '130px' }, top: { xs: '10px', md: '310px' }, zIndex: 30 }} />
                     <DashboardSidebar
                         activeItem="My Jobs"
                         clickableItem="Dashboard"
                         onItemClick={(text) => { if (text === "Dashboard") onNext(); }}
+                        onBack={onBack}
+                        showHint={showHint}
                     />
 
                     {/* Main Workspace Content */}
@@ -169,7 +168,6 @@ export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX
                 </Paper>
             </Box>
 
-            <GoBackButton onClick={onBack} />
         </Box>
     );
 }

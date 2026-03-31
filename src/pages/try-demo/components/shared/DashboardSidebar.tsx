@@ -4,6 +4,8 @@ import { Box, Typography, Button, IconButton } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HandHint from "./HandHint";
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import GridViewIcon from '@mui/icons-material/GridView';
 import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
@@ -23,6 +25,8 @@ interface DashboardSidebarProps {
     onItemClick?: (text: string) => void;
     showFooterExtras?: boolean;
     clickableItem?: string;
+    onBack?: () => void;
+    showHint?: boolean;
 }
 
 const navItems: SidebarItem[] = [
@@ -35,7 +39,7 @@ const navItems: SidebarItem[] = [
     { icon: <SubscriptionsOutlinedIcon fontSize="small" />, text: "Manage Subscription" },
 ];
 
-export default function DashboardSidebar({ activeItem, onItemClick, showFooterExtras = false, clickableItem }: DashboardSidebarProps): JSX.Element {
+export default function DashboardSidebar({ activeItem, onItemClick, showFooterExtras = false, clickableItem, onBack, showHint }: DashboardSidebarProps): JSX.Element {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const activeNavIcon = navItems.find(i => i.text === activeItem)?.icon;
@@ -79,6 +83,9 @@ export default function DashboardSidebar({ activeItem, onItemClick, showFooterEx
             {navItems.map((item, index) => {
                 const isActive = item.text === activeItem;
                 const isClickable = !clickableItem || item.text === clickableItem;
+                const isDashboard = item.text === 'Dashboard';
+                // Show hint on Dashboard item when: desktop always, or mobile when drawer is open
+                const showDashboardHint = showHint && isDashboard;
                 return (
                     <Box
                         key={index}
@@ -105,6 +112,20 @@ export default function DashboardSidebar({ activeItem, onItemClick, showFooterEx
                         )}
                         {item.icon}
                         <Box>{item.text}</Box>
+                        {/* Desktop: always show hint. Mobile: only when drawer is open */}
+                        {showDashboardHint && (
+                            <HandHint
+                                show={drawerOpen || true}
+                                direction="left"
+                                sx={{
+                                    display: { xs: drawerOpen ? 'block' : 'none', md: 'block' },
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%) rotate(90deg)',
+                                    width: '28px',
+                                }}
+                            />
+                        )}
                     </Box>
                 );
             })}
@@ -140,9 +161,30 @@ export default function DashboardSidebar({ activeItem, onItemClick, showFooterEx
                 position: 'relative',
                 zIndex: 10,
             }}>
-                <IconButton onClick={() => setDrawerOpen(true)} sx={{ p: 0.5 }}>
-                    <MenuIcon sx={{ color: '#4B5563', fontSize: '24px' }} />
-                </IconButton>
+                {/* Left: Back button (if provided) + Hamburger */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {onBack && (
+                        <IconButton onClick={onBack} sx={{ p: 0.5 }}>
+                            <ArrowBackIcon sx={{ color: '#4B5563', fontSize: '22px' }} />
+                        </IconButton>
+                    )}
+                    {/* Hamburger with hint pointing at it when drawer is closed */}
+                    <Box sx={{ position: 'relative' }}>
+                        <IconButton onClick={() => setDrawerOpen(true)} sx={{ p: 0.5 }}>
+                            <MenuIcon sx={{ color: '#4B5563', fontSize: '24px' }} />
+                        </IconButton>
+                        <HandHint
+                            show={!!showHint && !drawerOpen}
+                            direction="down"
+                            sx={{
+                                bottom: '-34px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                width: '28px',
+                            }}
+                        />
+                    </Box>
+                </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ color: '#4B5563', display: 'flex' }}>{activeNavIcon}</Box>
