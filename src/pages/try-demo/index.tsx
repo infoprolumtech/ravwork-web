@@ -1,4 +1,4 @@
-import { type JSX, useState, useCallback } from "react";
+import { type JSX, useState, useCallback, useEffect } from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,6 +24,8 @@ export default function TryDemo(): JSX.Element {
 
   const goToStep = useCallback((s: number) => setStep(s), []);
   const handleFinish = useCallback(() => navigate("/signup"), [navigate]);
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [step]);
 
   return (
     <Box
