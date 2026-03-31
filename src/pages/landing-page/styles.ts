@@ -16,7 +16,7 @@ export const colors = {
 };
 
 export const spacing = {
-  sectionPadding: { xs: '60px 0', md: '100px 0' },
+  sectionPadding: { xs: '40px 0', md: '100px 0' },
   containerMaxWidth: '1200px',
   gridGap: { xs: '24px', md: '32px' },
   cardPadding: { xs: '24px', md: '32px' },

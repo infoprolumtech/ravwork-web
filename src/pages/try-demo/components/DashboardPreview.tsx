@@ -11,6 +11,7 @@ import BookOnlineOutlinedIcon from '@mui/icons-material/BookOnlineOutlined';
 import { motion } from "framer-motion";
 import StepHeader from "./shared/StepHeader";
 import HandHint from "./shared/HandHint";
+import GoBackButton from "./shared/GoBackButton";
 import DashboardSidebar from "./shared/DashboardSidebar";
 
 interface DashboardPreviewProps {
@@ -217,6 +218,7 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                 </Paper>
             </Box>
 
+            <GoBackButton onClick={onBack} />
         </Box>
     );
 }
