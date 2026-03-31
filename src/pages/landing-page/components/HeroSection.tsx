@@ -24,10 +24,10 @@ export default function HeroSection(): JSX.Element {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: { xs: "flex-start", md: "center" },
           flex: 1,
           textAlign: "center",
-          pt: { xs: 4, md: 8 },
+          pt: { xs: 3, md: 8 },
           pb: { xs: 0, md: 0 },
         }}
       >
@@ -47,7 +47,7 @@ export default function HeroSection(): JSX.Element {
             px: { xs: 1, md: 0 },
           }}
         >
-          Yor're Losing Clients
+          You're Losing Clients
           <br />
           Right Now.
         </Typography>
@@ -68,7 +68,7 @@ export default function HeroSection(): JSX.Element {
             px: { xs: 3, md: 0 },
           }}
         >
-          They wanted to book.There was nowhere to go. They moved on.
+          They wanted to book. There was nowhere to go. They moved on.
           <br />
           Ravwork gives you a booking page in 2 minutes.
         </Typography>
