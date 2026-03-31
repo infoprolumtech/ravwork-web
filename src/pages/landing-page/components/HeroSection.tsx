@@ -10,7 +10,7 @@ export default function HeroSection(): JSX.Element {
     <Box
       sx={{
         background: "#000000",
-        minHeight: "100dvh",
+        minHeight: { xs: "auto", md: "100dvh" },
         position: "relative",
         overflow: "hidden",
         display: "flex",

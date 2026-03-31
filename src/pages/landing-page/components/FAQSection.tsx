@@ -56,7 +56,7 @@ export default function FAQSection(): JSX.Element {
                     sx={{
                         ...sectionTitleStyle,
                         textAlign: 'center',
-                        mb: 8,
+                        mb: { xs: 3, md: 8 },
                         fontSize: { xs: '14px', sm: '18px', md: '20px' },
                         fontWeight: 400,
                         color: '#FFFFFF',
