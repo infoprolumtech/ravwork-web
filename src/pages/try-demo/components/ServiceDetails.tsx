@@ -24,7 +24,7 @@ export default function ServiceDetails({ onNext }: ServiceDetailsProps): JSX.Ele
     }, []);
 
     return (
-        <Box sx={{ width: '100%', maxWidth: '900px', mx: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ width: '100%', maxWidth: '1000px', minHeight: "100vh", mx: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <StepHeader
                 title="Start Setting Up Your Service"
                 subtitle="Add your service details, pricing, and response time"
@@ -51,10 +51,10 @@ export default function ServiceDetails({ onNext }: ServiceDetailsProps): JSX.Ele
 
                 {/* Form Fields */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
-                    <TextField fullWidth label="Service title" defaultValue="Exterior Wash" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
-                    <TextField fullWidth label="What's Included?" defaultValue="Hand wash, wheel/tire cleaning, and a spray wax for a quick shine." variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
-                    <TextField fullWidth label="Service price" defaultValue="$150" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
-                    <TextField fullWidth label="Response time" defaultValue="Select" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#9CA3AF' } }} />
+                    <TextField fullWidth label="Service title" defaultValue="Basic Clean" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={textFieldSx} />
+                    <TextField fullWidth label="What's Included?" defaultValue="A routine maintenance cleaning focusing on essential surfaces, floors, and high-traffic areas to keep your home fresh and tidy." variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
+                        <TextField fullWidth label="Service price" defaultValue="$150" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
+                        <TextField fullWidth label="Response time" defaultValue="Within 1 hour" variant="outlined" size="small" InputLabelProps={{ shrink: true }} sx={{ ...textFieldSx, '& .MuiOutlinedInput-root': { ...textFieldSx['& .MuiOutlinedInput-root'], color: '#4B5563', fontSize: '14px' } }} />
                 </Box>
 
                 {/* Bottom Buttons */}

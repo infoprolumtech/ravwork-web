@@ -17,9 +17,9 @@ interface ReceiveLeadsProps {
 }
 
 const leads = [
-    { title: "Exterior Wash", desc: "Hand wash, wheel/tire cleaning, and a spray...", client: "Antwon Johnson", email: "antwonj646@gmail.com", phone: "6466138029" },
-    { title: "Interior Clean", desc: "Thorough vacuuming, wiping down the dashbo...", client: "Mike Vett", email: "m1parr@gmail.com", phone: "6467550664" },
-    { title: "Exterior Wash", desc: "Hand wash, wheel/tire cleaning, and a spray...", client: "Al Miller", email: "allen2001@gmail.com", phone: "6462743111" }
+    { title: "Basic Clean", desc: "A routine maintenance cleaning focusing on....", client: "Antwon Johnson", email: "antwonj646@gmail.com", phone: "6466138029" },
+    { title: "Deep Clean", desc: "An intensive top-to-bottom scrub targeting hid....", client: "Mike Vett", email: "m1parr@gmail.com", phone: "6467550664" },
+    { title: "Basic Clean", desc: "A routine maintenance cleaning focusing on e....", client: "Al Miller", email: "allen2001@gmail.com", phone: "6462743111" }
 ];
 
 export default function ReceiveLeads({ onBack, onNext }: ReceiveLeadsProps): JSX.Element {

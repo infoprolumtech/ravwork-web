@@ -22,15 +22,17 @@ export default function ExponentialGrowth(): JSX.Element {
                     transition={{ duration: 0.6 }}
                     sx={{
                         ...sectionTitleStyle,
+                        background: "none",
                         mb: 2,
-                        fontSize: { xs: '32px', md: '56px' },
+                        fontSize: { xs: '32px', md: '44px' },
                         color: '#FFFFFF',
-                        fontWeight: 700,
+                        fontWeight: 500,
+                        pt: 0, 
                     }}
                 >
-                    Exponential Growth
+                    Your Clients Become Your Marketing Team
                 </Typography>
-                <Typography
+                {/* <Typography
                     component={motion.div}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +48,7 @@ export default function ExponentialGrowth(): JSX.Element {
                     }}
                 >
                     Watch how fast your business spreads when people share your link
-                </Typography>
+                </Typography> */}
 
                 {/* Main Growth Graphic */}
                 <Box
@@ -110,10 +112,10 @@ export default function ExponentialGrowth(): JSX.Element {
                     {/* Desktop CTA Image */}
                     <Box
                         component="img"
-                        src="/assets/landing-page/exponential-growth/Link.png"
+                        src="/assets/icons/every-person-box.png"
                         alt="50x Viral Growth"
                         sx={{
-                            width: '100%',
+                            width: '150%',
                             height: 'auto',
                             borderRadius: '24px',
                             boxShadow: '0 0 50px rgba(59, 130, 246, 0.2)',
@@ -124,7 +126,7 @@ export default function ExponentialGrowth(): JSX.Element {
                     {/* Mobile CTA Image */}
                     <Box
                         component="img"
-                        src="/assets/landing-page/exponential-growth/mobile-link.png"
+                        src="/assets/icons/every-person-box.png"
                         alt="50x Viral Growth"
                         sx={{
                             width: '100%',

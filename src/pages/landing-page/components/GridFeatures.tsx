@@ -25,8 +25,9 @@ export default function GridFeatures(): JSX.Element {
                         mb: { xs: 6, md: 8 },
                         fontSize: { xs: '32px', sm: '44px' },
                         color: '#FFFFFF',
-                        fontWeight: 700,
+                        fontWeight: 500,
                         lineHeight: 1.2,
+                        padding: 0
                     }}
                 >
                     Look Professional. Stay Organized.
@@ -52,12 +53,13 @@ export default function GridFeatures(): JSX.Element {
                     {/* Desktop Image */}
                     <Box
                         component="img"
-                        src="/assets/landing-page/grid-features.png"
+                        src="/assets/landing-page/get-more-client.png"
                         alt="RavworkLink Features"
                         sx={{
-                            width: '100%',
+                            width: '110%',
                             height: 'auto',
                             borderRadius: '12px',
+                            marginLeft: '100px',
                             display: { xs: 'none', md: 'block' },
                         }}
                     />
@@ -65,10 +67,10 @@ export default function GridFeatures(): JSX.Element {
                     {/* Mobile Image */}
                     <Box
                         component="img"
-                        src="/assets/landing-page/grid-features-mobile.png"
+                        src="/assets/landing-page/more-booking-section.png"
                         alt="RavworkLink Features"
                         sx={{
-                            width: '100%',
+                            width: '140%',
                             height: 'auto',
                             maxWidth: '400px',
                             borderRadius: '12px',

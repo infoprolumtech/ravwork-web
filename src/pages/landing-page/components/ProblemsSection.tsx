@@ -5,20 +5,20 @@ import { sectionTitleStyle } from "../styles";
 
 const problems = [
   {
-    text: "Clients messaging you on different apps?",
-    icon: "/assets/landing-page/problems-icons/icon-1.png",
+    text: "Clients DM you, you reply hours later — and they already booked someone else",
+    icon: "/assets/icons/message-icon.svg",
   },
   {
-    text: "Spending too much time asking basic questions?",
-    icon: "/assets/landing-page/problems-icons/icon-2.png",
+    text: "You're answering the same questions 10 times a day",
+    icon: "/assets/icons/questionmark-icon.svg",
   },
   {
     text: "Hard to look professional without a website?",
-    icon: "/assets/landing-page/problems-icons/icon-3.png",
+    icon: "/assets/icons/professional-icon.svg",
   },
   {
-    text: "Losing leads because you're disorganized?",
-    icon: "/assets/landing-page/problems-icons/icon-4.png",
+    text: "You have no idea how many leads you've lost this month",
+    icon: "/assets/icons/leads-icon.svg",
   },
 ];
 
@@ -43,10 +43,10 @@ export default function ProblemsSection(): JSX.Element {
             mb: 6,
             fontSize: { xs: "32px", md: "44px" },
             color: "#FFFFFF",
-            fontWeight: 700,
+            fontWeight: 500,
           }}
         >
-          The Problems You Keep Ignoring
+          Every Day Without This Is  <br />Money Left Behind.
         </Typography>
 
         <Box
@@ -85,15 +85,28 @@ export default function ProblemsSection(): JSX.Element {
               }}
             >
               <Box
-                component="img"
-                src={problem.icon}
-                alt=""
                 sx={{
-                  width: 48,
-                  height: 48,
+                  width: 56,
+                  height: 56,
                   borderRadius: "50%",
+                  background: "linear-gradient(135deg, #2563EB, #1D4ED8)", // 👈 blue gradient
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
                 }}
-              />
+              >
+                <Box
+                  component="img"
+                  src={problem.icon}
+                  alt=""
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    objectFit: "contain",
+                  }}
+                />
+              </Box>
               <Typography
                 sx={{
                   color: "#FFFFFF",

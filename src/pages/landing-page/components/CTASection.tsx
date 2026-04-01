@@ -33,7 +33,7 @@ export default function CTASection(): JSX.Element {
                     <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', position: 'relative' }}>
                         <Box
                             component="img"
-                            src="/assets/landing-page/footer.png"
+                            src="/assets/landing-page/footer-section-image.png"
                             alt=""
                             sx={{
                                 width: '100%',
@@ -65,7 +65,7 @@ export default function CTASection(): JSX.Element {
                     <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', position: 'relative' }}>
                         <Box
                             component="img"
-                            src="/assets/landing-page/mobile-footer.png"
+                            src="/assets/landing-page/footer-section-image.png"
                             alt=""
                             sx={{
                                 width: '100%',

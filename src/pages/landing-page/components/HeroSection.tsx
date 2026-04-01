@@ -1,8 +1,10 @@
 import { type JSX } from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
-import CallMadeIcon from "@mui/icons-material/CallMade";
+// import CallMadeIcon from "@mui/icons-material/CallMade";
+// import { ReactComponent as ArrowIcon } from "../assets/icons/arrow-up-right.svg";
 import { useNavigate } from "react-router-dom";
+import Icon from "../../../components/shared/Icon";
 
 export default function HeroSection(): JSX.Element {
   const navigate = useNavigate();
@@ -38,13 +40,15 @@ export default function HeroSection(): JSX.Element {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           sx={{
-            fontSize: { xs: "24px", sm: "44px" },
-            fontWeight: 700,
-            color: "#FFFFFF",
+            fontFamily: "Poppins, sans-serif",
+            fontSize: { xs: "30px", sm: "96px" },
+            fontWeight: 600,
+            color: "#F9FAFB",
             lineHeight: 1.2,
             mb: 2,
             maxWidth: "100%",
             px: { xs: 1, md: 0 },
+            pt: 0,
           }}
         >
           You're Losing Clients
@@ -53,26 +57,54 @@ export default function HeroSection(): JSX.Element {
         </Typography>
 
         {/* Subheadline */}
-        <Typography
+        {/* <Typography
           component={motion.div}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           sx={{
-            fontSize: { xs: "14px", sm: "18px", md: "20px" },
+            fontSize: { xs: "14px", sm: "24px" },
             fontWeight: 400,
-            color: "rgba(255, 255, 255, 0.7)",
-            lineHeight: 1.5,
+            color: "#F3F4F6",
+            lineHeight: 1.6,
             mb: 4,
-            maxWidth: "750px",
-            px: { xs: 3, md: 0 },
+            px: { xs: 2, md: 0 },
+
+            textAlign: "center",
+
+            maxWidth: { xs: "280px", sm: "500px", md: "750px" }, // 👈 KEY FIX
+            mx: "auto", // center
           }}
         >
-          They wanted to book. There was nowhere to go. They moved on.
+          They wanted to book. There was nowhere to go.
+          <br />
+          They moved on.
           <br />
           Ravwork gives you a booking page in 2 minutes.
-        </Typography>
+        </Typography> */}
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          sx={{
+            textAlign: "center",
+            color: "#F3F4F6",
+            mb: 4,
+          }}
+        >
+          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
+            They wanted to book. There was nowhere to go.
+          </Typography>
 
+          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
+            They moved on.
+          </Typography>
+
+          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
+            Ravwork gives you a booking page in 2 minutes.
+          </Typography>
+        </Box>
         {/* CTA Buttons */}
         <Box
           component={motion.div}
@@ -92,12 +124,13 @@ export default function HeroSection(): JSX.Element {
           <Button
             onClick={() => navigate("/signup")}
             sx={{
-              background: "#FFFFFF",
+              fontFamily: "Nunito, sans-serif",
+              background: "#F9FAFB",
               color: "#000000",
               textTransform: "none",
-              fontSize: { xs: "13px", sm: "18px" },
-              fontWeight: 600,
-              padding: { xs: "10px 16px", sm: "16px 0" },
+              fontSize: { xs: "13px", sm: "20px" },
+              fontWeight: 500,
+              padding: { xs: "10px 16px", sm: "12px 24px" },
               width: { xs: "140px", sm: "220px" },
               borderRadius: "12px",
               display: "flex",
@@ -113,23 +146,29 @@ export default function HeroSection(): JSX.Element {
             }}
           >
             Start Free Trial
-            <CallMadeIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
+            <Icon
+              src="/assets/icons/arrow-up-right.svg"
+              alt="arrow-up-right"
+              size={12.5}
+              style={{ marginLeft: "6px" }}
+            />
           </Button>
           <Button
             onClick={() => navigate("/try-demo")}
             sx={{
-              background: "rgba(15, 23, 42, 0.6)",
+              fontFamily: "Nunito, sans-serif",
+              background: "#14274E",
               color: "#FFFFFF",
               textTransform: "none",
-              fontSize: { xs: "13px", sm: "18px" },
+              fontSize: { xs: "13px", sm: "20px" },
               fontWeight: 600,
               padding: { xs: "10px 16px", sm: "16px 0" },
               width: { xs: "140px", sm: "220px" },
               borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              border: "1px solid #14274E",
               whiteSpace: "nowrap",
               "&:hover": {
-                background: "rgba(255, 255, 255, 0.1)",
+                background: "#14274E",
                 transform: "translateY(-2px)",
               },
               transition: "all 0.2s ease",
@@ -174,7 +213,7 @@ export default function HeroSection(): JSX.Element {
             src="/assets/landing-page/hero-new.png"
             alt="RavworkLink Dashboard"
             sx={{
-              width: "95%",
+              width: "110%",
               height: "auto",
               borderRadius: "12px",
               position: "relative",

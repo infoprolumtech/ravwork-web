@@ -20,15 +20,15 @@ interface DashboardPreviewProps {
 }
 
 const metricsTop = [
-    { title: "Today's Clicks", value: "1,721K", icon: <MouseOutlinedIcon fontSize="small" /> },
-    { title: "Clicks This Week", value: "367K", icon: <MouseOutlinedIcon fontSize="small" /> },
-    { title: "Clicks This month", value: "1,156", icon: <MouseOutlinedIcon fontSize="small" /> }
+    { title: "Today's Clicks", value: "300", icon: <MouseOutlinedIcon fontSize="small" /> },
+    { title: "Clicks This Week", value: "1,203", icon: <MouseOutlinedIcon fontSize="small" /> },
+    { title: "Clicks This month", value: "5,124", icon: <MouseOutlinedIcon fontSize="small" /> }
 ];
 
 const metricsBottom = [
-    { title: "Today's Bookings", value: "721K", icon: <BookOnlineOutlinedIcon fontSize="small" /> },
-    { title: "This Week's Bookings", value: "367K", icon: <BookOnlineOutlinedIcon fontSize="small" /> },
-    { title: "Bookings This Month", value: "1,156", icon: <BookOnlineOutlinedIcon fontSize="small" /> }
+    { title: "Today's Bookings", value: "25", icon: <BookOnlineOutlinedIcon fontSize="small" /> },
+    { title: "This Week's Bookings", value: "145", icon: <BookOnlineOutlinedIcon fontSize="small" /> },
+    { title: "Bookings This Month", value: "504", icon: <BookOnlineOutlinedIcon fontSize="small" /> }
 ];
 
 const tableData = [
@@ -125,10 +125,18 @@ export default function DashboardPreview({ onBack, onNext }: DashboardPreviewPro
                             <Typography sx={{ fontWeight: 600, fontSize: '14px', color: '#1E3A8A', mb: 2 }}>Welcome back!</Typography>
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'center', sm: 'center' }, gap: 2 }}>
                                 <Box sx={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #FFFFFF', flexShrink: 0 }}>
-                                    <DirectionsCarIcon sx={{ fontSize: '30px', color: '#1E3A8A' }} />
+                                  
+                                    <Box
+                                        component="img"
+                                        src="/assets/icons/Avatar.svg"
+                                        sx={{
+                                            width: { xs: 70, sm: 80 },
+                                            height: "auto",
+                                        }}
+                                    />
                                 </Box>
                                 <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                                    <Typography sx={{ fontWeight: 700, fontSize: '18px', color: '#111827' }}>Marties Car Spa</Typography>
+                                    <Typography sx={{ fontWeight: 700, fontSize: '18px', color: '#111827' }}>Minas Cleaning Services</Typography>
                                     <Typography sx={{ fontWeight: 600, fontSize: '14px', color: '#374151', mt: 0.5 }}>Start Your Growth Engine</Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                                         <Typography sx={{ fontSize: { xs: '11px', sm: '13px' }, color: '#6B7280', wordBreak: 'break-all' }}>https://ravwork.link/martiecarspa</Typography>

@@ -21,6 +21,7 @@ export default function GoBackButton({ onClick }: GoBackButtonProps): JSX.Elemen
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
+                    ml: { xs: 2, sm: 6 },
                     justifyContent: 'center',
                     transition: 'background-color 0.2s',
                     '&:hover': { backgroundColor: '#F3F4F6' }

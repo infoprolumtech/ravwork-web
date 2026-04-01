@@ -109,101 +109,120 @@ export default function ClientPreview({
         </Box>
 
         {/* Blue Banner Section */}
+
         <Box
           sx={{
             backgroundColor: "#DBEAFE",
-            borderRadius: "16px",
-            p: { xs: 2.5, sm: 4 },
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            alignItems: { xs: "center", sm: "flex-start" },
-            gap: { xs: 2, sm: 0 },
+            borderRadius: "24px",
+            p: { xs: 3, sm: 4 },
           }}
         >
-          {/* Avatar */}
+          {/* Top Row (Avatar + Share) */}
           <Box
             sx={{
-              width: { xs: "70px", sm: "90px" },
-              height: { xs: "70px", sm: "90px" },
-              borderRadius: "50%",
-              overflow: "hidden",
-              mr: { xs: 0, sm: 3 },
-              flexShrink: 0,
-              backgroundColor: "#BFDBFE",
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              justifyContent: "center",
-              border: "4px solid #FFFFFF",
+              mb: 2,
             }}
           >
-            <DirectionsCarIcon
-              sx={{ fontSize: { xs: "30px", sm: "40px" }, color: "#1E3A8A" }}
-            />
-          </Box>
-
-          <Box sx={{ flex: 1, textAlign: { xs: "center", sm: "left" } }}>
+            {/* Avatar */}
             <Box
               sx={{
+                width: { xs: 70, sm: 90 },
+                height: { xs: 70, sm: 90 },
+                borderRadius: "50%",
+                overflow: "hidden",
+                backgroundColor: "#BFDBFE",
                 display: "flex",
-                justifyContent: { xs: "center", sm: "space-between" },
-                alignItems: { xs: "center", sm: "flex-start" },
-                flexDirection: { xs: "column", sm: "row" },
-                gap: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                border: "4px solid #FFFFFF",
               }}
             >
-              <Typography
-                variant="h6"
+              {/* <DirectionsCarIcon sx={{ fontSize: 36, color: "#1E3A8A" }} /> */}
+              <Box
+                component="img"
+                src="/assets/icons/Avatar.svg" 
                 sx={{
-                  fontWeight: 700,
-                  color: "#111827",
-                  mb: 1,
-                  width: { xs: "100%", sm: "auto" },
-                  textAlign: { xs: "center", sm: "left" },
+                  width: { xs: 70, sm: 80 }, 
+                  height: "auto",
                 }}
-              >
-                Marties Car Spa
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<IosShareIcon fontSize="small" />}
-                sx={{
-                  backgroundColor: "#111827",
-                  color: "#FFFFFF",
-                  borderRadius: "20px",
-                  textTransform: "none",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  py: 0.5,
-                  alignSelf: { xs: "center", sm: "auto" },
-                  pointerEvents: "none",
-                  cursor: "default",
-                  "&:hover": { backgroundColor: "#111827" },
-                }}
-              >
-                Share
-              </Button>
+              />
             </Box>
 
-            <Box
+            {/* Share Button */}
+            <Button
+              variant="contained"
+              startIcon={<IosShareIcon fontSize="small" />}
               sx={{
-                display: "flex",
-                gap: 1,
-                mb: 2,
-                justifyContent: { xs: "center", sm: "flex-start" },
+                backgroundColor: "#111827",
+                color: "#FFFFFF",
+                borderRadius: "20px",
+                textTransform: "none",
+                fontSize: "13px",
+                fontWeight: 600,
+                px: 2,
+                py: 0.5,
+                "&:hover": { backgroundColor: "#111827" },
               }}
             >
-              <FacebookIcon sx={{ color: "#3B82F6", fontSize: "20px" }} />
-              <LinkedInIcon sx={{ color: "#2563EB", fontSize: "20px" }} />
-              <InstagramIcon sx={{ color: "#E1306C", fontSize: "20px" }} />
-            </Box>
-
-            <Typography
-              sx={{ color: "#4B5563", fontSize: "13px", lineHeight: 1.5 }}
-            >
-              Shine with Martie! ✨ Pick your service below, and I'll be in
-              touch ASAP to get your ride looking brand new.
-            </Typography>
+              Share
+            </Button>
           </Box>
+
+          {/* Title */}
+          <Typography
+            sx={{
+              fontWeight: 700,
+              color: "#111827",
+              fontSize: { xs: "20px", sm: "24px" },
+              mb: 1,
+              textAlign: { xs: "left", sm: "left" },
+            }}
+          >
+            Minas Cleaning Services
+          </Typography>
+
+          {/* Small Divider */}
+          <Box
+            sx={{
+              width: "40px",
+              height: "4px",
+              background: "#E5E7EB",
+              borderRadius: "4px",
+              mb: 2,
+            }}
+          />
+
+          {/* Social Icons */}
+          {/* <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mb: 2,
+            }}
+          >
+            <FacebookIcon sx={{ color: "#3B82F6" }} />
+            <LinkedInIcon sx={{ color: "#2563EB" }} />
+            <InstagramIcon sx={{ color: "#E1306C" }} />
+          </Box> */}
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Box component="img" src="/assets/icons/Facebook-icon.svg" sx={{ width: 24 }} />
+            <Box component="img" src="/assets/icons/linkedin.svg" sx={{ width: 28 }} />
+            <Box component="img" src="/assets/icons/instagram.svg" sx={{ width: 24 }} />
+          </Box>
+
+          {/* Description */}
+          <Typography
+            sx={{
+              color: "#4B5563",
+              fontSize: "14px",
+              lineHeight: 1.6,
+            }}
+          >
+            Professional cleaning services offering everything from routine maintenance to intensive deep cleans to keep your home or office spotless.
+          </Typography>
         </Box>
 
         {/* Services Grid */}
@@ -240,12 +259,12 @@ export default function ClientPreview({
               <ElectricBoltIcon sx={{ fontSize: "16px" }} />
             </Box>
             <Typography sx={{ fontWeight: 700, color: "#111827", mb: 1 }}>
-              Exterior Wash
+              Basic Clean
             </Typography>
             <Typography
               sx={{ color: "#6B7280", fontSize: "13px", mb: 3, flex: 1 }}
             >
-              Hand wash, wheel/tire cleaning, and a spray wax for a quick shine.
+              A routine maintenance cleaning focusing on essential surfaces, floors, and high-traffic areas to keep your home fresh and tidy.
             </Typography>
             <Box
               sx={{
@@ -319,13 +338,12 @@ export default function ClientPreview({
               <DescriptionOutlinedIcon sx={{ fontSize: "16px" }} />
             </Box>
             <Typography sx={{ fontWeight: 700, color: "#111827", mb: 1 }}>
-              Interior Clean
+              Deep Clean
             </Typography>
             <Typography
               sx={{ color: "#6B7280", fontSize: "13px", mb: 3, flex: 1 }}
             >
-              Thorough vacuuming, wiping down the dashboard/console, and
-              cleaning the windows.
+             An intensive top-to-bottom scrub targeting hidden dirt, grime, and hard-to-reach areas to restore your home to its cleanest possible state.
             </Typography>
             <Box
               sx={{

@@ -77,7 +77,15 @@ export default function DashboardSidebar({
             mr: 1.5,
           }}
         >
-          <DirectionsCarIcon sx={{ fontSize: "20px", color: "#1E3A8A" }} />
+          {/* <DirectionsCarIcon sx={{ fontSize: "20px", color: "#1E3A8A" }} /> */}
+            <Box
+                component="img"
+                src="/assets/icons/Avatar.svg" 
+                sx={{
+                  width: { xs: 40, sm: 40 }, 
+                  height: "auto",
+                }}
+              />
         </Box>
         <Box>
           <Typography
@@ -88,10 +96,10 @@ export default function DashboardSidebar({
               lineHeight: 1.2,
             }}
           >
-            Marties
+            Mina
           </Typography>
           <Typography sx={{ fontSize: "12px", color: "#6B7280" }}>
-            Marties Car Spa
+            Minas Cleaning Services
           </Typography>
         </Box>
       </Box>

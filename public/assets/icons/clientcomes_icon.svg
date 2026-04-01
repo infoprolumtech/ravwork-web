@@ -1,0 +1,21 @@
+<svg width="146" height="146" viewBox="0 0 146 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="145.192" height="145.192" rx="72.596" fill="url(#paint0_radial_14_4649)"/>
+<rect x="0.625" y="0.625" width="143.942" height="143.942" rx="71.971" stroke="#1C0EE8" stroke-opacity="0.2" stroke-width="1.25"/>
+<g clip-path="url(#clip0_14_4649)">
+<path d="M58.0904 48.8181C58.5775 52.2649 61.3266 55.2479 65.7331 57.1111C70.1395 58.9743 75.8422 59.5649 81.5868 58.7531C87.3313 57.9413 92.6471 55.7936 96.3646 52.7824C100.082 49.7711 101.897 46.1431 101.41 42.6964C100.923 39.2497 98.1738 36.2666 93.7674 34.4034C89.361 32.5402 83.6582 31.9496 77.9137 32.7614C72.1692 33.5732 66.8534 35.7209 63.1358 38.7322C59.4182 41.7434 57.6034 45.3714 58.0904 48.8181Z" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M58.0898 48.8184L60.5385 66.1462C61.5529 73.3242 72.0743 77.7714 84.0349 76.0812C95.9954 74.391 104.873 67.2025 103.858 60.0244L101.409 42.6966" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M60.5391 66.1465L62.9878 83.4743C64.0021 90.6524 74.5235 95.0995 86.4841 93.4093C98.4446 91.7191 107.322 84.5306 106.307 77.3526L103.859 60.0247" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M62.9883 83.4736L65.437 100.801C66.4514 107.98 76.9728 112.427 88.9333 110.736C100.894 109.046 109.771 101.858 108.757 94.6797L106.308 77.3519" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M42.5993 64.2632L31.7694 65.7937C30.0461 66.0372 28.49 66.9554 27.4436 68.3462C26.3972 69.737 25.9462 71.4865 26.1897 73.2099C26.4333 74.9332 27.3515 76.4892 28.7423 77.5356C30.1331 78.582 31.8826 79.0331 33.6059 78.7895L37.9379 78.1774C39.6613 77.9338 41.4108 78.3848 42.8016 79.4312C44.1924 80.4776 45.1106 82.0337 45.3541 83.757C45.5976 85.4804 45.1466 87.2299 44.1002 88.6207C43.0538 90.0115 41.4978 90.9297 39.7744 91.1732L28.9445 92.7037" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M37.6075 91.479L38.2197 95.8109M33.3223 61.1553L33.9344 65.4872" stroke="#ABD5E3" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<radialGradient id="paint0_radial_14_4649" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(72.596 72.596) rotate(90) scale(72.596)">
+<stop stop-color="#082F7C"/>
+<stop offset="1" stop-color="#091733"/>
+</radialGradient>
+<clipPath id="clip0_14_4649">
+<rect width="105" height="105" fill="white" transform="translate(6.76562 29.5605) rotate(-8.04356)"/>
+</clipPath>
+</defs>
+</svg>
