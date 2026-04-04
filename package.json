@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy:dev": "npm run build && aws s3 sync dist/ s3://ravworklink-dev-admin-panel --delete --profile ravworklink"
+    "deploy:dev": "npm run build && aws s3 sync dist/ s3://ravworklink-dev-admin-panel --delete --profile ravworklink",
+    "deploy:prod": "npm run build && aws s3 sync dist/ s3://ravworklink-prod-admin-panel --delete --profile ravworklink"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

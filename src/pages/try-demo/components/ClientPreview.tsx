@@ -11,10 +11,6 @@ import IosShareIcon from "@mui/icons-material/IosShare";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { motion } from "framer-motion";
 import GlowingCard from "./shared/GlowingCard";
 import StepHeader from "./shared/StepHeader";
@@ -143,9 +139,9 @@ export default function ClientPreview({
               {/* <DirectionsCarIcon sx={{ fontSize: 36, color: "#1E3A8A" }} /> */}
               <Box
                 component="img"
-                src="/assets/icons/Avatar.svg" 
+                src="/assets/icons/Avatar.svg"
                 sx={{
-                  width: { xs: 70, sm: 80 }, 
+                  width: { xs: 70, sm: 80 },
                   height: "auto",
                 }}
               />
@@ -208,9 +204,21 @@ export default function ClientPreview({
             <InstagramIcon sx={{ color: "#E1306C" }} />
           </Box> */}
           <Box sx={{ display: "flex", gap: 2 }}>
-            <Box component="img" src="/assets/icons/Facebook-icon.svg" sx={{ width: 24 }} />
-            <Box component="img" src="/assets/icons/linkedin.svg" sx={{ width: 28 }} />
-            <Box component="img" src="/assets/icons/instagram.svg" sx={{ width: 24 }} />
+            <Box
+              component="img"
+              src="/assets/icons/Facebook-icon.svg"
+              sx={{ width: 24 }}
+            />
+            <Box
+              component="img"
+              src="/assets/icons/linkedin.svg"
+              sx={{ width: 28 }}
+            />
+            <Box
+              component="img"
+              src="/assets/icons/instagram.svg"
+              sx={{ width: 24 }}
+            />
           </Box>
 
           {/* Description */}
@@ -221,7 +229,9 @@ export default function ClientPreview({
               lineHeight: 1.6,
             }}
           >
-            Professional cleaning services offering everything from routine maintenance to intensive deep cleans to keep your home or office spotless.
+            Professional cleaning services offering everything from routine
+            maintenance to intensive deep cleans to keep your home or office
+            spotless.
           </Typography>
         </Box>
 
@@ -264,7 +274,8 @@ export default function ClientPreview({
             <Typography
               sx={{ color: "#6B7280", fontSize: "13px", mb: 3, flex: 1 }}
             >
-              A routine maintenance cleaning focusing on essential surfaces, floors, and high-traffic areas to keep your home fresh and tidy.
+              A routine maintenance cleaning focusing on essential surfaces,
+              floors, and high-traffic areas to keep your home fresh and tidy.
             </Typography>
             <Box
               sx={{
@@ -343,7 +354,9 @@ export default function ClientPreview({
             <Typography
               sx={{ color: "#6B7280", fontSize: "13px", mb: 3, flex: 1 }}
             >
-             An intensive top-to-bottom scrub targeting hidden dirt, grime, and hard-to-reach areas to restore your home to its cleanest possible state.
+              An intensive top-to-bottom scrub targeting hidden dirt, grime, and
+              hard-to-reach areas to restore your home to its cleanest possible
+              state.
             </Typography>
             <Box
               sx={{

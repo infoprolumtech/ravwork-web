@@ -15,7 +15,9 @@ const OTPVerificationPage = lazy(() => import("../pages/otp-verification"));
 const Dashboard = lazy(() => import("../pages/dashboard"));
 const MyJobs = lazy(() => import("../pages/my-jobs"));
 const ServicesOffered = lazy(() => import("../pages/services-offered"));
-const AddEditServicePage = lazy(() => import("../pages/services-offered/add-edit"));
+const AddEditServicePage = lazy(
+  () => import("../pages/services-offered/add-edit"),
+);
 const Earnings = lazy(() => import("../pages/earnings"));
 const MyProfile = lazy(() => import("../pages/my-profile"));
 const Notifications = lazy(() => import("../pages/notifications"));

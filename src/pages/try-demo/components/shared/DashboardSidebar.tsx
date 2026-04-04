@@ -6,7 +6,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HandHint from "./HandHint";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import GridViewIcon from "@mui/icons-material/GridView";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import HandymanIcon from "@mui/icons-material/Handyman";
@@ -78,14 +77,14 @@ export default function DashboardSidebar({
           }}
         >
           {/* <DirectionsCarIcon sx={{ fontSize: "20px", color: "#1E3A8A" }} /> */}
-            <Box
-                component="img"
-                src="/assets/icons/Avatar.svg" 
-                sx={{
-                  width: { xs: 40, sm: 40 }, 
-                  height: "auto",
-                }}
-              />
+          <Box
+            component="img"
+            src="/assets/icons/Avatar.svg"
+            sx={{
+              width: { xs: 40, sm: 40 },
+              height: "auto",
+            }}
+          />
         </Box>
         <Box>
           <Typography

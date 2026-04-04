@@ -41,7 +41,7 @@ export default function HeroSection(): JSX.Element {
           transition={{ duration: 0.8, ease: "easeOut" }}
           sx={{
             fontFamily: "Poppins, sans-serif",
-            fontSize: { xs: "30px", sm: "96px" },
+            fontSize: { xs: "26px", sm: "76px" },
             fontWeight: 600,
             color: "#F9FAFB",
             lineHeight: 1.2,
@@ -51,9 +51,8 @@ export default function HeroSection(): JSX.Element {
             pt: 0,
           }}
         >
-          You're Losing Clients
-          <br />
-          Right Now.
+          Turn Every Cleaning Inquiry Into a Booked Job.
+          {/* <br /> */}
         </Typography>
 
         {/* Subheadline */}
@@ -93,17 +92,31 @@ export default function HeroSection(): JSX.Element {
             mb: 4,
           }}
         >
-          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
-            They wanted to book. There was nowhere to go.
+          <Typography
+            sx={{
+              fontSize: { xs: "13px", md: "24px" },
+              lineHeight: 1.6,
+            }}
+          >
+            Stop chasing clients. Let them book you, send job details upfront,
+            <Box
+              component="span"
+              sx={{ display: { xs: "none", md: "block" } }}
+            />
+            and stay organized in one simple dashboard.
           </Typography>
 
-          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
-            They moved on.
-          </Typography>
+          {/* <Typography
+            sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}
+          >
+            
+          </Typography> */}
 
-          <Typography sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}>
+          {/* <Typography
+            sx={{ fontSize: { xs: "14px", md: "24px" }, lineHeight: 1.6 }}
+          >
             Ravwork gives you a booking page in 2 minutes.
-          </Typography>
+          </Typography> */}
         </Box>
         {/* CTA Buttons */}
         <Box
@@ -128,10 +141,11 @@ export default function HeroSection(): JSX.Element {
               background: "#F9FAFB",
               color: "#000000",
               textTransform: "none",
-              fontSize: { xs: "13px", sm: "20px" },
+              fontSize: { xs: "15px", sm: "23px" },
               fontWeight: 500,
               padding: { xs: "10px 16px", sm: "12px 24px" },
-              width: { xs: "140px", sm: "220px" },
+              width: { xs: "154px", sm: "220px" },
+              height: { xs: "50px", sm: "60px" },
               borderRadius: "12px",
               display: "flex",
               justifyContent: "center",

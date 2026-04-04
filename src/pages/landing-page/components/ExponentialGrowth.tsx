@@ -1,38 +1,38 @@
-import { type JSX } from 'react';
-import { Box, Container, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
-import { sectionTitleStyle, spacing } from '../styles';
+import { type JSX } from "react";
+import { Box, Container, Typography } from "@mui/material";
+import { motion } from "framer-motion";
+import { sectionTitleStyle, spacing } from "../styles";
 
 export default function ExponentialGrowth(): JSX.Element {
-    return (
-        <Box
-            sx={{
-                background: '#000000',
-                padding: spacing.sectionPadding,
-                textAlign: 'center',
-            }}
+  return (
+    <Box
+      sx={{
+        background: "#000000",
+        padding: spacing.sectionPadding,
+        textAlign: "center",
+      }}
+    >
+      <Container maxWidth="lg">
+        {/* Title and Subtitle */}
+        <Typography
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          sx={{
+            ...sectionTitleStyle,
+            background: "none",
+            mb: 2,
+            fontSize: { xs: "32px", md: "44px" },
+            color: "#FFFFFF",
+            fontWeight: 500,
+            pt: 0,
+          }}
         >
-            <Container maxWidth="lg">
-                {/* Title and Subtitle */}
-                <Typography
-                    component={motion.div}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    sx={{
-                        ...sectionTitleStyle,
-                        background: "none",
-                        mb: 2,
-                        fontSize: { xs: '32px', md: '44px' },
-                        color: '#FFFFFF',
-                        fontWeight: 500,
-                        pt: 0, 
-                    }}
-                >
-                    Your Clients Become Your Marketing Team
-                </Typography>
-                {/* <Typography
+          Your Clients Become Your Marketing Team
+        </Typography>
+        {/* <Typography
                     component={motion.div}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -50,51 +50,51 @@ export default function ExponentialGrowth(): JSX.Element {
                     Watch how fast your business spreads when people share your link
                 </Typography> */}
 
-                {/* Main Growth Graphic */}
-                <Box
-                    component={motion.div}
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8 }}
-                    sx={{
-                        width: '100%',
-                        maxWidth: '1200px',
-                        mx: 'auto',
-                        mb: { xs: 4, md: 12 },
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    {/* Desktop Graphic */}
-                    <Box
-                        component="img"
-                        src="/assets/landing-page/exponential-growth/first.png"
-                        alt="Exponential Growth Sequence"
-                        sx={{
-                            width: '100%',
-                            height: 'auto',
-                            display: { xs: 'none', md: 'block' },
-                        }}
-                    />
+        {/* Main Growth Graphic */}
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          sx={{
+            width: "100%",
+            maxWidth: "1200px",
+            mx: "auto",
+            mb: { xs: 4, md: 12 },
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {/* Desktop Graphic */}
+          <Box
+            component="img"
+            src="/assets/landing-page/exponential-growth/first.png"
+            alt="Exponential Growth Sequence"
+            sx={{
+              width: "100%",
+              height: "auto",
+              display: { xs: "none", md: "block" },
+            }}
+          />
 
-                    {/* Mobile Graphic */}
-                    <Box
-                        component="img"
-                        src="/assets/landing-page/exponential-growth/mobile-first.png"
-                        alt="Exponential Growth Sequence"
-                        sx={{
-                            width: '100%',
-                            height: 'auto',
-                            maxWidth: '100%',
-                            display: { xs: 'block', md: 'none' },
-                        }}
-                    />
-                </Box>
+          {/* Mobile Graphic */}
+          <Box
+            component="img"
+            src="/assets/landing-page/exponential-growth/mobile-first.png"
+            alt="Exponential Growth Sequence"
+            sx={{
+              width: "100%",
+              height: "auto",
+              maxWidth: "100%",
+              display: { xs: "block", md: "none" },
+            }}
+          />
+        </Box>
 
-                {/* Viral Growth CTA Box */}
-                <Box
+        {/* Viral Growth CTA Box */}
+        {/* <Box
                     component={motion.div}
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
@@ -109,7 +109,7 @@ export default function ExponentialGrowth(): JSX.Element {
                         mt: { xs: 4, md: 0 },
                     }}
                 >
-                    {/* Desktop CTA Image */}
+                    {/* Desktop CTA Image 
                     <Box
                         component="img"
                         src="/assets/icons/every-person-box.png"
@@ -123,7 +123,7 @@ export default function ExponentialGrowth(): JSX.Element {
                         }}
                     />
 
-                    {/* Mobile CTA Image */}
+                    {/* Mobile CTA Image 
                     <Box
                         component="img"
                         src="/assets/icons/every-person-box.png"
@@ -136,8 +136,50 @@ export default function ExponentialGrowth(): JSX.Element {
                             display: { xs: 'block', md: 'none' },
                         }}
                     />
-                </Box>
-            </Container>
+                </Box> */}
+
+        <Box
+          sx={{
+            borderRadius: "18px",
+            px: { xs: 2, md: 6 },
+            py: { xs: 3, md: 5 },
+            textAlign: "center",
+
+            background: `
+          radial-gradient(circle at 50% 100%, #3b5bff 0%, rgba(59,91,255,0.25) 25%, rgba(59,91,255,0) 55%),
+          linear-gradient(180deg, #2a2f8f 0%, #1f2370 100%)
+        `,
+
+            color: "#fff",
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: { xs: "14px", md: "20px" },
+              lineHeight: 1.6,
+              fontWeight: 500,
+              opacity: 0.95,
+              maxWidth: "900px",
+              mx: "auto",
+            }}
+          >
+            Every person who books through your link sees your page. They share
+            it. Their friends find you. You don't pay for ads — you just do
+            great work, and Ravwork spreads the word.
+          </Typography>
+
+          <Typography
+            sx={{
+              fontSize: { xs: "16px", md: "22px" },
+              mt: 2,
+              fontWeight: 600,
+              opacity: 0.95,
+            }}
+          >
+            One link. Compounding growth. On autopilot.
+          </Typography>
         </Box>
-    );
+      </Container>
+    </Box>
+  );
 }
