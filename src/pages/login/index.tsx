@@ -11,7 +11,10 @@ import { loginUser } from "../../rtk/feature/authSlice";
 import FormFieldWithIcon from "../../components/shared/FormFieldWithIcon";
 import PasswordField from "../../components/shared/PasswordField";
 import AuthPageWrapper from "../../components/shared/AuthPageWrapper";
-import { calculateProfileComplete, extractErrorMessage } from "../../utils/helper";
+import {
+  calculateProfileComplete,
+  extractErrorMessage,
+} from "../../utils/helper";
 import serviceApi from "../../rtk/endpoints/serviceApi";
 import userApi from "../../rtk/endpoints/userApi";
 
@@ -41,8 +44,14 @@ export default function LoginPage(): JSX.Element {
         email: data.email,
         password: data.password,
       }).unwrap();
-      const accessToken = result.tokens?.accessToken || result.accessToken || result.user?.accessToken;
-      const refreshToken = result.tokens?.refreshToken || result.refreshToken || result.user?.refreshToken;
+      const accessToken =
+        result.tokens?.accessToken ||
+        result.accessToken ||
+        result.user?.accessToken;
+      const refreshToken =
+        result.tokens?.refreshToken ||
+        result.refreshToken ||
+        result.user?.refreshToken;
 
       const userData = {
         ...result.user,
@@ -55,7 +64,10 @@ export default function LoginPage(): JSX.Element {
       let hasServices = false;
       try {
         const servicesResult = await dispatch(
-          serviceApi.endpoints.getServices.initiate({ page: 1, limit: 1 }, { forceRefetch: true })
+          serviceApi.endpoints.getServices.initiate(
+            { page: 1, limit: 1 },
+            { forceRefetch: true },
+          ),
         ).unwrap();
         hasServices = Array.isArray(servicesResult)
           ? servicesResult.length > 0
@@ -64,19 +76,19 @@ export default function LoginPage(): JSX.Element {
             : (servicesResult as any)?.items
               ? (servicesResult as any).items.length > 0
               : false;
-      } catch {
-      }
+      } catch {}
 
       let profileData = result.user;
       try {
         const profileResult = await dispatch(
-          userApi.endpoints.getUserProfile.initiate(undefined, { forceRefetch: true })
+          userApi.endpoints.getUserProfile.initiate(undefined, {
+            forceRefetch: true,
+          }),
         ).unwrap();
         if (profileResult) {
           profileData = { ...profileData, ...profileResult };
         }
-      } catch {
-      }
+      } catch {}
 
       const completion = calculateProfileComplete(
         {
@@ -84,7 +96,7 @@ export default function LoginPage(): JSX.Element {
           profilePhoto: profileData?.profilePhoto ?? "",
           businessDescription: profileData?.businessDescription ?? "",
         },
-        hasServices
+        hasServices,
       );
 
       if (completion === 100) {
@@ -94,17 +106,22 @@ export default function LoginPage(): JSX.Element {
 
       const profileStep = result.user?.profileStep || 0;
       if (profileStep < 3) {
-        navigate("/signup", { state: { resumeStep: profileStep + 1 } });
+        navigate("/setup", { state: { resumeStep: profileStep + 1 } });
       } else if (completion >= 50) {
         navigate("/services-offered");
       } else {
         navigate("/my-profile");
       }
     } catch (error: unknown) {
-      dispatch(showAlert({
-        message: extractErrorMessage(error, "Invalid email or password. Please try again."),
-        severity: "error"
-      }));
+      dispatch(
+        showAlert({
+          message: extractErrorMessage(
+            error,
+            "Invalid email or password. Please try again.",
+          ),
+          severity: "error",
+        }),
+      );
     }
   };
 
@@ -126,9 +143,9 @@ export default function LoginPage(): JSX.Element {
           fontSize: { xs: "14px", sm: "16px" },
           color: "#111927",
           cursor: "pointer",
-          "&:hover": { textDecoration: "underline" }
+          "&:hover": { textDecoration: "underline" },
         }}
-        onClick={() => navigate("/signup")}
+        onClick={() => navigate("/setup")}
       >
         Sign Up
       </Typography>
@@ -186,7 +203,7 @@ export default function LoginPage(): JSX.Element {
           fontSize: { xs: "14px", sm: "16px" },
           "&:hover": {
             textDecoration: "underline",
-          }
+          },
         }}
         onClick={() => navigate("/forgot-password")}
       >
@@ -195,4 +212,3 @@ export default function LoginPage(): JSX.Element {
     </AuthPageWrapper>
   );
 }
-

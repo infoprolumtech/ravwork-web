@@ -14,7 +14,12 @@ const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
     headers.set("user-agent", "");
-    const state = getState() as { auth: { user: { accessToken?: string } | null; signupToken: string | null } };
+    const state = getState() as {
+      auth: {
+        user: { accessToken?: string } | null;
+        signupToken: string | null;
+      };
+    };
     const user = state.auth.user;
     const signupToken = state.auth.signupToken;
 
@@ -23,9 +28,9 @@ const baseQuery = fetchBaseQuery({
       headers.set("Authorization", `Bearer ${user.accessToken}`);
     } else if (signupToken) {
       // Use signup token for authenticated calls during signup flow
-        headers.set("Authorization", `Bearer ${signupToken}`);
+      headers.set("Authorization", `Bearer ${signupToken}`);
     }
-    
+
     return headers;
   },
 });
@@ -50,9 +55,10 @@ export const baseQueryWithReauth: BaseQueryFn<
   let result = await baseQuery(args, api, extraOptions);
 
   // Check if this is a login or signup request (these should show errors on 401, not redirect)
-  const isAuthRequest = typeof args === 'object' && args !== null && 'url' in args 
-    ? (args.url === '/auth/login' || args.url === '/auth/signup')
-    : false;
+  const isAuthRequest =
+    typeof args === "object" && args !== null && "url" in args
+      ? args.url === "/auth/login" || args.url === "/auth/setup"
+      : false;
 
   // Handle token expiration (401 Unauthorized)
   // But NOT for login/signup requests - those should show errors
@@ -83,7 +89,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       showAlert({
         message: errorMessage,
         severity: "error",
-      })
+      }),
     );
   }
 

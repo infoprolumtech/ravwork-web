@@ -135,7 +135,7 @@ export default function HeroSection(): JSX.Element {
           }}
         >
           <Button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/setup")}
             sx={{
               fontFamily: "Nunito, sans-serif",
               background: "#F9FAFB",

@@ -23,7 +23,7 @@ export default function TryDemo(): JSX.Element {
   const navigate = useNavigate();
 
   const goToStep = useCallback((s: number) => setStep(s), []);
-  const handleFinish = useCallback(() => navigate("/signup"), [navigate]);
+  const handleFinish = useCallback(() => navigate("/setup"), [navigate]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
