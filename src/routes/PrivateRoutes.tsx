@@ -20,7 +20,17 @@ export default function PrivateRoute({
   if (!isLogin) {
     return <Navigate to="/login" replace />;
   }
-
+  // ✅ ADD THIS: Logged in but signup not complete → resume signup flow
+  const profileStep = user?.profileStep ?? 0;
+  if (profileStep < 3) {
+    // profileStep 2 means subscription done, needs /setup
+    // profileStep < 2 means still needs /signup
+    return profileStep >= 2 ? (
+      <Navigate to="/setup" replace />
+    ) : (
+      <Navigate to="/signup" state={{ resumeStep: profileStep + 1 }} replace />
+    );
+  }
   // Logged in but role is not allowed → redirect to dashboard
   if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
     const completion = calculateProfileComplete(
@@ -29,9 +39,14 @@ export default function PrivateRoute({
         profilePhoto: user?.profilePhoto ?? "",
         businessDescription: user?.businessDescription ?? "",
       },
-      false
+      false,
     );
-    return <Navigate to={completion >= 50 ? "/services-offered" : "/my-profile"} replace />;
+    return (
+      <Navigate
+        to={completion >= 50 ? "/services-offered" : "/my-profile"}
+        replace
+      />
+    );
   }
 
   return children;

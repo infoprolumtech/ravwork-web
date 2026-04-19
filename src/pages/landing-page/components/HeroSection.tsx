@@ -51,7 +51,7 @@ export default function HeroSection(): JSX.Element {
             pt: 0,
           }}
         >
-          Turn Every Cleaning Inquiry Into a Booked Job.
+          Turn Every Inquiry Into a Booked Job.
           {/* <br /> */}
         </Typography>
 

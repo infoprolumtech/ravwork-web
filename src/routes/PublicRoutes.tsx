@@ -23,10 +23,11 @@ export default function PublicRoute({ children }: PublicRouteProps) {
     if (profileStep < 3 && allowedPaths.includes(location.pathname)) {
       // For login page, redirect to signup to continue the flow
       if (location.pathname === "/login") {
+        const nextStep = profileStep + 1;
         return (
           <Navigate
-            to="/signup"
-            state={{ resumeStep: profileStep + 1 }}
+            to={nextStep >= 3 ? "/setup" : "/signup"}
+            state={nextStep >= 3 ? undefined : { resumeStep: nextStep }}
             replace
           />
         );
