@@ -77,7 +77,7 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
 
       <Box sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}>
         <Button
-          href="/setup"
+          href="/signup"
           fullWidth
           sx={{
             color: colors.textPrimary,
@@ -202,7 +202,7 @@ export default function Header({ onTermsClick }: HeaderProps): JSX.Element {
           {/* Auth Buttons */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
-              href="/setup"
+              href="/signup"
               sx={{
                 color: colors.textPrimary,
                 textTransform: "none",

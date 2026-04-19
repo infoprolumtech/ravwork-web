@@ -280,7 +280,7 @@ export default function SignUpPage(): JSX.Element {
               }),
             );
             setCurrentStep(2);
-            navigate("/setup", { replace: true, state: { resumeStep: 2 } });
+            navigate("/signup", { replace: true, state: { resumeStep: 2 } });
             return;
           }
 
@@ -323,7 +323,7 @@ export default function SignUpPage(): JSX.Element {
             }),
           );
           setCurrentStep(4);
-          navigate("/setup", { replace: true, state: { resumeStep: 4 } });
+          navigate("/signup", { replace: true, state: { resumeStep: 4 } });
         } catch (error: unknown) {
           // If we can't verify subscription, send user back to Step 2.
           dispatch(
@@ -336,7 +336,7 @@ export default function SignUpPage(): JSX.Element {
             }),
           );
           setCurrentStep(2);
-          navigate("/setup", { replace: true, state: { resumeStep: 2 } });
+          navigate("/signup", { replace: true, state: { resumeStep: 2 } });
           return;
         }
       })();
@@ -351,7 +351,7 @@ export default function SignUpPage(): JSX.Element {
         }),
       );
       setCurrentStep(2);
-      navigate("/setup", { replace: true, state: { resumeStep: 2 } });
+      navigate("/signup", { replace: true, state: { resumeStep: 2 } });
     }
   }, [
     dispatch,
@@ -430,8 +430,8 @@ export default function SignUpPage(): JSX.Element {
       }
 
       const origin = window.location.origin;
-      const successUrl = `${origin}/setup?subscription=success&resumeStep=4`;
-      const cancelUrl = `${origin}/setup?subscription=cancel&resumeStep=2`;
+      const successUrl = `${origin}/signup?subscription=success&resumeStep=4`;
+      const cancelUrl = `${origin}/signup?subscription=cancel&resumeStep=2`;
 
       const checkout = await createSubscriptionCheckout({
         planId: data.plan, // Step2 stores backend plan UUID in `plan`
@@ -475,7 +475,7 @@ export default function SignUpPage(): JSX.Element {
           }),
         );
         setCurrentStep(4);
-        navigate("/setup", { replace: true, state: { resumeStep: 4 } });
+        navigate("/signup", { replace: true, state: { resumeStep: 4 } });
         return;
       }
       dispatch(showAlert({ message, severity: "error" }));

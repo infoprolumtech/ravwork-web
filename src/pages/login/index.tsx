@@ -106,7 +106,7 @@ export default function LoginPage(): JSX.Element {
 
       const profileStep = result.user?.profileStep || 0;
       if (profileStep < 3) {
-        navigate("/setup", { state: { resumeStep: profileStep + 1 } });
+        navigate("/signup", { state: { resumeStep: profileStep + 1 } });
       } else if (completion >= 50) {
         navigate("/services-offered");
       } else {
@@ -145,7 +145,7 @@ export default function LoginPage(): JSX.Element {
           cursor: "pointer",
           "&:hover": { textDecoration: "underline" },
         }}
-        onClick={() => navigate("/setup")}
+        onClick={() => navigate("/signup")}
       >
         Sign Up
       </Typography>

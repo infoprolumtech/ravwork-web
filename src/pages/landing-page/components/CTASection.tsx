@@ -155,7 +155,7 @@ const FooterCTA: React.FC = () => {
             </Typography>
 
             <CtaButton
-              onClick={() => navigate("/setup")}
+              onClick={() => navigate("/signup")}
               variant="contained"
               disableElevation
               endIcon={

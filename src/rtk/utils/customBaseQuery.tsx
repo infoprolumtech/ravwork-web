@@ -57,7 +57,7 @@ export const baseQueryWithReauth: BaseQueryFn<
   // Check if this is a login or signup request (these should show errors on 401, not redirect)
   const isAuthRequest =
     typeof args === "object" && args !== null && "url" in args
-      ? args.url === "/auth/login" || args.url === "/auth/setup"
+      ? args.url === "/auth/login" || args.url === "/auth/signup"
       : false;
 
   // Handle token expiration (401 Unauthorized)

@@ -371,7 +371,7 @@ export default function PricingSection(): JSX.Element {
             {/* CTA Section */}
             <Box sx={{ mt: 6 }}>
               <Button
-                href="/setup"
+                href="/signup"
                 fullWidth
                 sx={{
                   background: "#FFFFFF",
